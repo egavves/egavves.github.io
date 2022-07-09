@@ -4,256 +4,256 @@
   
   
   <url>
-    <loc>http://localhost:63160/project/eva/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/eva/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/timing/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/timing/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/quva/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/quva/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/popaart/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/popaart/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/nnds/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/nnds/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/flora/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/flora/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/histo-ai/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/histo-ai/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/airborne/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/airborne/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/talk/example-talk/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/talk/example-talk/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/event/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/event/</loc><lastmod>2030-06-01T13:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication-type/1/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication-type/1/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication-type/2/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication-type/2/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/lippe-2022-citris/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/lippe-2022-citris/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/bereska-2022-continualdynamics/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/bereska-2022-continualdynamics/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/zoetmulder-2022-thrombus/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/zoetmulder-2022-thrombus/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/schirris-2022-deepsmile/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/schirris-2022-deepsmile/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/liu-2022-prototypes/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/liu-2022-prototypes/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/lippe-2022-enco/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/lippe-2022-enco/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/wang-2022-nformer/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/wang-2022-nformer/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication_types/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication_types/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/</loc><lastmod>2022-06-13T21:22:16+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/pervez-2022-stabreg/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/pervez-2022-stabreg/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/adaptive-radiotherapy/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/adaptive-radiotherapy/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/computer-vision/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/computer-vision/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/ct/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/ct/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/deep-learning/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/deep-learning/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/dynamical-systems/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/dynamical-systems/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/elekta/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/elekta/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/machine-learning-for-science/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/machine-learning-for-science/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/mri/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/mri/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/project/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/project/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tags/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tags/</loc><lastmod>2021-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/zoetmulder-2021-automated/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/zoetmulder-2021-automated/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oh-2021-batch/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oh-2021-batch/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/schirris-2021-deepsmile/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/schirris-2021-deepsmile/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/lippe-2021-efficient/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/lippe-2021-efficient/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/reisser-2021-federated/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/reisser-2021-federated/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oh-2021-mixed/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oh-2021-mixed/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2021-model/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2021-model/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/dal-2021-multiple/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/dal-2021-multiple/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/chen-2021-neural/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/chen-2021-neural/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/liao-2021-quasibinary/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/liao-2021-quasibinary/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gupta-2021-rotation/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gupta-2021-rotation/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/kofinas-2021-roto/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/kofinas-2021-roto/</loc><lastmod>2022-06-11T23:12:29+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/kilickaya-2021-self/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/kilickaya-2021-self/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/panteli-2021-sparse/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/panteli-2021-sparse/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/pervez-2021-spectral/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/pervez-2021-spectral/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gupta-2021-tackling/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gupta-2021-tackling/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/de-2021-transformers/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/de-2021-transformers/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/shi-2021-unsharp/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/shi-2021-unsharp/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/academic/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/academic/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/categories/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/categories/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/category/demo/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/category/demo/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/post/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/post/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/post/getting-started/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/post/getting-started/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/%E5%BC%80%E6%BA%90/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/%E5%BC%80%E6%BA%90/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/category/%E6%95%99%E7%A8%8B/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/category/%E6%95%99%E7%A8%8B/</loc><lastmod>2020-12-13T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/ai-for-immunotherapy/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/ai-for-immunotherapy/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/bmw/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/bmw/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/ellogon.ai/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/ellogon.ai/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/forecasting-future/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/forecasting-future/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/genomics/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/genomics/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/histopathology/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/histopathology/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/nico.lab/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/nico.lab/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/tag/stroke/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/tag/stroke/</loc><lastmod>2020-09-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/vandeleur-2020-automatic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/vandeleur-2020-automatic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/lippe-2020-categorical/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/lippe-2020-categorical/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/pervez-2020-low/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/pervez-2020-low/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/hussein-2020-pic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/hussein-2020-pic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/chen-2020-pointmixup/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/chen-2020-pointmixup/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/panteli-2020-siamese/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/panteli-2020-siamese/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/pervez-2020-variance/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/pervez-2020-variance/</loc><lastmod>2022-06-11T23:12:28+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/chen-20193-d/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/chen-20193-d/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oh-2019-combinatorial/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oh-2019-combinatorial/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/samson-2019-bet/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/samson-2019-bet/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/davidson-2019-increasing/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/davidson-2019-increasing/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oconnor-2019-initialized/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oconnor-2019-initialized/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/vanderheiden-2019-safecritic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/vanderheiden-2019-safecritic/</loc><lastmod>2022-06-11T23:12:26+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/liao-2019-spherical/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/liao-2019-spherical/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/kristan-2019-seventh/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/kristan-2019-seventh/</loc><lastmod>2022-06-11T23:12:27+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/hussein-2019-timeception/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/hussein-2019-timeception/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oconnor-2019-training/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oconnor-2019-training/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/hussein-2019-videograph/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/hussein-2019-videograph/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oh-2018-bock/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oh-2018-bock/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/shkodrani-2018-dynamic/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/shkodrani-2018-dynamic/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/scheepers-2018-improving/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/scheepers-2018-improving/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/valmadre-2018-long/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/valmadre-2018-long/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/louizos-2018-relaxed/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/louizos-2018-relaxed/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/liao-2018-searching/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/liao-2018-searching/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/kristan-2018-sixth/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/kristan-2018-sixth/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oconnor-2018-training/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oconnor-2018-training/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/ghodrati-2018-video/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/ghodrati-2018-video/</loc><lastmod>2022-06-11T23:12:25+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/li-2018-videolstm/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/li-2018-videolstm/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/bilen-2017-action/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/bilen-2017-action/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/georgoulis-2017-reflectance/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/georgoulis-2017-reflectance/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/fernando-2017-self/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/fernando-2017-self/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/oconnor-2017-temporally/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/oconnor-2017-temporally/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/li-2017-tracking/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/li-2017-tracking/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/tao-2017-tracking/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/tao-2017-tracking/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/hussein-2017-unified/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/hussein-2017-unified/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/snoek-2017-university/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/snoek-2017-university/</loc><lastmod>2022-06-11T23:12:24+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/haije-2016-automatic/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/haije-2016-automatic/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/rematas-2016-deep/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/rematas-2016-deep/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/bilen-2016-dynamic/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/bilen-2016-dynamic/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/de-2016-online/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/de-2016-online/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/fernando-2016-rank/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/fernando-2016-rank/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/tao-2016-siamese/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/tao-2016-siamese/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2015-active/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2015-active/</loc><lastmod>2022-06-11T23:12:23+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/jia-2015-guiding/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/jia-2015-guiding/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/fernando-2015-learning/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/fernando-2015-learning/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2015-local/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2015-local/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/fernando-2015-modeling/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/fernando-2015-modeling/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/li-2014-attributes/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/li-2014-attributes/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/mazloom-2014-conceptlets/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/mazloom-2014-conceptlets/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/mensink-2014-costa/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/mensink-2014-costa/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/tao-2014-locality/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/tao-2014-locality/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/example-publication/example/</loc><lastmod>2013-07-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/example-publication/example/</loc><lastmod>2013-07-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/example-publication/</loc><lastmod>2013-07-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/example-publication/</loc><lastmod>2013-07-01T00:00:00+00:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/li-2013-codemaps/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/li-2013-codemaps/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2013-fine/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2013-fine/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/mazloom-2013-searching/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/mazloom-2013-searching/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2012-convex/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2012-convex/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2012-visual/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2012-visual/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/li-2011-personalizing/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/li-2011-personalizing/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/gavves-2010-landmark/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
+    <loc>http://localhost:63223/publication/gavves-2010-landmark/</loc><lastmod>2022-06-11T23:12:21+02:00</lastmod><changefreq>weekly</changefreq></url>
   <url>
-    <loc>http://localhost:63160/publication/snoek-2010-mediamill/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url></urlset>
+    <loc>http://localhost:63223/publication/snoek-2010-mediamill/</loc><lastmod>2022-06-11T23:12:22+02:00</lastmod><changefreq>weekly</changefreq></url></urlset>
