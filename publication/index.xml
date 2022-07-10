@@ -2,693 +2,693 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Publications | Efstratios Gavves</title>
-    <link>http://localhost:63223/publication/</link>
-      <atom:link href="http://localhost:63223/publication/index.xml" rel="self" type="application/rss+xml" />
+    <link>http://localhost:1313/publication/</link>
+      <atom:link href="http://localhost:1313/publication/index.xml" rel="self" type="application/rss+xml" />
     <description>Publications</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Sat, 01 Jan 2022 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://localhost:63223/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png</url>
+      <url>http://localhost:1313/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png</url>
       <title>Publications</title>
-      <link>http://localhost:63223/publication/</link>
+      <link>http://localhost:1313/publication/</link>
     </image>
     
     <item>
       <title>CITRIS: Causal Identifiability from Temporal Intervened Sequences</title>
-      <link>http://localhost:63223/publication/lippe-2022-citris/</link>
+      <link>http://localhost:1313/publication/lippe-2022-citris/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/lippe-2022-citris/</guid>
+      <guid>http://localhost:1313/publication/lippe-2022-citris/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Continual Learning of Dynamical Systems With Competitive Multi-Head Reservoirs</title>
-      <link>http://localhost:63223/publication/bereska-2022-continualdynamics/</link>
+      <link>http://localhost:1313/publication/bereska-2022-continualdynamics/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/bereska-2022-continualdynamics/</guid>
+      <guid>http://localhost:1313/publication/bereska-2022-continualdynamics/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Deep Learning-Based Thrombus Localization and Segmentation in Patients with Posterior Circulation Stroke</title>
-      <link>http://localhost:63223/publication/zoetmulder-2022-thrombus/</link>
+      <link>http://localhost:1313/publication/zoetmulder-2022-thrombus/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/zoetmulder-2022-thrombus/</guid>
+      <guid>http://localhost:1313/publication/zoetmulder-2022-thrombus/</guid>
       <description></description>
     </item>
     
     <item>
       <title>DeepSMILE: Self-supervised heterogeneity-aware multiple instance learning for DNA damage response defect classification directly from H&amp;E whole-slide images</title>
-      <link>http://localhost:63223/publication/schirris-2022-deepsmile/</link>
+      <link>http://localhost:1313/publication/schirris-2022-deepsmile/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/schirris-2022-deepsmile/</guid>
+      <guid>http://localhost:1313/publication/schirris-2022-deepsmile/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Dynamic Prototype Convolution Network for Few-Shot Semantic Segmentation</title>
-      <link>http://localhost:63223/publication/liu-2022-prototypes/</link>
+      <link>http://localhost:1313/publication/liu-2022-prototypes/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/liu-2022-prototypes/</guid>
+      <guid>http://localhost:1313/publication/liu-2022-prototypes/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Efficient Neural Causal Discovery without Acyclicity Constraints</title>
-      <link>http://localhost:63223/publication/lippe-2022-enco/</link>
+      <link>http://localhost:1313/publication/lippe-2022-enco/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/lippe-2022-enco/</guid>
+      <guid>http://localhost:1313/publication/lippe-2022-enco/</guid>
       <description></description>
     </item>
     
     <item>
       <title>NFormer: Robust Person Re-Identification With Neighbor Transformer</title>
-      <link>http://localhost:63223/publication/wang-2022-nformer/</link>
+      <link>http://localhost:1313/publication/wang-2022-nformer/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/wang-2022-nformer/</guid>
+      <guid>http://localhost:1313/publication/wang-2022-nformer/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Stability Regularization for Discrete Representation Learning</title>
-      <link>http://localhost:63223/publication/pervez-2022-stabreg/</link>
+      <link>http://localhost:1313/publication/pervez-2022-stabreg/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/pervez-2022-stabreg/</guid>
+      <guid>http://localhost:1313/publication/pervez-2022-stabreg/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Automated final lesion seentation in posterior circulation acute ischemic stroke using deep learning</title>
-      <link>http://localhost:63223/publication/zoetmulder-2021-automated/</link>
+      <link>http://localhost:1313/publication/zoetmulder-2021-automated/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/zoetmulder-2021-automated/</guid>
+      <guid>http://localhost:1313/publication/zoetmulder-2021-automated/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Batch Bayesian Optimization on Permutations using Acquisition Weighted Kernels</title>
-      <link>http://localhost:63223/publication/oh-2021-batch/</link>
+      <link>http://localhost:1313/publication/oh-2021-batch/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oh-2021-batch/</guid>
+      <guid>http://localhost:1313/publication/oh-2021-batch/</guid>
       <description></description>
     </item>
     
     <item>
       <title>DeepSMILE: Self-supervised heterogeneity-aware multiple instance learning for DNA damage response defect classification directly from H&amp;E whole-slide images</title>
-      <link>http://localhost:63223/publication/schirris-2021-deepsmile/</link>
+      <link>http://localhost:1313/publication/schirris-2021-deepsmile/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/schirris-2021-deepsmile/</guid>
+      <guid>http://localhost:1313/publication/schirris-2021-deepsmile/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Efficient Neural Causal Discovery without Acyclicity Constraints</title>
-      <link>http://localhost:63223/publication/lippe-2021-efficient/</link>
+      <link>http://localhost:1313/publication/lippe-2021-efficient/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/lippe-2021-efficient/</guid>
+      <guid>http://localhost:1313/publication/lippe-2021-efficient/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Federated mixture of experts</title>
-      <link>http://localhost:63223/publication/reisser-2021-federated/</link>
+      <link>http://localhost:1313/publication/reisser-2021-federated/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/reisser-2021-federated/</guid>
+      <guid>http://localhost:1313/publication/reisser-2021-federated/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Mixed Variable Bayesian Optimization with Frequency Modulated Kernels</title>
-      <link>http://localhost:63223/publication/oh-2021-mixed/</link>
+      <link>http://localhost:1313/publication/oh-2021-mixed/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oh-2021-mixed/</guid>
+      <guid>http://localhost:1313/publication/oh-2021-mixed/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Model decay in long-term tracking</title>
-      <link>http://localhost:63223/publication/gavves-2021-model/</link>
+      <link>http://localhost:1313/publication/gavves-2021-model/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2021-model/</guid>
+      <guid>http://localhost:1313/publication/gavves-2021-model/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Multiple-instance learning for assessing prognosis of ductal carcinoma in situ</title>
-      <link>http://localhost:63223/publication/dal-2021-multiple/</link>
+      <link>http://localhost:1313/publication/dal-2021-multiple/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/dal-2021-multiple/</guid>
+      <guid>http://localhost:1313/publication/dal-2021-multiple/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Neural Feature Matching in Implicit 3D Representations</title>
-      <link>http://localhost:63223/publication/chen-2021-neural/</link>
+      <link>http://localhost:1313/publication/chen-2021-neural/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/chen-2021-neural/</guid>
+      <guid>http://localhost:1313/publication/chen-2021-neural/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Quasibinary Classifier for Images with Zero and Multiple Labels</title>
-      <link>http://localhost:63223/publication/liao-2021-quasibinary/</link>
+      <link>http://localhost:1313/publication/liao-2021-quasibinary/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/liao-2021-quasibinary/</guid>
+      <guid>http://localhost:1313/publication/liao-2021-quasibinary/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Rotation Equivariant Siamese Networks for Tracking</title>
-      <link>http://localhost:63223/publication/gupta-2021-rotation/</link>
+      <link>http://localhost:1313/publication/gupta-2021-rotation/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gupta-2021-rotation/</guid>
+      <guid>http://localhost:1313/publication/gupta-2021-rotation/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Roto-translated Local Coordinate Frames For Interacting Dynamical Systems</title>
-      <link>http://localhost:63223/publication/kofinas-2021-roto/</link>
+      <link>http://localhost:1313/publication/kofinas-2021-roto/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/kofinas-2021-roto/</guid>
+      <guid>http://localhost:1313/publication/kofinas-2021-roto/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Self-selective context for interaction recognition</title>
-      <link>http://localhost:63223/publication/kilickaya-2021-self/</link>
+      <link>http://localhost:1313/publication/kilickaya-2021-self/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/kilickaya-2021-self/</guid>
+      <guid>http://localhost:1313/publication/kilickaya-2021-self/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Sparse-Shot Learning for Extremely Many Localisations</title>
-      <link>http://localhost:63223/publication/panteli-2021-sparse/</link>
+      <link>http://localhost:1313/publication/panteli-2021-sparse/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/panteli-2021-sparse/</guid>
+      <guid>http://localhost:1313/publication/panteli-2021-sparse/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Spectral Smoothing Unveils Phase Transitions in Hierarchical Variational Autoencoders</title>
-      <link>http://localhost:63223/publication/pervez-2021-spectral/</link>
+      <link>http://localhost:1313/publication/pervez-2021-spectral/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/pervez-2021-spectral/</guid>
+      <guid>http://localhost:1313/publication/pervez-2021-spectral/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tackling occlusion in Siamese tracking with structured dropouts</title>
-      <link>http://localhost:63223/publication/gupta-2021-tackling/</link>
+      <link>http://localhost:1313/publication/gupta-2021-tackling/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gupta-2021-tackling/</guid>
+      <guid>http://localhost:1313/publication/gupta-2021-tackling/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Transformers for Ischemic Stroke Infarct Core Seentation from Spatio-temporal CT Perfusion Scans</title>
-      <link>http://localhost:63223/publication/de-2021-transformers/</link>
+      <link>http://localhost:1313/publication/de-2021-transformers/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/de-2021-transformers/</guid>
+      <guid>http://localhost:1313/publication/de-2021-transformers/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Unsharp Mask Guided Filtering</title>
-      <link>http://localhost:63223/publication/shi-2021-unsharp/</link>
+      <link>http://localhost:1313/publication/shi-2021-unsharp/</link>
       <pubDate>Fri, 01 Jan 2021 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/shi-2021-unsharp/</guid>
+      <guid>http://localhost:1313/publication/shi-2021-unsharp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Automatic triage of 12-lead ECGs using deep convolutional neural networks</title>
-      <link>http://localhost:63223/publication/vandeleur-2020-automatic/</link>
+      <link>http://localhost:1313/publication/vandeleur-2020-automatic/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/vandeleur-2020-automatic/</guid>
+      <guid>http://localhost:1313/publication/vandeleur-2020-automatic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Categorical normalizing flows via continuous transformations</title>
-      <link>http://localhost:63223/publication/lippe-2020-categorical/</link>
+      <link>http://localhost:1313/publication/lippe-2020-categorical/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/lippe-2020-categorical/</guid>
+      <guid>http://localhost:1313/publication/lippe-2020-categorical/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Low Bias Low Variance Gradient Estimates for Hierarchical Boolean Stochastic Networks</title>
-      <link>http://localhost:63223/publication/pervez-2020-low/</link>
+      <link>http://localhost:1313/publication/pervez-2020-low/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/pervez-2020-low/</guid>
+      <guid>http://localhost:1313/publication/pervez-2020-low/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Pic: Permutation invariant convolution for recognizing long-range activities</title>
-      <link>http://localhost:63223/publication/hussein-2020-pic/</link>
+      <link>http://localhost:1313/publication/hussein-2020-pic/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/hussein-2020-pic/</guid>
+      <guid>http://localhost:1313/publication/hussein-2020-pic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Pointmixup: Auentation for point clouds</title>
-      <link>http://localhost:63223/publication/chen-2020-pointmixup/</link>
+      <link>http://localhost:1313/publication/chen-2020-pointmixup/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/chen-2020-pointmixup/</guid>
+      <guid>http://localhost:1313/publication/chen-2020-pointmixup/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Siamese tracking of cell behaviour patterns</title>
-      <link>http://localhost:63223/publication/panteli-2020-siamese/</link>
+      <link>http://localhost:1313/publication/panteli-2020-siamese/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/panteli-2020-siamese/</guid>
+      <guid>http://localhost:1313/publication/panteli-2020-siamese/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Variance Reduction in Hierarchical Variational Autoencoders</title>
-      <link>http://localhost:63223/publication/pervez-2020-variance/</link>
+      <link>http://localhost:1313/publication/pervez-2020-variance/</link>
       <pubDate>Wed, 01 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/pervez-2020-variance/</guid>
+      <guid>http://localhost:1313/publication/pervez-2020-variance/</guid>
       <description></description>
     </item>
     
     <item>
       <title>3d neighborhood convolution: Learning depth-aware features for rgb-d and rgb semantic seentation</title>
-      <link>http://localhost:63223/publication/chen-20193-d/</link>
+      <link>http://localhost:1313/publication/chen-20193-d/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/chen-20193-d/</guid>
+      <guid>http://localhost:1313/publication/chen-20193-d/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Combinatorial bayesian optimization using the graph cartesian product</title>
-      <link>http://localhost:63223/publication/oh-2019-combinatorial/</link>
+      <link>http://localhost:1313/publication/oh-2019-combinatorial/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oh-2019-combinatorial/</guid>
+      <guid>http://localhost:1313/publication/oh-2019-combinatorial/</guid>
       <description></description>
     </item>
     
     <item>
       <title>I bet you are wrong: Gambling adversarial networks for structured semantic seentation</title>
-      <link>http://localhost:63223/publication/samson-2019-bet/</link>
+      <link>http://localhost:1313/publication/samson-2019-bet/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/samson-2019-bet/</guid>
+      <guid>http://localhost:1313/publication/samson-2019-bet/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Increasing Expressivity of a Hyperspherical VAE</title>
-      <link>http://localhost:63223/publication/davidson-2019-increasing/</link>
+      <link>http://localhost:1313/publication/davidson-2019-increasing/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/davidson-2019-increasing/</guid>
+      <guid>http://localhost:1313/publication/davidson-2019-increasing/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Initialized Equilibrium Propagation for Backprop-Free Training</title>
-      <link>http://localhost:63223/publication/oconnor-2019-initialized/</link>
+      <link>http://localhost:1313/publication/oconnor-2019-initialized/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oconnor-2019-initialized/</guid>
+      <guid>http://localhost:1313/publication/oconnor-2019-initialized/</guid>
       <description></description>
     </item>
     
     <item>
       <title>SafeCritic: Collision-aware trajectory prediction</title>
-      <link>http://localhost:63223/publication/vanderheiden-2019-safecritic/</link>
+      <link>http://localhost:1313/publication/vanderheiden-2019-safecritic/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/vanderheiden-2019-safecritic/</guid>
+      <guid>http://localhost:1313/publication/vanderheiden-2019-safecritic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Spherical regression: Learning viewpoints, surface normals and 3d rotations on n-spheres</title>
-      <link>http://localhost:63223/publication/liao-2019-spherical/</link>
+      <link>http://localhost:1313/publication/liao-2019-spherical/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/liao-2019-spherical/</guid>
+      <guid>http://localhost:1313/publication/liao-2019-spherical/</guid>
       <description></description>
     </item>
     
     <item>
       <title>The seventh visual object tracking vot2019 challenge results</title>
-      <link>http://localhost:63223/publication/kristan-2019-seventh/</link>
+      <link>http://localhost:1313/publication/kristan-2019-seventh/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/kristan-2019-seventh/</guid>
+      <guid>http://localhost:1313/publication/kristan-2019-seventh/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Timeception for complex action recognition</title>
-      <link>http://localhost:63223/publication/hussein-2019-timeception/</link>
+      <link>http://localhost:1313/publication/hussein-2019-timeception/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/hussein-2019-timeception/</guid>
+      <guid>http://localhost:1313/publication/hussein-2019-timeception/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Training a spiking neural network with equilibrium propagation</title>
-      <link>http://localhost:63223/publication/oconnor-2019-training/</link>
+      <link>http://localhost:1313/publication/oconnor-2019-training/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oconnor-2019-training/</guid>
+      <guid>http://localhost:1313/publication/oconnor-2019-training/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Videograph: Recognizing minutes-long human activities in videos</title>
-      <link>http://localhost:63223/publication/hussein-2019-videograph/</link>
+      <link>http://localhost:1313/publication/hussein-2019-videograph/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/hussein-2019-videograph/</guid>
+      <guid>http://localhost:1313/publication/hussein-2019-videograph/</guid>
       <description></description>
     </item>
     
     <item>
       <title>BOCK: Bayesian Optimization with Cylindrical Kernels</title>
-      <link>http://localhost:63223/publication/oh-2018-bock/</link>
+      <link>http://localhost:1313/publication/oh-2018-bock/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oh-2018-bock/</guid>
+      <guid>http://localhost:1313/publication/oh-2018-bock/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Dynamic Adaptation on Non-Stationary Visual Domains</title>
-      <link>http://localhost:63223/publication/shkodrani-2018-dynamic/</link>
+      <link>http://localhost:1313/publication/shkodrani-2018-dynamic/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/shkodrani-2018-dynamic/</guid>
+      <guid>http://localhost:1313/publication/shkodrani-2018-dynamic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Improving word embedding compositionality using lexicographic definitions</title>
-      <link>http://localhost:63223/publication/scheepers-2018-improving/</link>
+      <link>http://localhost:1313/publication/scheepers-2018-improving/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/scheepers-2018-improving/</guid>
+      <guid>http://localhost:1313/publication/scheepers-2018-improving/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Long-term tracking in the wild: A benchmark</title>
-      <link>http://localhost:63223/publication/valmadre-2018-long/</link>
+      <link>http://localhost:1313/publication/valmadre-2018-long/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/valmadre-2018-long/</guid>
+      <guid>http://localhost:1313/publication/valmadre-2018-long/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Relaxed quantization for discretized neural networks</title>
-      <link>http://localhost:63223/publication/louizos-2018-relaxed/</link>
+      <link>http://localhost:1313/publication/louizos-2018-relaxed/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/louizos-2018-relaxed/</guid>
+      <guid>http://localhost:1313/publication/louizos-2018-relaxed/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Searching and Matching Texture-free 3D Shapes in Images</title>
-      <link>http://localhost:63223/publication/liao-2018-searching/</link>
+      <link>http://localhost:1313/publication/liao-2018-searching/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/liao-2018-searching/</guid>
+      <guid>http://localhost:1313/publication/liao-2018-searching/</guid>
       <description></description>
     </item>
     
     <item>
       <title>The sixth visual object tracking vot2018 challenge results</title>
-      <link>http://localhost:63223/publication/kristan-2018-sixth/</link>
+      <link>http://localhost:1313/publication/kristan-2018-sixth/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/kristan-2018-sixth/</guid>
+      <guid>http://localhost:1313/publication/kristan-2018-sixth/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Training a network of spiking neurons with equilibrium propagation</title>
-      <link>http://localhost:63223/publication/oconnor-2018-training/</link>
+      <link>http://localhost:1313/publication/oconnor-2018-training/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oconnor-2018-training/</guid>
+      <guid>http://localhost:1313/publication/oconnor-2018-training/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Video Time: Properties, Encoders and Evaluation</title>
-      <link>http://localhost:63223/publication/ghodrati-2018-video/</link>
+      <link>http://localhost:1313/publication/ghodrati-2018-video/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/ghodrati-2018-video/</guid>
+      <guid>http://localhost:1313/publication/ghodrati-2018-video/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Videolstm convolves, attends and flows for action recognition</title>
-      <link>http://localhost:63223/publication/li-2018-videolstm/</link>
+      <link>http://localhost:1313/publication/li-2018-videolstm/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/li-2018-videolstm/</guid>
+      <guid>http://localhost:1313/publication/li-2018-videolstm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Action recognition with dynamic image networks</title>
-      <link>http://localhost:63223/publication/bilen-2017-action/</link>
+      <link>http://localhost:1313/publication/bilen-2017-action/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/bilen-2017-action/</guid>
+      <guid>http://localhost:1313/publication/bilen-2017-action/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Reflectance and natural illumination from single-material specular objects using deep learning</title>
-      <link>http://localhost:63223/publication/georgoulis-2017-reflectance/</link>
+      <link>http://localhost:1313/publication/georgoulis-2017-reflectance/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/georgoulis-2017-reflectance/</guid>
+      <guid>http://localhost:1313/publication/georgoulis-2017-reflectance/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Self-Supervised Video Representation Learning With Odd-One-Out Networks</title>
-      <link>http://localhost:63223/publication/fernando-2017-self/</link>
+      <link>http://localhost:1313/publication/fernando-2017-self/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/fernando-2017-self/</guid>
+      <guid>http://localhost:1313/publication/fernando-2017-self/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Temporally Efficient Deep Learning with Spikes</title>
-      <link>http://localhost:63223/publication/oconnor-2017-temporally/</link>
+      <link>http://localhost:1313/publication/oconnor-2017-temporally/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/oconnor-2017-temporally/</guid>
+      <guid>http://localhost:1313/publication/oconnor-2017-temporally/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tracking by natural language specification</title>
-      <link>http://localhost:63223/publication/li-2017-tracking/</link>
+      <link>http://localhost:1313/publication/li-2017-tracking/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/li-2017-tracking/</guid>
+      <guid>http://localhost:1313/publication/li-2017-tracking/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tracking for half an hour</title>
-      <link>http://localhost:63223/publication/tao-2017-tracking/</link>
+      <link>http://localhost:1313/publication/tao-2017-tracking/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/tao-2017-tracking/</guid>
+      <guid>http://localhost:1313/publication/tao-2017-tracking/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Unified embedding and metric learning for zero-exemplar event detection</title>
-      <link>http://localhost:63223/publication/hussein-2017-unified/</link>
+      <link>http://localhost:1313/publication/hussein-2017-unified/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/hussein-2017-unified/</guid>
+      <guid>http://localhost:1313/publication/hussein-2017-unified/</guid>
       <description></description>
     </item>
     
     <item>
       <title>University of Amsterdam and Renmin University at TRECVID 2017: Searching Video, Detecting Events and Describing Video.</title>
-      <link>http://localhost:63223/publication/snoek-2017-university/</link>
+      <link>http://localhost:1313/publication/snoek-2017-university/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/snoek-2017-university/</guid>
+      <guid>http://localhost:1313/publication/snoek-2017-university/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Automatic comment generation using a neural translation model</title>
-      <link>http://localhost:63223/publication/haije-2016-automatic/</link>
+      <link>http://localhost:1313/publication/haije-2016-automatic/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/haije-2016-automatic/</guid>
+      <guid>http://localhost:1313/publication/haije-2016-automatic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Deep reflectance maps</title>
-      <link>http://localhost:63223/publication/rematas-2016-deep/</link>
+      <link>http://localhost:1313/publication/rematas-2016-deep/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/rematas-2016-deep/</guid>
+      <guid>http://localhost:1313/publication/rematas-2016-deep/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Dynamic image networks for action recognition</title>
-      <link>http://localhost:63223/publication/bilen-2016-dynamic/</link>
+      <link>http://localhost:1313/publication/bilen-2016-dynamic/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/bilen-2016-dynamic/</guid>
+      <guid>http://localhost:1313/publication/bilen-2016-dynamic/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Online action detection</title>
-      <link>http://localhost:63223/publication/de-2016-online/</link>
+      <link>http://localhost:1313/publication/de-2016-online/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/de-2016-online/</guid>
+      <guid>http://localhost:1313/publication/de-2016-online/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Rank pooling for action recognition</title>
-      <link>http://localhost:63223/publication/fernando-2016-rank/</link>
+      <link>http://localhost:1313/publication/fernando-2016-rank/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/fernando-2016-rank/</guid>
+      <guid>http://localhost:1313/publication/fernando-2016-rank/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Siamese instance search for tracking</title>
-      <link>http://localhost:63223/publication/tao-2016-siamese/</link>
+      <link>http://localhost:1313/publication/tao-2016-siamese/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/tao-2016-siamese/</guid>
+      <guid>http://localhost:1313/publication/tao-2016-siamese/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Active transfer learning with zero-shot priors: Reusing past datasets for future tasks</title>
-      <link>http://localhost:63223/publication/gavves-2015-active/</link>
+      <link>http://localhost:1313/publication/gavves-2015-active/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2015-active/</guid>
+      <guid>http://localhost:1313/publication/gavves-2015-active/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Guiding the long-short term memory model for image caption generation</title>
-      <link>http://localhost:63223/publication/jia-2015-guiding/</link>
+      <link>http://localhost:1313/publication/jia-2015-guiding/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/jia-2015-guiding/</guid>
+      <guid>http://localhost:1313/publication/jia-2015-guiding/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Learning to rank based on subsequences</title>
-      <link>http://localhost:63223/publication/fernando-2015-learning/</link>
+      <link>http://localhost:1313/publication/fernando-2015-learning/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/fernando-2015-learning/</guid>
+      <guid>http://localhost:1313/publication/fernando-2015-learning/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Local alignments for fine-grained categorization</title>
-      <link>http://localhost:63223/publication/gavves-2015-local/</link>
+      <link>http://localhost:1313/publication/gavves-2015-local/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2015-local/</guid>
+      <guid>http://localhost:1313/publication/gavves-2015-local/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Modeling video evolution for action recognition</title>
-      <link>http://localhost:63223/publication/fernando-2015-modeling/</link>
+      <link>http://localhost:1313/publication/fernando-2015-modeling/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/fernando-2015-modeling/</guid>
+      <guid>http://localhost:1313/publication/fernando-2015-modeling/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Attributes make sense on seented objects</title>
-      <link>http://localhost:63223/publication/li-2014-attributes/</link>
+      <link>http://localhost:1313/publication/li-2014-attributes/</link>
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/li-2014-attributes/</guid>
+      <guid>http://localhost:1313/publication/li-2014-attributes/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Conceptlets: Selective semantics for classifying video events</title>
-      <link>http://localhost:63223/publication/mazloom-2014-conceptlets/</link>
+      <link>http://localhost:1313/publication/mazloom-2014-conceptlets/</link>
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/mazloom-2014-conceptlets/</guid>
+      <guid>http://localhost:1313/publication/mazloom-2014-conceptlets/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Costa: Co-occurrence statistics for zero-shot classification</title>
-      <link>http://localhost:63223/publication/mensink-2014-costa/</link>
+      <link>http://localhost:1313/publication/mensink-2014-costa/</link>
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/mensink-2014-costa/</guid>
+      <guid>http://localhost:1313/publication/mensink-2014-costa/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Locality in generic instance search from one example</title>
-      <link>http://localhost:63223/publication/tao-2014-locality/</link>
+      <link>http://localhost:1313/publication/tao-2014-locality/</link>
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/tao-2014-locality/</guid>
+      <guid>http://localhost:1313/publication/tao-2014-locality/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Codemaps-seent, classify and search objects locally</title>
-      <link>http://localhost:63223/publication/li-2013-codemaps/</link>
+      <link>http://localhost:1313/publication/li-2013-codemaps/</link>
       <pubDate>Tue, 01 Jan 2013 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/li-2013-codemaps/</guid>
+      <guid>http://localhost:1313/publication/li-2013-codemaps/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Fine-grained categorization by alignments</title>
-      <link>http://localhost:63223/publication/gavves-2013-fine/</link>
+      <link>http://localhost:1313/publication/gavves-2013-fine/</link>
       <pubDate>Tue, 01 Jan 2013 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2013-fine/</guid>
+      <guid>http://localhost:1313/publication/gavves-2013-fine/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Searching informative concept banks for video event detection</title>
-      <link>http://localhost:63223/publication/mazloom-2013-searching/</link>
+      <link>http://localhost:1313/publication/mazloom-2013-searching/</link>
       <pubDate>Tue, 01 Jan 2013 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/mazloom-2013-searching/</guid>
+      <guid>http://localhost:1313/publication/mazloom-2013-searching/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Convex reduction of high-dimensional kernels for visual classification</title>
-      <link>http://localhost:63223/publication/gavves-2012-convex/</link>
+      <link>http://localhost:1313/publication/gavves-2012-convex/</link>
       <pubDate>Sun, 01 Jan 2012 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2012-convex/</guid>
+      <guid>http://localhost:1313/publication/gavves-2012-convex/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Visual synonyms for landmark image retrieval</title>
-      <link>http://localhost:63223/publication/gavves-2012-visual/</link>
+      <link>http://localhost:1313/publication/gavves-2012-visual/</link>
       <pubDate>Sun, 01 Jan 2012 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2012-visual/</guid>
+      <guid>http://localhost:1313/publication/gavves-2012-visual/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Personalizing automated image annotation using cross-entropy</title>
-      <link>http://localhost:63223/publication/li-2011-personalizing/</link>
+      <link>http://localhost:1313/publication/li-2011-personalizing/</link>
       <pubDate>Sat, 01 Jan 2011 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/li-2011-personalizing/</guid>
+      <guid>http://localhost:1313/publication/li-2011-personalizing/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Landmark image retrieval using visual synonyms</title>
-      <link>http://localhost:63223/publication/gavves-2010-landmark/</link>
+      <link>http://localhost:1313/publication/gavves-2010-landmark/</link>
       <pubDate>Fri, 01 Jan 2010 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/gavves-2010-landmark/</guid>
+      <guid>http://localhost:1313/publication/gavves-2010-landmark/</guid>
       <description></description>
     </item>
     
     <item>
       <title>The MediaMill TRECVID 2010 semantic video search engine</title>
-      <link>http://localhost:63223/publication/snoek-2010-mediamill/</link>
+      <link>http://localhost:1313/publication/snoek-2010-mediamill/</link>
       <pubDate>Fri, 01 Jan 2010 00:00:00 +0000</pubDate>
-      <guid>http://localhost:63223/publication/snoek-2010-mediamill/</guid>
+      <guid>http://localhost:1313/publication/snoek-2010-mediamill/</guid>
       <description></description>
     </item>
     
