@@ -5,12 +5,36 @@
     <link>https://egavves.github.io/publication-type/2/</link>
       <atom:link href="https://egavves.github.io/publication-type/2/index.xml" rel="self" type="application/rss+xml" />
     <description>2</description>
-    <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Sat, 01 Jan 2022 00:00:00 +0000</lastBuildDate>
+    <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Sun, 01 Jan 2023 00:00:00 +0000</lastBuildDate>
     <image>
       <url>https://egavves.github.io/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png</url>
       <title>2</title>
       <link>https://egavves.github.io/publication-type/2/</link>
     </image>
+    
+    <item>
+      <title>Modelling Long Range Dependencies in ND: From Task-Specific to a General Purpose CNN</title>
+      <link>https://egavves.github.io/publication/devries-2023-perfunet/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/devries-2023-perfunet/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PC-Reg: A pyramidal prediction–correction approach for large deformation image registration</title>
+      <link>https://egavves.github.io/publication/yin-2023-pcreg/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/yin-2023-pcreg/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spatio-temporal physics-informed learning: A novel approach to CT perfusion analysis in acute ischemic stroke</title>
+      <link>https://egavves.github.io/publication/devries-2023-sppinn/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/devries-2023-sppinn/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>DeepSMILE: Self-supervised heterogeneity-aware multiple instance learning for DNA damage response defect classification directly from H&amp;E whole-slide images</title>

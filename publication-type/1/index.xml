@@ -5,12 +5,76 @@
     <link>https://egavves.github.io/publication-type/1/</link>
       <atom:link href="https://egavves.github.io/publication-type/1/index.xml" rel="self" type="application/rss+xml" />
     <description>1</description>
-    <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Sat, 01 Jan 2022 00:00:00 +0000</lastBuildDate>
+    <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Sun, 01 Jan 2023 00:00:00 +0000</lastBuildDate>
     <image>
       <url>https://egavves.github.io/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png</url>
       <title>1</title>
       <link>https://egavves.github.io/publication-type/1/</link>
     </image>
+    
+    <item>
+      <title>BISCUIT: Causal Representation Learning from Binary Interactions</title>
+      <link>https://egavves.github.io/publication/lippe-2023-biscuit/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/lippe-2023-biscuit/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Graph Switching Dynamical Systems</title>
+      <link>https://egavves.github.io/publication/liu-2023-grass/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/liu-2023-grass/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Latent Field Discovery In Interacting Dynamical Systems With Neural Fields</title>
+      <link>https://egavves.github.io/publication/kofinas-2023-aether/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/kofinas-2023-aether/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Modulated Neural ODEs</title>
+      <link>https://egavves.github.io/publication/auzina-2023-monode/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/auzina-2023-monode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Neural Modulation Fields for Conditional Cone Beam Neural Tomography</title>
+      <link>https://egavves.github.io/publication/papa-2023-neuralct/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/papa-2023-neuralct/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Noise2Aliasing: Unsupervised Deep Learning for View Aliasing and Noise Reduction in 4DCBCT</title>
+      <link>https://egavves.github.io/publication/papa-2023-noise-2-aliasing/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/papa-2023-noise-2-aliasing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Time does tell: Self-supervised time-tuning of dense image representations</title>
+      <link>https://egavves.github.io/publication/salehi-2023-time/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/salehi-2023-time/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Towards open-vocabulary video instance segmentation</title>
+      <link>https://egavves.github.io/publication/wang-2023-towards/</link>
+      <pubDate>Sun, 01 Jan 2023 00:00:00 +0000</pubDate>
+      <guid>https://egavves.github.io/publication/wang-2023-towards/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>CITRIS: Causal Identifiability from Temporal Intervened Sequences</title>
