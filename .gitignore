@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+
+# Node (if needed later)
+node_modules/
+npm-debug.log*

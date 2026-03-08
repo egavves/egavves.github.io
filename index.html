@@ -1,3524 +1,1857 @@
-<!DOCTYPE html><html lang="en-us" >
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Efstratios Gavves — Professor of Physical AI</title>
+  <meta name="description" content="Efstratios Gavves — Associate Professor of Physical AI at the University of Amsterdam. Research in world models, causal vision, mechanistic learning and biomedical AI." />
 
-
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  
-  
-  
-    <meta name="generator" content="Wowchemy 5.5.0 for Hugo" />
-  
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-  
-  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-  
-  
-  
+  <style>
+    /* ================================================================
+       RESET & CUSTOM PROPERTIES
+    ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:       #09090D;
+      --dark-surf:  #111118;
+      --dark-card:  rgba(17,17,24,0.96);
+      --ink:        #1B1B22;
+      --ink-mid:    #47474F;
+      --gold:       #C4A96A;
+      --gold-dim:   rgba(196,169,106,0.25);
+      --gold-faint: rgba(196,169,106,0.08);
+      --text-hi:    #EAE6DE;
+      --text-lo:    rgba(234,230,222,0.5);
+      --light:      #F4F1EB;
+      --light-2:    #EBE8E2;
+      --display:    'Space Grotesk', system-ui, sans-serif;
+      --sans:       'Inter', system-ui, sans-serif;
+      --mono:       'DM Mono', 'Courier New', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--dark);
+      color: var(--text-hi);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--gold-dim); }
+
+    /* ================================================================
+       UTILITY
+    ================================================================ */
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 4rem;
+    }
+    @media (max-width: 900px) { .container { padding: 0 2rem; } }
+
+    .label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.75s ease, transform 0.75s ease;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal.d1 { transition-delay: 0.10s; }
+    .reveal.d2 { transition-delay: 0.20s; }
+    .reveal.d3 { transition-delay: 0.30s; }
+    .reveal.d4 { transition-delay: 0.40s; }
+
+    /* ================================================================
+       NAVIGATION
+    ================================================================ */
+    nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      padding: 1.4rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s, border-color 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(9,9,13,0.88);
+      backdrop-filter: blur(16px);
+      border-color: rgba(196,169,106,0.1);
+    }
+    .nav-left  { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-right { display: flex; align-items: center; gap: 1.5rem; }
+
+    .nav-name {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-links { list-style: none; display: flex; gap: 2rem; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-hi); }
+
+    .nav-icon {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--text-lo);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-icon:hover { color: var(--gold); }
+
     
-      
-      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap" media="print" onload="this.media='all'">
-    
-  
-
-  
-  
-  
-  
-  
-    
-    
-    
-  
-  
-
-  <meta name="author" content="Efstratios Gavves" />
-
-  
-  
-  
-    
-  
-  <meta name="description" content="Personal website of Efstratios Gavves." />
-
-  
-  <link rel="alternate" hreflang="en-us" href="https://egavves.github.io/" />
-
-  
-  
-  
-    <meta name="theme-color" content="#1565c0" />
-  
-
-  
-  
-
-  
-
-  <link rel="stylesheet" href="./css/vendor-bundle.min.css" media="print" onload="this.media='all'">
-
-  
-  
-  
-    
-    
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha512-W0xM4mr6dEP9nREo7Z9z+9X70wytKvMGeDsj7ps2+xg5QPrEBXC8tAW1IFnzjR6eoJ90JmCnFzerQJTLzIEHjA==" crossorigin="anonymous" media="print" onload="this.media='all'">
-    
-
-    
-    
-    
-    
-      
-      
-      
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-
-    
-    
-    
-
-    
-
-    
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-        
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-      
-      
-
-      
-      
-
-      
-    
-  
-
-  
-  
-  
-  
-  
-  
-  <link rel="stylesheet" href="./css/wowchemy.css" />
-
-  
-  
-  
-  
-  
-  
-  
-    
-    
-    <link rel="stylesheet" href="./css/libs/chroma/github-light.min.css" title="hl-light" media="print" onload="this.media='all'" >
-    <link rel="stylesheet" href="./css/libs/chroma/dracula.min.css" title="hl-dark" media="print" onload="this.media='all'" disabled>
-  
-
-  
-  
-
-
-
-  
-
-
-  
-
-
-  
-
-
-
-
-  
-  
-  
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  
-
-  
-  
-    <link rel="alternate" href="./index.xml" type="application/rss+xml" title="Efstratios Gavves" />
-  
-
-  
-  
-
-  
-  <link rel="icon" type="image/png" href="./media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_32x32_fill_lanczos_center_3.png" />
-  <link rel="apple-touch-icon" type="image/png" href="./media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_180x180_fill_lanczos_center_3.png" />
-
-  <link rel="canonical" href="https://egavves.github.io/" />
-
-  
-  
-  
-  
-  
-  
-  
-  
-    
-    
-  
-  
-
-  
-  
-    
-    
-  
-  <meta property="twitter:card" content="summary" />
-  
-    <meta property="twitter:site" content="@egavves" />
-    <meta property="twitter:creator" content="@egavves" />
-  
-  <meta property="og:site_name" content="Efstratios Gavves" />
-  <meta property="og:url" content="https://egavves.github.io/" />
-  <meta property="og:title" content="Efstratios Gavves" />
-  <meta property="og:description" content="Personal website of Efstratios Gavves." /><meta property="og:image" content="https://egavves.github.io/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png" />
-    <meta property="twitter:image" content="https://egavves.github.io/media/icon_huac07b9ebb8ffd2b1d1617642febbe690_115450_512x512_fill_lanczos_center_3.png" /><meta property="og:locale" content="en-us" />
-  
-    
-      <meta property="og:updated_time" content="2030-06-01T13:00:00&#43;00:00" />
-    
-  
-
-  
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://egavves.github.io/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  },
-  "url": "https://egavves.github.io/"
-}
-</script>
-
-
-  
-
-  
-
-
-  <title>Efstratios Gavves</title>
-
-  
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
+    .nav-icon svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+    /* ================================================================
+       HERO CANVAS
+    ================================================================ */
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      background: var(--dark);
+    }
+
+    #bg-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* center identity */
+    .hero-id {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+    }
+    .hero-name {
+      display: block;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2.6rem, 5vw, 5.2rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text-hi);
+    }
+    .hero-role {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.9rem;
+    }
+    .hero-inst {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      margin-top: 0.3rem;
+    }
+
+    /* thrust nodes */
+    .t-node {
+      position: absolute;
+      z-index: 20;
+      cursor: pointer;
+    }
+    .t-node-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .t-node-num {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+    }
+    .t-node-label {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: clamp(0.85rem, 1.2vw, 1.1rem);
+      color: var(--text-hi);
+      white-space: nowrap;
+      transition: color 0.25s;
+      line-height: 1.2;
+    }
+    .t-node-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 0.3rem;
+      position: relative;
+    }
+    .t-node-dot::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 1px solid rgba(196,169,106,0.45);
+      animation: node-pulse 2.8s ease-in-out infinite;
+    }
+    @keyframes node-pulse {
+      0%,100% { transform: scale(1); opacity: 0.8; }
+      50%      { transform: scale(2.2); opacity: 0; }
+    }
+    .t-node:nth-child(2) .t-node-dot::after { animation-delay: 0.7s; }
+    .t-node:nth-child(3) .t-node-dot::after { animation-delay: 1.4s; }
+    .t-node:nth-child(4) .t-node-dot::after { animation-delay: 2.1s; }
+
+    .t-node:hover .t-node-label { color: var(--gold); }
+
+    /* right-aligned nodes */
+    .t-node.right .t-node-inner { align-items: flex-end; }
+    .t-node.right .t-node-label { text-align: right; }
+
+    /* hover card */
+    .t-card {
+      position: absolute;
+      top: calc(100% + 0.8rem);
+      left: 0;
+      width: 270px;
+      background: var(--dark-card);
+      border: 1px solid rgba(196,169,106,0.18);
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      pointer-events: none;
+      z-index: 30;
+      overflow: hidden;
+    }
+    .t-node.right .t-card { left: auto; right: 0; }
+    .t-node:hover .t-card { opacity: 1; transform: none; pointer-events: auto; }
+
+    .t-card-img {
+      width: 100%; height: 130px;
+      object-fit: cover;
+      object-position: center 15%;
+      filter: brightness(0.65) saturate(0.7);
+      display: block;
+      transition: object-position 9s ease-in-out;
+    }
+    .t-node:hover .t-card-img {
+      object-position: center 85%;
+    }
+    .t-card-body { padding: 1rem 1.2rem 1.2rem; }
+    .t-card-tag {
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .t-card-papers { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+    .t-card-papers li {
+      font-size: 0.71rem;
+      color: rgba(234,230,222,0.7);
+      line-height: 1.4;
+      padding-left: 0.9rem;
+      position: relative;
+    }
+    .t-card-papers li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--gold); font-size: 0.55rem;
+      top: 0.05em;
+    }
+    .t-card-venue {
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      color: var(--gold);
+      opacity: 0.75;
+      margin-left: 0.25rem;
+    }
+
+    /* scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      z-index: 10;
+    }
+    .scroll-cue span {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+    }
+    .scroll-line {
+      width: 1px; height: 36px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: line-drop 2.2s ease-in-out infinite;
+    }
+    @keyframes line-drop {
+      0%   { transform: scaleY(0); transform-origin: top; opacity: 1; }
+      50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+      51%  { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
+    }
+
+    /* ================================================================
+       ABOUT
+    ================================================================ */
+    .about {
+      background: var(--dark);
+      padding: 9rem 0;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    .about-photo-wrap { position: relative; }
+    .about-photo {
+      width: 100%; max-width: 420px;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      filter: contrast(1.04);
+    }
+    .about-photo-frame {
+      position: absolute;
+      bottom: -1.4rem; right: -1.4rem;
+      width: 55%; height: 55%;
+      border: 1px solid rgba(196,169,106,0.22);
+      z-index: -1;
+    }
+
+    .about-label { margin-bottom: 1.4rem; }
+    .about-heading {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin-bottom: 1.6rem;
+    }
+    .about-text {
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: rgba(234,230,222,0.65);
+      margin-bottom: 1.2rem;
+    }
+    .about-text strong { color: var(--text-hi); font-weight: 500; }
+    .stats {
+      display: flex; gap: 2.8rem; flex-wrap: wrap;
+      margin: 2.2rem 0 2.4rem;
+    }
+    .stat-val {
+      display: block;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 2.4rem;
+      letter-spacing: -0.04em;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-lbl {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      margin-top: 0.25rem;
+    }
+    .pill-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .pill {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.45rem 1.1rem;
+      border: 1px solid rgba(196,169,106,0.35);
+      color: var(--gold);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .pill:hover { background: var(--gold); color: var(--dark); }
+
+    /* ================================================================
+       MANIFESTO
+    ================================================================ */
+    .manifesto {
+      background: var(--dark-surf);
+      padding: 9rem 0;
+      border-top: 1px solid rgba(196,169,106,0.08);
+      border-bottom: 1px solid rgba(196,169,106,0.08);
+      overflow: hidden;
+      position: relative;
+    }
+    .manifesto-inner {
+      max-width: 800px;
+    }
+    .manifesto-heading {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2.6rem, 5vw, 5.2rem);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin: 1.2rem 0 3rem;
+    }
+    .manifesto-heading em { color: var(--gold); font-style: normal; }
+    .manifesto-body {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: rgba(234,230,222,0.65);
+      margin-bottom: 1.6rem;
+    }
+    .manifesto-body strong { color: var(--text-hi); font-weight: 500; }
+    .manifesto-pull {
+      font-family: var(--display);
+      font-weight: 300;
+      font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: var(--text-hi);
+      border-left: 2px solid var(--gold);
+      padding-left: 2rem;
+      margin: 3rem 0;
+      opacity: 0.88;
+    }
+    .manifesto-thrusts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-top: 2.5rem;
+    }
+    @media (max-width: 700px) { .manifesto-thrusts { grid-template-columns: 1fr; } }
+    .manifesto-thrust {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid rgba(196,169,106,0.12);
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .manifesto-thrust:hover {
+      border-color: rgba(196,169,106,0.35);
+      background: var(--gold-faint);
+    }
+    .mthrust-num {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      flex-shrink: 0;
+      padding-top: 0.1rem;
+    }
+    .mthrust-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-hi);
+      margin-bottom: 0.3rem;
+    }
+    .mthrust-desc {
+      font-size: 0.78rem;
+      line-height: 1.6;
+      color: var(--text-lo);
+    }
+
+    /* ================================================================
+       BRIDGE dark → light
+    ================================================================ */
+    .bridge { height: 5rem; background: linear-gradient(to bottom, var(--dark-surf), var(--light)); }
+
+    /* ================================================================
+       RESEARCH SECTIONS
+    ================================================================ */
+    .research {
+      background: var(--light);
+      padding: 8rem 0;
+    }
+    .research:nth-of-type(even) { background: var(--light-2); }
+
+    .research-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.8rem;
+      margin-bottom: 3.5rem;
+    }
+    .research-num {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(4rem, 7vw, 7rem);
+      line-height: 0.9;
+      color: rgba(196,169,106,0.18);
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .research-title-block {}
+    .research-label { color: #8A6F38; margin-bottom: 0.5rem; }
+    .research-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      line-height: 1.05;
+    }
+    .research-desc {
+      font-size: 0.97rem;
+      line-height: 1.85;
+      color: var(--ink-mid);
+      max-width: 58ch;
+      margin-top: 0.9rem;
+    }
+
+    .papers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.4rem;
+    }
+    @media (max-width: 900px) { .papers-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .papers-grid { grid-template-columns: 1fr; } }
+
+    .paper-card {
+      background: #fff;
+      padding: 1.6rem 1.7rem;
+      border-top: 2px solid transparent;
+      transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+    }
+    .paper-card:hover {
+      border-color: #8A6F38;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+    }
+    .paper-card.feat { border-top-color: #8A6F38; }
+
+    .paper-venue {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8A6F38;
+      display: block;
+      margin-bottom: 0.7rem;
+    }
+    .paper-title {
+      font-family: var(--display);
+      font-weight: 500;
+      font-size: 0.93rem;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+    .paper-authors {
+      font-size: 0.76rem;
+      line-height: 1.5;
+      color: var(--ink-mid);
+      margin-bottom: 0.9rem;
+    }
+    .paper-award {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.54rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.6rem;
+      background: rgba(139,111,56,0.1);
+      color: #8A6F38;
+      margin-bottom: 0.9rem;
+    }
+    .paper-link {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8A6F38;
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      transition: gap 0.2s;
+    }
+    .paper-link:hover { gap: 0.6rem; }
+
+    /* ================================================================
+       PARTNERSHIPS
+    ================================================================ */
+    .partnerships {
+      background: var(--light-2);
+      padding: 8rem 0;
+      border-top: 1px solid rgba(139,111,56,0.12);
+    }
+    .partnerships-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3.5rem;
+    }
+    .partnerships-title {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2rem, 3vw, 3rem);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .partnerships-sub {
+      font-size: 0.88rem;
+      color: var(--ink-mid);
+      max-width: 30ch;
+      text-align: right;
+      line-height: 1.6;
+    }
+    @media (max-width: 700px) { .partnerships-header { flex-direction: column; gap: 1rem; }
+      .partnerships-sub { text-align: left; } }
+
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.4rem;
+    }
+    @media (max-width: 900px) { .partners-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 550px) { .partners-grid { grid-template-columns: 1fr; } }
+
+    .partner-card {
+      background: #fff;
+      padding: 2rem 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 1px solid rgba(139,111,56,0.1);
+      transition: border-color 0.22s, box-shadow 0.22s;
+    }
+    .partner-card:hover {
+      border-color: rgba(139,111,56,0.35);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+    .partner-logo-wrap {
+      height: 48px;
+      display: flex;
+      align-items: center;
+    }
+    .partner-logo-text {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+    .partner-logo-img {
+      max-height: 40px;
+      max-width: 140px;
+      object-fit: contain;
+      filter: grayscale(0.3);
+    }
+    .partner-type {
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8A6F38;
+    }
+    .partner-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--ink);
+      margin-bottom: 0.2rem;
+    }
+    .partner-desc {
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: var(--ink-mid);
+    }
+
+    /* ================================================================
+       AWARDS
+    ================================================================ */
+    .awards {
+      background: var(--ink);
+      padding: 8rem 0;
+    }
+    .awards-heading {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin: 1rem 0 3.5rem;
+    }
+    .awards-list { display: flex; flex-direction: column; }
+    .award-item {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      padding: 1.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.2s;
+    }
+    .award-item:hover { background: rgba(255,255,255,0.02); margin: 0 -2rem; padding: 1.6rem 2rem; }
+    .award-year {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-lo);
+      letter-spacing: 0.08em;
+    }
+    .award-name {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-hi);
+      margin-bottom: 0.25rem;
+    }
+    .award-desc {
+      font-size: 0.78rem;
+      color: var(--text-lo);
+      line-height: 1.5;
+    }
+    .award-badge {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid rgba(196,169,106,0.35);
+      color: var(--gold);
+      white-space: nowrap;
+    }
+    @media (max-width: 700px) {
+      .award-item { grid-template-columns: 50px 1fr; }
+      .award-badge { display: none; }
+    }
+
+    /* ================================================================
+       RECENT PUBLICATIONS & NEWS
+    ================================================================ */
+    .recent {
+      background: var(--dark-surf);
+      padding: 8rem 0;
+      border-top: 1px solid rgba(196,169,106,0.08);
+    }
+    .recent-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 5rem;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .recent-grid { grid-template-columns: 1fr; gap: 3rem; } }
+
+    .recent-heading {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2rem, 3vw, 3rem);
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin: 1rem 0 2.5rem;
+    }
+    .recent-papers { display: flex; flex-direction: column; gap: 0; }
+    .rpaper {
+      display: grid;
+      grid-template-columns: 90px 1fr 90px;
+      gap: 1.5rem;
+      padding: 1.4rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      align-items: start;
+      transition: background 0.2s;
+    }
+    .rpaper:hover { background: rgba(255,255,255,0.02); }
+    .rpaper-year {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-lo);
+      padding-top: 0.1rem;
+    }
+    .rpaper-title {
+      font-size: 0.88rem;
+      line-height: 1.5;
+      color: var(--text-hi);
+      margin-bottom: 0.25rem;
+    }
+    .rpaper-authors { font-size: 0.74rem; color: var(--text-lo); }
+    .rpaper-venue {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      text-align: right;
+      padding-top: 0.15rem;
+    }
+
+    /* News / Updates column */
+    .news-heading {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(1.5rem, 2vw, 2rem);
+      letter-spacing: -0.025em;
+      color: var(--text-hi);
+      margin: 1rem 0 2rem;
+    }
+    .news-list { display: flex; flex-direction: column; gap: 0; }
+    .news-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .news-date {
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .news-text {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: rgba(234,230,222,0.65);
+    }
+    .news-text strong { color: var(--text-hi); font-weight: 500; }
+
+    .scholar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2.5rem;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.6rem;
+      border: 1px solid rgba(196,169,106,0.35);
+      color: var(--gold);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .scholar-btn:hover { background: var(--gold); color: var(--dark); }
+
+    /* ================================================================
+       FOOTER
+    ================================================================ */
+    footer {
+      background: var(--dark);
+      padding: 6rem 0 3rem;
+      border-top: 1px solid rgba(196,169,106,0.1);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 4rem;
+    }
+    @media (max-width: 800px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid > *:first-child { grid-column: 1/-1; }
+    }
+    .footer-name {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin-bottom: 0.8rem;
+    }
+    .footer-tagline {
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--text-lo);
+      max-width: 28ch;
+    }
+    .footer-col-head {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.4rem;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+    .footer-links a {
+      font-size: 0.84rem;
+      color: var(--text-lo);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text-hi); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-lo);
+      letter-spacing: 0.06em;
+    }
+
+    /* ================================================================
+       TRON GRID
+    ================================================================ */
+    #tron-grid {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      transform-style: preserve-3d;
+      transition: transform 0.14s ease-out;
+      will-change: transform;
+    }
+    /* Primary fine grid */
+    .tron-lines {
+      position: absolute;
+      inset: -40%;
+      background-image:
+        linear-gradient(rgba(0,220,245,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,220,245,0.055) 1px, transparent 1px);
+      background-size: 54px 54px;
+      animation: tron-drift 20s linear infinite;
+    }
+    /* Accent lines every 4 cells — slightly brighter */
+    .tron-lines::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,220,245,0.13) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,220,245,0.13) 1px, transparent 1px);
+      background-size: 216px 216px;
+    }
+    @keyframes tron-drift {
+      from { background-position: 0 0; }
+      to   { background-position: 0 54px; }
+    }
+    /* Radial vignette — fades grid at edges so it doesn't overpower */
+    .tron-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 72% 72% at 50% 50%,
+        transparent 35%,
+        rgba(9,9,13,0.75) 100%
+      );
+    }
+    /* Subtle horizontal scan line that drifts downward */
+    .tron-scan {
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0,220,245,0.18) 30%,
+        rgba(0,220,245,0.28) 50%,
+        rgba(0,220,245,0.18) 70%,
+        transparent 100%
+      );
+      animation: tron-scan 8s ease-in-out infinite;
+      box-shadow: 0 0 14px 3px rgba(0,220,245,0.08);
+    }
+    @keyframes tron-scan {
+      0%   { top: -2%; opacity: 0; }
+      5%   { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { top: 102%; opacity: 0; }
+    }
+
+  </style>
 </head>
+<body>
 
-
-<body id="top" data-spy="scroll" data-offset="70" data-target="#navbar-main" class="page-wrapper   "  >
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <script src="./js/wowchemy-init.min.js"></script>
-
-  
-
-
-<aside class="search-modal" id="search">
-  <div class="container">
-    <section class="search-header">
-
-      <div class="row no-gutters justify-content-between mb-3">
-        <div class="col-6">
-          <h1>Search</h1>
-        </div>
-        <div class="col-6 col-search-close">
-          <a class="js-search" href="#" aria-label="Close"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
-        </div>
-      </div>
-
-      <div id="search-box">
-        
-        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
-        autocomplete="off" autocorrect="off" spellcheck="false" type="search" class="form-control"
-        aria-label="Search...">
-        
-      </div>
-
-      
-      
-
-      
-
-    </section>
-    <section class="section-search-results">
-
-      <div id="search-hits">
-        
-      </div>
-
-    </section>
+<!-- ================================================================
+     NAVIGATION
+================================================================ -->
+<nav id="site-nav">
+  <div class="nav-left">
+    <a href="#hero" class="nav-name">E. Gavves</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#world-models">Research</a></li>
+      <li><a href="#partnerships">Partnerships</a></li>
+      <li><a href="#awards" class="nav-link-awards">Awards</a></li>
+      <li><a href="#recent">Publications &amp; News</a></li>
+    </ul>
   </div>
-</aside>
-
-
-
-  <div class="page-header">
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<header class="header--fixed">
-  <nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
-    <div class="container-xl">
-
-      
-      <div class="d-none d-lg-inline-flex">
-        <a class="navbar-brand" href="./">Efstratios Gavves</a>
-      </div>
-      
-
-      
-      <button type="button" class="navbar-toggler" data-toggle="collapse"
-              data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
-      <span><i class="fas fa-bars"></i></span>
-      </button>
-      
-
-      
-      <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
-        <a class="navbar-brand" href="./">Efstratios Gavves</a>
-      </div>
-      
-
-      
-      
-      <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
-
-        
-        <ul class="navbar-nav d-md-inline-flex">
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#about" data-target="#about"><span>Home</span></a>
-          </li>
-
-          
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#highlights" data-target="#highlights"><span>Highlights</span></a>
-          </li>
-
-          
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#awards" data-target="#awards"><span>Awards</span></a>
-          </li>
-
-          
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#publications" data-target="#publications"><span>Publications</span></a>
-          </li>
-
-          
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#team" data-target="#team"><span>Team</span></a>
-          </li>
-
-          
-          
-
-          
-
-          
-          
-          
-            
-          
-
-          
-
-          
-          
-          
-          
-
-          
-            
-              
-              
-            
-            
-              
-              
-              
-                
-              
-              
-            
-          
-
-          <li class="nav-item">
-            <a class="nav-link " href="./#contact" data-target="#contact"><span>Contact</span></a>
-          </li>
-
-          
-          
-
-        
-
-          
+  <div class="nav-right">
+    <a href="https://scholar.google.nl/citations?user=QqfCvsgAAAAJ&hl=en" target="_blank" class="nav-icon" title="Google Scholar">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5h4.5L12 4l7.5 5.5H24L12 0z"/></svg>
+      Scholar
+    </a>
+    <a href="mailto:egavves@uva.nl" class="nav-icon" title="Email">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      egavves@uva.nl
+    </a>
+  </div>
+</nav>
+
+<!-- ================================================================
+     HERO CANVAS
+================================================================ -->
+<section class="hero" id="hero">
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- TRON grid -->
+  <div id="tron-grid">
+    <div class="tron-lines"></div>
+    <div class="tron-vignette"></div>
+    <div class="tron-scan"></div>
+  </div>
+
+  <!-- Identity -->
+  <div class="hero-id">
+    <span class="hero-name">Efstratios Gavves</span>
+    <span class="hero-role">Professor · Physical AI</span>
+    <span class="hero-inst">University of Amsterdam</span>
+  </div>
+
+  <!-- Node 01: World Models & Robot Learning (upper-left) -->
+  <div class="t-node" style="top:27%; left:11%;" data-target="#world-models">
+    <div class="t-node-inner">
+      <span class="t-node-num">01</span>
+      <span class="t-node-label">World Models &<br>Robot Learning</span>
+      <div class="t-node-dot"></div>
+    </div>
+    <div class="t-card">
+      <img class="t-card-img" src="robot.gif" alt="World Models" />
+      <div class="t-card-body">
+        <div class="t-card-tag">Digital Twins · Embodied AI</div>
+        <ul class="t-card-papers">
+          <li>DreMa: Compositional World Models <span class="t-card-venue">ICLR 2025</span></li>
+          <li>CaPo: Cooperative Plan Optimization <span class="t-card-venue">ICLR 2025</span></li>
+          <li>Graph Switching Dynamical Systems <span class="t-card-venue">ICML 2023</span></li>
         </ul>
       </div>
-
-      <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
-
-        
-        
-          
-        
-
-        
-        
-        <li class="nav-item">
-          <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
-        </li>
-        
-
-        
-        
-        
-        <li class="nav-item dropdown theme-dropdown">
-          <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-label="Display preferences">
-            <i class="fas fa-moon" aria-hidden="true"></i>
-          </a>
-          <div class="dropdown-menu">
-            <a href="#" class="dropdown-item js-set-theme-light">
-              <span>Light</span>
-            </a>
-            <a href="#" class="dropdown-item js-set-theme-dark">
-              <span>Dark</span>
-            </a>
-            <a href="#" class="dropdown-item js-set-theme-auto">
-              <span>Automatic</span>
-            </a>
-          </div>
-        </li>
-        
-
-        
-        
-
-      </ul>
-
-    </div>
-  </nav>
-</header>
-
-
-  </div>
-
-  <div class="page-body">
-    
-    
-    
-
-    
-
-
-  
-
-
-
-
-
-
-
-
-
-  
-<span class="js-widget-page d-none"></span>
-
-
-
-
-
-  
-  
-  
-  
-
-
-
-
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="about" class="home-section wg-about  "  >
-   <div class="home-section-bg " >
-     
-   </div>
-    <div class="container">
-
-    
-
-      
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-<div class="row">
-  <div class="col-12 col-lg-4">
-    <div id="profile">
-
-      
-      
-      <img class="avatar avatar-circle"
-           width="270" height="270"
-           src="./authors/admin/avatar_hu1580ac4463571b753d759267d31ee882_9454018_270x270_fill_q75_lanczos_center.jpg" alt="Efstratios Gavves">
-      
-
-      <div class="portrait-title">
-
-        <h2>Efstratios Gavves</h2>
-
-        <h3>Causal Computer Vision &amp; Learning Dynamics</h3>
-
-        
-        <h3>
-          <a href="https://www.uva.nl/" target="_blank" rel="noopener">
-          <span>Associate Professor UvA</span>
-          </a>
-        </h3>
-        
-        <h3>
-          <a href="https://ellogon.ai" target="_blank" rel="noopener">
-          <span>Co-founder Ellogon.AI</span>
-          </a>
-        </h3>
-        
-      </div>
-
-      <ul class="network-icon" aria-hidden="true">
-        
-        
-        
-        
-          
-        
-        
-        
-        
-        
-          
-        
-        <li>
-          <a href="./#contact"  aria-label="envelope">
-            <i class="fas fa-envelope big-icon"></i>
-          </a>
-        </li>
-        
-        
-        
-        
-          
-        
-        
-        
-        
-        
-          
-        
-        <li>
-          <a href="https://twitter.com/egavves" target="_blank" rel="noopener" aria-label="twitter">
-            <i class="fab fa-twitter big-icon"></i>
-          </a>
-        </li>
-        
-        
-        
-        
-          
-        
-        
-        
-        
-        
-          
-        
-        <li>
-          <a href="https://scholar.google.com/citations?user=QqfCvsgAAAAJ&amp;hl=en" target="_blank" rel="noopener" aria-label="graduation-cap">
-            <i class="fas fa-graduation-cap big-icon"></i>
-          </a>
-        </li>
-        
-        
-        
-        
-          
-        
-        
-        
-        
-        
-          
-        
-        <li>
-          <a href="https://github.com/egavves" target="_blank" rel="noopener" aria-label="github">
-            <i class="fab fa-github big-icon"></i>
-          </a>
-        </li>
-        
-        
-        
-        
-          
-        
-        
-        
-        
-        
-          
-        
-        <li>
-          <a href="https://www.linkedin.com/" target="_blank" rel="noopener" aria-label="linkedin">
-            <i class="fab fa-linkedin big-icon"></i>
-          </a>
-        </li>
-        
-      </ul>
-
     </div>
   </div>
-  <div class="col-12 col-lg-8">
 
-    
-    
-
-    <div class="article-style">
-      <p>What is the role of dynamics and causality for Deep Learning that not only understands but also interfaces with the physical world?&lt;</p>
-<p>This question fascinates me and drives my research on <em>Causal Computer Vision</em>. The vision is <em>Embodied General Intelligence</em> and eventually, a novel paradigm of <em>Cyberphysical AI</em>.</p>
-<p>With Cyberphysical AI I want to address the <em>fundamental chasm between information and matter</em>, that is the observation that machines in the digital world and machines in the physical world work fantastically in isolation, but cannot easily be combined.
-Bridging the digital and physical world will be key in not only Robot Learning but also automating Biomedical, Health, IoT, Manufacting, Sciences, and so on with AI.</p>
-<p>My research is supported by an ERC StG and NWO VIDI, and academic-industry <a href="https://icai.ai/" target="_blank" rel="noopener">ICAI labs</a>: QUVA with <a href="https://www.qualcomm.com/home" target="_blank" rel="noopener">Qualcomm</a>, and POP-AART with <a href="https://www.elekta.com/" target="_blank" rel="noopener">Elekta</a> and <a href="https://www.nki.nl/" target="_blank" rel="noopener">NKI</a>.</p>
-<!-- <em>Learning algorithms that understand time and dynamics</em> will alse lead to algorithms that are reliable, robust, explainable, algorithms that extrapolate. -->
-<h3 id="news">News</h3>
-<!-- &rarr; [Post-doc vacancy](https://vacatures.uva.nl/UvA/job/Postdoctoral-Researcher-on-Deep-Learning-and-Dynamical-Systems%2C-PDEs%2C-for-Science-%282-years%29/750169202/) on Deep Learning for Neural PDE solvers, Dynamical Systems, Science.      -->
-<p>→ Ilze presents <a href="https://github.com/IlzeAmandaA/MoNODE" target="_blank" rel="noopener"><em>Modulated Neural ODEs</em></a> in NeurIPS 2023.<br>
-→ Miltos presents <a href="https://github.com/mkofinas/aether" target="_blank" rel="noopener"><em>Latent Field Discovery in Interacting Dynamical Systems with Neural Fields</em></a> in NeurIPS 2023.<br>
-→ Haochen presents <a href="https://github.com/haochenheheda/LVVIS" target="_blank" rel="noopener"><em>Causal Identifiability from Temporal Intervened Sequences</em></a> in ICCV 2023 as oral.<br>
-→ Mohammad presents <a href="https://github.com/SMSD75/Timetuning" target="_blank" rel="noopener"><em>Time Does Tell: Self-Supervised Time-Tuning of Dense Image Representations</em></a> in ICCV 2023.<br>
-→ Lucas had <a href="https://pubmed.ncbi.nlm.nih.gov/37778103/" target="_blank" rel="noopener"><em>Spatio-temporal physics-informed learning: A novel approach to CT perfusion analysis in acute ischemic stroke</em></a> in IEEE MedIA 2023.<br>
-→ Wenzhe had <a href="https://pubmed.ncbi.nlm.nih.gov/37820419/" target="_blank" rel="noopener"><em>PC-Reg: A pyramidal prediction-correction approach for large deformation image registration</em></a> in IEEE MedIA 2023.</p>
-<!-- &rarr; Our work with [Phillip](https://phlippe.github.io/), [Sara](https://smaglia.wordpress.com/), [Sindy](https://loewex.github.io/), [Yuki](https://yukimasano.github.io/), and [Taco](https://tacocohen.wordpress.com/) on [<em>Causal Identifiability from Temporal Intervened Sequences</em>](https://arxiv.org/abs/2202.03169) has been accepted to [ICML 2022](https://icml.cc/Conferences/2022/CallForPapers)     -->
-<!-- &rarr; Heading to CVPR 2022 to present [<em>NFormers</em>](https://ivi.fnwi.uva.nl/vislab/publication/haochenwang-cvpr-2022/) and [<em>Dynamic Prototype ConvNets</em>](https://ivi.fnwi.uva.nl/vislab/publication/jieliu-cvpr-2022/)     -->  
-<!-- 
-  <i class="fas fa-download  pr-1 fa-fw"></i> Download my <a href="./uploads/demo_resume.pdf" target="_blank">resumé</a>. -->
-
+  <!-- Node 02: Causal Vision (lower-left) -->
+  <div class="t-node" style="top:62%; left:16%;" data-target="#causal-vision">
+    <div class="t-node-inner">
+      <span class="t-node-num">02</span>
+      <span class="t-node-label">Causal Vision</span>
+      <div class="t-node-dot"></div>
     </div>
-
-    <div class="row">
-
-      
-
-      
-
-    </div>
-  </div>
-</div>
-
-
-    
-
-    </div>
-  </section>
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-    
-    
-    
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="highlights" class="home-section wg-slider   carousel slide"  data-ride="carousel" data-interval="3000">
-   <div class="home-section-bg " >
-     
-   </div>
-    
-
-    
-
-      
-
-
-
-
-<ol class="carousel-indicators">
-  
-  <li data-target="#highlights" data-slide-to="0" class="active"></li>
-  
-  <li data-target="#highlights" data-slide-to="1" ></li>
-  
-  <li data-target="#highlights" data-slide-to="2" ></li>
-  
-  <li data-target="#highlights" data-slide-to="3" ></li>
-  
-  <li data-target="#highlights" data-slide-to="4" ></li>
-  
-</ol>
-
-
-<div class="carousel-inner">
-  
-
-    
-    
-
-    
-
-    
-      
-    
-
-    
-      
-      
-        
-      
-      
-        
-      
-   
-
-  <div class="carousel-item active fullscreen" style=" background-color: #666;background-image: url(&#39;https://egavves.github.io/media/biscuit.png&#39;); background-repeat: no-repeat; background-position: right; background-size: cover; ">
-    <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center" style="-webkit-backdrop-filter: brightness(0.4); backdrop-filter: brightness(0.4);">
-      
-      <div class="wg-hero dark container" style="margin-left: 6rem; margin-right: 6rem; text-align: center;">
-          <h1 class="hero-title">
-            BISCUIT - Causal Representation Learning from Binary Interactions
-          </h1>
-
-          
-          <p class="hero-lead" style="margin: 0 auto 0 auto;">
-            Lippe, Magliacane, Lowe, Asano, Cohen, Gavves, UAI 2023
-          </p>
-          
-
-          
-            
-            
-            
-              
-            
-            <p>
-              <a href="https://github.com/phlippe/BISCUIT/tree/main" class="btn btn-light btn-lg mt-3"><i class="fab fa-github" style="padding-right: 10px;"></i>GitHub</a>
-            </p>
-          
-        </div>
-    </div>
-  </div>
-  
-
-    
-    
-
-    
-
-    
-      
-    
-
-    
-      
-      
-        
-      
-      
-        
-      
-   
-
-  <div class="carousel-item fullscreen" style=" background-color: #666;background-image: url(&#39;https://egavves.github.io/media/grass.png&#39;); background-repeat: no-repeat; background-position: right; background-size: cover; ">
-    <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center" style="-webkit-backdrop-filter: brightness(0.4); backdrop-filter: brightness(0.4);">
-      
-      <div class="wg-hero dark container" style="margin-left: 6rem; margin-right: 6rem; text-align: center;">
-          <h1 class="hero-title">
-            Graph Switching Dynamical Systems
-          </h1>
-
-          
-          <p class="hero-lead" style="margin: 0 auto 0 auto;">
-            Liu, Magliacane, Kofinas, Gavves, ICML 2023
-          </p>
-          
-
-          
-            
-            
-            
-              
-            
-            <p>
-              <a href="https://github.com/yongtuoliu/Graph-Switching-Dynamical-Systems" class="btn btn-light btn-lg mt-3"><i class="fab fa-github" style="padding-right: 10px;"></i>GitHub</a>
-            </p>
-          
-        </div>
-    </div>
-  </div>
-  
-
-    
-    
-
-    
-
-    
-      
-    
-
-    
-      
-      
-        
-      
-      
-        
-      
-   
-
-  <div class="carousel-item fullscreen" style=" background-color: #666;background-image: url(&#39;https://egavves.github.io/media/aether.png&#39;); background-repeat: no-repeat; background-position: right; background-size: cover; ">
-    <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center" style="-webkit-backdrop-filter: brightness(0.4); backdrop-filter: brightness(0.4);">
-      
-      <div class="wg-hero dark container" style="margin-left: 6rem; margin-right: 6rem; text-align: center;">
-          <h1 class="hero-title">
-            Latent Field Discovery In Interacting Dynamical Systems With Neural Fields
-          </h1>
-
-          
-          <p class="hero-lead" style="margin: 0 auto 0 auto;">
-            Kofinas, Bekkers, Nagaraja, Gavves, NeurIPS 2023
-          </p>
-          
-
-          
-            
-            
-            
-              
-            
-            <p>
-              <a href="https://github.com/mkofinas/aether" class="btn btn-light btn-lg mt-3"><i class="fab fa-arxiv" style="padding-right: 10px;"></i>GitHub</a>
-            </p>
-          
-        </div>
-    </div>
-  </div>
-  
-
-    
-    
-
-    
-
-    
-      
-    
-
-    
-      
-      
-        
-      
-      
-        
-      
-   
-
-  <div class="carousel-item fullscreen" style=" background-color: #666;background-image: url(&#39;https://egavves.github.io/media/monode.png&#39;); background-repeat: no-repeat; background-position: right; background-size: cover; ">
-    <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center" style="-webkit-backdrop-filter: brightness(0.4); backdrop-filter: brightness(0.4);">
-      
-      <div class="wg-hero dark container" style="margin-left: 6rem; margin-right: 6rem; text-align: center;">
-          <h1 class="hero-title">
-            Modulated Neural ODEs
-          </h1>
-
-          
-          <p class="hero-lead" style="margin: 0 auto 0 auto;">
-            Auzina, Yildiz, Magliacane, Bethge, Gavves, NeurIPS 2023
-          </p>
-          
-
-          
-            
-            
-            
-              
-            
-            <p>
-              <a href="https://github.com/IlzeAmandaA/MoNODE" class="btn btn-light btn-lg mt-3"><i class="fab fa-arxiv" style="padding-right: 10px;"></i>arXiv</a>
-            </p>
-          
-        </div>
-    </div>
-  </div>
-  
-
-    
-    
-
-    
-
-    
-      
-    
-
-    
-      
-      
-        
-      
-      
-        
-      
-   
-
-  <div class="carousel-item fullscreen" style=" background-color: #666;background-image: url(&#39;https://egavves.github.io/media/sppinn.jpg&#39;); background-repeat: no-repeat; background-position: right; background-size: cover; ">
-    <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center" style="-webkit-backdrop-filter: brightness(0.4); backdrop-filter: brightness(0.4);">
-      
-      <div class="wg-hero dark container" style="margin-left: 6rem; margin-right: 6rem; text-align: center;">
-          <h1 class="hero-title">
-            Spatio-temporal Physics-Informed Learning
-          </h1>
-
-          
-          <p class="hero-lead" style="margin: 0 auto 0 auto;">
-            de Vries, van Herten, Hoving, Išgum, Emmer, Majoie, Marquering, Gavves, MeDIA 2023
-          </p>
-          
-
-          
-            
-            
-            
-              
-            
-            <p>
-              <a href="https://pubmed.ncbi.nlm.nih.gov/37778103/" class="btn btn-light btn-lg mt-3"><i class="fab fa-arxiv" style="padding-right: 10px;"></i>Paper</a>
-            </p>
-          
-        </div>
-    </div>
-  </div>
-  
-</div>
-
-
-<a class="carousel-control-prev" href="#highlights" data-slide="prev">
-  <span class="carousel-control-prev-icon"></span>
-  <span class="sr-only">Previous</span>
-</a>
-<a class="carousel-control-next" href="#highlights" data-slide="next">
-  <span class="carousel-control-next-icon"></span>
-  <span class="sr-only">Next</span>
-</a>
-
-
-    
-
-    
-  </section>
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="awards" class="home-section wg-experience  "  >
-   <div class="home-section-bg " >
-     
-   </div>
-    <div class="container">
-
-    
-      <div class="row  ">
-      
-        
-          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
-            <h1 class="mb-0">Awards</h1>
-            
-          </div>
-        
-      
-    
-
-      
-
-
-
-
-<div class="col-12 col-lg-8">
-  <!-- experience:
-  - title: ERC Starting Grant
-    company: European Research Council
-    company_url: ''
-    company_logo: org-gc
-    location: 
-    date_start: '2021-09-01'
-    date_end: '2026-09-01'
-    # description: 'Personal award given to top scientists in Europe'
-
-  - title: NWO VIDI
-    company: Netherlands Science Foundation
-    company_url: ''
-    company_logo: org-x
-    location: 
-    date_start: '2021-09-01'
-    date_end: '2026-09-01'
-    # description: 'Personal award given to top scientists in the Netherlands'
-
-    - title: ELLIS Scholar
-    company: ELLIS Europe
-    company_url: ''
-    location: 
-    company_logo: org-x
-    date_start: '2020-09-01'
-    date_end:
-    # description: 'Member of the ELLIS network of AI excellence in Europe' -->
-
-
-  
-  
-
-  
-  
-  <div class="row experience">
-    
-    <div class="col-auto text-center flex-column d-none d-sm-flex">
-      <div class="row h-50">
-        <div class="col ">&nbsp;</div>
-        <div class="col">&nbsp;</div>
-      </div>
-      <div class="m-2">
-        <span class="badge badge-pill border exp-fill">&nbsp;</span>
-      </div>
-      <div class="row h-50">
-        <div class="col border-right">&nbsp;</div>
-        <div class="col">&nbsp;</div>
+    <div class="t-card">
+      <img class="t-card-img" src="home/biscuit.png" alt="Causal Vision" />
+      <div class="t-card-body">
+        <div class="t-card-tag">Causal Representations · Interventions</div>
+        <ul class="t-card-papers">
+          <li>BISCUIT: Causal Rep. Learning <span class="t-card-venue">UAI 2023</span></li>
+          <li>CITRIS: Causal Identifiability <span class="t-card-venue">ICML 2022</span></li>
+          <li>ENCO: Neural Causal Discovery <span class="t-card-venue">ICLR 2022</span></li>
+        </ul>
       </div>
     </div>
-    
-    <div class="col py-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-content-start">
-            <div class="mr-2 mb-2"><img src="./media/icons/brands/erc.svg" width="56px" height="56px" alt="European Research Council" loading="lazy"></div>
+  </div>
+
+  <!-- Node 03: Mechanisms & Safety (upper-right) -->
+  <div class="t-node right" style="top:27%; right:11%;" data-target="#mechanisms">
+    <div class="t-node-inner">
+      <span class="t-node-num">03</span>
+      <span class="t-node-label">Mechanisms<br>&amp; Safety</span>
+      <div class="t-node-dot"></div>
+    </div>
+    <div class="t-card">
+      <img class="t-card-img" src="home/monode.png" alt="Mechanisms" />
+      <div class="t-card-body">
+        <div class="t-card-tag">Physics · Interpretability · Safety</div>
+        <ul class="t-card-papers">
+          <li>Mechanistic Neural Networks <span class="t-card-venue">ICML 2024</span></li>
+          <li>Mech. Interpretability for AI Safety <span class="t-card-venue">TMLR 2024</span></li>
+          <li>Modulated Neural ODEs <span class="t-card-venue">NeurIPS 2023</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Node 04: Physical AI for Biomedical (lower-right) -->
+  <div class="t-node right" style="top:62%; right:13%;" data-target="#biomedical">
+    <div class="t-node-inner">
+      <span class="t-node-num">04</span>
+      <span class="t-node-label">Physical AI<br>for Biomedical</span>
+      <div class="t-node-dot"></div>
+    </div>
+    <div class="t-card">
+      <img class="t-card-img" src="home/sppinn.jpg" alt="Biomedical AI" />
+      <div class="t-card-body">
+        <div class="t-card-tag">Brain Stroke · Cancer · Neural Fields</div>
+        <ul class="t-card-papers">
+          <li>Physics-Inf. NFs for CT Perfusion <span class="t-card-venue">MIDL 2024 ★</span></li>
+          <li>Spatio-temporal Physics-Informed <span class="t-card-venue">MeDIA 2023</span></li>
+          <li>VISA: Video Object Segmentation <span class="t-card-venue">ECCV 2024</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ================================================================
+     ABOUT
+================================================================ -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photo-wrap reveal">
+        <img class="about-photo" src="authors/efstratios-gavves/avatar.jpeg" alt="Efstratios Gavves" />
+        <div class="about-photo-frame"></div>
+      </div>
+      <div>
+        <span class="label about-label reveal">About</span>
+        <h2 class="about-heading reveal">Building AI that<br/>understands the<br/><span style="color:var(--gold)">physical world.</span></h2>
+        <p class="about-text reveal">
+          I am an Associate Professor at the <strong>University of Amsterdam</strong> and co-founder &amp; Chief Science Officer of <strong>Calli Labs</strong>. My research centers on <strong>Learning Dynamics in Computer Vision</strong>, with Physical AI as my north star — algorithms that understand cause-and-effect and physical dynamics, enabling robust embodied agents to act safely and reliably.
+        </p>
+        <p class="about-text reveal d1">
+          Awarded the <strong>ERC Starting Grant</strong> and <strong>NWO VIDI Career Grant</strong>, I direct the QUVA Lab and POP-AART Lab at UvA. My work on causal representations, world models, and mechanistic interpretability forms the theoretical foundation for the next generation of Physical AI.
+        </p>
+        <div class="stats reveal d2">
+          <div><span class="stat-val">14K+</span><span class="stat-lbl">Citations</span></div>
+          <div><span class="stat-val">48</span><span class="stat-lbl">h-index</span></div>
+          <div><span class="stat-val">137</span><span class="stat-lbl">Publications</span></div>
+          <div><span class="stat-val">20+</span><span class="stat-lbl">PhD Graduates</span></div>
+        </div>
+        <div class="pill-row reveal d3">
+          <a href="https://scholar.google.nl/citations?user=QqfCvsgAAAAJ" target="_blank" class="pill">Google Scholar</a>
+          <a href="https://orcid.org/0000-0001-8947-1332" target="_blank" class="pill">ORCID</a>
+          <a href="https://www.linkedin.com/in/egavves" target="_blank" class="pill">LinkedIn</a>
+          <a href="https://twitter.com/egavves" target="_blank" class="pill">X / Twitter</a>
+          <a href="mailto:egavves@uva.nl" class="pill">Email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     MANIFESTO
+================================================================ -->
+<section class="manifesto" id="manifesto">
+  <div class="container">
+    <div class="manifesto-inner">
+      <span class="label reveal">Manifesto</span>
+      <h2 class="manifesto-heading reveal">
+        The physical world<br/>is not a <span style="color:var(--gold)">dataset.</span>
+      </h2>
+
+      <p class="manifesto-body reveal">
+        The dominant paradigm of modern AI has achieved remarkable things by treating intelligence as a function from observations to outputs, refined through oceans of data. But the physical world is causal. It is dynamic. It resists manipulation, conserves energy, flows according to differential equations older than any neural network. And crucially: it <strong>acts back.</strong>
+      </p>
+
+      <blockquote class="manifesto-pull reveal">
+        "True intelligence requires not just pattern recognition, but an understanding of <em>why</em> things happen, <em>what</em> causes <em>what</em>, and <em>what would happen if.</em>"
+      </blockquote>
+
+      <p class="manifesto-body reveal">
+        I believe the next frontier of AI is not wider models but <strong>deeper understanding</strong> — machines that model cause and effect, that embed governing physical laws into their architecture, that build compressed, interpretable representations of how the world actually works. Algorithms that are not only accurate but <strong>controllable, auditable, and safe.</strong>
+      </p>
+      <p class="manifesto-body reveal d1">
+        This is <strong>Physical AI</strong>: not AI applied to physical problems, but AI that is physically grounded — in causality, in mechanism, in the language of dynamics. My research advances this vision through four interlocking programs, each essential to the larger whole:
+      </p>
+
+      <div class="manifesto-thrusts">
+        <a href="#world-models" style="text-decoration:none;">
+          <div class="manifesto-thrust reveal">
+            <span class="mthrust-num">01</span>
             <div>
-          
-
-              <div class="section-subheading card-title exp-title text-muted my-0">ERC Starting Grant</div>
-              <div class="section-subheading card-title exp-company text-muted my-0">European Research Council</div>
-              <div class="text-muted exp-meta">
-                Sep 2020 –
-                
-                  Present
-                
-                
-              </div>
+              <div class="mthrust-title">World Models &amp; Robot Learning</div>
+              <div class="mthrust-desc">Learnable digital twins that simulate the world, enabling robots to reason about consequences before acting.</div>
             </div>
           </div>
-          
-
-          <div class="card-text">Award comes with personal funding of €1.5M to hire 3 Ph.D.s and 1 PostDoc</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="row experience">
-    
-    <div class="col-auto text-center flex-column d-none d-sm-flex">
-      <div class="row h-50">
-        <div class="col border-right">&nbsp;</div>
-        <div class="col">&nbsp;</div>
-      </div>
-      <div class="m-2">
-        <span class="badge badge-pill border exp-fill">&nbsp;</span>
-      </div>
-      <div class="row h-50">
-        <div class="col border-right">&nbsp;</div>
-        <div class="col">&nbsp;</div>
-      </div>
-    </div>
-    
-    <div class="col py-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-content-start">
-            <div class="mr-2 mb-2"><img src="./media/icons/brands/vidi.svg" width="56px" height="56px" alt="Netherlands Science Foundation" loading="lazy"></div>
+        </a>
+        <a href="#causal-vision" style="text-decoration:none;">
+          <div class="manifesto-thrust reveal d1">
+            <span class="mthrust-num">02</span>
             <div>
-          
-
-              <div class="section-subheading card-title exp-title text-muted my-0">NWO VIDI</div>
-              <div class="section-subheading card-title exp-company text-muted my-0">Netherlands Science Foundation</div>
-              <div class="text-muted exp-meta">
-                Sep 2020 –
-                
-                  Present
-                
-                
-              </div>
+              <div class="mthrust-title">Causal Vision</div>
+              <div class="mthrust-desc">Discovering cause-and-effect structure in visual data — representations that generalize robustly beyond observed distributions.</div>
             </div>
           </div>
-          
-
-          <div class="card-text">Award comes with personal funding of €800K to hire 2 Ph.D.s and 1 PostDoc</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="row experience">
-    
-    <div class="col-auto text-center flex-column d-none d-sm-flex">
-      <div class="row h-50">
-        <div class="col border-right">&nbsp;</div>
-        <div class="col">&nbsp;</div>
-      </div>
-      <div class="m-2">
-        <span class="badge badge-pill border exp-fill">&nbsp;</span>
-      </div>
-      <div class="row h-50">
-        <div class="col ">&nbsp;</div>
-        <div class="col">&nbsp;</div>
-      </div>
-    </div>
-    
-    <div class="col py-2">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-content-start">
-            <div class="mr-2 mb-2"><img src="./media/icons/brands/ellis.svg" width="56px" height="56px" alt="ELLIS Europe" loading="lazy"></div>
+        </a>
+        <a href="#mechanisms" style="text-decoration:none;">
+          <div class="manifesto-thrust reveal d2">
+            <span class="mthrust-num">03</span>
             <div>
-          
-
-              <div class="section-subheading card-title exp-title text-muted my-0">ELLIS Scholar</div>
-              <div class="section-subheading card-title exp-company text-muted my-0">ELLIS Europe</div>
-              <div class="text-muted exp-meta">
-                Sep 2020 –
-                
-                  Present
-                
-                
-              </div>
+              <div class="mthrust-title">Mechanisms &amp; Safety</div>
+              <div class="mthrust-desc">Neural networks that incorporate physical governing laws — conservation, symmetry, dynamics — making AI interpretable and safe by design.</div>
             </div>
           </div>
-          
+        </a>
+        <a href="#biomedical" style="text-decoration:none;">
+          <div class="manifesto-thrust reveal d3">
+            <span class="mthrust-num">04</span>
+            <div>
+              <div class="mthrust-title">Physical AI for Biomedical</div>
+              <div class="mthrust-desc">Applying physics-informed learning to medical imaging — from acute stroke CT perfusion to radiation therapy for cancer.</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-          <div class="card-text">Scholar of the ELLIS network of AI excellence in Europe</div>
+<div class="bridge"></div>
+
+<!-- ================================================================
+     RESEARCH: 01 — WORLD MODELS & ROBOT LEARNING
+================================================================ -->
+<section class="research" id="world-models">
+  <div class="container">
+    <div class="research-header reveal">
+      <span class="research-num">01</span>
+      <div class="research-title-block">
+        <span class="label research-label">Research Thrust</span>
+        <h2 class="research-title">World Models &amp;<br/>Robot Learning</h2>
+        <p class="research-desc">
+          Learnable digital twins that simulate the world, enabling robots and embodied agents to reason about the consequences of actions before executing them. Our compositional approach achieves remarkable generalization and transferability with scarce real-world data.
+        </p>
+      </div>
+    </div>
+    <div class="papers-grid">
+      <div class="paper-card feat reveal">
+        <span class="paper-venue">ICLR 2025</span>
+        <h3 class="paper-title">Dream to Manipulate: Compositional World Models Empowering Robot Imitation Learning with Imagination</h3>
+        <p class="paper-authors">Barcellona, Zadaianchuk, Allegro, Papa, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d1">
+        <span class="paper-venue">ICLR 2025</span>
+        <h3 class="paper-title">CaPo: Cooperative Plan Optimization for Efficient Embodied Multi-Agent Cooperation</h3>
+        <p class="paper-authors">Liu, Zhou, Du, Tan, Snoek, Sonke, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d2">
+        <span class="paper-venue">ICML 2023</span>
+        <h3 class="paper-title">Graph Switching Dynamical Systems</h3>
+        <p class="paper-authors">Liu, Magliacane, Kofinas, Gavves</p>
+        <a href="https://github.com/yongtuoliu/Graph-Switching-Dynamical-Systems" target="_blank" class="paper-link">GitHub →</a>
+      </div>
+      <div class="paper-card reveal">
+        <span class="paper-venue">NeurIPS 2023</span>
+        <h3 class="paper-title">Latent Field Discovery in Interacting Dynamical Systems with Neural Fields</h3>
+        <p class="paper-authors">Kofinas, Bekkers, Nagaraja, Gavves</p>
+        <a href="https://github.com/mkofinas/aether" target="_blank" class="paper-link">GitHub →</a>
+      </div>
+      <div class="paper-card reveal d1">
+        <span class="paper-venue">CVPR 2016</span>
+        <h3 class="paper-title">Siamese Instance Search for Tracking</h3>
+        <p class="paper-authors">Tao, Gavves, Smeulders</p>
+        <p class="paper-authors" style="font-style:italic;margin-top:0.3rem">1,467 citations · paradigm-shifting</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RESEARCH: 02 — CAUSAL VISION
+================================================================ -->
+<section class="research" id="causal-vision">
+  <div class="container">
+    <div class="research-header reveal">
+      <span class="research-num">02</span>
+      <div class="research-title-block">
+        <span class="label research-label">Research Thrust</span>
+        <h2 class="research-title">Causal Vision</h2>
+        <p class="research-desc">
+          Discovering causal structure in visual data through temporal interventions and interaction signals. Our representations identify true cause-and-effect relationships, enabling agents that generalize robustly to unseen scenarios far beyond the training distribution.
+        </p>
+      </div>
+    </div>
+    <div class="papers-grid">
+      <div class="paper-card feat reveal">
+        <span class="paper-venue">UAI 2023</span>
+        <h3 class="paper-title">BISCUIT: Causal Representation Learning from Binary Interactions</h3>
+        <p class="paper-authors">Lippe, Magliacane, Löwe, Asano, Cohen, Gavves</p>
+        <a href="https://github.com/phlippe/BISCUIT" target="_blank" class="paper-link">GitHub →</a>
+      </div>
+      <div class="paper-card reveal d1">
+        <span class="paper-venue">ICML 2022</span>
+        <h3 class="paper-title">CITRIS: Causal Identifiability from Temporal Interventions in Latent Spaces</h3>
+        <p class="paper-authors">Lippe, Magliacane, Löwe, Asano, Cohen, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d2">
+        <span class="paper-venue">ICLR 2022</span>
+        <h3 class="paper-title">ENCO: Efficient Neural Causal Discovery under Interventions</h3>
+        <p class="paper-authors">Lippe, Cohen, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal">
+        <span class="paper-venue">ICLR 2021</span>
+        <h3 class="paper-title">Efficient Neural Causal Discovery without Acyclicity Constraints</h3>
+        <p class="paper-authors">Lippe, Cohen, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RESEARCH: 03 — MECHANISMS & SAFETY
+================================================================ -->
+<section class="research" id="mechanisms">
+  <div class="container">
+    <div class="research-header reveal">
+      <span class="research-num">03</span>
+      <div class="research-title-block">
+        <span class="label research-label">Research Thrust</span>
+        <h2 class="research-title">Mechanisms<br/>&amp; Safety</h2>
+        <p class="research-desc">
+          Neural networks that incorporate physical governing mechanisms — conservation laws, differential equations, structured priors. Controllable, auditable, interpretable AI systems that are not merely accurate but fundamentally trustworthy.
+        </p>
+      </div>
+    </div>
+    <div class="papers-grid">
+      <div class="paper-card feat reveal">
+        <span class="paper-venue">ICML 2024</span>
+        <h3 class="paper-title">Mechanistic Neural Networks for Scientific Machine Learning</h3>
+        <p class="paper-authors">Pervez, Locatello, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d1">
+        <span class="paper-venue">TMLR 2024</span>
+        <h3 class="paper-title">Mechanistic Interpretability for AI Safety — A Review</h3>
+        <p class="paper-authors">Bereska, Gavves</p>
+        <div class="paper-award">300+ Citations in One Year</div>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d2">
+        <span class="paper-venue">NeurIPS 2023</span>
+        <h3 class="paper-title">Modulated Neural ODEs</h3>
+        <p class="paper-authors">Auzina, Yildiz, Magliacane, Bethge, Gavves</p>
+        <a href="https://github.com/IlzeAmandaA/MoNODE" target="_blank" class="paper-link">GitHub →</a>
+      </div>
+      <div class="paper-card reveal">
+        <span class="paper-venue">CVPR 2016 · Oral</span>
+        <h3 class="paper-title">Dynamic Image Networks for Action Recognition</h3>
+        <p class="paper-authors">Bilen, Fernando, Gavves, Vedaldi, Gould</p>
+        <p class="paper-authors" style="font-style:italic;margin-top:0.3rem">1,067 citations combined</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RESEARCH: 04 — PHYSICAL AI FOR BIOMEDICAL
+================================================================ -->
+<section class="research" id="biomedical">
+  <div class="container">
+    <div class="research-header reveal">
+      <span class="research-num">04</span>
+      <div class="research-title-block">
+        <span class="label research-label">Research Thrust</span>
+        <h2 class="research-title">Physical AI<br/>for Biomedical</h2>
+        <p class="research-desc">
+          Applying physics-informed learning to medical imaging and biomedical data — from CT perfusion in acute ischemic stroke to radiation therapy planning for cancer. Algorithms that not only predict but respect the physical laws governing the body.
+        </p>
+      </div>
+    </div>
+    <div class="papers-grid">
+      <div class="paper-card feat reveal">
+        <span class="paper-venue">MIDL 2024</span>
+        <h3 class="paper-title">Accelerating Physics-Informed Neural Fields for Fast CT Perfusion Analysis in Acute Ischemic Stroke</h3>
+        <p class="paper-authors">de Vries, Herten, Hoving, Isgum, Emmer, Majoie, Marquering, Gavves</p>
+        <div class="paper-award">Best Paper Runner-Up</div>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+      <div class="paper-card reveal d1">
+        <span class="paper-venue">MeDIA 2023</span>
+        <h3 class="paper-title">Spatio-temporal Physics-Informed Learning for CT Perfusion</h3>
+        <p class="paper-authors">de Vries, van Herten, Hoving, Išgum, Emmer, Majoie, Marquering, Gavves</p>
+        <a href="https://arxiv.org/abs/2203.09594" target="_blank" class="paper-link">arXiv →</a>
+      </div>
+      <div class="paper-card reveal d2">
+        <span class="paper-venue">ECCV 2024</span>
+        <h3 class="paper-title">VISA: Reasoning Video Object Segmentation via Large Language Models</h3>
+        <p class="paper-authors">Yan, Wang, Yan, Jiang, Hu, Kang, Xie, Gavves</p>
+        <a href="#" class="paper-link">Read paper →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     PARTNERSHIPS
+================================================================ -->
+<section class="partnerships" id="partnerships">
+  <div class="container">
+    <div class="partnerships-header">
+      <div>
+        <span class="label reveal">Partnerships &amp; Collaborations</span>
+        <h2 class="partnerships-title reveal">Industry<br/>Research Labs</h2>
+      </div>
+      <p class="partnerships-sub reveal">
+        Long-term research collaborations bridging fundamental AI with industrial-scale deployment.
+      </p>
+    </div>
+    <div class="partners-grid">
+
+      <!-- Toyota -->
+      <div class="partner-card reveal">
+        <div class="partner-logo-wrap">
+          <span class="partner-logo-text" style="font-family:var(--sans);font-weight:700;letter-spacing:-0.03em;color:#EB0A1E;">TOYOTA</span>
+        </div>
+        <div>
+          <div class="partner-type">Foundation Robotics</div>
+          <div class="partner-name">Toyota Research Institute</div>
+          <p class="partner-desc">€1M collaboration on transferring world models research to real-world robot learning systems. Joint work on compositional scene understanding and generalizable manipulation.</p>
+        </div>
+      </div>
+
+      <!-- NXAI -->
+      <div class="partner-card reveal d1">
+        <div class="partner-logo-wrap">
+          <span class="partner-logo-text" style="font-family:var(--mono);font-size:1.5rem;letter-spacing:0.05em;color:var(--ink);">NXAI</span>
+        </div>
+        <div>
+          <div class="partner-type">World Models at Scale</div>
+          <div class="partner-name">Next Generation AI Austria</div>
+          <p class="partner-desc">Ongoing research dialogue on foundation models and the future of general-purpose world models. Invited speaker at NXAI@NeurIPS on world models and Physical AI.</p>
+        </div>
+      </div>
+
+      <!-- Qualcomm -->
+      <div class="partner-card reveal d2">
+        <div class="partner-logo-wrap">
+          <span class="partner-logo-text" style="font-family:var(--sans);font-weight:700;color:#3253DC;">Qualcomm</span>
+        </div>
+        <div>
+          <div class="partner-type">QUVA 2.0 Lab · UvA</div>
+          <div class="partner-name">Qualcomm Research</div>
+          <p class="partner-desc">Joint research laboratory at the University of Amsterdam exploring efficient, scalable AI for computer vision and embodied intelligence. Co-supervising 3 PhD students.</p>
+        </div>
+      </div>
+
+      <!-- Elekta -->
+      <div class="partner-card reveal d3">
+        <div class="partner-logo-wrap">
+          <span class="partner-logo-text" style="font-family:var(--sans);font-weight:300;font-size:1.5rem;letter-spacing:0.04em;color:var(--ink);">elekta</span>
+        </div>
+        <div>
+          <div class="partner-type">POP-AART Lab · NKI</div>
+          <div class="partner-name">Elekta &amp; Netherlands Cancer Institute</div>
+          <p class="partner-desc">AI-driven radiation therapy optimisation and oncological imaging. Joint research lab with NKI, co-supervising 3 PhD students on physics-informed learning for cancer treatment.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     AWARDS
+================================================================ -->
+<section class="awards" id="awards">
+  <div class="container">
+    <span class="label reveal">Recognition</span>
+    <h2 class="awards-heading reveal">Awards &amp;<br/>Grants</h2>
+    <div class="awards-list">
+
+      <div class="award-item reveal">
+        <span class="award-year">2020</span>
+        <div>
+          <div class="award-name">ERC Starting Grant — "Expectational Visual Artificial Intelligence"</div>
+          <div class="award-desc">European Research Council · Ranked in the top 3% of all candidates across all disciplines</div>
+        </div>
+        <span class="award-badge">ERC</span>
+      </div>
+
+      <div class="award-item reveal">
+        <span class="award-year">2020</span>
+        <div>
+          <div class="award-name">NWO VIDI Junior Scientist Career Grant — "TIMING: Learning Time in Visual Recognition"</div>
+          <div class="award-desc">Netherlands Organisation for Scientific Research · Prestigious personal career grant</div>
+        </div>
+        <span class="award-badge">NWO VIDI</span>
+      </div>
+
+      <div class="award-item reveal">
+        <span class="award-year">2019–</span>
+        <div>
+          <div class="award-name">ELLIS Scholar</div>
+          <div class="award-desc">European Laboratory for Learning and Intelligent Systems · Member since founding</div>
+        </div>
+        <span class="award-badge">ELLIS</span>
+      </div>
+
+      <div class="award-item reveal">
+        <span class="award-year">2024</span>
+        <div>
+          <div class="award-name">Best Paper Runner-Up · MIDL 2024</div>
+          <div class="award-desc">Accelerating physics-informed neural fields for fast CT perfusion analysis in acute ischemic stroke</div>
+        </div>
+        <span class="award-badge">Best Paper</span>
+      </div>
+
+      <div class="award-item reveal">
+        <span class="award-year">2025</span>
+        <div>
+          <div class="award-name">Toyota Research Foundation Grant — Foundation Robotics</div>
+          <div class="award-desc">€1,000,000 · Transferring world model research to industrial robotics processes · 20% acceptance rate</div>
+        </div>
+        <span class="award-badge">€1M</span>
+      </div>
+
+      <div class="award-item reveal">
+        <span class="award-year">2025</span>
+        <div>
+          <div class="award-name">ELLIOT Consortium — European Large Open Multimodal Foundation Models</div>
+          <div class="award-desc">HORIZON-CL4-2024 · ELLIS-sponsored · €30,000,000 granted for scalable robust generalisation</div>
+        </div>
+        <span class="award-badge">€30M HORIZON</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RECENT PUBLICATIONS & NEWS
+================================================================ -->
+<section class="recent" id="recent">
+  <div class="container">
+    <div class="recent-grid">
+
+      <!-- Publications column -->
+      <div>
+        <span class="label reveal">Selected Recent Work</span>
+        <h2 class="recent-heading reveal">Recent<br/>Publications</h2>
+        <div class="recent-papers" id="pub-list"></div>
+        <a href="https://scholar.google.nl/citations?user=QqfCvsgAAAAJ&hl=en" target="_blank" class="scholar-btn reveal">
+          View full list on Google Scholar →
+        </a>
+      </div>
+
+      <!-- News column -->
+      <div>
+        <span class="label reveal">Updates</span>
+        <h2 class="news-heading reveal">News</h2>
+        <div class="news-list">
+          <div class="news-item reveal">
+            <span class="news-date">2026</span>
+            <p class="news-text"><strong>Advisor in NWO Round Table CS</strong> — Selected as advisor to the Netherlands Organisation for Scientific Research strategic advisory board for Computer Science.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2026</span>
+            <p class="news-text"><strong>Member of IPN Network</strong> — Joined the <a href="https://ict-research.nl/" style="color:var(--gold);text-decoration:underline;">IPN (ICT Research Netherlands)</a> network, collaborating on national AI and computing research initiatives.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">Jan 2026</span>
+            <p class="news-text"><strong>Summit with 10+ leading European robotics industries</strong> to discuss the future of Physical AI and possible collaborations.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2025</span>
+            <p class="news-text"><strong>Calli Labs co-founded</strong> — AI for augmenting creativity, spun out of UvA and Gunpowder Sky (Hollywood production studio).</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2025</span>
+            <p class="news-text"><strong>Greeks in AI Symposium 2025</strong> — 500+ participants. Founded and chaired the inaugural event connecting Greek AI researchers across academia and industry.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2024</span>
+            <p class="news-text"><strong>ELLIOT Consortium granted €30M</strong> (HORIZON-CL4-2024) — pan-European initiative on open multimodal foundation models.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2024</span>
+            <p class="news-text"><strong>Best Paper Runner-Up at MIDL 2024</strong> for physics-informed neural fields for CT perfusion analysis in acute ischemic stroke.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2024</span>
+            <p class="news-text"><strong>PhD cum laude</strong> awarded to Phillip Lippe — a rare distinction at the University of Amsterdam — for pioneering causal representations in embodied AI.</p>
+          </div>
+          <div class="news-item reveal">
+            <span class="news-date">2024</span>
+            <p class="news-text">Elected <strong>Programme Director</strong> of the BSc AI at the University of Amsterdam. Mission: modernise the curriculum for the Physical AI era.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+================================================================ -->
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-name">Efstratios Gavves</div>
+        <p class="footer-tagline">Building Physical AI — algorithms that understand the dynamics of the physical world and enable safe, reliable embodied intelligence.</p>
+      </div>
+      <div>
+        <div class="footer-col-head">Navigate</div>
+        <ul class="footer-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#manifesto">Manifesto</a></li>
+          <li><a href="#world-models">World Models &amp; Robot Learning</a></li>
+          <li><a href="#causal-vision">Causal Vision</a></li>
+          <li><a href="#mechanisms">Mechanisms &amp; Safety</a></li>
+          <li><a href="#biomedical">Physical AI for Biomedical</a></li>
+          <li><a href="#partnerships">Partnerships</a></li>
+          <li><a href="#awards">Awards</a></li>
+          <li><a href="#recent">Publications &amp; News</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-head">Connect</div>
+        <ul class="footer-links">
+          <li><a href="mailto:egavves@uva.nl">egavves@uva.nl</a></li>
+          <li><a href="https://www.egavves.com" target="_blank">egavves.com</a></li>
+          <li><a href="https://scholar.google.nl/citations?user=QqfCvsgAAAAJ" target="_blank">Google Scholar</a></li>
+          <li><a href="https://orcid.org/0000-0001-8947-1332" target="_blank">ORCID</a></li>
+          <li><a href="https://www.linkedin.com/in/egavves" target="_blank">LinkedIn</a></li>
+          <li><a href="https://twitter.com/egavves" target="_blank">X / Twitter</a></li>
+          <li><a href="https://www.uva.nl/profile/e.gavves" target="_blank">UvA Profile</a></li>
+        </ul>
+        <div style="margin-top:2rem;">
+          <div class="footer-col-head">Labs</div>
+          <ul class="footer-links">
+            <li><a href="#partnerships">QUVA Lab · Qualcomm</a></li>
+            <li><a href="#partnerships">POP-AART Lab · Elekta &amp; NKI</a></li>
+            <li><a href="#partnerships">Calli Labs</a></li>
+          </ul>
         </div>
       </div>
     </div>
-  </div>
-  
-  
-</div>
-
-
-    
-      </div>
-    
-
-    </div>
-  </section>
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="publications" class="home-section wg-pages  "  >
-   <div class="home-section-bg " >
-     
-   </div>
-    <div class="container">
-
-    
-      <div class="row  ">
-      
-        
-          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
-            <h1 class="mb-0">Publications</h1>
-            
-          </div>
-        
-      
-    
-
-      
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-  
-  
-  
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-<div class="col-12 col-lg-8">
-
-  <div class="alert alert-note">
-  <div>
-    Quickly discover relevant content by <a href="./publication/">filtering publications</a>.
-  </div>
-</div>
-
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Phillip Lippe</span>, <span >
-      Sara Magliacane</span>, <span >
-      Sindy Löwe</span>, <span >
-      Yuki M. Asano</span>, <span >
-      Taco Cohen</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/lippe-2023-biscuit/">BISCUIT: Causal Representation Learning from Binary Interactions</a>.
-  <em>Association for Uncertainty in Artificial Intelligence</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/lippe-2023-biscuit/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Yongtuo Liu</span>, <span >
-      Sara Magliacane</span>, <span >
-      Miltos Kofinas</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/liu-2023-grass/">Graph Switching Dynamical Systems</a>.
-  <em>International Conference on Machine Learning</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/liu-2023-grass/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Miltiadis Kofinas</span>, <span >
-      Erik Bekkers</span>, <span >
-      Naveen Shankar Nagaraja</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/kofinas-2023-aether/">Latent Field Discovery In Interacting Dynamical Systems With Neural Fields</a>.
-  <em>Neural Information Processing Systems</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/kofinas-2023-aether/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      David Knigge</span>, <span >
-      David Romero</span>, <span >
-      Albert Gu</span>, <span >
-      Efstratios Gavves</span>, <span >
-      Erik Bekkers</span>, <span >
-      Jakub Tomczak</span>, <span >
-      Mark Hoogendoorn</span>, <span >
-      Jan-Jakob Sonke</span>
-  </span>
-  (2023).
-  <a href="./publication/devries-2023-perfunet/">Modelling Long Range Dependencies in ND: From Task-Specific to a General Purpose CNN</a>.
-  <em>International Conference on Learning Representations</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/devries-2023-perfunet/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Ilze Auzina</span>, <span >
-      Cagatay Yildiz</span>, <span >
-      Sara Magliacane</span>, <span >
-      Matthias Bethge</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/auzina-2023-monode/">Modulated Neural ODEs</a>.
-  <em>Neural Information Processing Systems</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/auzina-2023-monode/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Samuele Papa</span>, <span >
-      David Knigge</span>, <span >
-      Riccardo Valperga</span>, <span >
-      Nikita Moriakov</span>, <span >
-      Miltos Kofinas</span>, <span >
-      Jan-Jakob Sonke</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/papa-2023-neuralct/">Neural Modulation Fields for Conditional Cone Beam Neural Tomography</a>.
-  <em>SynS and ML Workshop, ICML</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/papa-2023-neuralct/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Samuele Papa</span>, <span >
-      Efstratios Gavves</span>, <span >
-      Jan-Jakob Sonke</span>
-  </span>
-  (2023).
-  <a href="./publication/papa-2023-noise-2-aliasing/">Noise2Aliasing: Unsupervised Deep Learning for View Aliasing and Noise Reduction in 4DCBCT</a>.
-  <em>Medical Image Computing and Computer Assisted Intervention Society</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/papa-2023-noise-2-aliasing/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      W Yin</span>, <span >
-      Jan-Jakob Sonke</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/yin-2023-pcreg/">PC-Reg: A pyramidal prediction–correction approach for large deformation image registration</a>.
-  <em>Journal on Medical Image Analysis</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/yin-2023-pcreg/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Lucas de Vries</span>, <span >
-      Rudolf van Herten</span>, <span >
-      Jan Hoving</span>, <span >
-      Ivana Išgum</span>, <span >
-      Bart Emmer</span>, <span >
-      Charles Majoie</span>, <span >
-      Henk Marquering</span>, <span >
-      Efstratios Gavves</span>
-  </span>
-  (2023).
-  <a href="./publication/devries-2023-sppinn/">Spatio-temporal physics-informed learning: A novel approach to CT perfusion analysis in acute ischemic stroke</a>.
-  <em>Journal on Medical Image Analysis</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/devries-2023-sppinn/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-    
-
-
-<div class="pub-list-item view-citation" style="margin-bottom: 1rem">
-  <i class="far fa-file-alt pub-icon" aria-hidden="true"></i>
-
-  
-  
-
-  <span class="article-metadata li-cite-author">
-    
-
-  <span >
-      Mohammadreza Salehi</span>, <span >
-      Efstratios Gavves</span>, <span >
-      Cees GM Snoek</span>, <span >
-      Yuki M Asano</span>
-  </span>
-  (2023).
-  <a href="./publication/salehi-2023-time/">Time does tell: Self-supervised time-tuning of dense image representations</a>.
-  <em>IEEE International Conference on Computer Vision</em>.
-  
-  <p>
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-<a href="#" class="btn btn-outline-primary btn-page-header btn-sm js-cite-modal"
-        data-filename="/publication/salehi-2023-time/cite.bib">
-  Cite
-</a>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</p>
-
-  
-  
-</div>
-
-  
-
-  
-  
-  
-
-    
-    
-      
-    
-
-    
-    
-    
-    
-      
-    
-
-    
-
-    <div class="see-all">
-      <a href="./publication/">
-        See all publications
-        <i class="fas fa-angle-right"></i>
-      </a>
-    </div>
-  
-
-</div>
-
-
-    
-      </div>
-    
-
-    </div>
-  </section>
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="team" class="home-section wg-people  "  >
-   <div class="home-section-bg " >
-     
-   </div>
-    <div class="container">
-
-    
-
-      
-
-
-
-
-
-
-
-
-
-<div class="row justify-content-center people-widget">
-  
-  <div class="col-md-12 section-heading">
-    <h1>Team</h1>
-    
-  </div>
-  
-
-  
-
-  
-  
-
-  
-  <div class="col-md-12">
-    <h2 class="mb-4">Ph.D. students</h2>
-  </div>
-  
-
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/ilze-auzina/avatar_hu69fc99b5f36e627bc7067312dc150e3b_77741_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Ilze Auzina</h2>
-      
-      <h3>Space-time generative &amp; bayesian learning</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Efstratios Gavves · University of Amsterdam</span>
+      <span class="footer-copy">QUVA Lab · POP-AART Lab · Calli Labs</span>
     </div>
   </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/leonard-bereska/avatar_hu190fc36214026b0f6afe62f0a2f063ba_58106_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Leonard Bereska</h2>
-      
-      <h3>Space-time memory neural nets</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/alex-gabel/avatar_hu58159ea50aa1ae8da7f8b0a11210bdc4_63144_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Alex Gabel</h2>
-      
-      <h3>Neural network dynamical systems</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/david-knigge/avatar_hueff18b8141b935164dea46e6fb57d974_42036_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>David Knigge</h2>
-      
-      <h3>Space-time geometric deep learning</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/miltos-kofinas/avatar_hu4b0c6860aa4eca2bc12526bdce3830d2_41283_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Miltos Kofinas</h2>
-      
-      <h3>Deep spatiotemporal forecasting</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/phillip-lippe/avatar_hue8d5bf2b8be73c3c160200f82e1f484f_36513_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Phillip Lippe</h2>
-      
-      <h3>Temporal causality &amp; causal representation learning</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/jie-liu/avatar_hubfab6bc9dd8249a654f3e4449690c5d3_57173_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Jie Liu</h2>
-      
-      <h3>Interactive image segmentation</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/yongtuo-liu/avatar_hu26b947dade2b22c308b3a6157125f5a4_73500_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Yongtuo Liu</h2>
-      
-      <h3>Long-term spatiotemporal learning</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/andreas-panteli/avatar_hubd5794eb8d69a9a62850e6aaabef6b0a_45891_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Andreas Panteli</h2>
-      
-      <h3>Object detection computational pathology</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/samuele-papa/avatar_hucd83aa5967c0b6489d58c269cdda3361_21535_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Samuele Papa</h2>
-      
-      <h3>Deep generative learing in CBCT</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/mohammad-salehi/avatar_hu0f5c21428621c34c4e0df538ab2a81f9_82094_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Mohammad Salehi</h2>
-      
-      <h3>Efficient spatiotemporal learning</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/yoni-schirris/avatar_hu85e9feaf5c2e895f178924c40c307d65_44496_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Yoni Schirris</h2>
-      
-      <h3>Weakly supervised deep learning computational pathology</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/lucas-devries/avatar_hu189286a38c3dcaa8a5bf01f86339202d_13530_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Lucas de Vries</h2>
-      
-      <h3>Spatiotemporal forecasting in brain CT</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/riccardo-valperga/avatar_hu24e0d04577bae8a144afc1e2fb0fed67_52332_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Riccardo Valperga</h2>
-      
-      <h3>System dynamics &amp; neural networks</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/haochen-wang/avatar_hu79807426a877a5dbc945aea026563df6_28991_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Haochen Wang</h2>
-      
-      <h3>Video segmentation &amp; tracking</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/wenzhe-yin/avatar_huc6ea55143834f6f955783bc841162b2d_36309_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Wenzhe Yin</h2>
-      
-      <h3>Spatiotemporal medical image registation</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-
-  
-  <div class="col-md-12">
-    <h2 class="mb-4">Post-doctoral researchers</h2>
-  </div>
-  
-
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/nikita-moriakov/avatar_hu09a11aa2bbc5cf06b9e7a76dbc69af53_22290_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Nikita Moriakov</h2>
-      
-      <h3>Deep inverse models in CBCT</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/adeel-pervez/avatar_hu31713ec6629930b001c4929384d52bf9_36531_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Adeel Pervez</h2>
-      
-      <h3>Harmonic analysis &amp; neural nets</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-
-  
-
-  
-  
-  
-
-  
-  <div class="col-md-12">
-    <h2 class="mb-4">Alumni</h2>
-  </div>
-  
-
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/yunlu-chen/avatar_hu70dd8039ee3d21011b40f44c39709320_51962_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Yunlu Chen</h2>
-      
-      <h3>3D implicit neural representations</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-    
-  
-  <div class="col-12 col-sm-auto people-person">
-    
-    
-      
-      
-    
-    
-      
-      <img width="270" height="270" loading="lazy" class="avatar avatar-circle" src="./authors/riaan-zoetmulder/avatar_hu70cf0f44662a8586dbe3b6b17b6ac7ea_56419_270x270_fill_q75_lanczos_center.jpg" alt="Avatar">
-    
-
-    <div class="portrait-title">
-      <h2>Riaan Zoetmulder</h2>
-      
-      <h3>Deep transfer learning in medical imaging</h3>
-      <ul class="network-icon" aria-hidden="true">
-  
-</ul>
-
-      
-    </div>
-  </div>
-  
-  
-</div>
-
-
-    
-
-    </div>
-  </section>
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-  
-
-  
-  
-  
-  
-  
-
-  
-  
-
-  
-
-  
-  
-
-  
-  
-
-  
-  <section id="contact" class="home-section wg-contact  "  >
-   <div class="home-section-bg " >
-     
-   </div>
-    <div class="container">
-
-    
-      <div class="row  ">
-      
-        
-          <div class="section-heading col-12 col-lg-4 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
-            <h1 class="mb-0">Contact</h1>
-            
-          </div>
-        
-      
-    
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="col-12 col-lg-8">
-  
-
-  
-
-  <ul class="fa-ul">
-
-    
-    <li>
-      <i class="fa-li fas fa-envelope fa-2x" aria-hidden="true"></i>
-      <span id="person-email"><a href="mailto:egavves@uva.nl">egavves@uva.nl</a></span>
-    </li>
-    
-
-    
-
-    
-    
-      
-      <li>
-        <i class="fa-li fas fa-map-marker fa-2x" aria-hidden="true"></i>
-        <span id="person-address">Science Park 900, Amsterdam, 1012WX, Room L4.38</span>
-      </li>
-    
-
-    
-
-    
-
-    
-
-    
-    
-    
-    
-    
-      
-    
-    
-    
-    
-    
-      
-    
-    <li>
-      <i class="fa-li fab fa-twitter fa-2x" aria-hidden="true"></i>
-      <a href="https://twitter.com/egavves" target="_blank" rel="noopener">DM Me</a>
-    </li>
-    
-
-  </ul>
-
-  
-
-</div>
-
-
-    
-      </div>
-    
-
-    </div>
-  </section>
-
-
-
-
-
-
-
-  </div>
-
-  <div class="page-footer">
-    
-    
-    <div class="container">
-      <footer class="site-footer">
-
-  
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-
-
-
-
-
-  
-  
-  
-
-  
-  
-    
-  
-  
-    
-  
-
-  
-
-  
-  <p class="powered-by copyright-license-text">
-    © 2023 Me. This work is licensed under <a href="https://creativecommons.org/licenses/by-nc-nd/4.0" rel="noopener noreferrer" target="_blank">CC BY NC ND 4.0</a>
-  </p>
-  
-
-  <p class="powered-by footer-license-icons">
-    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0" rel="noopener noreferrer" target="_blank" aria-label="Creative Commons">
-      <i class="fab fa-creative-commons fa-2x" aria-hidden="true"></i>
-      <i class="fab fa-creative-commons-by fa-2x" aria-hidden="true"></i>
-      
-        <i class="fab fa-creative-commons-nc fa-2x" aria-hidden="true"></i>
-      
-      
-        <i class="fab fa-creative-commons-nd fa-2x" aria-hidden="true"></i>
-      
-    </a>
-  </p>
-
-
-
-
-  <p class="powered-by">
-    
-    
-    
-      
-      
-      
-      
-      
-      
-      Published with <a href="https://wowchemy.com/?utm_campaign=poweredby" target="_blank" rel="noopener">Wowchemy</a> — the free, <a href="https://github.com/wowchemy/wowchemy-hugo-themes" target="_blank" rel="noopener">open source</a> website builder that empowers creators.
-    
-  </p>
 </footer>
 
-    </div>
-    
-  </div>
+<!-- ================================================================
+     SCRIPTS
+================================================================ -->
+<script>
+  // ── TRON GRID MOUSE TILT ─────────────────────────────────────────
+  const tronGrid = document.getElementById('tron-grid');
+  const heroEl   = document.getElementById('hero');
 
-  
+  heroEl.addEventListener('mousemove', e => {
+    const r  = heroEl.getBoundingClientRect();
+    const mx = (e.clientX - r.left) / r.width  - 0.5; // −0.5 → +0.5
+    const my = (e.clientY - r.top)  / r.height - 0.5;
+    tronGrid.style.transition = 'transform 0.12s ease-out';
+    tronGrid.style.transform  =
+      `perspective(1100px) rotateX(${my * -9}deg) rotateY(${mx * 9}deg)`;
+  }, { passive: true });
+
+  heroEl.addEventListener('mouseleave', () => {
+    tronGrid.style.transition = 'transform 1.1s ease-out';
+    tronGrid.style.transform  = 'perspective(1100px) rotateX(0deg) rotateY(0deg)';
+  });
+
+  // ── PARTICLE CANVAS ──────────────────────────────────────────────
+  const canvas = document.getElementById('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+  let particles = [], rafId = null;
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function initParticles() {
+    particles = [];
+    const n = Math.floor((canvas.width * canvas.height) / 10000);
+    for (let i = 0; i < n; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        r:  Math.random() * 1.4 + 0.3,
+        a:  Math.random() * 0.45 + 0.08
+      });
+    }
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Lines between nearby particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < 110) {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(196,169,106,${(1 - d/110) * 0.07})`;
+          ctx.lineWidth   = 0.4;
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Constellation lines from thrust nodes to center
+    const nodes = document.querySelectorAll('.t-node');
+    const cx    = canvas.width  / 2;
+    const cy    = canvas.height / 2;
+    nodes.forEach(node => {
+      const r   = node.getBoundingClientRect();
+      const nx  = r.left + r.width  / 2;
+      const ny  = r.top  + r.height / 2;
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(196,169,106,0.12)';
+      ctx.lineWidth   = 0.6;
+      ctx.setLineDash([4, 8]);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(nx, ny);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // Dots
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(196,169,106,${p.a})`;
+      ctx.fill();
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width)  p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+    });
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  resize();
+  initParticles();
+  tick();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+
+  // Pause animation when hero off-screen (perf)
+  new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      if (!rafId) tick();
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }).observe(document.getElementById('hero'));
 
 
-<script src="./js/vendor-bundle.min.js"></script>
+  // ── NAV SCROLL ───────────────────────────────────────────────────
+  const nav = document.getElementById('site-nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
 
 
+  // ── SCROLL REVEAL ────────────────────────────────────────────────
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 
-  
-
-  
-  
-
-  
-
-
-
+  // ── NODE CLICK NAVIGATION ────────────────────────────────────────
+  document.querySelectorAll('.t-node').forEach(node => {
+    node.addEventListener('click', () => {
+      const target = node.dataset.target;
+      if (target) document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
 
 
+  // ── PUBLICATIONS LIST ────────────────────────────────────────────
+  const pubs = [
+    { year: 2026, title: "Distributional Vision-Language Alignment by Cauchy-Schwarz Divergence", authors: "Gavves et al.", venue: "ICLR 2026" },
+    { year: 2025, title: "Physics-Informed Learning for Biomedical Imaging", authors: "de Vries, Herten, et al.", venue: "The Lancet Digital Health" },
+    { year: 2025, title: "Dream to Manipulate: Compositional World Models Empowering Robot Imitation Learning with Imagination", authors: "Barcellona, Zadaianchuk, Allegro, Papa, Gavves", venue: "ICLR 2025" },
+    { year: 2025, title: "CaPo: Cooperative Plan Optimization for Efficient Embodied Multi-Agent Cooperation", authors: "Liu, Zhou, Du, Tan, Snoek, Sonke, Gavves", venue: "ICLR 2025" },
+    { year: 2024, title: "Mechanistic Neural Networks for Scientific Machine Learning", authors: "Pervez, Locatello, Gavves", venue: "ICML 2024" },
+    { year: 2024, title: "Mechanistic Interpretability for AI Safety — A Review", authors: "Bereska, Gavves", venue: "TMLR 2024" },
+    { year: 2024, title: "VISA: Reasoning Video Object Segmentation via Large Language Models", authors: "Yan, Wang, Yan, Jiang, Hu, Kang, Xie, Gavves", venue: "ECCV 2024" },
+    { year: 2024, title: "Accelerating Physics-Informed Neural Fields for Fast CT Perfusion Analysis in Acute Ischemic Stroke", authors: "de Vries, Herten, Hoving, Isgum, Emmer, Majoie, Marquering, Gavves", venue: "MIDL 2024 ★" },
+    { year: 2023, title: "BISCUIT: Causal Representation Learning from Binary Interactions", authors: "Lippe, Magliacane, Löwe, Asano, Cohen, Gavves", venue: "UAI 2023" },
+    { year: 2023, title: "Graph Switching Dynamical Systems", authors: "Liu, Magliacane, Kofinas, Gavves", venue: "ICML 2023" },
+    { year: 2023, title: "Latent Field Discovery in Interacting Dynamical Systems with Neural Fields", authors: "Kofinas, Bekkers, Nagaraja, Gavves", venue: "NeurIPS 2023" },
+    { year: 2023, title: "Modulated Neural ODEs", authors: "Auzina, Yildiz, Magliacane, Bethge, Gavves", venue: "NeurIPS 2023" },
+    { year: 2022, title: "CITRIS: Causal Identifiability from Temporal Interventions in Latent Spaces", authors: "Lippe, Magliacane, Löwe, Asano, Cohen, Gavves", venue: "ICML 2022" },
+    { year: 2022, title: "ENCO: Efficient Neural Causal Discovery under Interventions", authors: "Lippe, Cohen, Gavves", venue: "ICLR 2022" },
+    { year: 2016, title: "Siamese Instance Search for Tracking", authors: "Tao, Gavves, Smeulders", venue: "CVPR 2016" },
+    { year: 2016, title: "Dynamic Image Networks for Action Recognition", authors: "Bilen, Fernando, Gavves, Vedaldi, Gould", venue: "CVPR 2016 · Oral" },
+  ];
 
-
-
-
-
-
-
-
-  
-  <script id="search-hit-fuse-template" type="text/x-template">
-    <div class="search-hit" id="summary-{{key}}">
-      <div class="search-hit-content">
-        <div class="search-hit-name">
-          <a href="{{relpermalink}}">{{title}}</a>
-          <div class="article-metadata search-hit-type">{{type}}</div>
-          <p class="search-hit-description">{{snippet}}</p>
-        </div>
+  const pubList = document.getElementById('pub-list');
+  pubs.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'rpaper reveal';
+    el.innerHTML = `
+      <span class="rpaper-year">${p.year}</span>
+      <div>
+        <div class="rpaper-title">${p.title}</div>
+        <div class="rpaper-authors">${p.authors}</div>
       </div>
-    </div>
-  </script>
-  
-    <script src="https://cdn.jsdelivr.net/gh/krisk/Fuse@v3.2.1/dist/fuse.min.js" integrity="sha512-o38bmzBGX+hD3JHWUFCDA09btWaqrNmoJ3RXLlrysA7PP01Kgs4UlE4MhelE1v5dJR3+cxlR4qQlotsW7jKsnw==" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/gh/julmot/mark.js@8.11.1/dist/jquery.mark.min.js" integrity="sha512-mhbv5DqBMgrWL+32MmsDOt/OAvqr/cHimk6B8y/bx/xS88MVkYGPiVv2ixKVrkywF2qHplNRUvFsAHUdxZ3Krg==" crossorigin="anonymous"></script>
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  
-  
-  
-  
-  
-
-
-
-
-
-
-
-<script id="page-data" type="application/json">{"use_headroom":false}</script>
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-<script src="./en/js/wowchemy.min.js"></script>
-
-
-
-
-
-
-
-  
-<div id="modal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Cite</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <pre><code class="tex hljs"></code></pre>
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
-          <i class="fas fa-copy"></i> Copy
-        </a>
-        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
-          <i class="fas fa-download"></i> Download
-        </a>
-        <div id="modal-error"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <script src="./js/wowchemy-publication.js" type="module"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
+      <span class="rpaper-venue">${p.venue}</span>
+    `;
+    pubList.appendChild(el);
+    revealObs.observe(el);
+  });
+</script>
 
 
 </body>
