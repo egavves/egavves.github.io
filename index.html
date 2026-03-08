@@ -933,6 +933,113 @@
     /* ================================================================
        TRON GRID
     ================================================================ */
+
+    /* ================================================================
+       ENTREPRENEURSHIP
+    ================================================================ */
+    .entrepreneurship {
+      background: var(--dark-surf);
+      padding: 8rem 0;
+      border-top: 1px solid rgba(196,169,106,0.08);
+    }
+    .entrepreneurship-heading {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: clamp(2rem, 3.5vw, 3.5rem);
+      letter-spacing: -0.03em;
+      color: var(--text-hi);
+      margin: 1rem 0 3.5rem;
+    }
+    .entrepreneurship-grid {
+      display: grid;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 2rem;
+      max-width: 600px;
+    }
+    .venture-card {
+      background: var(--dark-card);
+      border: 1px solid rgba(196,169,106,0.18);
+      backdrop-filter: blur(20px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+      padding: 2rem;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      align-items: stretch;
+    }
+    .venture-card:hover {
+      border-color: rgba(196,169,106,0.35);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    @media (max-width: 700px) {
+      .venture-card { flex-direction: column; }
+    }
+    .venture-image {
+      flex-shrink: 0;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .venture-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(196,169,106,0.2), rgba(0,220,245,0.1));
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      border: 1px solid rgba(196,169,106,0.15);
+    }
+    .venture-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .venture-type {
+      font-family: var(--mono);
+      font-size: 0.56rem;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .venture-name {
+      font-family: var(--display);
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: var(--text-hi);
+    }
+    .venture-desc {
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: rgba(234,230,222,0.65);
+    }
+    .venture-highlights {
+      font-size: 0.78rem;
+      color: rgba(234,230,222,0.55);
+      line-height: 1.5;
+    }
+    .venture-highlights strong { color: var(--gold); }
+    .venture-link {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: gap 0.2s;
+      margin-top: 0.5rem;
+      width: fit-content;
+    }
+    .venture-link:hover { gap: 0.6rem; }
+
     #tron-grid {
       position: absolute;
       inset: 0;
@@ -1015,6 +1122,7 @@
       <li><a href="#world-models">Research</a></li>
       <li><a href="#partnerships">Partnerships</a></li>
       <li><a href="#awards" class="nav-link-awards">Awards</a></li>
+      <li><a href="#entrepreneurship">Entrepreneurship</a></li>
       <li><a href="#recent">Publications &amp; News</a></li>
     </ul>
   </div>
@@ -1046,7 +1154,7 @@
   <!-- Identity -->
   <div class="hero-id">
     <span class="hero-name">Efstratios Gavves</span>
-    <span class="hero-role">Professor · Physical AI</span>
+    <span class="hero-role">Associate Professor · Physical AI</span>
     <span class="hero-inst">University of Amsterdam</span>
   </div>
 
@@ -1560,7 +1668,36 @@
 </section>
 
 <!-- ================================================================
-     RECENT PUBLICATIONS & NEWS
+     ENTREPRENEURSHIP
+================================================================ -->
+<section class="entrepreneurship" id="entrepreneurship">
+  <div class="container">
+    <span class="label reveal">Building the Future</span>
+    <h2 class="entrepreneurship-heading reveal">Entrepreneurship</h2>
+    <div class="entrepreneurship-grid">
+      
+      <div class="venture-card feat reveal">
+        <div class="venture-image">
+          <div class="venture-placeholder">🤖✨</div>
+        </div>
+        <div class="venture-body">
+          <span class="venture-type">Co-Founder & Chief Science Officer</span>
+          <h3 class="venture-name">Calli Labs</h3>
+          <p class="venture-desc">
+            Spun out of the University of Amsterdam and Gunpowder Sky (leading Hollywood production studio). Building AI for augmenting creativity — transforming how artists, creators, and filmmakers collaborate with machine intelligence.
+          </p>
+          <p class="venture-highlights">
+            <strong>Focus:</strong> Video understanding, world models, creative AI applications
+          </p>
+          <a href="https://calliabs.com" target="_blank" class="venture-link">Visit Calli Labs →</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="recent" id="recent"> & NEWS
 ================================================================ -->
 <section class="recent" id="recent">
   <div class="container">
@@ -1645,6 +1782,7 @@
           <li><a href="#biomedical">Physical AI for Biomedical</a></li>
           <li><a href="#partnerships">Partnerships</a></li>
           <li><a href="#awards">Awards</a></li>
+          <li><a href="#entrepreneurship">Entrepreneurship</a></li>
           <li><a href="#recent">Publications &amp; News</a></li>
         </ul>
       </div>
