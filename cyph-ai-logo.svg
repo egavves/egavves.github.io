@@ -1,122 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Define gradients and patterns -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
   <defs>
-    <!-- Main gradient for bronze accent -->
-    <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#E6C371;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#C4A96A;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#A68D58;stop-opacity:1" />
+    <!-- Bronze gradient for main strokes -->
+    <linearGradient id="bronze" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E8CD7E"/>
+      <stop offset="40%" stop-color="#C4A96A"/>
+      <stop offset="100%" stop-color="#9E8650"/>
     </linearGradient>
-    
-    <!-- Glow effect -->
-    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" style="stop-color:#C4A96A;stop-opacity:0.3" />
-      <stop offset="100%" style="stop-color:#C4A96A;stop-opacity:0" />
-    </radialGradient>
-    
-    <!-- Shadow filter -->
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.2" />
+
+    <!-- Lighter bronze for secondary elements -->
+    <linearGradient id="bronzeLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E8CD7E" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#C4A96A" stop-opacity="0.4"/>
+    </linearGradient>
+
+    <!-- Subtle glow for the ellipse -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
   </defs>
-  
-  <!-- Background circle (optional, remove if not needed) -->
-  <!-- <circle cx="256" cy="256" r="256" fill="#09090D"/> -->
-  
-  <!-- Outer ring (circuit aesthetic) -->
-  <circle cx="256" cy="256" r="240" fill="none" stroke="url(#bronzeGrad)" stroke-width="1.5" opacity="0.4"/>
-  <circle cx="256" cy="256" r="235" fill="none" stroke="url(#bronzeGrad)" stroke-width="0.8" opacity="0.2"/>
-  
-  <!-- Central glow -->
-  <circle cx="256" cy="256" r="180" fill="url(#glowGrad)"/>
-  
-  <!-- Main geometric frame -->
-  <g filter="url(#shadow)">
-    <!-- Outer hexagon-like frame -->
-    <path d="M 256 80 L 380 150 L 380 290 L 256 360 L 132 290 L 132 150 Z" 
-          fill="none" stroke="url(#bronzeGrad)" stroke-width="2" opacity="0.3"/>
-  </g>
-  
-  <!-- PSI (Ψ) - Left chamber -->
-  <g transform="translate(180, 220)">
-    <!-- Vertical stem -->
-    <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#bronzeGrad)" stroke-width="4" stroke-linecap="round"/>
-    
-    <!-- Left prong curve -->
-    <path d="M -20 -30 Q -28 -15 -22 10" fill="none" stroke="url(#bronzeGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-    
-    <!-- Right prong curve -->
-    <path d="M 20 -30 Q 28 -15 22 10" fill="none" stroke="url(#bronzeGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-    
-    <!-- Bottom hook (mechanical joint) -->
-    <path d="M 0 50 Q 0 65 -8 72" fill="none" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
-    
-    <!-- Circuit node -->
-    <circle cx="0" cy="-50" r="3.5" fill="url(#bronzeGrad)"/>
-  </g>
-  
-  <!-- PHI (Φ) - Center chamber -->
-  <g transform="translate(256, 220)">
-    <!-- Vertical stem (stronger) -->
-    <line x1="0" y1="-60" x2="0" y2="60" stroke="url(#bronzeGrad)" stroke-width="4.5" stroke-linecap="round"/>
-    
-    <!-- Circle loop (main feature) -->
-    <circle cx="0" cy="0" r="30" fill="none" stroke="url(#bronzeGrad)" stroke-width="4"/>
-    
-    <!-- Inner detail circle -->
-    <circle cx="0" cy="0" r="25" fill="none" stroke="url(#bronzeGrad)" stroke-width="1.5" opacity="0.4"/>
-    
-    <!-- Circuit nodes (top and bottom) -->
-    <circle cx="0" cy="-60" r="3.5" fill="url(#bronzeGrad)"/>
-    <circle cx="0" cy="60" r="3.5" fill="url(#bronzeGrad)"/>
-  </g>
-  
-  <!-- IOTA (Ι) - Right chamber -->
-  <g transform="translate(332, 220)">
-    <!-- Main vertical line -->
-    <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#bronzeGrad)" stroke-width="4" stroke-linecap="round"/>
-    
-    <!-- Top serif (T-like bar) -->
-    <line x1="-12" y1="-50" x2="12" y2="-50" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
-    
-    <!-- Bottom serif -->
-    <line x1="-12" y1="50" x2="12" y2="50" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
-    
-    <!-- Circuit node -->
-    <circle cx="0" cy="50" r="3.5" fill="url(#bronzeGrad)"/>
-  </g>
-  
-  <!-- Mechanical connectors (robot arms) -->
-  <!-- Left arm -->
-  <g stroke="url(#bronzeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M 140 220 L 80 180 L 50 160" opacity="0.6"/>
-    <circle cx="50" cy="160" r="4" fill="url(#bronzeGrad)" opacity="0.7"/>
-  </g>
-  
-  <!-- Right arm -->
-  <g stroke="url(#bronzeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M 372 220 L 432 180 L 462 160" opacity="0.6"/>
-    <circle cx="462" cy="160" r="4" fill="url(#bronzeGrad)" opacity="0.7"/>
-  </g>
-  
-  <!-- Bottom stabilizers (torque indicators) -->
-  <g stroke="url(#bronzeGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5">
-    <path d="M 220 320 Q 220 350 256 365"/>
-    <path d="M 292 320 Q 292 350 256 365"/>
-  </g>
-  
-  <!-- Energy flow lines (subtle) -->
-  <g stroke="url(#bronzeGrad)" stroke-width="1" stroke-dasharray="4,3" fill="none" opacity="0.25">
-    <path d="M 180 140 Q 200 100 256 80"/>
-    <path d="M 332 140 Q 312 100 256 80"/>
-  </g>
-  
-  <!-- Corner anchor points (circuit aesthetic) -->
-  <circle cx="80" cy="80" r="2.5" fill="url(#bronzeGrad)" opacity="0.3"/>
-  <circle cx="432" cy="80" r="2.5" fill="url(#bronzeGrad)" opacity="0.3"/>
-  <circle cx="80" cy="392" r="2.5" fill="url(#bronzeGrad)" opacity="0.3"/>
-  <circle cx="432" cy="392" r="2.5" fill="url(#bronzeGrad)" opacity="0.3"/>
-  
-  <!-- Text (optional - comment out if just want symbol) -->
-  <!-- <text x="256" y="420" font-family="'Space Grotesk', sans-serif" font-size="24" font-weight="700" text-anchor="middle" fill="url(#bronzeGrad)" letter-spacing="-1">CY·PH·AI</text> -->
+
+  <!-- =============================================
+       THE UNIFIED SYMBOL: Ψ + Φ + Ι
+       
+       Structure:
+       - Vertical line (IOTA) runs full height
+       - Horizontal ellipse (PHI body) at center
+       - Upper Psi prongs curve outward above ellipse
+       - Lower inverted Psi prongs mirror below
+       ============================================= -->
+
+  <!-- IOTA: The vertical spine — double line for distinction -->
+  <line x1="200" y1="68" x2="200" y2="532" 
+        stroke="url(#bronze)" stroke-width="5" stroke-linecap="round"/>
+  <!-- Iota: subtle inner highlight line -->
+  <line x1="200" y1="72" x2="200" y2="528" 
+        stroke="#E8CD7E" stroke-width="1.5" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- PHI: The ellipse — slightly heavier stroke, with glow -->
+  <ellipse cx="200" cy="300" rx="110" ry="68" 
+           fill="none" stroke="url(#bronze)" stroke-width="5" filter="url(#glow)"/>
+  <!-- Phi: inner contour line for elegance -->
+  <ellipse cx="200" cy="300" rx="106" ry="64" 
+           fill="none" stroke="url(#bronzeLight)" stroke-width="1.2"/>
+
+  <!-- UPPER PSI: Two prongs curving outward from the stem above the ellipse -->
+  <!-- Left prong -->
+  <path d="M 200,195  C 190,175  130,140  95,175" 
+        fill="none" stroke="url(#bronze)" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Right prong -->
+  <path d="M 200,195  C 210,175  270,140  305,175" 
+        fill="none" stroke="url(#bronze)" stroke-width="4.5" stroke-linecap="round"/>
+
+  <!-- LOWER PSI (inverted): Mirror prongs below the ellipse -->
+  <!-- Left prong -->
+  <path d="M 200,405  C 190,425  130,460  95,425" 
+        fill="none" stroke="url(#bronze)" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Right prong -->
+  <path d="M 200,405  C 210,425  270,460  305,425" 
+        fill="none" stroke="url(#bronze)" stroke-width="4.5" stroke-linecap="round"/>
+
+  <!-- Terminal nodes — circuit aesthetic at prong ends -->
+  <circle cx="95" cy="175" r="4" fill="url(#bronze)"/>
+  <circle cx="305" cy="175" r="4" fill="url(#bronze)"/>
+  <circle cx="95" cy="425" r="4" fill="url(#bronze)"/>
+  <circle cx="305" cy="425" r="4" fill="url(#bronze)"/>
+
+  <!-- Iota terminals — small marks at top and bottom of the stem -->
+  <circle cx="200" cy="68" r="4.5" fill="url(#bronze)"/>
+  <circle cx="200" cy="532" r="4.5" fill="url(#bronze)"/>
 </svg>
