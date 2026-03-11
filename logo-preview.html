@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cy·Ph·Ai Logo Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #09090D;
+      color: #EAE6DE;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      padding: 4rem 2rem;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      text-align: center;
+      color: #C4A96A;
+      font-size: 1rem;
+      margin-bottom: 3rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .logos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 3rem;
+      margin-bottom: 4rem;
+    }
+    .logo-card {
+      background: rgba(17, 17, 24, 0.96);
+      border: 1px solid rgba(196, 169, 106, 0.18);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      backdrop-filter: blur(20px);
+      transition: all 0.3s;
+    }
+    .logo-card:hover {
+      border-color: rgba(196, 169, 106, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .logo-display {
+      width: 100%;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.3rem;
+      border: 1px solid rgba(196, 169, 106, 0.1);
+    }
+    .logo-display svg {
+      width: 200px;
+      height: 200px;
+    }
+    .logo-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #C4A96A;
+      text-align: center;
+    }
+    .logo-description {
+      font-size: 0.9rem;
+      color: rgba(234, 230, 222, 0.65);
+      text-align: center;
+    }
+    .usage {
+      background: rgba(17, 17, 24, 0.96);
+      border: 1px solid rgba(196, 169, 106, 0.18);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+    .usage h2 {
+      font-size: 1.5rem;
+      color: #C4A96A;
+      margin-bottom: 1rem;
+    }
+    .usage-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .usage-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 0.3rem;
+      border-left: 3px solid #C4A96A;
+    }
+    .usage-item strong {
+      color: #C4A96A;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .design-elements {
+      background: rgba(17, 17, 24, 0.96);
+      border: 1px solid rgba(196, 169, 106, 0.18);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+    .design-elements h2 {
+      font-size: 1.5rem;
+      color: #C4A96A;
+      margin-bottom: 1rem;
+    }
+    .elements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    .element {
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 0.3rem;
+    }
+    .element-symbol {
+      font-size: 2rem;
+      color: #C4A96A;
+      margin-bottom: 0.5rem;
+    }
+    .element-name {
+      font-weight: 600;
+      color: #EAE6DE;
+      margin-bottom: 0.3rem;
+    }
+    .element-desc {
+      font-size: 0.85rem;
+      color: rgba(234, 230, 222, 0.65);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cy·Ph·Ai Logo</h1>
+    <p class="subtitle">Cyber-Physical AI Branding System</p>
+    
+    <div class="logos-grid">
+      <!-- Logo 1: Symbol Only -->
+      <div class="logo-card">
+        <div class="logo-display">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <defs>
+              <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#E6C371;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#C4A96A;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#A68D58;stop-opacity:1" />
+              </linearGradient>
+              <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#C4A96A;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#C4A96A;stop-opacity:0" />
+              </radialGradient>
+              <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="4" stdDeviation="8" flood-opacity="0.2" />
+              </filter>
+            </defs>
+            
+            <circle cx="256" cy="256" r="240" fill="none" stroke="url(#bronzeGrad)" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="256" cy="256" r="235" fill="none" stroke="url(#bronzeGrad)" stroke-width="0.8" opacity="0.2"/>
+            <circle cx="256" cy="256" r="180" fill="url(#glowGrad)"/>
+            
+            <g filter="url(#shadow)">
+              <path d="M 256 80 L 380 150 L 380 290 L 256 360 L 132 290 L 132 150 Z" fill="none" stroke="url(#bronzeGrad)" stroke-width="2" opacity="0.3"/>
+            </g>
+            
+            <g transform="translate(180, 220)">
+              <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#bronzeGrad)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M -20 -30 Q -28 -15 -22 10" fill="none" stroke="url(#bronzeGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 20 -30 Q 28 -15 22 10" fill="none" stroke="url(#bronzeGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M 0 50 Q 0 65 -8 72" fill="none" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="0" cy="-50" r="3.5" fill="url(#bronzeGrad)"/>
+            </g>
+            
+            <g transform="translate(256, 220)">
+              <line x1="0" y1="-60" x2="0" y2="60" stroke="url(#bronzeGrad)" stroke-width="4.5" stroke-linecap="round"/>
+              <circle cx="0" cy="0" r="30" fill="none" stroke="url(#bronzeGrad)" stroke-width="4"/>
+              <circle cx="0" cy="0" r="25" fill="none" stroke="url(#bronzeGrad)" stroke-width="1.5" opacity="0.4"/>
+              <circle cx="0" cy="-60" r="3.5" fill="url(#bronzeGrad)"/>
+              <circle cx="0" cy="60" r="3.5" fill="url(#bronzeGrad)"/>
+            </g>
+            
+            <g transform="translate(332, 220)">
+              <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#bronzeGrad)" stroke-width="4" stroke-linecap="round"/>
+              <line x1="-12" y1="-50" x2="12" y2="-50" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
+              <line x1="-12" y1="50" x2="12" y2="50" stroke="url(#bronzeGrad)" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="0" cy="50" r="3.5" fill="url(#bronzeGrad)"/>
+            </g>
+            
+            <g stroke="url(#bronzeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 140 220 L 80 180 L 50 160" opacity="0.6"/>
+              <circle cx="50" cy="160" r="4" fill="url(#bronzeGrad)" opacity="0.7"/>
+            </g>
+            
+            <g stroke="url(#bronzeGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M 372 220 L 432 180 L 462 160" opacity="0.6"/>
+              <circle cx="462" cy="160" r="4" fill="url(#bronzeGrad)" opacity="0.7"/>
+            </g>
+            
+            <g stroke="url(#bronzeGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5">
+              <path d="M 220 320 Q 220 350 256 365"/>
+              <path d="M 292 320 Q 292 350 256 365"/>
+            </g>
+          </svg>
+        </div>
+        <div class="logo-title">Symbol Only</div>
+        <div class="logo-description">Pure geometric design. Best for: favicon, icons, badges, social media profiles.</div>
+      </div>
+      
+      <!-- Logo 2: With Text -->
+      <div class="logo-card">
+        <div class="logo-display">
+          <div style="text-align: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 400" style="width: 180px; height: auto;">
+              <defs>
+                <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#E6C371;stop-opacity:1" />
+                  <stop offset="50%" style="stop-color:#C4A96A;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#A68D58;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <text x="256" y="380" font-family="'Space Grotesk', sans-serif" font-size="42" font-weight="700" text-anchor="middle" fill="url(#bg2)" letter-spacing="2">Cy·Ph·Ai</text>
+            </svg>
+          </div>
+        </div>
+        <div class="logo-title">Logo + Text</div>
+        <div class="logo-description">With "Cy·Ph·Ai" label. Best for: branding, presentations, documents, headers.</div>
+      </div>
+      
+      <!-- Logo 3: Favicon -->
+      <div class="logo-card">
+        <div class="logo-display">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" style="width: 120px; height: 120px;">
+            <rect width="256" height="256" fill="#09090D"/>
+            <defs>
+              <linearGradient id="fav" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#C4A96A;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#A68D58;stop-opacity:1" />
+              </linearGradient>
+            </defs>
+            <circle cx="128" cy="128" r="70" fill="none" stroke="url(#fav)" stroke-width="2" opacity="0.3"/>
+            <line x1="128" y1="60" x2="128" y2="196" stroke="url(#fav)" stroke-width="2"/>
+            <circle cx="128" cy="128" r="25" fill="none" stroke="url(#fav)" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="logo-title">Favicon</div>
+        <div class="logo-description">Browser tab icon. Optimized for small sizes (16px-64px).</div>
+      </div>
+    </div>
+    
+    <!-- Usage Options -->
+    <div class="usage">
+      <h2>🎯 Where to Use This Logo</h2>
+      <ul class="usage-list">
+        <li class="usage-item">
+          <strong>Website Header</strong>
+          Use the symbol version at 300×300px in your site header next to the navigation
+        </li>
+        <li class="usage-item">
+          <strong>Academic Papers</strong>
+          Include in the header or sidebar of research papers and publications
+        </li>
+        <li class="usage-item">
+          <strong>Presentations</strong>
+          Title slide background or speaker notes header with the text version
+        </li>
+        <li class="usage-item">
+          <strong>Social Media</strong>
+          LinkedIn/Twitter avatar (200×200px) and banners (1200×600px)
+        </li>
+        <li class="usage-item">
+          <strong>Business Cards</strong>
+          Corner logo or centered on reverse side with text version
+        </li>
+        <li class="usage-item">
+          <strong>Lab/Group Identity</strong>
+          Use across all QUVA Lab and POP-AART Lab materials
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Design Elements -->
+    <div class="design-elements">
+      <h2>🔬 Design Elements</h2>
+      <div class="elements-grid">
+        <div class="element">
+          <div class="element-symbol">Ψ</div>
+          <div class="element-name">Psi</div>
+          <div class="element-desc">Left chamber: Consciousness, mind, cognitive processes</div>
+        </div>
+        <div class="element">
+          <div class="element-symbol">Φ</div>
+          <div class="element-name">Phi</div>
+          <div class="element-desc">Center chamber: Golden ratio, harmony, proportions</div>
+        </div>
+        <div class="element">
+          <div class="element-symbol">Ι</div>
+          <div class="element-name">Iota</div>
+          <div class="element-desc">Right chamber: Minimal but significant</div>
+        </div>
+        <div class="element">
+          <div class="element-symbol">🤖</div>
+          <div class="element-name">Robot Arms</div>
+          <div class="element-desc">Mechanical effectors for action and control</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
