@@ -2,47 +2,72 @@
   <!-- Dark background -->
   <rect width="256" height="256" fill="#09090D"/>
   
-  <!-- Left robotic arm (torque) -->
-  <g stroke="#C4A96A" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Upper arm segment angled down-left -->
-    <line x1="64" y1="96" x2="32" y2="140"/>
-    <!-- Elbow joint -->
-    <circle cx="32" cy="140" r="6" fill="#C4A96A"/>
-    <!-- Forearm segment -->
-    <line x1="32" y1="140" x2="20" y2="180"/>
-    <!-- Hand/gripper -->
-    <circle cx="20" cy="180" r="5" fill="#C4A96A"/>
-    <line x1="16" y1="174" x2="10" y2="168"/>
-    <line x1="24" y1="186" x2="30" y2="192"/>
+  <!-- Gradient definitions -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#C4A96A;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#C4A96A;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Center glow -->
+  <circle cx="128" cy="128" r="80" fill="url(#glow)"/>
+  
+  <!-- Central circle frame -->
+  <circle cx="128" cy="128" r="70" fill="none" stroke="#C4A96A" stroke-width="2" opacity="0.3"/>
+  
+  <!-- PSI (Ψ) - Left side -->
+  <g transform="translate(85, 128)">
+    <!-- Vertical stem -->
+    <line x1="0" y1="-35" x2="0" y2="25" stroke="#C4A96A" stroke-width="3" stroke-linecap="round"/>
+    <!-- Left prong -->
+    <path d="M -15 -20 Q -20 -10 -15 5" fill="none" stroke="#C4A96A" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Right prong -->
+    <path d="M 15 -20 Q 20 -10 15 5" fill="none" stroke="#C4A96A" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Bottom hook -->
+    <path d="M 0 25 Q 8 35 0 40" fill="none" stroke="#C4A96A" stroke-width="2.5" stroke-linecap="round"/>
   </g>
   
-  <!-- Right robotic arm (torque) -->
-  <g stroke="#C4A96A" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Upper arm segment angled down-right -->
-    <line x1="192" y1="96" x2="224" y2="140"/>
-    <!-- Elbow joint -->
-    <circle cx="224" cy="140" r="6" fill="#C4A96A"/>
-    <!-- Forearm segment -->
-    <line x1="224" y1="140" x2="236" y2="180"/>
-    <!-- Hand/gripper -->
-    <circle cx="236" cy="180" r="5" fill="#C4A96A"/>
-    <line x1="240" y1="174" x2="246" y2="168"/>
-    <line x1="232" y1="186" x2="226" y2="192"/>
+  <!-- PHI (Φ) - Center -->
+  <g transform="translate(128, 128)">
+    <!-- Vertical stem through circle -->
+    <line x1="0" y1="-40" x2="0" y2="40" stroke="#C4A96A" stroke-width="3" stroke-linecap="round"/>
+    <!-- Circle loop -->
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#C4A96A" stroke-width="2.5"/>
   </g>
   
-  <!-- Center φ (Phi) symbol -->
-  <g fill="none" stroke="#C4A96A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Vertical line (stem of phi) -->
-    <line x1="128" y1="50" x2="128" y2="206"/>
-    
-    <!-- Circular loop (Greek phi characteristic shape) -->
-    <circle cx="128" cy="110" r="48" fill="none"/>
+  <!-- IOTA (Ι) - Right side -->
+  <g transform="translate(171, 128)">
+    <!-- Vertical line -->
+    <line x1="0" y1="-35" x2="0" y2="35" stroke="#C4A96A" stroke-width="3" stroke-linecap="round"/>
+    <!-- Top serif -->
+    <line x1="-8" y1="-35" x2="8" y2="-35" stroke="#C4A96A" stroke-width="2" stroke-linecap="round"/>
+    <!-- Bottom serif -->
+    <line x1="-8" y1="35" x2="8" y2="35" stroke="#C4A96A" stroke-width="2" stroke-linecap="round"/>
   </g>
   
-  <!-- Subtle rotation indicator (torque lines) -->
-  <g stroke="#C4A96A" stroke-width="3" fill="none" opacity="0.5" stroke-linecap="round">
-    <!-- Curved motion lines around phi -->
-    <path d="M 88 70 Q 100 65 112 70" stroke-dasharray="4,4"/>
-    <path d="M 168 70 Q 156 65 144 70" stroke-dasharray="4,4"/>
+  <!-- Robot arm connectors (bronze effectors) -->
+  <!-- Left arm -->
+  <g stroke="#C4A96A" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M 60 128 L 40 110 L 35 100" />
+    <circle cx="35" cy="100" r="3" fill="#C4A96A"/>
   </g>
+  
+  <!-- Right arm -->
+  <g stroke="#C4A96A" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M 196 128 L 216 110 L 221 100" />
+    <circle cx="221" cy="100" r="3" fill="#C4A96A"/>
+  </g>
+  
+  <!-- Bottom torque indicators -->
+  <g stroke="#C4A96A" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round">
+    <path d="M 115 165 Q 115 180 128 185" stroke-dasharray="3,2"/>
+    <path d="M 141 165 Q 141 180 128 185" stroke-dasharray="3,2"/>
+  </g>
+  
+  <!-- Subtle corner dots (circuit aesthetic) -->
+  <circle cx="30" cy="30" r="2" fill="#C4A96A" opacity="0.4"/>
+  <circle cx="226" cy="30" r="2" fill="#C4A96A" opacity="0.4"/>
+  <circle cx="30" cy="226" r="2" fill="#C4A96A" opacity="0.4"/>
+  <circle cx="226" cy="226" r="2" fill="#C4A96A" opacity="0.4"/>
 </svg>
