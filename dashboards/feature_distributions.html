@@ -108,15 +108,84 @@ hr.sidebar-sep{border:none;border-top:1px solid rgba(255,255,255,.05);margin:8px
 #modalSparkContainer{cursor:crosshair;border-radius:6px;overflow:hidden}
 .modal-spark-hint{font-size:.62rem;color:#334155;margin-top:4px;text-align:center}
 .modal-ts-display{font-size:.72rem;color:#60a5fa;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:5px;padding:4px 10px;text-align:center}
+
+    /* ── Unified navigation bar ─────────────────────────────────────────────── */
+    nav.unified-nav {
+      position: sticky; top: 0; z-index: 200;
+      background: #060a12;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center;
+      height: 42px; padding: 0 16px; gap: 0; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-brand {
+      font-weight: 800; font-size: 13px; color: #F59E0B;
+      text-decoration: none; margin-right: 12px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-vsep {
+      width: 1px; height: 18px; background: rgba(255,255,255,0.10);
+      margin: 0 10px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-section-label {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #2D3748; font-weight: 700; margin-right: 4px; flex-shrink: 0;
+      user-select: none;
+    }
+    nav.unified-nav .nav-tab {
+      display: flex; align-items: center; padding: 0 11px; height: 42px;
+      font-size: 12px; color: #475569; text-decoration: none;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-tab:hover  { color: #CBD5E1; }
+    nav.unified-nav .nav-tab.nav-active { color: #E2E8F0; border-bottom-color: #60a5fa; }
+    nav.unified-nav .nav-soon {
+      color: #2D3748 !important; cursor: default; pointer-events: none;
+    }
+    nav.unified-nav .nav-spacer { flex: 1; min-width: 12px; }
+    nav.unified-nav .nav-chip {
+      display: flex; align-items: center; gap: 4px;
+      padding: 3px 12px; margin-left: 5px;
+      font-size: 11px; color: #4B5563; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+      white-space: nowrap; background: rgba(255,255,255,0.03);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-chip:hover {
+      color: #CBD5E1; border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+    }
+    nav.unified-nav .nav-chip.nav-active {
+      color: #A78BFA; border-color: rgba(124,106,247,0.6);
+      background: rgba(124,106,247,0.12);
+    }
+
+    /* AI Analysis label — purple pill */
+    nav.unified-nav .nav-ai-label {
+      color: #A78BFA !important;
+      background: rgba(124,106,247,0.12);
+      border: 1px solid rgba(124,106,247,0.30);
+      padding: 2px 9px;
+      border-radius: 12px;
+      margin-right: 6px;
+      letter-spacing: 0.08em;
+    }
 </style>
 </head>
 <body>
-<nav class="collection-nav">
-  <a class="nav-brand" href="calli_feature_vault_v2.html">✦ Calli Labs</a>
+<nav class="unified-nav">
+  <a class="nav-brand" href="index.html">✦ Calli Labs</a>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label">Data</span>
   <a class="nav-tab" href="calli_feature_vault_v2.html">📚 Vault</a>
   <a class="nav-tab nav-active" href="feature_distributions.html">🎬 Cinematheque</a>
   <a class="nav-tab" href="cut_feature_dashboard.html">✂️ CUT</a>
   <span class="nav-tab nav-soon">🏆 Emmys</span>
+  <div class="nav-spacer"></div>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label nav-ai-label">AI Analysis</span>
+  <a class="nav-chip" href="cut_ml_analysis.html">🔬 Correlations</a>
+  <a class="nav-chip" href="cut_lasso_analysis.html">📐 LASSO Analysis</a>
+  <a class="nav-chip" href="cut_rf_shap.html">🌲 Random Forest Analysis</a>
 </nav>
 <header class="site-header">
   <div class="logo">Calli Labs</div>
@@ -56490,27 +56559,6 @@ routeFromUrl();
 window.addEventListener('resize',()=>{
   if(activeSlotId){ const s=FEATURE_SLOTS.find(s=>s.id===activeSlotId);
     if(s?.computed) drawStrip(s,getFilteredFilms(s)); }
-});
-</script>
-
-<!-- ── Calli Chat Widget ──────────────────────────────────────── -->
-<script src="calli-chat.js"></script>
-<script>
-CalliChat.init({
-  dashboard: 'cinematheque',
-  getContext: () => {
-    const slot = FEATURE_SLOTS.find(s => s.id === activeSlotId);
-    return {
-      feature: slot ? `${slot.label} (${slot.id})` : '(none selected)',
-      description: slot?.desc || undefined,
-      tierFilter: activeTierFilter !== 'all' ? activeTierFilter : undefined,
-      stats: slot?.stats ? {
-        mean: slot.stats.mean?.toFixed ? slot.stats.mean.toFixed(3) : slot.stats.mean,
-        median: slot.stats.p50?.toFixed ? slot.stats.p50.toFixed(3) : slot.stats.p50,
-        n: slot.stats.n,
-      } : undefined,
-    };
-  }
 });
 </script>
 </body>

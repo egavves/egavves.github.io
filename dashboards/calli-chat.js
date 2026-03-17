@@ -30,8 +30,13 @@
   function init({ dashboard = 'index', getContext = () => ({}) } = {}) {
     dashboardId = dashboard;
     getContextFn = getContext;
-    injectStyles();
-    mountWidget();
+    // Wait for DOM to be ready, however late the script loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => { injectStyles(); mountWidget(); });
+    } else {
+      injectStyles();
+      mountWidget();
+    }
   }
 
   // ── DOM ──────────────────────────────────────────────────────
@@ -79,9 +84,9 @@
         </div>
       </div>
     `;
-    // Append to <html> not <body> — escapes overflow:hidden on body/html
-    // which is common in full-viewport dashboard layouts and clips fixed elements
-    document.documentElement.appendChild(wrap);
+    // Force inline styles so button is always visible regardless of CSS load order
+    wrap.style.cssText = 'position:fixed!important;bottom:24px!important;right:24px!important;z-index:2147483647!important;';
+    document.body.appendChild(wrap);
 
     // Wire up events
     document.getElementById('cc-toggle').addEventListener('click', togglePanel);

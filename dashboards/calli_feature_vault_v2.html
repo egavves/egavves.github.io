@@ -1013,18 +1013,87 @@
         .nav-tab:hover { color: #94a3b8; }
         .nav-tab.nav-active { color: #e2e8f0; border-bottom-color: #60a5fa; }
         .nav-soon { opacity: .3; cursor: default; pointer-events: none; }
-    </style>
+    
+    /* ── Unified navigation bar ─────────────────────────────────────────────── */
+    nav.unified-nav {
+      position: sticky; top: 0; z-index: 200;
+      background: #060a12;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center;
+      height: 42px; padding: 0 16px; gap: 0; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-brand {
+      font-weight: 800; font-size: 13px; color: #F59E0B;
+      text-decoration: none; margin-right: 12px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-vsep {
+      width: 1px; height: 18px; background: rgba(255,255,255,0.10);
+      margin: 0 10px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-section-label {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #2D3748; font-weight: 700; margin-right: 4px; flex-shrink: 0;
+      user-select: none;
+    }
+    nav.unified-nav .nav-tab {
+      display: flex; align-items: center; padding: 0 11px; height: 42px;
+      font-size: 12px; color: #475569; text-decoration: none;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-tab:hover  { color: #CBD5E1; }
+    nav.unified-nav .nav-tab.nav-active { color: #E2E8F0; border-bottom-color: #60a5fa; }
+    nav.unified-nav .nav-soon {
+      color: #2D3748 !important; cursor: default; pointer-events: none;
+    }
+    nav.unified-nav .nav-spacer { flex: 1; min-width: 12px; }
+    nav.unified-nav .nav-chip {
+      display: flex; align-items: center; gap: 4px;
+      padding: 3px 12px; margin-left: 5px;
+      font-size: 11px; color: #4B5563; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+      white-space: nowrap; background: rgba(255,255,255,0.03);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-chip:hover {
+      color: #CBD5E1; border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+    }
+    nav.unified-nav .nav-chip.nav-active {
+      color: #A78BFA; border-color: rgba(124,106,247,0.6);
+      background: rgba(124,106,247,0.12);
+    }
+
+    /* AI Analysis label — purple pill */
+    nav.unified-nav .nav-ai-label {
+      color: #A78BFA !important;
+      background: rgba(124,106,247,0.12);
+      border: 1px solid rgba(124,106,247,0.30);
+      padding: 2px 9px;
+      border-radius: 12px;
+      margin-right: 6px;
+      letter-spacing: 0.08em;
+    }
+</style>
 </head>
 <body>
 
     <!-- Unified collection nav -->
-    <nav class="collection-nav">
-        <a class="nav-brand" href="calli_feature_vault_v2.html">✦ Calli Labs</a>
-        <a class="nav-tab nav-active" href="calli_feature_vault_v2.html">📚 Vault</a>
-        <a class="nav-tab" href="feature_distributions.html">🎬 Cinematheque</a>
-        <a class="nav-tab" href="cut_feature_dashboard.html">✂️ CUT</a>
-        <span class="nav-tab nav-soon">🏆 Emmys</span>
-    </nav>
+    <nav class="unified-nav">
+  <a class="nav-brand" href="index.html">✦ Calli Labs</a>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label">Data</span>
+  <a class="nav-tab nav-active" href="calli_feature_vault_v2.html">📚 Vault</a>
+  <a class="nav-tab" href="feature_distributions.html">🎬 Cinematheque</a>
+  <a class="nav-tab" href="cut_feature_dashboard.html">✂️ CUT</a>
+  <span class="nav-tab nav-soon">🏆 Emmys</span>
+  <div class="nav-spacer"></div>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label nav-ai-label">AI Analysis</span>
+  <a class="nav-chip" href="cut_ml_analysis.html">🔬 Correlations</a>
+  <a class="nav-chip" href="cut_lasso_analysis.html">📐 LASSO Analysis</a>
+  <a class="nav-chip" href="cut_rf_shap.html">🌲 Random Forest Analysis</a>
+</nav>
 
     <!-- STATS BAR -->
     <div class="stats-bar">
@@ -1136,7 +1205,7 @@
                 <div class="sidebar-title" style="color: #a78bfa;">✂️ Unscripted / Social Video</div>
                 <div class="sidebar-item" onclick="navigateTo('section17')">
                     <span>Dialogue & Social Dynamics</span>
-                    <span class="feature-badge">10</span>
+                    <span class="feature-badge">32</span>
                 </div>
             </div>
 
@@ -4716,6 +4785,261 @@ Tool: get_broadcast_competition(timeslot: str, market: str) -> dict
                     status: "implemented",
                     toolType: "deep",
                     vizType: "timeline"
+                },
+
+                // ── Speech & Structure ──────────────────────────────────────────
+                {
+                    name: "Word Count (Hook Window)",
+                    code: "word_count",
+                    description: "Total word count from the opening transcript window (~first 90 seconds). Captures speech density at the moment most viewers decide to stay or leave.",
+                    computation: "Token count from Whisper transcript of opening segment. Short videos use full transcript. Median CUT value: ~60 words in 90s.",
+                    example: "20 (very sparse opening) → 60 (typical) → 150 (dense rapid monologue)",
+                    relevance: "Proxy for pacing and information density in the critical hook window. Extremely low counts may signal dead air; extremely high counts signal overwhelming density.",
+                    genres: ["YouTube", "Unscripted", "Talk Show"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Speech Rate",
+                    code: "speech_rate",
+                    description: "Words per second of spoken audio in the hook window. A direct measure of delivery pace — how fast the host or participants are speaking.",
+                    computation: "word_count / speech_duration_seconds. Derived from Whisper transcript with segment-level timestamps.",
+                    example: "0.5 w/s (slow, deliberate) → 2.0 w/s (conversational) → 4.5 w/s (rapid-fire)",
+                    relevance: "Optimal pace for unscripted content sits around 2–3 w/s. Too slow loses attention; too fast becomes fatiguing. Interacts with avg_sentence_length.",
+                    genres: ["YouTube", "Unscripted", "Podcast"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Avg Sentence Length",
+                    code: "avg_sentence_length",
+                    description: "Mean number of words per sentence in the hook-window transcript. Short sentences feel punchy and scannable; long sentences feel dense or meandering.",
+                    computation: "word_count / sentence_count from NLP sentence tokenization of Whisper/VTT transcript. Punctuation-based sentence boundaries.",
+                    example: "2.5 words (extremely punchy — exclamations, fragments) → 6 words (conversational) → 15 words (dense exposition)",
+                    relevance: "r=−0.144 with 30s retention. Shorter sentences are modestly associated with better retention — suggesting concise, punchy delivery wins in social video.",
+                    genres: ["YouTube", "Unscripted", "Talk Show"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Filler Frequency",
+                    code: "filler_frequency",
+                    description: "Fraction of total words that are filler words: 'um', 'uh', 'like', 'you know', 'basically', 'literally', 'actually'. A proxy for spontaneity vs polish.",
+                    computation: "Count of filler word tokens / total word count. Filler lexicon: ~20 common English verbal tics.",
+                    example: "0.0 (scripted/edited) → 0.04 (natural conversational) → 0.12 (heavily unscripted)",
+                    relevance: "Moderate filler rate signals authenticity. Very low filler can feel over-produced for unscripted formats; very high filler can reduce clarity.",
+                    genres: ["YouTube", "Unscripted", "Documentary"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Question Rate",
+                    code: "q_rate",
+                    description: "Fraction of sentences that are questions. Questions drive engagement by creating open loops — the viewer wants to know the answer.",
+                    computation: "Sentence count ending with '?' / total sentence count. Applied to opening transcript window.",
+                    example: "0.0 (no questions — pure statements) → 0.15 (some questions) → 0.50 (interrogative-dominant format like Truth or Drink)",
+                    relevance: "r=+0.094 with 30s retention. Question-rich openings modestly boost early retention — consistent with psychological 'open loop' engagement theory.",
+                    genres: ["YouTube", "Unscripted", "Game Show"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+
+                // ── Narrative Quality ────────────────────────────────────────────
+                {
+                    name: "Hook Presence",
+                    code: "hook_presence",
+                    description: "Binary flag: does the opening contain an explicit hook signal — a question, dramatic statement, or attention-capture device within the first 30 seconds?",
+                    computation: "Rule-based detection: True if any of (q_rate > 0.2 in first 20% of transcript) OR (hook_score > 0.05). Validated against manual labelling.",
+                    example: "False (no explicit hook detected) · True (hook present)",
+                    relevance: "Separates videos with intentional opening design from those that open without a hook. CUT data shows ~35% of videos have no detectable hook.",
+                    genres: ["YouTube", "Unscripted"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "color"
+                },
+                {
+                    name: "Narrative Clarity",
+                    code: "narrative_clarity",
+                    description: "Categorical assessment of whether the opening transcript communicates a clear premise, setup, or situation within the first 30–90 seconds.",
+                    computation: "LLM-based classification (GPT-3.5): 'clear' if the transcript reveals a coherent situation or question; 'unclear' if fragmented, purely reactive, or premise-free.",
+                    example: "'unclear' (reactive exclamations only) · 'clear' (setup + premise established)",
+                    relevance: "Clear narrative openings are associated with higher avg_view_percentage. Videos that establish 'what is happening' earlier retain viewers longer.",
+                    genres: ["YouTube", "Unscripted", "Documentary"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "color"
+                },
+
+                // ── Sentiment Dimensions ─────────────────────────────────────────
+                {
+                    name: "Joy Score",
+                    code: "joy",
+                    description: "Fraction of sentences in the opening transcript classified as expressing joy — happiness, excitement, celebration, positive surprise.",
+                    computation: "RoBERTa-based emotion classifier (go_emotions or j-hartmann/emotion-english-distilroberta-base) applied sentence-by-sentence, averaged across opening window.",
+                    example: "0.02 (very low joy — tense/neutral content) → 0.10 (some joy) → 0.35 (high-joy — celebratory, gleeful)",
+                    relevance: "r=−0.266 with 30s retention — the strongest single predictor in the transcript feature set. Counterintuitively, high joy openings retain less. Tension, stakes, or surprise may engage better than pure positivity.",
+                    genres: ["YouTube", "Unscripted", "Reality TV"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Neutral Score",
+                    code: "neutral",
+                    description: "Fraction of sentences classified as neutral in sentiment — neither strongly positive nor negative. A proxy for informational, observational, or expository delivery.",
+                    computation: "Same RoBERTa classifier as joy/other emotion features. Neutral is the dominant class for most CUT videos (mean ~0.58).",
+                    example: "0.25 (emotionally charged throughout) → 0.58 (typical CUT balance) → 0.85 (almost entirely neutral/expository)",
+                    relevance: "r=+0.121 with 30s retention. Higher neutral fraction is modestly associated with better retention — suggests factual, grounded openings may outperform highly emotional ones.",
+                    genres: ["YouTube", "Unscripted", "Documentary"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Fear Score",
+                    code: "fear",
+                    description: "Fraction of sentences expressing fear, anxiety, dread, or apprehension. Can signal genuine vulnerability or manufactured tension.",
+                    computation: "RoBERTa emotion classifier, fear class probability averaged across sentences in opening window.",
+                    example: "0.0 (no fear signals) → 0.03 (subtle anxiety) → 0.12 (pronounced fear/stakes)",
+                    relevance: "Moderate fear signals may boost engagement by raising stakes. Extreme fear may cause aversion. Interacts strongly with format (Fear Pong has highest fear scores).",
+                    genres: ["YouTube", "Unscripted", "Horror", "Reality TV"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Anger Score",
+                    code: "anger",
+                    description: "Fraction of sentences expressing anger, frustration, or hostility. High anger may signal conflict-driven content that drives engagement through drama.",
+                    computation: "RoBERTa emotion classifier, anger class probability averaged across sentences.",
+                    example: "0.0 → 0.05 (some conflict) → 0.20 (high-conflict, confrontational opening)",
+                    relevance: "Anger-inflected content can drive views through conflict but may reduce long-watch retention. Useful signal for distinguishing drama-bait from substance.",
+                    genres: ["YouTube", "Unscripted", "Reality TV"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Disgust Score",
+                    code: "disgust",
+                    description: "Fraction of sentences expressing disgust or revulsion. In unscripted social video, often triggered by uncomfortable questions or shocking revelations.",
+                    computation: "RoBERTa emotion classifier, disgust class probability.",
+                    example: "0.0 → 0.02 → 0.10 (pronounced disgust)",
+                    relevance: "A niche but revealing signal — Truth or Drink and Fear Pong formats have elevated disgust scores. May correlate with the 'cringe' or 'dare' hook mechanism.",
+                    genres: ["YouTube", "Unscripted"],
+                    collections: ["cut", "emmys"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Sadness Score",
+                    code: "sadness",
+                    description: "Fraction of sentences expressing sadness, grief, regret, or melancholy. High sadness in opening moments is unusual and may signal deeply personal content.",
+                    computation: "RoBERTa emotion classifier, sadness class probability.",
+                    example: "0.0 → 0.04 (some sadness) → 0.18 (emotionally heavy opening)",
+                    relevance: "Sadness-inflected openings may create emotional intimacy or vulnerability — a mechanism connected to vulnerability_score. Rare in CUT content but potentially high-impact when present.",
+                    genres: ["YouTube", "Unscripted", "Documentary"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Surprise Score",
+                    code: "surprise",
+                    description: "Fraction of sentences expressing surprise, astonishment, or the unexpected. One of the highest-variance emotions in unscripted content.",
+                    computation: "RoBERTa emotion classifier, surprise class probability.",
+                    example: "0.02 (few surprises) → 0.14 (frequent surprise reactions) → 0.38 (surprise-dominant — revelation-driven content)",
+                    relevance: "Surprise is the engine of viral unscripted content — unexpected revelations and reactions are a core CUT format mechanic. High surprise scores may predict shares.",
+                    genres: ["YouTube", "Unscripted", "Game Show", "Reality TV"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+
+                // ── Audio (Whisper-based) ────────────────────────────────────────
+                {
+                    name: "Speech Ratio (Audio)",
+                    code: "speech_ratio",
+                    description: "Fraction of video duration that contains active speech, detected by Whisper ASR segment timestamps. Complement to silence_density (caption-based).",
+                    computation: "Sum of Whisper segment durations / total video duration. Computed from the full-video Whisper transcript, not just the opening window.",
+                    example: "0.60 (40% silence/music) → 0.85 (mostly speech) → 0.97 (near-continuous speech)",
+                    relevance: "High speech ratio signals wall-to-wall dialogue; low ratio suggests editorial breathing room, music breaks, or reaction pauses. Interacts with format type.",
+                    genres: ["YouTube", "Unscripted", "Podcast"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "WPM (Whisper)",
+                    code: "wpm_whisper",
+                    description: "Words per minute from the full-video Whisper transcript — more accurate than caption-based speech_rate as it covers the entire video and handles overlapping speech.",
+                    computation: "word_count_whisper / (speech_time_sec / 60). Full-video Whisper transcript with diarization-aware segment counting.",
+                    example: "80 wpm (slow, deliberate) → 140 wpm (natural conversation) → 220 wpm (rapid-fire game show)",
+                    relevance: "Full-video WPM is a more reliable measure than opening-window speech_rate. High WPM formats (Truth or Drink, Lineup) tend to have different retention dynamics from slower formats.",
+                    genres: ["YouTube", "Unscripted", "Talk Show"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Silence Ratio (Audio)",
+                    code: "silence_ratio_audio",
+                    description: "Fraction of audio that is below the RMS energy threshold — a direct audio-level measure of silence and pauses, independent of caption timing.",
+                    computation: "librosa RMS energy below 10% of mean → fraction of audio frames classified silent. More precise than caption-gap-based silence_density.",
+                    example: "0.02 (almost no silence — wall-to-wall audio) → 0.08 (occasional pauses) → 0.25 (significant silent sections)",
+                    relevance: "Audio-based silence is more accurate than caption-based. Silence patterns may reveal editorial rhythm — deliberate pauses before punchlines or reveals.",
+                    genres: ["YouTube", "Unscripted", "Film"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Hook Energy Ratio",
+                    code: "hook_energy_ratio",
+                    description: "Ratio of audio RMS energy in the first 15 seconds to mean energy across the full video. Measures whether the audio 'opens loud' — a common hook technique.",
+                    computation: "RMS mean of first 15s / RMS mean of full video. Values > 1.0 mean the opening is louder/more energetic than average.",
+                    example: "0.6 (quiet opening) → 1.0 (equal energy) → 1.5 (opening is 50% louder — aggressive audio hook)",
+                    relevance: "High hook energy ratio may correlate with scroll-stopping power. Combined with hook_score (linguistic), captures both verbal and sonic dimensions of the hook.",
+                    genres: ["YouTube", "Unscripted"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
+                },
+                {
+                    name: "Excitement Peaks / Min",
+                    code: "excitement_peaks_per_min",
+                    description: "Number of audio RMS spikes per minute that exceed mean + 2 standard deviations. Each spike represents a moment of elevated audio energy — laughter bursts, exclamations, music hits.",
+                    computation: "librosa RMS time series; peaks above (mean + 2σ) counted, normalised by video duration in minutes.",
+                    example: "2/min (calm, low-energy) → 10/min (moderate excitement) → 25/min (high-energy reactive content)",
+                    relevance: "Excitement peak density may predict shareability — moments of audio excitement are often the clips that get clipped and shared. High peak density across the video signals sustained energy.",
+                    genres: ["YouTube", "Unscripted", "Game Show", "Reality TV"],
+                    collections: ["cut", "emmys", "universal"],
+                    status: "implemented",
+                    toolType: "deep",
+                    vizType: "waveform"
                 }
             ]
         };
@@ -4782,10 +5106,18 @@ Tool: get_broadcast_competition(timeslot: str, market: str) -> dict
             'cut_frequency','shot_scale_distribution',
             // Cinematheque Batch 3 — speech (Whisper)
             'dialogue_density',
-            // CUT / Unscripted — 10 live features from VTT + audio
+            // CUT / Unscripted — 10 VTT dynamics features
             'laugh_rate','hook_score','vulnerability_score','reaction_word_rate',
             'sentiment_arc','opening_q_density','crosstalk_index',
-            'silence_density','escalation_score','avg_segment_len_s'
+            'silence_density','escalation_score','avg_segment_len_s',
+            // CUT / Unscripted — speech & structure (transcript)
+            'word_count','speech_rate','avg_sentence_length','filler_frequency','q_rate',
+            // CUT / Unscripted — narrative quality flags
+            'hook_presence','narrative_clarity',
+            // CUT / Unscripted — sentiment dimensions (RoBERTa)
+            'joy','neutral','fear','anger','disgust','sadness','surprise',
+            // CUT / Unscripted — audio features (Whisper + librosa)
+            'speech_ratio','wpm_whisper','silence_ratio_audio','hook_energy_ratio','excitement_peaks_per_min'
         ]);
 
         // Which collections each section belongs to (for collection filter)
@@ -6749,27 +7081,6 @@ Tool: get_broadcast_competition(timeslot: str, market: str) -> dict
             generateHeatmap();
         });
     </script>
-
-<!-- ── Calli Chat Widget ──────────────────────────────────────── -->
-<script src="calli-chat.js"></script>
-<script>
-CalliChat.init({
-  dashboard: 'vault',
-  getContext: () => {
-    // Try to read which feature/section is currently highlighted
-    const activeItem = document.querySelector('.feature-item.active, .feature-card.active');
-    const featureName = activeItem?.querySelector('.feature-name, .feature-code')?.textContent?.trim();
-    const sectionEl   = activeItem?.closest('[data-section], section, .section');
-    const section     = sectionEl?.dataset?.section || sectionEl?.id || undefined;
-    const activeFilter = document.querySelector('.filter-btn.active, .collection-filter.active')?.textContent?.trim();
-    return {
-      feature: featureName || '(browsing vault)',
-      section: section || undefined,
-      collectionFilter: activeFilter || undefined,
-    };
-  }
-});
-</script>
 
 </body>
 </html>
