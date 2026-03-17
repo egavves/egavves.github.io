@@ -12,6 +12,7 @@ const ALLOWED_ORIGINS = [
   'https://egavves.github.io',
   'http://localhost',
   'http://127.0.0.1',
+  'null', // file:// origins (local HTML testing)
 ];
 
 function corsHeaders(origin) {
