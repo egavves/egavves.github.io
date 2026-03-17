@@ -699,5 +699,38 @@ buildSidebar();
 const firstFeat = FEAT_GROUPS[0]?.features[0]?.id;
 if (firstFeat) selectFeature(firstFeat);
 </script>
+
+<!-- ── Calli Chat Widget ──────────────────────────────────────── -->
+<script src="calli-chat.js"></script>
+<script>
+CalliChat.init({
+  dashboard: 'cut',
+  getContext: () => {
+    const feat = activeFeature;
+    const corrs = feat && CORRELATIONS[feat]
+      ? Object.fromEntries(
+          Object.entries(CORRELATIONS[feat]).map(([k, v]) => [TARGET_LABELS[k] || k, v])
+        )
+      : null;
+
+    // Find top 3 videos for the currently active feature+target
+    const visible = activeFormat === 'ALL' ? DATASET : DATASET.filter(d => d.format === activeFormat);
+    const withData = visible.filter(d => feat && d[feat] != null && d[activeTarget] != null);
+    const top3 = [...withData]
+      .sort((a, b) => b[activeTarget] - a[activeTarget])
+      .slice(0, 3)
+      .map(d => `"${d.title}" (${TARGET_LABELS[activeTarget] || activeTarget}: ${d[activeTarget]?.toFixed ? d[activeTarget].toFixed(2) : d[activeTarget]})`);
+
+    return {
+      feature: feat || '(none selected)',
+      metric: TARGET_LABELS[activeTarget] || activeTarget,
+      format: activeFormat,
+      correlations: corrs,
+      topVideos: top3.length ? top3 : undefined,
+      visibleCount: visible.length,
+    };
+  }
+});
+</script>
 </body>
 </html>

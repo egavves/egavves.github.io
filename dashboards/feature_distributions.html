@@ -56492,5 +56492,26 @@ window.addEventListener('resize',()=>{
     if(s?.computed) drawStrip(s,getFilteredFilms(s)); }
 });
 </script>
+
+<!-- ── Calli Chat Widget ──────────────────────────────────────── -->
+<script src="calli-chat.js"></script>
+<script>
+CalliChat.init({
+  dashboard: 'cinematheque',
+  getContext: () => {
+    const slot = FEATURE_SLOTS.find(s => s.id === activeSlotId);
+    return {
+      feature: slot ? `${slot.label} (${slot.id})` : '(none selected)',
+      description: slot?.desc || undefined,
+      tierFilter: activeTierFilter !== 'all' ? activeTierFilter : undefined,
+      stats: slot?.stats ? {
+        mean: slot.stats.mean?.toFixed ? slot.stats.mean.toFixed(3) : slot.stats.mean,
+        median: slot.stats.p50?.toFixed ? slot.stats.p50.toFixed(3) : slot.stats.p50,
+        n: slot.stats.n,
+      } : undefined,
+    };
+  }
+});
+</script>
 </body>
 </html>

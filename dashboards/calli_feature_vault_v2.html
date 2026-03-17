@@ -6750,5 +6750,26 @@ Tool: get_broadcast_competition(timeslot: str, market: str) -> dict
         });
     </script>
 
+<!-- ── Calli Chat Widget ──────────────────────────────────────── -->
+<script src="calli-chat.js"></script>
+<script>
+CalliChat.init({
+  dashboard: 'vault',
+  getContext: () => {
+    // Try to read which feature/section is currently highlighted
+    const activeItem = document.querySelector('.feature-item.active, .feature-card.active');
+    const featureName = activeItem?.querySelector('.feature-name, .feature-code')?.textContent?.trim();
+    const sectionEl   = activeItem?.closest('[data-section], section, .section');
+    const section     = sectionEl?.dataset?.section || sectionEl?.id || undefined;
+    const activeFilter = document.querySelector('.filter-btn.active, .collection-filter.active')?.textContent?.trim();
+    return {
+      feature: featureName || '(browsing vault)',
+      section: section || undefined,
+      collectionFilter: activeFilter || undefined,
+    };
+  }
+});
+</script>
+
 </body>
 </html>
