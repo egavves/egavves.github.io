@@ -13,3 +13,18 @@ Thumbs.db
 # Node (if needed later)
 node_modules/
 npm-debug.log*
+
+# Large video files — store externally (Google Drive / S3), never commit
+*.mp4
+*.mov
+*.avi
+*.webm
+*.mkv
+*.m4v
+*.wmv
+
+# Large data directories (Calli agent data, model weights, etc.)
+data/cinematheque/
+venv/
+__pycache__/
+*.pyc
