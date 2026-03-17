@@ -79,7 +79,9 @@
         </div>
       </div>
     `;
-    document.body.appendChild(wrap);
+    // Append to <html> not <body> — escapes overflow:hidden on body/html
+    // which is common in full-viewport dashboard layouts and clips fixed elements
+    document.documentElement.appendChild(wrap);
 
     // Wire up events
     document.getElementById('cc-toggle').addEventListener('click', togglePanel);
@@ -272,7 +274,7 @@
     const s = document.createElement('style');
     s.id = 'cc-styles';
     s.textContent = `
-      #calli-chat-root { position: fixed; bottom: 24px; right: 24px; z-index: 9999; font-family: 'Segoe UI', system-ui, sans-serif; }
+      #calli-chat-root { position: fixed; bottom: 24px; right: 24px; z-index: 2147483647; font-family: 'Segoe UI', system-ui, sans-serif; }
 
       /* ── Toggle button ── */
       #cc-toggle {
