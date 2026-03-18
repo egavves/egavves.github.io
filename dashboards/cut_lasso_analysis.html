@@ -575,9 +575,9 @@ const FEAT_DESCRIPTIONS = {
     interp:"<strong>Challenge framing</strong> invites 'could I do this?' and shared community experience." },
 };
 
-let activeTgt     = TARGETS[0].id;
-let activeFmt     = "overall";
-let activeFeatCat = "all";
+let activeTgt      = TARGETS[0].id;
+let activeFmt      = "overall";
+let activeFeatCats = new Set(['all']);
 
 const FEAT_CATEGORIES = [{"id": "all", "label": "\u2726 All Features", "color": "#9CA3AF", "feats": null}, {"id": "grp0", "label": "\ud83c\udd95 CUT Dynamics (VTT)", "color": "#a78bfa", "feats": ["laugh_rate", "hook_score", "vulnerability_score", "reaction_word_rate", "sentiment_arc", "opening_q_density", "crosstalk_index", "silence_density", "escalation_score", "avg_segment_len_s"]}, {"id": "grp1", "label": "\ud83c\udf99\ufe0f Speech & Structure", "color": "#34d399", "feats": ["word_count", "speech_rate", "avg_sentence_length", "filler_frequency", "q_rate"]}, {"id": "grp2", "label": "\ud83e\udde0 Sentiment (RoBERTa)", "color": "#fb923c", "feats": ["joy", "neutral", "fear", "anger", "disgust", "sadness", "surprise"]}, {"id": "grp3", "label": "\ud83d\udd0a Audio (Whisper/librosa)", "color": "#60a5fa", "feats": ["speech_ratio", "wpm_whisper", "silence_ratio_audio", "hook_energy_ratio", "excitement_peaks_per_min"]}, {"id": "grp4", "label": "\ud83d\udcac Comment Signals", "color": "#f472b6", "feats": ["comment_gen_z_score", "comment_relatability_score", "comment_lol_score", "comment_controversy_score", "comment_shock_score", "comment_pos_ratio", "comment_neg_ratio", "comment_parasocial_score", "comment_share_intent", "comment_rewatch_intent"]}, {"id": "grp5", "label": "\ud83c\udf0d Geography & Reach", "color": "#2dd4bf", "feats": ["geo_us_pct", "geo_eu_pct", "geo_latam_pct", "geo_asia_pct", "geo_international_pct", "geo_diversity_entropy"]}, {"id": "grp6", "label": "\ud83d\udce1 Discovery & Device", "color": "#facc15", "feats": ["traffic_algorithmic_pct", "traffic_search_pct", "traffic_external_pct", "traffic_subscriber_pct", "device_mobile_pct", "device_tv_pct", "device_desktop_pct"]}, {"id": "grp7", "label": "\ud83c\udff7\ufe0f Metadata & Timing", "color": "#f87171", "feats": ["title_shock_word_count", "title_has_question", "title_relationship_topic", "title_has_age_mention", "duration_minutes", "pub_day_of_week", "pub_hour_utc"]}, {"id": "grp8", "label": "\ud83d\udcdd Title NLP", "color": "#86efac", "feats": ["title_char_length", "title_readability_fk", "title_unique_word_ratio", "title_curiosity_score", "title_fomo_score", "title_urgency_score", "title_number_present", "title_number_value", "title_named_person", "title_personal_you", "title_first_person", "title_third_person", "title_positive_emotion", "title_negative_emotion", "title_emotion_polarity", "title_arousal_score", "title_format_signal", "title_vs_present", "title_ft_collab", "title_brackets", "title_ellipsis", "title_clickbait_score", "title_social_proof", "title_challenge_framing"]}, {"id": "grp9", "label": "\ud83d\uddbc\ufe0f Thumbnail Visuals", "color": "#c084fc", "feats": ["thumb_face_count", "thumb_face_total_pct", "thumb_face_largest_pct", "thumb_face_thirds", "thumb_sharpness", "thumb_brightness", "thumb_contrast_rms", "thumb_contrast_p90p10", "thumb_saturation", "thumb_warmth_lab", "thumb_red_orange_pct", "thumb_colorfulness", "thumb_hue_diversity", "thumb_edge_density", "thumb_thirds_score", "thumb_visual_complexity", "thumb_center_weight", "thumb_lr_balance", "thumb_text_likelihood", "thumb_creative_score"]}];
 
@@ -691,20 +691,26 @@ function selectFmt(fmt) {
   });
 }
 
+// ── Multi-select filter helper ─────────────────────────────────────────────────
+function toggleFilter(set, val) {
+  if (val === 'all') { set.clear(); set.add('all'); }
+  else {
+    set.delete('all');
+    if (set.has(val)) { set.delete(val); if (set.size === 0) set.add('all'); }
+    else { set.add(val); }
+  }
+}
+
 // ── Feature group filter ──────────────────────────────────────────────────────
 function setCatFilter(catId) {
-  activeFeatCat = catId;
+  toggleFilter(activeFeatCats, catId);
   document.querySelectorAll('.feat-filter-btn').forEach(btn => {
     const bid    = btn.dataset.cat;
-    const active = bid === catId;
+    const active = activeFeatCats.has(bid);
     btn.classList.toggle('active', active);
-    const c = FEAT_CATEGORIES.find(fc => fc.id === catId);
-    if (active) {
-      btn.style.color       = c?.color || '#9CA3AF';
-      btn.style.borderColor = c?.color || '#9CA3AF';
-    } else {
-      btn.style.color = ''; btn.style.borderColor = '';
-    }
+    const c = FEAT_CATEGORIES.find(fc => fc.id === bid);
+    btn.style.color       = active ? (c?.color || '#9CA3AF') : '';
+    btn.style.borderColor = active ? (c?.color || '#9CA3AF') : '';
   });
   renderInsight();
   renderFormatPanel();
@@ -738,10 +744,10 @@ function renderContent() {
   // Feature group filter buttons
   const catFilterHtml = `<div class="feat-filter-wrap">
     ${FEAT_CATEGORIES.map(c =>
-      `<button class="feat-filter-btn${activeFeatCat===c.id?' active':''}"
+      `<button class="feat-filter-btn${activeFeatCats.has(c.id)?' active':''}"
                data-cat="${c.id}"
                onclick="setCatFilter('${c.id}')"
-               style="${activeFeatCat===c.id?'color:'+c.color+';border-color:'+c.color:''}"
+               style="${activeFeatCats.has(c.id)?'color:'+c.color+';border-color:'+c.color:''}"
       >${c.label}</button>`
     ).join('')}
   </div>`;
@@ -793,13 +799,11 @@ function renderInsight() {
     .filter(d => d.stab >= thr);
 
   let catLabel = "";
-  if (activeFeatCat !== 'all') {
-    const cat = FEAT_CATEGORIES.find(c => c.id === activeFeatCat);
-    if (cat?.feats) {
-      const catSet = new Set(cat.feats);
-      pairs = pairs.filter(d => catSet.has(d.f));
-    }
-    catLabel = ` <span style="opacity:.75">${FEAT_CATEGORIES.find(c=>c.id===activeFeatCat)?.label||''}</span>`;
+  if (!activeFeatCats.has('all')) {
+    const catFeats = new Set();
+    FEAT_CATEGORIES.filter(c => activeFeatCats.has(c.id) && c.feats).forEach(c => c.feats.forEach(f => catFeats.add(f)));
+    pairs = pairs.filter(d => catFeats.has(d.f));
+    catLabel = ` <span style="opacity:.75">${FEAT_CATEGORIES.filter(c=>activeFeatCats.has(c.id)).map(c=>c.label).join(' + ')}</span>`;
   }
 
   const stable = pairs.sort((a,b) => b.stab - a.stab);
@@ -848,13 +852,11 @@ function renderStabBars(data) {
   let pairs = data.features.map((f,i) => ({f, i, stab:data.max_stab[i]}))
     .sort((a,b) => b.stab - a.stab);
 
-  // Filter by active feature group
-  if (activeFeatCat !== 'all') {
-    const cat = FEAT_CATEGORIES.find(c => c.id === activeFeatCat);
-    if (cat?.feats) {
-      const catSet = new Set(cat.feats);
-      pairs = pairs.filter(d => catSet.has(d.f));
-    }
+  // Filter by active feature groups
+  if (!activeFeatCats.has('all')) {
+    const catFeats = new Set();
+    FEAT_CATEGORIES.filter(c => activeFeatCats.has(c.id) && c.feats).forEach(c => c.feats.forEach(f => catFeats.add(f)));
+    pairs = pairs.filter(d => catFeats.has(d.f));
   }
 
   const thr50 = 0.5, thr70 = 0.7;
@@ -885,13 +887,11 @@ function renderCIChart(data) {
     .map((f,i) => ({f, i, stab:data.max_stab[i], ci:data.ci[String(i)]}))
     .filter(d => d.stab >= thr && d.ci);
 
-  // Filter by active feature group
-  if (activeFeatCat !== 'all') {
-    const cat = FEAT_CATEGORIES.find(c => c.id === activeFeatCat);
-    if (cat?.feats) {
-      const catSet = new Set(cat.feats);
-      pairs = pairs.filter(d => catSet.has(d.f));
-    }
+  // Filter by active feature groups
+  if (!activeFeatCats.has('all')) {
+    const catFeats = new Set();
+    FEAT_CATEGORIES.filter(c => activeFeatCats.has(c.id) && c.feats).forEach(c => c.feats.forEach(f => catFeats.add(f)));
+    pairs = pairs.filter(d => catFeats.has(d.f));
   }
   pairs.sort((a,b) => (b.ci.median||0) - (a.ci.median||0));
 
