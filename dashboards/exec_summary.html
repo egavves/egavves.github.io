@@ -32,6 +32,11 @@ nav.unified-nav .nav-ai-label{
   background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.30);
   padding:2px 9px;border-radius:12px;margin-right:6px
 }
+nav.unified-nav .nav-data-label{
+  color:#2dd4bf!important;
+  background:rgba(45,212,191,0.12);border:1px solid rgba(45,212,191,0.30);
+  padding:2px 9px;border-radius:12px;margin-right:6px
+}
 nav.unified-nav .nav-tab{
   display:flex;align-items:center;padding:0 11px;height:42px;
   font-size:12px;color:#475569;text-decoration:none;
@@ -62,8 +67,10 @@ nav.unified-nav .nav-chip.nav-active{color:#A78BFA;border-color:rgba(124,106,247
 .stat-pill .lbl{font-size:11px;color:#64748b;margin-top:2px}
 
 /* CONTROLS BAR */
-.controls{display:flex;gap:12px;padding:18px 32px;background:#0f172a;border-bottom:1px solid #1e293b;align-items:center;flex-wrap:wrap}
-.controls-label{font-size:12px;color:#64748b;font-weight:500;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.controls{display:flex;flex-direction:column;gap:0;background:#0f172a;border-bottom:1px solid #1e293b}
+.controls-row{display:flex;gap:12px;padding:12px 32px;align-items:center;flex-wrap:wrap}
+.controls-row+.controls-row{border-top:1px solid #1e293b;padding-top:10px;padding-bottom:10px}
+.controls-label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;white-space:nowrap}
 .pill-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .pill{padding:6px 14px;border-radius:20px;border:1px solid #334155;font-size:12px;color:#94a3b8;cursor:pointer;transition:all .2s;background:#1e293b}
 .pill:hover{color:#e2e8f0;border-color:#475569}
@@ -139,7 +146,7 @@ nav.unified-nav .nav-chip.nav-active{color:#A78BFA;border-color:rgba(124,106,247
 <nav class="unified-nav">
   <a class="nav-brand" href="index.html">✦ Calli Labs</a>
   <div class="nav-vsep"></div>
-  <span class="nav-section-label">Data</span>
+  <span class="nav-section-label nav-data-label">Data</span>
   <a class="nav-tab" href="calli_feature_vault_v2.html">📚 Vault</a>
   <a class="nav-tab" href="feature_distributions.html">🎬 Cinematheque</a>
   <a class="nav-tab" href="cut_feature_dashboard.html">✂️ CUT</a>
@@ -169,17 +176,23 @@ nav.unified-nav .nav-chip.nav-active{color:#A78BFA;border-color:rgba(124,106,247
 
 <!-- CONTROLS -->
 <div class="controls">
-  <span class="controls-label">Format</span>
-  <div class="pill-row" id="fmt-pills"></div>
-  <div class="sep"></div>
-  <span class="controls-label">Category</span>
-  <div class="pill-row" id="cat-pills"></div>
-  <div class="sep"></div>
-  <span class="controls-label">Complexity</span>
-  <div class="temp-wrap" id="temp-toggle">
-    <button class="temp-btn active" data-temp="1" onclick="setTemp(1)">🔬 Surgical (1 var)</button>
-    <button class="temp-btn" data-temp="2" onclick="setTemp(2)">🎯 Focused (≤2 vars)</button>
-    <button class="temp-btn" data-temp="3" onclick="setTemp(3)">🌊 Broad (all)</button>
+  <div class="controls-row">
+    <span class="controls-label">Format</span>
+    <div class="pill-row" id="fmt-pills"></div>
+    <div class="sep"></div>
+    <span class="controls-label">Category</span>
+    <div class="pill-row" id="cat-pills"></div>
+  </div>
+  <div class="controls-row">
+    <span class="controls-label">Target</span>
+    <div class="pill-row" id="tgt-pills"></div>
+    <div class="sep"></div>
+    <span class="controls-label">Complexity</span>
+    <div class="temp-wrap" id="temp-toggle">
+      <button class="temp-btn active" data-temp="1" onclick="setTemp(1)">🔬 Surgical (1 var)</button>
+      <button class="temp-btn" data-temp="2" onclick="setTemp(2)">🎯 Focused (≤2 vars)</button>
+      <button class="temp-btn" data-temp="3" onclick="setTemp(3)">🌊 Broad (all)</button>
+    </div>
   </div>
 </div>
 
@@ -196,11 +209,12 @@ const KEY_FINDS   = [{"feat": "geo_asia_pct", "tgt": "avg_view_percentage", "tgt
 const GROUPS      = [{"key": "dynamics", "label": "🆕 CUT Dynamics", "color": "#a78bfa"}, {"key": "speech", "label": "🎙️ Speech & Structure", "color": "#34d399"}, {"key": "sentiment", "label": "🧠 Sentiment", "color": "#fb923c"}, {"key": "audio", "label": "🔊 Audio", "color": "#60a5fa"}, {"key": "comments", "label": "💬 Comment Signals", "color": "#f472b6"}, {"key": "geo", "label": "🌍 Geography", "color": "#2dd4bf"}, {"key": "discovery", "label": "📡 Discovery & Device", "color": "#facc15"}, {"key": "metadata", "label": "🏷️ Metadata & Timing", "color": "#f87171"}, {"key": "title", "label": "📝 Title NLP", "color": "#86efac"}, {"key": "thumbnail", "label": "🖼️ Thumbnail", "color": "#c084fc"}];
 const FORMATS_ALL = ["Truth or Drink", "Lineup", "Keep it 100", "Button", "Fear Pong", "Other"];
 const KPIS        = {"retention_30s": {"mean": 0.73, "median": 0.75, "std": 0.1, "n": 302}, "avg_view_percentage": {"mean": 54.4, "median": 57.62, "std": 12.1, "n": 482}, "views": {"mean": 1408014.38, "median": 999164.5, "std": 1282126.1, "n": 482}, "estimated_revenue": {"mean": 5460.15, "median": 3396.24, "std": 6343.15, "n": 479}, "cpm": {"mean": 8.47, "median": 8.48, "std": 3.06, "n": 479}, "subscribers_gained": {"mean": 2031.24, "median": 929.0, "std": 3225.84, "n": 479}};
-const FMT_COUNTS  = {"Fear Pong": 6, "Truth Or Drink": 53, "Keep it 100": 25, "Keep It 100": 52, "Truth or Drink": 72, "Lineup": 108, "Button": 71, "Other": 100};
+const FMT_COUNTS  = {"Truth Or Drink": 53, "Lineup": 108, "Other": 100, "Keep It 100": 52, "Truth or Drink": 72, "Button": 71, "Keep it 100": 25, "Fear Pong": 6};
 const TARGETS     = [{"id": "retention_30s", "name": "30s Retention", "color": "#f59e0b"}, {"id": "avg_view_percentage", "name": "Avg View %", "color": "#60a5fa"}, {"id": "views", "name": "Views", "color": "#34d399"}, {"id": "estimated_revenue", "name": "Revenue", "color": "#a78bfa"}, {"id": "cpm", "name": "CPM", "color": "#fb923c"}, {"id": "subscribers_gained", "name": "Subs Gained", "color": "#f87171"}];
 
 let activeFmt   = "all";
 let activeCat   = "all";
+let activeTgt   = "all";
 let activeTemp  = 1;
 let shownCount  = 5;
 let expandedIds = new Set();
@@ -217,6 +231,7 @@ function init() {
   renderFindings();
   renderFmtPills();
   renderCatPills();
+  renderTgtPills();
   renderHypotheses();
 }
 
@@ -271,6 +286,17 @@ function renderCatPills() {
   }).join('');
 }
 
+function renderTgtPills() {
+  const wrap = document.getElementById('tgt-pills');
+  const tgts = [{id:'all', name:'✦ All Targets', color:'#9ca3af'}, ...TARGETS];
+  wrap.innerHTML = tgts.map(t => {
+    const isActive = activeTgt === t.id;
+    return `<button class="pill${isActive?' active':''}" data-tgt="${t.id}"
+      style="${isActive ? `background:${t.color};border-color:${t.color};color:#0f172a` : `color:${t.color};border-color:${t.color}33`}"
+      onclick="setTgt('${t.id}')">${t.name}</button>`;
+  }).join('');
+}
+
 function setFmt(fmt) {
   activeFmt = fmt; shownCount = 5;
   renderFmtPills(); renderHypotheses();
@@ -278,6 +304,10 @@ function setFmt(fmt) {
 function setCat(cat) {
   activeCat = cat; shownCount = 5;
   renderCatPills(); renderHypotheses();
+}
+function setTgt(tgt) {
+  activeTgt = tgt; shownCount = 5;
+  renderTgtPills(); renderHypotheses();
 }
 function setTemp(t) {
   activeTemp = t; shownCount = 5;
@@ -289,10 +319,11 @@ function setTemp(t) {
 
 function filtered() {
   return HYPOTHESES.filter(h => {
-    const fmtMatch = activeFmt === 'all' || h.formats.includes('all') || h.formats.includes(activeFmt);
-    const catMatch = activeCat === 'all' || h.category_key === activeCat;
+    const fmtMatch  = activeFmt === 'all' || h.formats.includes('all') || h.formats.includes(activeFmt);
+    const catMatch  = activeCat === 'all' || h.category_key === activeCat;
+    const tgtMatch  = activeTgt === 'all' || h.primary_target === activeTgt;
     const tempMatch = h.temp_cost <= activeTemp;
-    return fmtMatch && catMatch && tempMatch;
+    return fmtMatch && catMatch && tgtMatch && tempMatch;
   });
 }
 
