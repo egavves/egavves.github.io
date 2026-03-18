@@ -98,6 +98,32 @@ header .logo { font-size: 1.4rem; }
 }
 .fmt-btn-all.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
+/* ── Left target panel ── */
+.tgt-panel{width:160px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);overflow-y:auto;padding-top:6px}
+.tgt-panel-lbl{font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:#4a5568;padding:8px 14px 6px}
+.tgt-panel-row{padding:9px 14px;cursor:pointer;font-size:.8rem;
+  border-left:3px solid transparent;display:flex;flex-direction:column;gap:3px;
+  transition:background .1s}
+.tgt-panel-row:hover{background:var(--surface2)}
+.tgt-panel-row.active{border-left-color:var(--accent);background:rgba(124,106,247,.12)}
+.tpr-name{font-weight:600;font-size:.8rem;color:#94a3b8}
+.tgt-panel-row.active .tpr-name{color:#fff}
+.tpr-n{font-size:.68rem;color:#4B5563}
+
+/* ── Content filter strips ── */
+.content-filters{display:flex;flex-direction:column;gap:7px;
+  padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.filter-row-lbl{font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:#4a5568;flex-shrink:0;width:56px}
+.cf-pill{padding:3px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.1);
+  font-size:11px;cursor:pointer;background:rgba(255,255,255,.03);transition:all .15s;
+  white-space:nowrap;font-family:inherit;line-height:1.5}
+.cf-pill:hover{opacity:.85}
+.cf-pill.active{font-weight:700;color:#0f172a}
+
 #body { display: flex; flex: 1; overflow: hidden; }
 
 /* ── Sidebar ────────────────────── */
@@ -317,6 +343,13 @@ main {
       background: rgba(124,106,247,0.12);
     }
 
+    /* Data label — teal pill */
+    nav.unified-nav .nav-data-label {
+      color: #2dd4bf !important;
+      background: rgba(45,212,191,0.12);
+      border: 1px solid rgba(45,212,191,0.30);
+      padding: 2px 8px; border-radius: 20px;
+    }
     /* AI Analysis label — purple pill */
     nav.unified-nav .nav-ai-label {
       color: #A78BFA !important;
@@ -336,7 +369,7 @@ main {
   <nav class="unified-nav">
   <a class="nav-brand" href="index.html">✦ Calli Labs</a>
   <div class="nav-vsep"></div>
-  <span class="nav-section-label">Data</span>
+  <span class="nav-section-label nav-data-label">Data</span>
   <a class="nav-tab" href="calli_feature_vault_v2.html">📚 Vault</a>
   <a class="nav-tab" href="feature_distributions.html">🎬 Cinematheque</a>
   <a class="nav-tab nav-active" href="cut_feature_dashboard.html">✂️ CUT</a>
@@ -347,39 +380,28 @@ main {
   <a class="nav-chip" href="cut_ml_analysis.html">🔬 Correlations</a>
   <a class="nav-chip" href="cut_lasso_analysis.html">📐 LASSO Analysis</a>
   <a class="nav-chip" href="cut_rf_shap.html">🌲 Random Forest Analysis</a>
+  <a class="nav-chip" href="exec_summary.html">✦ Executive Summary</a>
 </nav>
 
-  <!-- Header -->
-  <header>
+  <!-- Slim title bar -->
+  <header style="padding:8px 20px;min-height:0">
     <span class="logo">✂️</span>
     <h1>CUT — Feature Distribution Dashboard</h1>
-    <div class="target-row">
-      <label>Performance target:</label>
-      <select id="target-sel" onchange="setTarget(this.value)">
-        <option value="avg_view_percentage">Avg View % (AVP) — 482 videos</option>
-        <option value="retention_30s">30s Retention — 302 videos</option>
-        <option value="views">Views</option>
-        <option value="estimated_revenue">Est. Revenue ($)</option>
-        <option value="cpm">CPM ($)</option>
-        <option value="subscribers_gained">Subs Gained</option>
-      </select>
-    </div>
   </header>
 
-  <!-- Format filter bar -->
-  <div class="fmt-bar">
-    <span>Format:</span>
-    <button class="fmt-btn-all active" onclick="setFormat('ALL')">All</button>
-    <button class="fmt-btn" data-fmt="Button" style="--fc:#facc15" onclick="setFormat('Button')">Button</button><button class="fmt-btn" data-fmt="Challenge" style="--fc:#fb923c" onclick="setFormat('Challenge')">Challenge</button><button class="fmt-btn" data-fmt="Fear Pong" style="--fc:#a78bfa" onclick="setFormat('Fear Pong')">Fear Pong</button><button class="fmt-btn" data-fmt="Keep it 100" style="--fc:#4ade80" onclick="setFormat('Keep it 100')">Keep it 100</button><button class="fmt-btn" data-fmt="Lineup" style="--fc:#60a5fa" onclick="setFormat('Lineup')">Lineup</button><button class="fmt-btn" data-fmt="Other" style="--fc:#94a3b8" onclick="setFormat('Other')">Other</button><button class="fmt-btn" data-fmt="Truth or Drink" style="--fc:#f87171" onclick="setFormat('Truth or Drink')">Truth or Drink</button>
-  </div>
-
   <div id="body">
+    <!-- Left target panel -->
+    <div class="tgt-panel" id="tgt-panel"></div>
+
     <!-- Sidebar -->
     <aside id="sidebar"></aside>
 
     <!-- Main panel -->
     <main id="main">
-      <div id="welcome" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted);text-align:center">
+      <!-- Format + Category filter strips -->
+      <div class="content-filters" id="content-filters"></div>
+
+      <div id="welcome" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 80px);gap:12px;color:var(--muted);text-align:center">
         <div style="font-size:3rem">✂️</div>
         <div style="font-size:1.1rem;color:var(--text);font-weight:700">CUT Feature Dashboard</div>
         <div>Select a feature from the sidebar to explore its distribution<br>and correlation with audience retention & performance metrics.</div>
@@ -448,12 +470,83 @@ const TARGET_LABELS = {
 let activeFeature = null;
 let activeTarget  = "avg_view_percentage";
 let activeFormat  = "ALL";
+let activeCatGroup = 'all';  // single-select category filter for sidebar
+
+// Target metadata with n counts
+const TARGET_META = [
+  {id:'avg_view_percentage', label:'Avg View % (AVP)', n:482, color:'#F59E0B'},
+  {id:'retention_30s',       label:'30s Retention',   n:302, color:'#34d399'},
+  {id:'views',               label:'Views',           n:482, color:'#60a5fa'},
+  {id:'estimated_revenue',   label:'Est. Revenue ($)', n:479, color:'#a78bfa'},
+  {id:'cpm',                 label:'CPM ($)',          n:479, color:'#fb923c'},
+  {id:'subscribers_gained',  label:'Subs Gained',     n:479, color:'#f87171'},
+];
+const FMT_META = [
+  {id:'ALL',          label:'✦ All',        color:'#9ca3af'},
+  {id:'Button',       label:'Button',       color:'#facc15'},
+  {id:'Challenge',    label:'Challenge',    color:'#fb923c'},
+  {id:'Fear Pong',    label:'Fear Pong',    color:'#a78bfa'},
+  {id:'Keep it 100',  label:'Keep it 100',  color:'#4ade80'},
+  {id:'Lineup',       label:'Lineup',       color:'#60a5fa'},
+  {id:'Other',        label:'Other',        color:'#94a3b8'},
+  {id:'Truth or Drink',label:'Truth or Drink',color:'#f87171'},
+];
+
+// ── Target panel ──────────────────────────────────────────────────────────────
+function buildTgtPanel() {
+  const panel = document.getElementById('tgt-panel');
+  let html = '<div class="tgt-panel-lbl">Performance Target</div>';
+  TARGET_META.forEach(t => {
+    html += `<div class="tgt-panel-row${t.id === activeTarget ? ' active' : ''}"
+      onclick="setTarget('${t.id}')">
+      <span class="tpr-name" style="color:${t.color}">${t.label}</span>
+      <span class="tpr-n">n≈${t.n}</span>
+    </div>`;
+  });
+  panel.innerHTML = html;
+}
+
+// ── Content filter strips (format + category) ─────────────────────────────────
+function buildContentFilters() {
+  const el = document.getElementById('content-filters');
+  let html = '';
+  // Format row
+  html += '<div class="filter-row"><span class="filter-row-lbl">Format</span>';
+  FMT_META.forEach(f => {
+    const active = activeFormat === f.id;
+    html += `<button class="cf-pill${active?' active':''}"
+      style="${active?`background:${f.color};border-color:${f.color};color:#0f172a`:`color:${f.color};border-color:${f.color}33`}"
+      onclick="setFormat('${f.id}')">${f.label}</button>`;
+  });
+  html += '</div>';
+  // Category row
+  const catAll = activeCatGroup === 'all';
+  html += '<div class="filter-row"><span class="filter-row-lbl">Features</span>';
+  html += `<button class="cf-pill${catAll?' active':''}"
+    style="${catAll?'background:#9ca3af;border-color:#9ca3af;color:#0f172a':'color:#9ca3af;border-color:#9ca3af33'}"
+    onclick="setCatGroup('all')">✦ All</button>`;
+  FEAT_GROUPS.forEach(g => {
+    const active = activeCatGroup === g.label;
+    html += `<button class="cf-pill${active?' active':''}"
+      style="${active?`background:${g.color};border-color:${g.color};color:#0f172a`:`color:${g.color};border-color:${g.color}33`}"
+      onclick="setCatGroup('${g.label.replace(/'/g,"\\'")}')">  ${g.label}</button>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function setCatGroup(val) {
+  activeCatGroup = val;
+  buildContentFilters();
+  buildSidebar();
+}
 
 // ── Sidebar ──────────────────────────────────────────────────────────────────
 function buildSidebar() {
   const aside = document.getElementById("sidebar");
   aside.innerHTML = "";
   FEAT_GROUPS.forEach(group => {
+    if (activeCatGroup !== 'all' && activeCatGroup !== group.label) return;
     const gh = document.createElement("div");
     gh.className = "group-header";
     gh.style.color = group.color;
@@ -724,8 +817,7 @@ function closeDetailBtn() {
 // ── Format filter ─────────────────────────────────────────────────────────────
 function setFormat(fmt) {
   activeFormat = fmt;
-  document.querySelectorAll(".fmt-btn").forEach(b => b.classList.toggle("active", b.dataset.fmt === fmt));
-  document.querySelectorAll(".fmt-btn-all").forEach(b => b.classList.toggle("active", fmt === "ALL"));
+  buildContentFilters();
   if (activeFeature) selectFeature(activeFeature);
   buildSidebar();
   if (activeFeature) {
@@ -736,9 +828,7 @@ function setFormat(fmt) {
 // ── Target metric ─────────────────────────────────────────────────────────────
 function setTarget(tgt) {
   activeTarget = tgt;
-  // Keep dropdown in sync when clicking a card
-  const sel = document.getElementById("target-sel");
-  if (sel && sel.value !== tgt) sel.value = tgt;
+  buildTgtPanel();
   buildSidebar();
   if (activeFeature) {
     document.getElementById("fi-"+activeFeature)?.classList.add("active");
@@ -763,6 +853,8 @@ function fmtNum(n) {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+buildTgtPanel();
+buildContentFilters();
 buildSidebar();
 // Auto-select first new feature
 const firstFeat = FEAT_GROUPS[0]?.features[0]?.id;

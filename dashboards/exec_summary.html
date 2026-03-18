@@ -250,7 +250,7 @@ const KEY_FINDS        = [{"feat": "geo_asia_pct", "tgt": "avg_view_percentage",
 const GROUPS           = [{"key": "dynamics", "label": "🆕 CUT Dynamics", "color": "#a78bfa"}, {"key": "speech", "label": "🎙️ Speech & Structure", "color": "#34d399"}, {"key": "sentiment", "label": "🧠 Sentiment", "color": "#fb923c"}, {"key": "audio", "label": "🔊 Audio", "color": "#60a5fa"}, {"key": "comments", "label": "💬 Comment Signals", "color": "#f472b6"}, {"key": "geo", "label": "🌍 Geography", "color": "#2dd4bf"}, {"key": "discovery", "label": "📡 Discovery & Device", "color": "#facc15"}, {"key": "metadata", "label": "🏷️ Metadata & Timing", "color": "#f87171"}, {"key": "title", "label": "📝 Title NLP", "color": "#86efac"}, {"key": "thumbnail", "label": "🖼️ Thumbnail", "color": "#c084fc"}];
 const FORMATS_ALL      = ["Truth or Drink", "Lineup", "Keep it 100", "Button", "Fear Pong", "Other"];
 const KPIS             = {"retention_30s": {"mean": 0.73, "median": 0.75, "std": 0.1, "n": 302}, "avg_view_percentage": {"mean": 54.4, "median": 57.62, "std": 12.1, "n": 482}, "views": {"mean": 1408014.38, "median": 999164.5, "std": 1282126.1, "n": 482}, "estimated_revenue": {"mean": 5460.15, "median": 3396.24, "std": 6343.15, "n": 479}, "cpm": {"mean": 8.47, "median": 8.48, "std": 3.06, "n": 479}, "subscribers_gained": {"mean": 2031.24, "median": 929.0, "std": 3225.84, "n": 479}};
-const FMT_COUNTS       = {"Truth or Drink": 72, "Other": 100, "Lineup": 108, "Button": 71, "Truth Or Drink": 53, "Keep It 100": 52, "Keep it 100": 25, "Fear Pong": 6};
+const FMT_COUNTS       = {"Keep It 100": 52, "Other": 100, "Lineup": 108, "Truth Or Drink": 53, "Keep it 100": 25, "Button": 71, "Fear Pong": 6, "Truth or Drink": 72};
 const TARGETS          = [{"id": "retention_30s", "name": "30s Retention", "color": "#f59e0b"}, {"id": "avg_view_percentage", "name": "Avg View %", "color": "#60a5fa"}, {"id": "views", "name": "Views", "color": "#34d399"}, {"id": "estimated_revenue", "name": "Revenue", "color": "#a78bfa"}, {"id": "cpm", "name": "CPM", "color": "#fb923c"}, {"id": "subscribers_gained", "name": "Subs Gained", "color": "#f87171"}];
 const CONF_LEVELS      = [{"id": "all", "label": "All confidence", "medal": ""}, {"id": "gold", "label": "🥇 Gold  (3/3 methods)", "medal": "🥇"}, {"id": "silver", "label": "🥈 Silver (2/3 methods)", "medal": "🥈"}, {"id": "bronze", "label": "🥉 Bronze (1/3 methods)", "medal": "🥉"}, {"id": "none", "label": "💡 Background only", "medal": "💡"}];
 
@@ -389,6 +389,7 @@ function setTemp(t) {
   renderHypotheses();
 }
 
+const CONF_RANK = {'gold':0,'silver':1,'bronze':2};
 function filtered() {
   return HYPOTHESES.filter(h => {
     const fmtMatch  = activeFmts.has('all') || h.formats.includes('all') || h.formats.some(f => activeFmts.has(f));
@@ -399,6 +400,10 @@ function filtered() {
     const confMatch = activeConfidence === 'all' ||
                       (activeConfidence === 'none' ? !h.confidence : h.confidence === activeConfidence);
     return fmtMatch && catMatch && tgtMatch && tempMatch && inspMatch && confMatch;
+  }).sort((a, b) => {
+    const ra = a.confidence != null ? (CONF_RANK[a.confidence] ?? 3) : 3;
+    const rb = b.confidence != null ? (CONF_RANK[b.confidence] ?? 3) : 3;
+    return ra - rb;
   });
 }
 
