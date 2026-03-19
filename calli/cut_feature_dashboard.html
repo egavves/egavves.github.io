@@ -1523,7 +1523,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
       url = 'https://api.anthropic.com/v1/messages';
       opts = Object.assign({}, opts);
-      opts.headers = Object.assign({}, opts.headers, {
+      opts.headers = Object.assign({'anthropic-version': '2023-06-01'}, opts.headers, {
         'x-api-key': key,
         'anthropic-dangerous-direct-browser-access': 'true'
       });
