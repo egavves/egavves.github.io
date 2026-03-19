@@ -1,43 +1,44 @@
-// Vercel Edge Function — proxies Anthropic API requests server-side
-// so the API key never touches the browser.
-//
-// Set ANTHROPIC_API_KEY in Vercel → Project Settings → Environment Variables.
+// Vercel Node.js serverless function — proxies Anthropic API requests.
+// ANTHROPIC_API_KEY must be set in Vercel → Project Settings → Environment Variables.
 
-export const config = { runtime: 'edge' };
+module.exports = async function handler(req, res) {
+  // CORS headers on every response
+  res.setHeader('Access-Control-Allow-Origin',  'https://egavves.github.io');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin':  'https://egavves.github.io',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-export default async function handler(req) {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+    return res.status(204).end();
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const body = await req.text();
+  // Collect request body
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const body = Buffer.concat(chunks).toString();
 
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'Content-Type':        'application/json',
-      'x-api-key':           process.env.ANTHROPIC_API_KEY,
-      'anthropic-version':   '2023-06-01',
+      'Content-Type':       'application/json',
+      'x-api-key':          process.env.ANTHROPIC_API_KEY,
+      'anthropic-version':  '2023-06-01',
     },
     body,
   });
 
-  return new Response(upstream.body, {
-    status: upstream.status,
-    headers: {
-      'Content-Type': upstream.headers.get('Content-Type') || 'application/json',
-      ...CORS_HEADERS,
-    },
-  });
-}
+  res.status(upstream.status);
+  res.setHeader('Content-Type', upstream.headers.get('Content-Type') || 'application/json');
+
+  // Pipe response — handles both streaming SSE and plain JSON
+  const reader = upstream.body.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    res.write(value);
+  }
+  res.end();
+};
