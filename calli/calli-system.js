@@ -16,6 +16,8 @@
  *  10. Modal Helpers
  *  11. Scroll / UI Utilities
  *  12. Dataset Switcher
+ *  13. Project Dropdown
+ *  14. Global Settings Panel
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -753,6 +755,165 @@ CALLI.initDatasetSwitcher = function(onChange = null) {
 };
 
 
+/* ── 14. GLOBAL SETTINGS PANEL ──────────────────────────────────────────── */
+
+/**
+ * Shared settings panel — injected once into <body>.
+ * All dashboards call CALLI.toggleSettings() from their gear button.
+ * On egavves.github.io the key inputs are replaced with proxy notices.
+ */
+
+CALLI._settingsInjected = false;
+
+CALLI._injectSettingsPanel = function() {
+  if (CALLI._settingsInjected || document.getElementById('calli-settings-panel')) {
+    CALLI._settingsInjected = true;
+    return;
+  }
+  CALLI._settingsInjected = true;
+
+  const isProd = location.hostname === 'egavves.github.io';
+
+  const anthropicHTML = isProd
+    ? `<div class="settings-label" style="color:var(--positive)">✓ Anthropic API</div>
+       <div class="settings-note">Routed via secure proxy — no key needed.</div>
+       <div class="settings-status" id="calli-anthropic-status"></div>`
+    : `<div class="settings-label">Anthropic API Key</div>
+       <div class="settings-row">
+         <input class="api-key-input" id="calli-anthropic-key" type="password" placeholder="sk-ant-api03-…">
+         <button class="api-save-btn" onclick="CALLI.saveAnthropicKey()">Save</button>
+         <button class="api-save-btn" onclick="CALLI.clearAnthropicKey()" style="color:var(--negative)">Clear</button>
+       </div>
+       <div class="settings-status" id="calli-anthropic-status"></div>
+       <div class="settings-note" style="margin-top:5px">
+         Stored only in your browser's localStorage.<br>
+         Sent only to <code>api.anthropic.com</code>. Never logged.
+       </div>`;
+
+  const falHTML = isProd
+    ? `<div class="settings-label" style="color:var(--positive)">✓ fal.ai Image Generation</div>
+       <div class="settings-note">Routed via secure proxy — no key needed.</div>
+       <div class="settings-status" id="calli-fal-status"></div>`
+    : `<div class="settings-label">fal.ai API Key</div>
+       <div class="settings-row">
+         <input class="api-key-input" id="calli-fal-key" type="password" placeholder="fal_…">
+         <button class="api-save-btn" onclick="CALLI.saveFalKey()">Save</button>
+         <button class="api-save-btn" onclick="CALLI.clearFalKey()" style="color:var(--negative)">Clear</button>
+       </div>
+       <div class="settings-status" id="calli-fal-status"></div>
+       <div class="settings-note" style="margin-top:3px">For image generation in Ideation Studio.</div>`;
+
+  const panel = document.createElement('div');
+  panel.className = 'settings-panel';
+  panel.id = 'calli-settings-panel';
+  panel.innerHTML =
+    `<div class="settings-panel-title">` +
+      `⚙&#xFE0E; Settings` +
+      `<button class="settings-close" onclick="CALLI.closeSettings()">✕</button>` +
+    `</div>` +
+    `<hr class="settings-divider">` +
+    `<div id="calli-anthropic-section">${anthropicHTML}</div>` +
+    `<hr class="settings-divider">` +
+    `<div id="calli-fal-section">${falHTML}</div>`;
+
+  document.body.appendChild(panel);
+
+  // Pre-fill with any previously saved keys
+  if (!isProd) {
+    const savedAnth = localStorage.getItem('anthropic_api_key') || localStorage.getItem('anthropicKey') || '';
+    const savedFal  = localStorage.getItem('fal_api_key')       || localStorage.getItem('falKey')       || '';
+    const ainp = document.getElementById('calli-anthropic-key');
+    const finp = document.getElementById('calli-fal-key');
+    if (ainp && savedAnth) ainp.value = savedAnth;
+    if (finp && savedFal)  finp.value = savedFal;
+  }
+};
+
+CALLI.openSettings = function() {
+  CALLI._injectSettingsPanel();
+  const panel = document.getElementById('calli-settings-panel');
+  const btn   = document.getElementById('gear-btn');
+  if (!panel) return;
+  panel.classList.add('open');
+  if (btn) btn.classList.add('active');
+  setTimeout(() => document.addEventListener('click', CALLI._outsideSettingsClick), 10);
+};
+
+CALLI.closeSettings = function() {
+  const panel = document.getElementById('calli-settings-panel');
+  const btn   = document.getElementById('gear-btn');
+  if (panel) panel.classList.remove('open');
+  if (btn)   btn.classList.remove('active');
+  document.removeEventListener('click', CALLI._outsideSettingsClick);
+};
+
+CALLI.toggleSettings = function() {
+  CALLI._injectSettingsPanel();
+  const panel = document.getElementById('calli-settings-panel');
+  if (!panel) return;
+  if (panel.classList.contains('open')) {
+    CALLI.closeSettings();
+  } else {
+    CALLI.openSettings();
+  }
+};
+
+CALLI._outsideSettingsClick = function(e) {
+  const panel = document.getElementById('calli-settings-panel');
+  const btn   = document.getElementById('gear-btn');
+  if (panel && panel.contains(e.target)) return;
+  if (btn   && btn.contains(e.target))   return;
+  CALLI.closeSettings();
+};
+
+CALLI._setSettingsStatus = function(elId, msg, type) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'settings-status ' + (type || '');
+  setTimeout(() => { if (el) { el.textContent = ''; el.className = 'settings-status'; } }, 3000);
+};
+
+CALLI.saveAnthropicKey = function() {
+  const inp = document.getElementById('calli-anthropic-key');
+  const key = inp ? inp.value.trim() : '';
+  if (!key) { CALLI._setSettingsStatus('calli-anthropic-status', 'Please enter an API key.', 'err'); return; }
+  localStorage.setItem('anthropic_api_key', key);
+  localStorage.setItem('anthropicKey', key);  // legacy alias
+  CALLI._setSettingsStatus('calli-anthropic-status', '✓ Anthropic key saved.', 'ok');
+};
+
+CALLI.clearAnthropicKey = function() {
+  localStorage.removeItem('anthropic_api_key');
+  localStorage.removeItem('anthropicKey');
+  const inp = document.getElementById('calli-anthropic-key');
+  if (inp) inp.value = '';
+  CALLI._setSettingsStatus('calli-anthropic-status', 'Key cleared.', '');
+};
+
+CALLI.saveFalKey = function() {
+  const inp = document.getElementById('calli-fal-key');
+  const key = inp ? inp.value.trim() : '';
+  if (!key) { CALLI._setSettingsStatus('calli-fal-status', 'Please enter a fal.ai key.', 'err'); return; }
+  localStorage.setItem('fal_api_key', key);
+  localStorage.setItem('falKey', key);  // legacy alias
+  CALLI._setSettingsStatus('calli-fal-status', '✓ fal.ai key saved.', 'ok');
+};
+
+CALLI.clearFalKey = function() {
+  localStorage.removeItem('fal_api_key');
+  localStorage.removeItem('falKey');
+  const inp = document.getElementById('calli-fal-key');
+  if (inp) inp.value = '';
+  CALLI._setSettingsStatus('calli-fal-status', 'Key cleared.', '');
+};
+
+CALLI.initSettings = function() {
+  // Pre-inject on DOMContentLoaded so the panel is ready before first use
+  CALLI._injectSettingsPanel();
+};
+
+
 /* ── AUTO-INIT ───────────────────────────────────────────────────────────── */
 
 /**
@@ -766,6 +927,7 @@ CALLI.init = function(options = {}) {
   CALLI.initPanelExpand();
   CALLI.initModals();
   CALLI.initMathTooltips();
+  CALLI.initSettings();
   if (options.proxyBadge !== false) CALLI.checkProxy();
   if (options.datasetSwitcher) CALLI.initDatasetSwitcher(options.onDatasetChange);
 };
@@ -818,22 +980,26 @@ function _navProjOutside(e) {
 
 /**
  * Add a new project to the Open-project dropdown.
- * Replaces the old navDataSelect-based version.
+ * Prompts the user to ask Claude to generate the full dashboard set.
  */
 function addDataSource() {
-  const n = prompt('Project name?');
-  if (!n) return;
-  const u = prompt('Dashboard URL?');
-  if (!u) return;
-  const menu = document.getElementById('nav-proj-menu');
-  if (!menu) return;
-  const a = document.createElement('a');
-  a.className = 'nav-proj-item';
-  a.href = u.trim();
-  a.textContent = '📊 ' + n.trim();
-  // Insert before the disabled "Emmys (soon)" span if present
-  const disabled = menu.querySelector('.nav-proj-disabled');
-  if (disabled) menu.insertBefore(a, disabled);
-  else menu.appendChild(a);
-  if (confirm('Navigate to ' + u.trim() + ' now?')) window.location.href = u.trim();
+  const msg = [
+    '🎸 New Project Wizard',
+    '',
+    'To add a new project with a full set of dashboards, open a Cowork session with Claude and say:',
+    '',
+    '  "Add a new project called [project name]"',
+    '',
+    'Claude will ask you a few questions and generate:',
+    '  • Home dashboard',
+    '  • Social Pulse dashboard',
+    '  • Ideation Studio',
+    '  • Executive Summary (placeholder)',
+    '  • Hypothesis Validation (placeholder)',
+    '',
+    'It will also update the project dropdown in all existing dashboards automatically.',
+    '',
+    'See NEW_PROJECT_SKILL.md in your workspace for full details.'
+  ].join('\n');
+  alert(msg);
 }

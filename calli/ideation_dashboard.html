@@ -795,7 +795,7 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     </div>
   </div>
   <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
-  <button class="nav-gear-btn" id="gear-btn" onclick="toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
   <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
   <div class="nav-spacer"></div>
   <div class="nav-vsep"></div>
@@ -1030,58 +1030,7 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 
 </div><!-- /studio-layout -->
 <!-- ── Settings panel ── -->
-<div class="settings-panel" id="settings-panel">
-  <div class="settings-panel-title">
-    ⚙&#xFE0E; Settings
-    <button class="settings-close" onclick="closeSettings()">✕</button>
-  </div>
-  <hr class="settings-divider">
 
-  <!-- Anthropic key: shown locally, replaced by proxy notice on prod -->
-  <div id="anthropic-key-section">
-    <div class="settings-label">Anthropic API Key</div>
-    <div class="settings-row">
-      <input type="password" class="api-key-input" id="api-key-input" placeholder="sk-ant-…">
-      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
-      <button class="api-save-btn" onclick="clearApiKey()">Clear</button>
-    </div>
-    <div class="settings-status" id="settings-status"></div>
-    <div class="settings-note" style="margin-top:5px">
-      Stored only in your browser's localStorage.<br>
-      Sent only to <code>api.anthropic.com</code>. Never logged.
-    </div>
-  </div>
-
-  <hr class="settings-divider">
-
-  <!-- fal.ai key: shown locally, replaced by proxy notice on prod -->
-  <div id="fal-key-section">
-    <div class="settings-label">fal.ai API Key</div>
-    <div class="settings-row">
-      <input type="password" class="api-key-input" id="fal-key-input" placeholder="fal_…">
-      <button class="api-save-btn" onclick="saveFalKey()">Save</button>
-      <button class="api-save-btn" onclick="clearFalKey()">Clear</button>
-    </div>
-    <div class="settings-status" id="fal-settings-status"></div>
-    <div class="settings-note" style="margin-top:3px">For thumbnail image generation.</div>
-  </div>
-  <script>
-    if (location.hostname === 'egavves.github.io') {
-      document.getElementById('anthropic-key-section').innerHTML = '<div class="settings-label" style="color:var(--positive)">✓ Anthropic API</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Routed via secure proxy — no key needed.</div><div class="settings-status" id="settings-status"></div>';
-      document.getElementById('fal-key-section').innerHTML = '<div class="settings-label" style="color:var(--positive)">✓ fal.ai Image Generation</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Routed via secure proxy — no key needed.</div><div class="settings-status" id="fal-settings-status"></div>';
-    }
-  </script>
-
-  <hr class="settings-divider">
-
-  <div>
-    <div class="settings-label">Models</div>
-    <div class="settings-note">
-      Ideation: claude-sonnet-4-6 &nbsp;·&nbsp; 8 192 tokens<br>
-      Images: FLUX.1 [schnell] via fal.ai
-    </div>
-  </div>
-</div>
 
 
 </div><!-- /app -->
@@ -1233,14 +1182,6 @@ function restoreTab(name) {
 window.addEventListener('beforeunload', saveNavState);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Load saved API key
-  const saved = localStorage.getItem('anthropic_api_key');
-  if (saved) document.getElementById('api-key-input').value = saved;
-
-  // Load saved fal.ai key
-  const savedFal = localStorage.getItem('fal_api_key');
-  if (savedFal) document.getElementById('fal-key-input').value = savedFal;
-
   buildHistoryPanel();
 
   // ── Try to restore navigation state first ───────────────────────────────
@@ -1462,67 +1403,6 @@ function handleImgUpload(input) {
   const reader = new FileReader();
   reader.onload = e => { imgBase64 = e.target.result.split(',')[1]; };
   reader.readAsDataURL(file);
-}
-
-function toggleSettings() {
-  const panel = document.getElementById('settings-panel');
-  const btn   = document.getElementById('gear-btn');
-  const open  = panel.classList.toggle('open');
-  btn.classList.toggle('active', open);
-  // close on outside click
-  if (open) setTimeout(() => document.addEventListener('click', outsideSettingsClick), 10);
-}
-function closeSettings() {
-  document.getElementById('settings-panel').classList.remove('open');
-  document.getElementById('gear-btn').classList.remove('active');
-  document.removeEventListener('click', outsideSettingsClick);
-}
-function outsideSettingsClick(e) {
-  const panel = document.getElementById('settings-panel');
-  const btn   = document.getElementById('gear-btn');
-  if (!panel.contains(e.target) && e.target !== btn) closeSettings();
-}
-
-function setSettingsStatus(msg, type) {
-  const el = document.getElementById('settings-status');
-  el.textContent = msg;
-  el.className = 'settings-status ' + (type || '');
-  setTimeout(() => { el.textContent = ''; el.className = 'settings-status'; }, 3000);
-}
-
-function saveApiKey() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key) { setSettingsStatus('Please enter an API key.', 'err'); return; }
-  localStorage.setItem('anthropic_api_key', key);
-  setSettingsStatus('✓ API key saved.', 'ok');
-}
-
-function clearApiKey() {
-  localStorage.removeItem('anthropic_api_key');
-  document.getElementById('api-key-input').value = '';
-  setSettingsStatus('API key cleared.', '');
-  document.getElementById('action-note').textContent = 'API key cleared.';  // keep backward compat
-}
-
-function saveFalKey() {
-  const key = document.getElementById('fal-key-input').value.trim();
-  if (!key) { setFalSettingsStatus('Please enter a fal.ai key.', 'err'); return; }
-  localStorage.setItem('fal_api_key', key);
-  setFalSettingsStatus('✓ fal.ai key saved.', 'ok');
-}
-
-function clearFalKey() {
-  localStorage.removeItem('fal_api_key');
-  document.getElementById('fal-key-input').value = '';
-  setFalSettingsStatus('fal.ai key cleared.', '');
-}
-
-function setFalSettingsStatus(msg, type) {
-  const el = document.getElementById('fal-settings-status');
-  if (!el) return;
-  el.textContent = msg;
-  el.className = 'settings-status ' + (type || '');
-  setTimeout(() => { el.textContent = ''; el.className = 'settings-status'; }, 3000);
 }
 
 function showError(msg) {
@@ -3888,7 +3768,7 @@ When reasoning across dashboards:
       if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
       url = 'https://api.anthropic.com/v1/messages';
       opts = Object.assign({}, opts);
-      opts.headers = Object.assign({'anthropic-version': '2023-06-01'}, opts.headers, {
+      opts.headers = Object.assign({}, opts.headers, {
         'x-api-key': key,
         'anthropic-dangerous-direct-browser-access': 'true'
       });

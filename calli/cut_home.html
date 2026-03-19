@@ -136,7 +136,7 @@
     </div>
   </div>
   <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
-  <button class="nav-gear-btn" id="gear-btn" onclick="toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
   <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
   <div class="nav-spacer"></div>
   <div class="nav-vsep"></div>
@@ -190,25 +190,7 @@
   </div>
 </div>
 
-<div class="settings-panel" id="settings-panel">
-  <div class="settings-panel-title">⚙&#xFE0E; Settings
-    <button class="settings-close" onclick="closeSettings()">✕</button>
-  </div>
-  <hr class="settings-divider">
-  <div>
-    <div class="settings-label">Anthropic API Key</div>
-    <div class="settings-row">
-      <input class="api-key-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…">
-      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
-      <button class="api-save-btn" onclick="clearApiKey()" style="color:var(--negative)">Clear</button>
-    </div>
-    <div class="settings-status" id="settings-status"></div>
-    <div class="settings-note" style="margin-top:5px">
-      Stored only in your browser's localStorage.<br>
-      Sent only to <code>api.anthropic.com</code>. Never logged.
-    </div>
-  </div>
-</div>
+
 
 <button class="tour-fab" onclick="CALLI_TOUR.launch()" title="Interactive tutorial">🎓 Tutorial</button>
 
@@ -270,9 +252,6 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('stat-views').textContent=tv>=1e9?(tv/1e9).toFixed(2)+'B':(tv/1e6).toFixed(0)+'M';
   document.getElementById('stat-retention').textContent=(ar*100).toFixed(1)+'%';
   document.getElementById('stat-formats').textContent=fmts;
-  const saved=localStorage.getItem('anthropic_api_key');
-  const inp=document.getElementById('api-key-input');
-  if(saved&&inp)inp.value=saved;
   renderGrid();
 });
 </script>
@@ -896,14 +875,6 @@ When reasoning across dashboards:
 })();
 
 </script>
-<script>
-function toggleSettings(){const p=document.getElementById('settings-panel'),b=document.getElementById('gear-btn'),o=p.classList.toggle('open');b.classList.toggle('active',o);if(o)setTimeout(()=>document.addEventListener('click',_osc),10);}
-function closeSettings(){document.getElementById('settings-panel').classList.remove('open');document.getElementById('gear-btn').classList.remove('active');document.removeEventListener('click',_osc);}
-function _osc(e){const p=document.getElementById('settings-panel'),b=document.getElementById('gear-btn');if(!p.contains(e.target)&&e.target!==b)closeSettings();}
-function setSettingsStatus(m,t){const e=document.getElementById('settings-status');if(!e)return;e.textContent=m;e.className='settings-status '+(t||'');setTimeout(()=>{e.textContent='';e.className='settings-status';},3000);}
-function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();if(!k){setSettingsStatus('Please enter an API key.','err');return;}localStorage.setItem('anthropic_api_key',k);setSettingsStatus('✓ API key saved.','ok');}
-function clearApiKey(){localStorage.removeItem('anthropic_api_key');document.getElementById('api-key-input').value='';setSettingsStatus('API key cleared.','');}
-</script>
 <script src="calli-system.js"></script>
 <script src="calli-tour.js"></script>
 <script>
@@ -917,7 +888,7 @@ function clearApiKey(){localStorage.removeItem('anthropic_api_key');document.get
       if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
       url = 'https://api.anthropic.com/v1/messages';
       opts = Object.assign({}, opts);
-      opts.headers = Object.assign({'anthropic-version': '2023-06-01'}, opts.headers, {
+      opts.headers = Object.assign({}, opts.headers, {
         'x-api-key': key,
         'anthropic-dangerous-direct-browser-access': 'true'
       });

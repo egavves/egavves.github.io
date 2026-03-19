@@ -211,7 +211,7 @@ a{color:inherit;text-decoration:none}
     </div>
   </div>
   <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
-  <button class="nav-gear-btn" id="gear-btn" onclick="toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
   <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
   <div class="nav-spacer"></div>
   <div class="nav-vsep"></div>
@@ -3802,26 +3802,7 @@ When reasoning across dashboards:
 })();
 </script>
 
-<div class="settings-panel" id="settings-panel">
-  <div class="settings-panel-title">
-    ⚙&#xFE0E; Settings
-    <button class="settings-close" onclick="closeSettings()">✕</button>
-  </div>
-  <hr class="settings-divider">
-  <div>
-    <div class="settings-label">Anthropic API Key</div>
-    <div class="settings-row">
-      <input class="api-key-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…">
-      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
-      <button class="api-save-btn" onclick="clearApiKey()" style="color:var(--negative)">Clear</button>
-    </div>
-    <div class="settings-status" id="settings-status"></div>
-    <div class="settings-note" style="margin-top:5px">
-      Stored only in your browser's localStorage.<br>
-      Sent only to <code>api.anthropic.com</code>. Never logged.
-    </div>
-  </div>
-</div>
+
 
 <script src="calli-system.js"></script>
 
@@ -3833,51 +3814,6 @@ When reasoning across dashboards:
 
 <script src="calli-tour.js"></script>
 <script>
-
-function toggleSettings() {
-  const panel = document.getElementById('settings-panel');
-  const btn   = document.getElementById('gear-btn');
-  const open  = panel.classList.toggle('open');
-  btn.classList.toggle('active', open);
-  if (open) setTimeout(() => document.addEventListener('click', outsideSettingsClick), 10);
-}
-function closeSettings() {
-  document.getElementById('settings-panel').classList.remove('open');
-  document.getElementById('gear-btn').classList.remove('active');
-  document.removeEventListener('click', outsideSettingsClick);
-}
-function outsideSettingsClick(e) {
-  const panel = document.getElementById('settings-panel');
-  const btn   = document.getElementById('gear-btn');
-  if (!panel.contains(e.target) && e.target !== btn) closeSettings();
-}
-function setSettingsStatus(msg, type) {
-  const el = document.getElementById('settings-status');
-  if (!el) return;
-  el.textContent = msg;
-  el.className = 'settings-status ' + (type || '');
-  setTimeout(() => { el.textContent = ''; el.className = 'settings-status'; }, 3000);
-}
-function saveApiKey() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key) { setSettingsStatus('Please enter an API key.', 'err'); return; }
-  localStorage.setItem('anthropic_api_key', key);
-  setSettingsStatus('\u2713 API key saved.', 'ok');
-}
-function clearApiKey() {
-  localStorage.removeItem('anthropic_api_key');
-  document.getElementById('api-key-input').value = '';
-  setSettingsStatus('API key cleared.', '');
-}
-
-// Load saved key into input on open
-document.addEventListener('DOMContentLoaded', function() {
-  const saved = localStorage.getItem('anthropic_api_key');
-  const inp = document.getElementById('api-key-input');
-  if (saved && inp) inp.value = saved;
-});
-</script>
-<script>
 /* ── Local-dev API routing ── */
 (function(){
   if (location.hostname === 'egavves.github.io') return;
@@ -3888,7 +3824,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
       url = 'https://api.anthropic.com/v1/messages';
       opts = Object.assign({}, opts);
-      opts.headers = Object.assign({'anthropic-version': '2023-06-01'}, opts.headers, {
+      opts.headers = Object.assign({}, opts.headers, {
         'x-api-key': key,
         'anthropic-dangerous-direct-browser-access': 'true'
       });
