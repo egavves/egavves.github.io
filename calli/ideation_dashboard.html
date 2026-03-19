@@ -790,6 +790,7 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     <div class="nav-proj-menu" id="nav-proj-menu">
       <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
       <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
       <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
     </div>
   </div>
@@ -1037,12 +1038,8 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   <hr class="settings-divider">
 
   <div>
-    <div class="settings-label">Anthropic API Key</div>
-    <div class="settings-row">
-      <input class="api-key-input" id="api-key-input" type="password" placeholder="sk-ant-api03-…">
-      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
-      <button class="api-save-btn" onclick="clearApiKey()" style="color:var(--negative)">Clear</button>
-    </div>
+    <div class="settings-label" style="color:var(--positive)">✓ Anthropic API</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;">Calls are routed through a secure server-side proxy — no API key needed here.</div>
     <div class="settings-status" id="settings-status"></div>
     <div class="settings-note" style="margin-top:5px">
       Stored only in your browser's localStorage.<br>
@@ -1866,8 +1863,6 @@ function appendStreamToken(token) {
 }
 
 async function callClaude(systemPrompt, userPrompt) {
-  const apiKey = localStorage.getItem('anthropic_api_key');
-  if (!apiKey) throw new Error('No API key found. Open ⚙&#xFE0E; Settings and save your Anthropic API key.');
 
   // Build the initial user message (with optional image)
   const userMsg = imgBase64
@@ -1903,14 +1898,11 @@ async function callClaude(systemPrompt, userPrompt) {
     const messages = [userMsg];
     if (fullText) messages.push({ role: 'assistant', content: fullText });
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://egavves-github-io.vercel.app/api/chat', {
       method: 'POST',
       signal: activeAbortController.signal,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
@@ -3711,12 +3703,6 @@ When reasoning across dashboards:
     const text = ta.value.trim();
     if (!text && !pendingImg) return;
 
-    const apiKey = localStorage.getItem('anthropic_api_key');
-    if (!apiKey) {
-      addMsg('assistant','<span style="color:#fb923c">⚠ Add your Anthropic API key in the Ideation Studio settings first.</span>');
-      return;
-    }
-
     // Build user content
     const userContent = [];
     if (pendingImg) userContent.push({ type:'image', source:{ type:'base64', media_type:pendingImg.mediaType, data:pendingImg.base64 } });
@@ -3746,12 +3732,9 @@ When reasoning across dashboards:
       const apiMessages = history.slice(0, -1)  // all but last (we'll add with image)
         .concat([{ role:'user', content: userContent.length===1 && !pendingImg ? text : userContent }]);
 
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      const resp = await fetch('https://egavves-github-io.vercel.app/api/chat', {
         method:'POST',
         headers:{
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
           'content-type': 'application/json',
         },
         body: JSON.stringify({
