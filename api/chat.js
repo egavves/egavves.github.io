@@ -5,7 +5,7 @@ module.exports = async function handler(req, res) {
   // CORS headers on every response
   res.setHeader('Access-Control-Allow-Origin',  'https://egavves.github.io');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, anthropic-version');
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
