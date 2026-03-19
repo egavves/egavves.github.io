@@ -1312,5 +1312,31 @@ document.addEventListener('DOMContentLoaded', function() {
   if (saved && inp) inp.value = saved;
 });
 </script>
+<script>
+/* ── Local-dev API routing ── */
+(function(){
+  if (location.hostname === 'egavves.github.io') return;
+  var _orig = window.fetch.bind(window);
+  window.fetch = function(url, opts) {
+    if (url === 'https://egavves-github-io.vercel.app/api/chat') {
+      var key = localStorage.getItem('anthropicKey') || localStorage.getItem('anthropic_api_key') || '';
+      if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
+      url = 'https://api.anthropic.com/v1/messages';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {
+        'x-api-key': key,
+        'anthropic-dangerous-direct-browser-access': 'true'
+      });
+    }
+    if (url === 'https://egavves-github-io.vercel.app/api/image') {
+      var key2 = localStorage.getItem('falKey') || localStorage.getItem('fal_api_key') || '';
+      url = 'https://fal.run/fal-ai/flux/schnell';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Key ' + key2});
+    }
+    return _orig(url, opts);
+  };
+})();
+</script>
 </body>
 </html>

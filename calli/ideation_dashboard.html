@@ -1037,9 +1037,14 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   </div>
   <hr class="settings-divider">
 
-  <div>
-    <div class="settings-label" style="color:var(--positive)">✓ Anthropic API</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5;">Calls are routed through a secure server-side proxy — no API key needed here.</div>
+  <!-- Anthropic key: shown locally, replaced by proxy notice on prod -->
+  <div id="anthropic-key-section">
+    <div class="settings-label">Anthropic API Key</div>
+    <div class="settings-row">
+      <input type="password" class="api-key-input" id="api-key-input" placeholder="sk-ant-…">
+      <button class="api-save-btn" onclick="saveApiKey()">Save</button>
+      <button class="api-save-btn" onclick="clearApiKey()">Clear</button>
+    </div>
     <div class="settings-status" id="settings-status"></div>
     <div class="settings-note" style="margin-top:5px">
       Stored only in your browser's localStorage.<br>
@@ -1049,11 +1054,23 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 
   <hr class="settings-divider">
 
-  <div>
-    <div class="settings-label" style="color:var(--positive)">✓ fal.ai Image Generation</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5;">Thumbnail generation is routed through a secure server-side proxy — no key needed here.</div>
+  <!-- fal.ai key: shown locally, replaced by proxy notice on prod -->
+  <div id="fal-key-section">
+    <div class="settings-label">fal.ai API Key</div>
+    <div class="settings-row">
+      <input type="password" class="api-key-input" id="fal-key-input" placeholder="fal_…">
+      <button class="api-save-btn" onclick="saveFalKey()">Save</button>
+      <button class="api-save-btn" onclick="clearFalKey()">Clear</button>
+    </div>
     <div class="settings-status" id="fal-settings-status"></div>
+    <div class="settings-note" style="margin-top:3px">For thumbnail image generation.</div>
   </div>
+  <script>
+    if (location.hostname === 'egavves.github.io') {
+      document.getElementById('anthropic-key-section').innerHTML = '<div class="settings-label" style="color:var(--positive)">✓ Anthropic API</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Routed via secure proxy — no key needed.</div><div class="settings-status" id="settings-status"></div>';
+      document.getElementById('fal-key-section').innerHTML = '<div class="settings-label" style="color:var(--positive)">✓ fal.ai Image Generation</div><div style="font-size:11px;color:var(--muted);line-height:1.5;">Routed via secure proxy — no key needed.</div><div class="settings-status" id="fal-settings-status"></div>';
+    }
+  </script>
 
   <hr class="settings-divider">
 
@@ -3860,5 +3877,31 @@ When reasoning across dashboards:
 </button>
 
 <script src="calli-tour.js"></script>
+<script>
+/* ── Local-dev API routing ── */
+(function(){
+  if (location.hostname === 'egavves.github.io') return;
+  var _orig = window.fetch.bind(window);
+  window.fetch = function(url, opts) {
+    if (url === 'https://egavves-github-io.vercel.app/api/chat') {
+      var key = localStorage.getItem('anthropicKey') || localStorage.getItem('anthropic_api_key') || '';
+      if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
+      url = 'https://api.anthropic.com/v1/messages';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {
+        'x-api-key': key,
+        'anthropic-dangerous-direct-browser-access': 'true'
+      });
+    }
+    if (url === 'https://egavves-github-io.vercel.app/api/image') {
+      var key2 = localStorage.getItem('falKey') || localStorage.getItem('fal_api_key') || '';
+      url = 'https://fal.run/fal-ai/flux/schnell';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Key ' + key2});
+    }
+    return _orig(url, opts);
+  };
+})();
+</script>
 </body>
 </html>
