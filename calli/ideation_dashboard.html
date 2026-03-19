@@ -1050,17 +1050,9 @@ table.cast-table { width: 100%; border-collapse: collapse; font-size: 12px; }
   <hr class="settings-divider">
 
   <div>
-    <div class="settings-label">fal.ai API Key <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--border2)">— for thumbnail image generation</span></div>
-    <div class="settings-row">
-      <input class="api-key-input" id="fal-key-input" type="password" placeholder="fal_key_…">
-      <button class="api-save-btn" onclick="saveFalKey()">Save</button>
-      <button class="api-save-btn" onclick="clearFalKey()" style="color:var(--negative)">Clear</button>
-    </div>
+    <div class="settings-label" style="color:var(--positive)">✓ fal.ai Image Generation</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.5;">Thumbnail generation is routed through a secure server-side proxy — no key needed here.</div>
     <div class="settings-status" id="fal-settings-status"></div>
-    <div class="settings-note" style="margin-top:5px">
-      Get a key at <code>fal.ai/dashboard</code> — ~$0.003/image.<br>
-      Sent only to <code>fal.run</code>. Stored in localStorage.
-    </div>
   </div>
 
   <hr class="settings-divider">
@@ -2676,7 +2668,7 @@ function renderThumbnails(thumbs) {
     document.getElementById('pane-thumbnails').innerHTML = '<p style="color:var(--muted);padding:20px">No thumbnail concepts generated.</p>';
     return;
   }
-  const hasFalKey = !!localStorage.getItem('fal_api_key');
+  const hasFalKey = true; // proxy handles auth server-side
 
   // Group into A/B pairs and standalones, preserving global index for generation
   const pairMap = {};
@@ -2716,7 +2708,8 @@ function renderThumbnails(thumbs) {
   document.getElementById('pane-thumbnails').innerHTML = html;
 
   // Auto-generate images if fal key exists, staggered 900ms apart
-  if (localStorage.getItem('fal_api_key')) {
+  // Auto-generate images via proxy (no key check needed)
+  {
     thumbs.forEach((t, i) => {
       if (!generatedThumbUrls[i]) {
         setTimeout(() => generateThumbnailImage(i), i * 900);
@@ -2726,12 +2719,6 @@ function renderThumbnails(thumbs) {
 }
 
 async function generateThumbnailImage(index) {
-  const falKey = localStorage.getItem('fal_api_key');
-  if (!falKey) {
-    toggleSettings();
-    setFalSettingsStatus('Add your fal.ai key here to generate images.', 'err');
-    return;
-  }
   const t = currentThumbnails[index];
   if (!t) return;
 
@@ -2759,10 +2746,9 @@ async function generateThumbnailImage(index) {
   preview.appendChild(spinner);
 
   try {
-    const res = await fetch('https://fal.run/fal-ai/flux/schnell', {
+    const res = await fetch('https://egavves-github-io.vercel.app/api/image', {
       method: 'POST',
       headers: {
-        'Authorization': `Key ${falKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
