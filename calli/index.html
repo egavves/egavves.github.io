@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calli Labs — Intelligence Dashboards</title>
+  <link rel="stylesheet" href="calli-system.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0F1729;
+      color: #E5E7EB;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(15,23,41,0.96);
+      border-bottom: 1px solid rgba(59,130,246,0.18);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; gap: 0;
+      padding: 0 2rem; height: 46px;
+    }
+    .nav-brand {
+      font-weight: 700; font-size: 0.95rem; color: #F59E0B;
+      text-decoration: none; margin-right: 2rem; letter-spacing: 0.02em;
+    }
+    .nav-tab {
+      padding: 0 14px; height: 46px; display: flex; align-items: center;
+      font-size: 0.82rem; color: #9CA3AF; text-decoration: none;
+      border-bottom: 2px solid transparent; transition: color 0.15s;
+    }
+    .nav-tab:hover { color: #E5E7EB; }
+    .nav-active { color: #E5E7EB !important; border-bottom-color: #3B82F6 !important; }
+    .nav-soon { color: #4B5563 !important; cursor: default; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 72px 2rem 56px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%);
+    }
+    .hero-logo { font-size: 2.6rem; margin-bottom: 0.5rem; }
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #F59E0B 0%, #3B82F6 60%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      color: #9CA3AF; font-size: 1.05rem; max-width: 560px; margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+      color: #93C5FD; font-size: 0.78rem; padding: 4px 12px; border-radius: 20px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    /* ── Cards grid ── */
+    .cards {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px; padding: 0 2rem 80px;
+    }
+
+    .card {
+      background: #161f35;
+      border: 1px solid rgba(59,130,246,0.12);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none; color: inherit;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59,130,246,0.4);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+
+    .card-banner {
+      height: 7px;
+    }
+    .card-banner-vault       { background: linear-gradient(90deg, #F59E0B, #fb923c); }
+    .card-banner-cinematheque{ background: linear-gradient(90deg, #3B82F6, #60a5fa); }
+    .card-banner-cut         { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
+    .card-banner-emmys       { background: linear-gradient(90deg, #4B5563, #6B7280); }
+
+    .card-body { padding: 24px 24px 20px; flex: 1; display: flex; flex-direction: column; }
+
+    .card-icon { font-size: 2rem; margin-bottom: 12px; }
+    .card-title {
+      font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; color: #F3F4F6;
+    }
+    .card-desc {
+      font-size: 0.88rem; color: #9CA3AF; line-height: 1.65; flex: 1; margin-bottom: 20px;
+    }
+
+    .card-stats {
+      display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-n { font-size: 1.1rem; font-weight: 700; color: #F59E0B; }
+    .stat-l { font-size: 0.72rem; color: #6B7280; margin-top: 1px; }
+
+    .card-cta {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0 0; border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.82rem; color: #6B7280;
+    }
+    .card-cta-link {
+      font-size: 0.82rem; color: #60a5fa; font-weight: 600; display: flex; align-items: center; gap: 4px;
+    }
+    .card.disabled { opacity: 0.45; pointer-events: none; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 32px; border-top: 1px solid rgba(255,255,255,0.06);
+      color: #4B5563; font-size: 0.8rem;
+    }
+    footer a { color: #6B7280; text-decoration: none; }
+    footer a:hover { color: #9CA3AF; }
+  
+    /* ── Unified navigation bar ─────────────────────────────────────────────── */
+    nav.unified-nav {
+      position: sticky; top: 0; z-index: 200;
+      background: #060a12;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      display: flex; align-items: center;
+      height: 42px; padding: 0 16px; gap: 0; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-brand {
+      font-weight: 800; font-size: 13px; color: #F59E0B;
+      text-decoration: none; margin-right: 12px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-vsep {
+      width: 1px; height: 18px; background: rgba(255,255,255,0.10);
+      margin: 0 10px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-section-label {
+      font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em;
+      color: #2D3748; font-weight: 700; margin-right: 4px; flex-shrink: 0;
+      user-select: none;
+    }
+    nav.unified-nav .nav-tab {
+      display: flex; align-items: center; padding: 0 11px; height: 42px;
+      font-size: 12px; color: #475569; text-decoration: none;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-tab:hover  { color: #CBD5E1; }
+    nav.unified-nav .nav-tab.nav-active { color: #E2E8F0; border-bottom-color: #60a5fa; }
+    nav.unified-nav .nav-soon {
+      color: #2D3748 !important; cursor: default; pointer-events: none;
+    }
+    nav.unified-nav .nav-data-dropdown {
+      display: flex; align-items: center; gap: 6px; padding: 0 4px 0 8px; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-data-select {
+      background: rgba(45,212,191,0.08); border: 1px solid rgba(45,212,191,0.3);
+      color: #2dd4bf; border-radius: 16px; padding: 3px 26px 3px 10px;
+      font-size: 11px; font-family: inherit; cursor: pointer; outline: none;
+      appearance: none; -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232dd4bf' opacity='.6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
+      transition: background .15s, border-color .15s; white-space: nowrap; max-width: 160px;
+    }
+    nav.unified-nav .nav-data-select:hover { background-color: rgba(45,212,191,0.14); border-color: rgba(45,212,191,0.5); }
+    nav.unified-nav .nav-data-select option { background: #0F1729; color: #e2e4f0; }
+    nav.unified-nav .nav-add-data-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.3);
+      color: #2dd4bf; border-radius: 14px; padding: 3px 10px;
+      font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit;
+      transition: background .15s, border-color .15s; white-space: nowrap;
+    }
+    nav.unified-nav .nav-add-data-btn:hover { background: rgba(45,212,191,0.2); border-color: rgba(45,212,191,0.5); }
+
+    nav.unified-nav .nav-spacer { flex: 1; min-width: 12px; }
+    nav.unified-nav .nav-chip {
+      display: flex; align-items: center; gap: 4px;
+      padding: 3px 12px; margin-left: 5px;
+      font-size: 11px; color: #4B5563; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 20px;
+      white-space: nowrap; background: rgba(255,255,255,0.03);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    nav.unified-nav .nav-chip:hover {
+      color: #CBD5E1; border-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.07);
+    }
+    nav.unified-nav .nav-chip.nav-active {
+      color: #A78BFA; border-color: rgba(124,106,247,0.6);
+      background: rgba(124,106,247,0.12);
+    }
+
+    /* AI Analysis label — purple pill */
+    nav.unified-nav .nav-ai-label {
+      color: #A78BFA !important;
+      background: rgba(124,106,247,0.12);
+      border: 1px solid rgba(124,106,247,0.30);
+      padding: 2px 9px;
+      border-radius: 12px;
+      margin-right: 6px;
+      letter-spacing: 0.08em;
+    }
+</style>
+</head>
+<body>
+
+<nav class="unified-nav">
+  <a class="nav-brand" href="index.html">✦ Calli Labs</a>
+  <div class="nav-vsep"></div>
+    <span class="nav-section-label nav-data-label">Data</span>
+  <div class="nav-data-dropdown">
+    <select class="nav-data-select" id="navDataSelect" onchange="navDataGo(this.value)">
+      <option value="">📂 Dataset…</option>
+      <option value="calli_feature_vault_v2.html">📚 Vault</option>
+      <option value="feature_distributions.html">🎬 Cinematheque</option>
+      <option value="cut_feature_dashboard.html">✂️ CUT</option>
+      <option value="" disabled>🏆 Emmys (soon)</option>
+    </select>
+    <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
+  </div>
+  <a class="nav-chip nav-social-chip" href="social_media_dashboard.html" style="margin-left:10px">🌐 Social Pulse</a>
+  <div class="nav-spacer"></div>
+</nav>
+
+<section class="hero">
+  <div class="hero-logo">✦</div>
+  <h1>Calli Labs Intelligence</h1>
+  <p>Data-driven creative intelligence for video — from Hollywood features to unscripted social content.</p>
+  <span class="hero-badge">Research Preview · 2025</span>
+</section>
+
+<div class="cards">
+
+  <!-- Feature Vault -->
+  <a class="card" href="calli_feature_vault_v2.html">
+    <div class="card-banner card-banner-vault"></div>
+    <div class="card-body">
+      <div class="card-icon">📚</div>
+      <div class="card-title">Feature Vault</div>
+      <div class="card-desc">
+        The master taxonomy of every signal Calli Labs can measure — across scripted features,
+        unscripted social video, awards content, and universal formats. Browse 170+ features
+        with computation details, relevance notes, and live population data.
+      </div>
+      <div class="card-stats">
+        <div class="stat"><div class="stat-n">170+</div><div class="stat-l">Features</div></div>
+        <div class="stat"><div class="stat-n">17</div><div class="stat-l">Sections</div></div>
+        <div class="stat"><div class="stat-n">4</div><div class="stat-l">Collections</div></div>
+      </div>
+      <div class="card-cta">
+        <span>Movies · CUT · Emmys · Universal</span>
+        <span class="card-cta-link">Open →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Cinematheque -->
+  <a class="card" href="feature_distributions.html">
+    <div class="card-banner card-banner-cinematheque"></div>
+    <div class="card-body">
+      <div class="card-icon">🎬</div>
+      <div class="card-title">Cinematheque Explorer</div>
+      <div class="card-desc">
+        Distribution inspector for the movie feature dataset. Explore how any signal
+        distributes across genres — with live histograms, scatter plots, and per-movie
+        drill-downs. Powered by 11 extracted features across the full collection.
+      </div>
+      <div class="card-stats">
+        <div class="stat"><div class="stat-n">11</div><div class="stat-l">Live Features</div></div>
+        <div class="stat"><div class="stat-n">6</div><div class="stat-l">Genres</div></div>
+      </div>
+      <div class="card-cta">
+        <span>Scripted · Long-form · Film</span>
+        <span class="card-cta-link">Open →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- CUT Dashboard -->
+  <a class="card" href="cut_feature_dashboard.html">
+    <div class="card-banner card-banner-cut"></div>
+    <div class="card-body">
+      <div class="card-icon">✂️</div>
+      <div class="card-title">CUT Channel Dashboard</div>
+      <div class="card-desc">
+        Performance analytics for the CUT YouTube channel. Correlate 22 caption-extracted
+        and sentiment features against retention, revenue, CPM, and avg view percentage.
+        Filter by format, click any metric card to switch the scatter axis.
+      </div>
+      <div class="card-stats">
+        <div class="stat"><div class="stat-n">482</div><div class="stat-l">Videos</div></div>
+        <div class="stat"><div class="stat-n">22</div><div class="stat-l">Features</div></div>
+        <div class="stat"><div class="stat-n">6</div><div class="stat-l">Formats</div></div>
+      </div>
+      <div class="card-cta">
+        <span>Unscripted · Social · YouTube</span>
+        <span class="card-cta-link">Open →</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Emmys — coming soon -->
+  <div class="card disabled">
+    <div class="card-banner card-banner-emmys"></div>
+    <div class="card-body">
+      <div class="card-icon">🏆</div>
+      <div class="card-title">Emmy Awards Dashboard</div>
+      <div class="card-desc">
+        Signal analysis for Emmy-nominated and Emmy-winning content. Coming soon — exploring
+        what distinguishes award-winning performances from the broader field across prestige
+        drama, comedy, and limited series.
+      </div>
+      <div class="card-stats">
+        <div class="stat"><div class="stat-n">—</div><div class="stat-l">Videos</div></div>
+        <div class="stat"><div class="stat-n">—</div><div class="stat-l">Features</div></div>
+      </div>
+      <div class="card-cta">
+        <span>Scripted · Prestige · Awards</span>
+        <span style="font-size:0.78rem;color:#4B5563;font-style:italic;">Coming soon</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>Calli Labs &nbsp;·&nbsp; <a href="https://www.egavves.com" target="_blank">egavves.com</a> &nbsp;·&nbsp; Research Preview 2025</p>
+</footer>
+
+<script>
+(function() {
+  // Highlight the current dataset in the dropdown
+  const pageFile = window.location.pathname.split('/').pop() || 'index.html';
+  const dataPageMap = {
+    'calli_feature_vault_v2.html':  'calli_feature_vault_v2.html',
+    'feature_distributions.html':   'feature_distributions.html',
+    'cut_feature_dashboard.html':   'cut_feature_dashboard.html',
+  };
+  // Analysis pages all work on the CUT dataset — pre-select it
+  const analysisPagesDefaultCUT = [
+    'cut_correlations.html','cut_lasso_analysis.html','cut_rf_shap.html',
+    'exec_summary.html','hypothesis_validation.html','ideation_dashboard.html',
+    'index.html',
+  ];
+  const sel = document.getElementById('navDataSelect');
+  if (sel) {
+    if (dataPageMap[pageFile]) {
+      sel.value = dataPageMap[pageFile];
+    } else if (analysisPagesDefaultCUT.includes(pageFile)) {
+      sel.value = 'cut_feature_dashboard.html';
+    }
+  }
+  // Restore any extra data sources saved by the user
+  try {
+    const sources = JSON.parse(localStorage.getItem('extra_data_sources') || '[]');
+    sources.forEach(s => {
+      document.querySelectorAll('.nav-data-select').forEach(sel => {
+        if (!Array.from(sel.options).some(o => o.value === s.url)) {
+          const opt = document.createElement('option');
+          opt.value = s.url; opt.textContent = '📊 ' + s.name;
+          const soonOpt = Array.from(sel.options).find(o => o.disabled);
+          if (soonOpt) sel.insertBefore(opt, soonOpt); else sel.appendChild(opt);
+        }
+      });
+    });
+  } catch(_) {}
+})();
+window.navDataGo = function(href) {
+  if (href) window.location.href = href;
+};
+window.addDataSource = function() {
+  const name = prompt('Dataset name (e.g. "Emmys 2024"):');
+  if (!name || !name.trim()) return;
+  const url = prompt('HTML file path (e.g. "emmys_2024.html"):');
+  if (!url || !url.trim()) return;
+  const sources = JSON.parse(localStorage.getItem('extra_data_sources') || '[]');
+  sources.push({ name: name.trim(), url: url.trim() });
+  localStorage.setItem('extra_data_sources', JSON.stringify(sources));
+  document.querySelectorAll('.nav-data-select').forEach(sel => {
+    const opt = document.createElement('option');
+    opt.value = url.trim(); opt.textContent = '📊 ' + name.trim();
+    const soonOpt = Array.from(sel.options).find(o => o.disabled);
+    if (soonOpt) sel.insertBefore(opt, soonOpt); else sel.appendChild(opt);
+  });
+  if (confirm('Navigate to ' + url.trim() + ' now?')) window.location.href = url.trim();
+};
+</script>
+<script src="calli-system.js"></script>
+</body>
+</html>
