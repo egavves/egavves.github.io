@@ -672,6 +672,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
     <div class="nav-proj-menu" id="nav-proj-menu">
       <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
       <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
       <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
     </div>
   </div>
@@ -1213,13 +1214,6 @@ async function ccpSend() {
   }
 
   // ── Normal chat → Claude API ────────────────────────────────────────────
-  const apiKey = localStorage.getItem('anthropic_api_key');
-  if (!apiKey) {
-    addChatMessage('user', _ccpEsc(text));
-    addChatMessage('assistant', '<span style="color:#fb923c">⚠ No Anthropic API key found — add it in the Ideation Studio settings.</span>');
-    return;
-  }
-
   addChatMessage('user', _ccpEsc(text));
   _ccpHistory.push({ role: 'user', content: text });
 
@@ -1236,12 +1230,10 @@ async function ccpSend() {
   if (sendBtn) sendBtn.disabled = true;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://egavves-github-io.vercel.app/api/chat', {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
         'content-type': 'application/json',
       },
       body: JSON.stringify({

@@ -206,6 +206,7 @@ a{color:inherit;text-decoration:none}
     <div class="nav-proj-menu" id="nav-proj-menu">
       <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
       <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
       <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
     </div>
   </div>
@@ -3116,10 +3117,10 @@ window.calliopeSnapshot = function() {
     }
     .calliope-title-block { flex: 1; min-width: 0; }
     .calliope-name { font-size: 13px; font-weight: 700; color: #e2e4f0; }
-    .calliope-status { font-size: 10px; color: #6b7280; margin-top: 1px; }
+    .calliope-status { font-size: 10px; color: #9ca3af; margin-top: 1px; }
     .calliope-hdr-btns { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
     .calliope-hbtn {
-      background: none; border: none; color: #4b5563; cursor: pointer;
+      background: none; border: none; color: #6b7280; cursor: pointer;
       padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1;
       transition: color .15s, background .15s; font-family: inherit;
     }
@@ -3189,7 +3190,7 @@ window.calliopeSnapshot = function() {
       background: #0d1024; flex-shrink: 0;
     }
     .calliope-attach {
-      color: #4b5563; font-size: 17px; cursor: pointer; padding: 3px 2px;
+      color: #6b7280; font-size: 17px; cursor: pointer; padding: 3px 2px;
       transition: color .15s; flex-shrink: 0; line-height: 1; background: none; border: none;
     }
     .calliope-attach:hover { color: #a78bfa; }
@@ -3201,7 +3202,7 @@ window.calliopeSnapshot = function() {
       transition: border-color .15s; overflow-y: auto;
     }
     .calliope-textarea:focus { border-color: rgba(124,106,247,.65); }
-    .calliope-textarea::placeholder { color: #3d4460; }
+    .calliope-textarea::placeholder { color: #6b7280; }
     .calliope-send {
       width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
       background: linear-gradient(135deg, #7c6af7, #a78bfa); border: none;
@@ -3220,9 +3221,9 @@ window.calliopeSnapshot = function() {
     .calliope-sug { padding: 10px 12px 8px; border-bottom: 1px solid rgba(124,106,247,.1); flex-shrink: 0; }
     .calliope-sug.hidden { display: none; }
     .calliope-sug-header { margin-bottom: 8px; }
-    .calliope-sug-subtitle { font-size: 11px; color: #9ca3af; line-height: 1.5; margin-bottom: 8px; }
+    .calliope-sug-subtitle { font-size: 11px; color: #c9d1e0; line-height: 1.5; margin-bottom: 8px; }
     .calliope-sug-subtitle strong { color: #e2e8f0; }
-    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
     .calliope-sug-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .calliope-sug-card { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left; border: 1px solid rgba(124,106,247,.2); background: rgba(124,106,247,.06); color: #e2e8f0; font-family: inherit; transition: all .15s; width: 100%; }
     .calliope-sug-card:hover { background: rgba(124,106,247,.14); border-color: rgba(124,106,247,.45); transform: translateY(-1px); }
@@ -3230,7 +3231,7 @@ window.calliopeSnapshot = function() {
     .csc-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .csc-title { font-size: 11px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
     .csc-q { font-size: 10px; color: #a78bfa; line-height: 1.4; font-style: italic; }
-    .csc-desc { font-size: 10px; color: #6b7280; line-height: 1.4; }
+    .csc-desc { font-size: 10px; color: #9ca3af; line-height: 1.4; }
   `;
   document.head.appendChild(style);
 
@@ -3549,6 +3550,7 @@ When reasoning across dashboards:
   window.calliopeResize = function(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+    if (el.value.trim()) document.getElementById('calliope-sug')?.classList.add('hidden');
   };
 
   window.calliopeAttach = function(input) {
@@ -3599,12 +3601,6 @@ When reasoning across dashboards:
     const text = ta.value.trim();
     if (!text && !pendingImg) return;
 
-    const apiKey = localStorage.getItem('anthropic_api_key');
-    if (!apiKey) {
-      addMsg('assistant','<span style="color:#fb923c">⚠ Add your Anthropic API key in the Ideation Studio settings first.</span>');
-      return;
-    }
-
     // Build user content
     const userContent = [];
     if (pendingImg) userContent.push({ type:'image', source:{ type:'base64', media_type:pendingImg.mediaType, data:pendingImg.base64 } });
@@ -3634,12 +3630,10 @@ When reasoning across dashboards:
       const apiMessages = history.slice(0, -1)  // all but last (we'll add with image)
         .concat([{ role:'user', content: userContent.length===1 && !pendingImg ? text : userContent }]);
 
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      const resp = await fetch('https://egavves-github-io.vercel.app/api/chat', {
         method:'POST',
         headers:{
-          'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
           'content-type': 'application/json',
         },
         body: JSON.stringify({

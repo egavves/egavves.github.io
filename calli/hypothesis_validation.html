@@ -154,6 +154,7 @@ body{background:var(--bg);color:var(--text);
     <div class="nav-proj-menu" id="nav-proj-menu">
       <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
       <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
       <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
     </div>
   </div>
@@ -653,21 +654,11 @@ Format your response as:
     '\n\nPlease validate each hypothesis against this evidence.';
 
   try {
-    const apiKey = localStorage.getItem('anthropic_api_key');
-    if(!apiKey) {
-      alert('API key not found. Please set your Anthropic API key.');
-      btn.disabled = false;
-      btn.textContent = '🧪 Validate All';
-      return;
-    }
-
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://egavves-github-io.vercel.app/api/chat', {
       method: 'POST',
       headers: {
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
         'content-type': 'application/json',
-        'x-api-key': apiKey
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
@@ -803,13 +794,11 @@ async function generateStreamingSummary(prompt) {
       return;
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://egavves-github-io.vercel.app/api/chat', {
       method: 'POST',
       headers: {
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
         'content-type': 'application/json',
-        'x-api-key': apiKey
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
@@ -939,10 +928,10 @@ window.calliopeSnapshot = function() {
     }
     .calliope-title-block { flex: 1; min-width: 0; }
     .calliope-name { font-size: 13px; font-weight: 700; color: #e2e4f0; }
-    .calliope-status { font-size: 10px; color: #6b7280; margin-top: 1px; }
+    .calliope-status { font-size: 10px; color: #9ca3af; margin-top: 1px; }
     .calliope-hdr-btns { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
     .calliope-hbtn {
-      background: none; border: none; color: #4b5563; cursor: pointer;
+      background: none; border: none; color: #6b7280; cursor: pointer;
       padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1;
       transition: color .15s, background .15s; font-family: inherit;
     }
@@ -1012,7 +1001,7 @@ window.calliopeSnapshot = function() {
       background: #0d1024; flex-shrink: 0;
     }
     .calliope-attach {
-      color: #4b5563; font-size: 17px; cursor: pointer; padding: 3px 2px;
+      color: #6b7280; font-size: 17px; cursor: pointer; padding: 3px 2px;
       transition: color .15s; flex-shrink: 0; line-height: 1; background: none; border: none;
     }
     .calliope-attach:hover { color: #a78bfa; }
@@ -1024,7 +1013,7 @@ window.calliopeSnapshot = function() {
       transition: border-color .15s; overflow-y: auto;
     }
     .calliope-textarea:focus { border-color: rgba(124,106,247,.65); }
-    .calliope-textarea::placeholder { color: #3d4460; }
+    .calliope-textarea::placeholder { color: #6b7280; }
     .calliope-send {
       width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
       background: linear-gradient(135deg, #7c6af7, #a78bfa); border: none;
@@ -1037,9 +1026,9 @@ window.calliopeSnapshot = function() {
     .calliope-sug { padding: 10px 12px 8px; border-bottom: 1px solid rgba(124,106,247,.1); flex-shrink: 0; }
     .calliope-sug.hidden { display: none; }
     .calliope-sug-header { margin-bottom: 8px; }
-    .calliope-sug-subtitle { font-size: 11px; color: #9ca3af; line-height: 1.5; margin-bottom: 8px; }
+    .calliope-sug-subtitle { font-size: 11px; color: #c9d1e0; line-height: 1.5; margin-bottom: 8px; }
     .calliope-sug-subtitle strong { color: #e2e8f0; }
-    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
     .calliope-sug-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .calliope-sug-card { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left; border: 1px solid rgba(124,106,247,.2); background: rgba(124,106,247,.06); color: #e2e8f0; font-family: inherit; transition: all .15s; width: 100%; }
     .calliope-sug-card:hover { background: rgba(124,106,247,.14); border-color: rgba(124,106,247,.45); transform: translateY(-1px); }
@@ -1047,7 +1036,7 @@ window.calliopeSnapshot = function() {
     .csc-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
     .csc-title { font-size: 11px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
     .csc-q { font-size: 10px; color: #a78bfa; line-height: 1.4; font-style: italic; }
-    .csc-desc { font-size: 10px; color: #6b7280; line-height: 1.4; }
+    .csc-desc { font-size: 10px; color: #9ca3af; line-height: 1.4; }
   `;
   document.head.appendChild(style);
 
@@ -1176,13 +1165,13 @@ Your role: help the CUT team understand what the data means and how to act on it
   window.calliopeToggle=function(){isOpen=!isOpen;document.getElementById('calliope-chat').classList.toggle('open',isOpen);if(isOpen){initChat();setTimeout(()=>document.getElementById('calliope-ta').focus(),160);}};
   window.calliopeClear=function(){clearStoredHistory();history=[];initialized=false;document.getElementById('calliope-msgs').innerHTML='';initChat();};
   window.calliopeKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();calliopeSend();}};
-  window.calliopeResize=function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';};
+  window.calliopeResize=function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';if(el.value.trim())document.getElementById('calliope-sug')?.classList.add('hidden');};
   window.calliopeAttach=function(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{const r=e.target.result;pendingImg={base64:r.split(',')[1],mediaType:file.type,dataUrl:r};showImgPreview();};reader.readAsDataURL(file);input.value='';};
   window.calliopeRmImg=function(){pendingImg=null;const p=document.getElementById('calliope-img-preview');p.style.display='none';p.innerHTML='';};
   document.addEventListener('paste',function(e){if(!isOpen)return;const items=e.clipboardData?.items||[];for(const item of items){if(item.type.startsWith('image/')){const file=item.getAsFile();const reader=new FileReader();reader.onload=ev=>{const r=ev.target.result;pendingImg={base64:r.split(',')[1],mediaType:item.type,dataUrl:r};showImgPreview();};reader.readAsDataURL(file);e.preventDefault();return;}}});
   function showImgPreview(){const p=document.getElementById('calliope-img-preview');p.innerHTML='<img src="'+pendingImg.dataUrl+'"><button class="calliope-img-rm" onclick="calliopeRmImg()">✕</button>';p.style.display='flex';}
 
-  window.calliopeSend=async function(){if(streaming)return;const ta=document.getElementById('calliope-ta');const text=ta.value.trim();if(!text&&!pendingImg)return;const apiKey=localStorage.getItem('anthropic_api_key');if(!apiKey){addMsg('assistant','<span style="color:#fb923c">⚠ Add your Anthropic API key in the Ideation Studio settings first.</span>');return;}const userContent=[];if(pendingImg)userContent.push({type:'image',source:{type:'base64',media_type:pendingImg.mediaType,data:pendingImg.base64}});if(text)userContent.push({type:'text',text});const userHtml=(pendingImg?'<img src="'+pendingImg.dataUrl+'" class="calliope-msg-img">':'')+(text?escHtml(text):'');addMsg('user',userHtml);history.push({role:'user',content:text||'[image attached]'});ta.value='';ta.style.height='auto';calliopeRmImg();const typingId='calliope-t-'+Date.now();addTyping(typingId);streaming=true;document.getElementById('calliope-send-btn').disabled=true;setStatus('Thinking…');saveSnapshot();try{const apiMessages=history.slice(0,-1).concat([{role:'user',content:userContent.length===1&&!pendingImg?text:userContent}]);const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:1536,system:buildSystemPrompt(),messages:apiMessages,stream:true})});if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'HTTP '+resp.status);}document.getElementById(typingId)?.remove();const msgEl=addMsg('assistant','');const bubble=msgEl.querySelector('.calliope-bubble');const reader=resp.body.getReader();const decoder=new TextDecoder();let buf='',fullText='';while(true){const{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const line of lines){if(!line.startsWith('data: '))continue;const json=line.slice(6);if(json==='[DONE]')continue;try{const ev=JSON.parse(json);if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){fullText+=ev.delta.text;bubble.innerHTML=calliopeMarkdown(fullText);scrollBottom();}}catch{}}}history.push({role:'assistant',content:fullText});saveHistory();setStatus('AI guide · claude-sonnet-4-6');}catch(err){document.getElementById(typingId)?.remove();addMsg('assistant','<span style="color:#f87171">⚠ '+escHtml(err.message)+'</span>');setStatus('AI guide · claude-sonnet-4-6');}finally{streaming=false;document.getElementById('calliope-send-btn').disabled=false;}};
+  window.calliopeSend=async function(){if(streaming)return;const ta=document.getElementById('calliope-ta');const text=ta.value.trim();if(!text&&!pendingImg)return;const userContent=[];if(pendingImg)userContent.push({type:'image',source:{type:'base64',media_type:pendingImg.mediaType,data:pendingImg.base64}});if(text)userContent.push({type:'text',text});const userHtml=(pendingImg?'<img src="'+pendingImg.dataUrl+'" class="calliope-msg-img">':'')+(text?escHtml(text):'');addMsg('user',userHtml);history.push({role:'user',content:text||'[image attached]'});ta.value='';ta.style.height='auto';calliopeRmImg();const typingId='calliope-t-'+Date.now();addTyping(typingId);streaming=true;document.getElementById('calliope-send-btn').disabled=true;setStatus('Thinking…');saveSnapshot();try{const apiMessages=history.slice(0,-1).concat([{role:'user',content:userContent.length===1&&!pendingImg?text:userContent}]);const resp=await fetch('https://egavves-github-io.vercel.app/api/chat',{method:'POST',headers:{'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:1536,system:buildSystemPrompt(),messages:apiMessages,stream:true})});if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'HTTP '+resp.status);}document.getElementById(typingId)?.remove();const msgEl=addMsg('assistant','');const bubble=msgEl.querySelector('.calliope-bubble');const reader=resp.body.getReader();const decoder=new TextDecoder();let buf='',fullText='';while(true){const{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const line of lines){if(!line.startsWith('data: '))continue;const json=line.slice(6);if(json==='[DONE]')continue;try{const ev=JSON.parse(json);if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){fullText+=ev.delta.text;bubble.innerHTML=calliopeMarkdown(fullText);scrollBottom();}}catch{}}}history.push({role:'assistant',content:fullText});saveHistory();setStatus('AI guide · claude-sonnet-4-6');}catch(err){document.getElementById(typingId)?.remove();addMsg('assistant','<span style="color:#f87171">⚠ '+escHtml(err.message)+'</span>');setStatus('AI guide · claude-sonnet-4-6');}finally{streaming=false;document.getElementById('calliope-send-btn').disabled=false;}};
 
   window.addEventListener('beforeunload',saveSnapshot);
 })();
