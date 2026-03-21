@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical AI Hero - 3D Scene</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: #09090D;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+            mix-blend-mode: screen;
+        }
+
+        .hero-text h1 {
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #EAE6DE;
+            text-shadow: 0 0 30px rgba(0, 221, 102, 0.3), 0 0 60px rgba(34, 136, 204, 0.2);
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-text .subtitle {
+            font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: #C4A96A;
+            margin-bottom: 0.3rem;
+            text-shadow: 0 0 20px rgba(196, 169, 106, 0.4);
+        }
+
+        .hero-text .institution {
+            font-size: clamp(0.7rem, 1.2vw, 1rem);
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            color: #A39A8A;
+            text-shadow: 0 0 10px rgba(196, 169, 106, 0.2);
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #00DD66;
+            font-family: monospace;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">Initializing Physical AI scene...</div>
+
+    <div class="hero-text">
+        <h1>EFSTRATIOS GAVVES</h1>
+        <div class="subtitle">Associate Professor · Physical AI</div>
+        <div class="institution">University of Amsterdam</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ===== SCENE SETUP =====
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x09090D);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Fog for depth
+        const fog = new THREE.FogExp2(0x09090D, 0.008);
+        scene.fog = fog;
+
+        // Camera setup
+        camera.position.set(0, 1.5, 8);
+        camera.lookAt(0, 1, 0);
+
+        // ===== UTILITY FUNCTIONS =====
+        function transformGeometry(geom, position, rotation, scale) {
+            const m = new THREE.Matrix4();
+            const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(rotation.x, rotation.y, rotation.z));
+            m.compose(
+                new THREE.Vector3(position.x, position.y, position.z),
+                q,
+                new THREE.Vector3(scale.x || 1, scale.y || 1, scale.z || 1)
+            );
+            geom.applyMatrix4(m);
+            return geom;
+        }
+
+        function mergeGeometries(geometries) {
+            const positions = [];
+            for (const geom of geometries) {
+                const pos = geom.attributes.position.array;
+                for (let i = 0; i < pos.length; i++) {
+                    positions.push(pos[i]);
+                }
+            }
+            const merged = new THREE.BufferGeometry();
+            merged.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(positions), 3));
+            merged.computeBoundingSphere();
+            return merged;
+        }
+
+        // ===== BUILD HUMANOID ROBOT =====
+        function buildHumanoid(sceneIndex, basePosition = { x: 0, y: 0, z: 0 }, scale = 1.0) {
+            const geometries = [];
+
+            // Pose parameters based on scene
+            let headRotation = { x: 0, y: 0, z: 0 };
+            let torsoRotation = { x: 0, y: 0, z: 0 };
+            let leftArmRotation = { x: 0, y: 0, z: 0 };
+            let rightArmRotation = { x: 0, y: 0, z: 0 };
+            let leftArmAngleZ = 0;
+            let rightArmAngleZ = 0;
+            let leftLegRotation = { x: 0, y: 0, z: 0 };
+            let rightLegRotation = { x: 0, y: 0, z: 0 };
+
+            if (sceneIndex === 0) { // The Reach
+                rightArmAngleZ = -Math.PI * 0.4;
+                rightArmRotation = { x: -Math.PI * 0.3, y: 0, z: rightArmAngleZ };
+                headRotation = { x: 0, y: Math.PI * 0.2, z: 0 };
+            } else if (sceneIndex === 1) { // The Walk
+                leftLegRotation = { x: Math.PI * 0.3, y: 0, z: 0 };
+                rightLegRotation = { x: -Math.PI * 0.2, y: 0, z: 0 };
+                leftArmRotation = { x: -Math.PI * 0.25, y: 0, z: 0 };
+                rightArmRotation = { x: Math.PI * 0.25, y: 0, z: 0 };
+                torsoRotation = { x: Math.PI * 0.05, y: 0, z: 0 };
+            } else if (sceneIndex === 2) { // The Builder
+                torsoRotation = { x: Math.PI * 0.2, y: 0, z: 0 };
+                leftArmRotation = { x: Math.PI * 0.15, y: 0, z: Math.PI * 0.3 };
+                rightArmRotation = { x: Math.PI * 0.15, y: 0, z: -Math.PI * 0.3 };
+                headRotation = { x: Math.PI * 0.1, y: 0, z: 0 };
+            } else { // The Meeting (scene 3)
+                rightArmAngleZ = Math.PI * 0.15;
+                rightArmRotation = { x: 0, y: 0, z: rightArmAngleZ };
+                headRotation = { x: 0, y: -Math.PI * 0.15, z: 0 };
+            }
+
+            // HEAD
+            const head = new THREE.SphereGeometry(0.4 * scale, 32, 32);
+            transformGeometry(head, { x: 0, y: 0.95 * scale, z: 0 }, headRotation, { x: 1, y: 1.1, z: 1 });
+            geometries.push(head);
+
+            // NECK
+            const neck = new THREE.CylinderGeometry(0.15 * scale, 0.2 * scale, 0.4 * scale, 16, 4);
+            transformGeometry(neck, { x: 0, y: 0.6 * scale, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(neck);
+
+            // TORSO
+            const torso = new THREE.BoxGeometry(0.8 * scale, 1.2 * scale, 0.5 * scale, 12, 16, 8);
+            transformGeometry(torso, { x: 0, y: 0.2 * scale, z: 0 }, torsoRotation, { x: 1, y: 1, z: 1 });
+            geometries.push(torso);
+
+            // LEFT ARM
+            const leftUpperArm = new THREE.CylinderGeometry(0.15 * scale, 0.12 * scale, 0.7 * scale, 12, 8);
+            transformGeometry(leftUpperArm, { x: -0.5 * scale, y: 0.5 * scale, z: 0 }, leftArmRotation, { x: 1, y: 1, z: 1 });
+            geometries.push(leftUpperArm);
+
+            const leftLowerArm = new THREE.CylinderGeometry(0.12 * scale, 0.1 * scale, 0.6 * scale, 12, 8);
+            transformGeometry(leftLowerArm, { x: -0.75 * scale, y: 0, z: 0 }, { x: leftArmRotation.x + 0.3, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(leftLowerArm);
+
+            const leftHand = new THREE.SphereGeometry(0.12 * scale, 8, 8);
+            transformGeometry(leftHand, { x: -0.85 * scale, y: -0.35 * scale, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(leftHand);
+
+            // RIGHT ARM
+            const rightUpperArm = new THREE.CylinderGeometry(0.15 * scale, 0.12 * scale, 0.7 * scale, 12, 8);
+            transformGeometry(rightUpperArm, { x: 0.5 * scale, y: 0.5 * scale, z: 0 }, rightArmRotation, { x: 1, y: 1, z: 1 });
+            geometries.push(rightUpperArm);
+
+            const rightLowerArm = new THREE.CylinderGeometry(0.12 * scale, 0.1 * scale, 0.6 * scale, 12, 8);
+            transformGeometry(rightLowerArm, { x: 0.75 * scale, y: 0, z: 0 }, { x: rightArmRotation.x + 0.3, y: 0, z: rightArmRotation.z }, { x: 1, y: 1, z: 1 });
+            geometries.push(rightLowerArm);
+
+            const rightHand = new THREE.SphereGeometry(0.12 * scale, 8, 8);
+            transformGeometry(rightHand, { x: 0.85 * scale, y: -0.35 * scale, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(rightHand);
+
+            // LEFT LEG
+            const leftUpperLeg = new THREE.CylinderGeometry(0.18 * scale, 0.15 * scale, 0.8 * scale, 12, 8);
+            transformGeometry(leftUpperLeg, { x: -0.25 * scale, y: -0.5 * scale, z: 0 }, leftLegRotation, { x: 1, y: 1, z: 1 });
+            geometries.push(leftUpperLeg);
+
+            const leftLowerLeg = new THREE.CylinderGeometry(0.15 * scale, 0.12 * scale, 0.75 * scale, 12, 8);
+            transformGeometry(leftLowerLeg, { x: -0.25 * scale, y: -1.25 * scale, z: 0 }, { x: leftLegRotation.x - 0.2, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(leftLowerLeg);
+
+            const leftFoot = new THREE.BoxGeometry(0.22 * scale, 0.1 * scale, 0.35 * scale, 4, 2, 4);
+            transformGeometry(leftFoot, { x: -0.25 * scale, y: -1.85 * scale, z: 0.1 * scale }, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(leftFoot);
+
+            // RIGHT LEG
+            const rightUpperLeg = new THREE.CylinderGeometry(0.18 * scale, 0.15 * scale, 0.8 * scale, 12, 8);
+            transformGeometry(rightUpperLeg, { x: 0.25 * scale, y: -0.5 * scale, z: 0 }, rightLegRotation, { x: 1, y: 1, z: 1 });
+            geometries.push(rightUpperLeg);
+
+            const rightLowerLeg = new THREE.CylinderGeometry(0.15 * scale, 0.12 * scale, 0.75 * scale, 12, 8);
+            transformGeometry(rightLowerLeg, { x: 0.25 * scale, y: -1.25 * scale, z: 0 }, { x: rightLegRotation.x - 0.2, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(rightLowerLeg);
+
+            const rightFoot = new THREE.BoxGeometry(0.22 * scale, 0.1 * scale, 0.35 * scale, 4, 2, 4);
+            transformGeometry(rightFoot, { x: 0.25 * scale, y: -1.85 * scale, z: 0.1 * scale }, { x: 0, y: 0, z: 0 }, { x: 1, y: 1, z: 1 });
+            geometries.push(rightFoot);
+
+            // Merge all geometries
+            const merged = mergeGeometries(geometries);
+
+            // Store original positions for warping
+            const originalPositions = new Float32Array(merged.attributes.position.array);
+
+            // Create point cloud
+            const pointMaterial = new THREE.PointsMaterial({
+                color: 0x00DD66,
+                size: 1.8,
+                transparent: true,
+                opacity: 0.85,
+                sizeAttenuation: true
+            });
+            const points = new THREE.Points(merged, pointMaterial);
+            points.position.copy(new THREE.Vector3(basePosition.x, basePosition.y, basePosition.z));
+            points.userData.originalPositions = originalPositions;
+            points.userData.warped = false;
+            points.name = 'robot-points';
+
+            // Create wireframe
+            const wireframeGeometry = new THREE.WireframeGeometry(merged);
+            const wireframeMaterial = new THREE.LineBasicMaterial({
+                color: 0x00DD66,
+                transparent: true,
+                opacity: 0.15,
+                linewidth: 1
+            });
+            const wireframe = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+            wireframe.position.copy(new THREE.Vector3(basePosition.x, basePosition.y, basePosition.z));
+            wireframe.userData.originalPositions = new Float32Array(wireframeGeometry.attributes.position.array);
+            wireframe.userData.warped = false;
+            wireframe.name = 'robot-wireframe';
+
+            return { points, wireframe, merged, originalPositions };
+        }
+
+        // ===== BUILD ENVIRONMENT =====
+        function buildEnvironment(sceneIndex) {
+            const envGroup = new THREE.Group();
+
+            // GROUND PLANE
+            const groundGeom = new THREE.PlaneGeometry(40, 40, 80, 80);
+            groundGeom.rotateX(-Math.PI / 2);
+            groundGeom.translate(0, -2.1, 0);
+
+            const groundPointMat = new THREE.PointsMaterial({
+                color: 0x2288CC,
+                size: 1.0,
+                transparent: true,
+                opacity: 0.4,
+                sizeAttenuation: true
+            });
+            const groundPoints = new THREE.Points(groundGeom, groundPointMat);
+            groundPoints.userData.originalPositions = new Float32Array(groundGeom.attributes.position.array);
+            groundPoints.userData.warped = false;
+            groundPoints.name = 'ground-points';
+            envGroup.add(groundPoints);
+
+            const groundWireGeom = new THREE.WireframeGeometry(groundGeom);
+            const groundWireMat = new THREE.LineBasicMaterial({
+                color: 0x2288CC,
+                transparent: true,
+                opacity: 0.08,
+                linewidth: 1
+            });
+            const groundWire = new THREE.LineSegments(groundWireGeom, groundWireMat);
+            groundWire.position.copy(groundPoints.position);
+            envGroup.add(groundWire);
+
+            // ENVIRONMENT OBJECTS based on scene
+            if (sceneIndex === 0) { // The Reach - floating cube
+                const cubeGeom = new THREE.BoxGeometry(0.8, 0.8, 0.8, 8, 8, 8);
+                cubeGeom.translate(2.5, 1.5, 0);
+                const cubeMat = new THREE.PointsMaterial({
+                    color: 0x2288CC,
+                    size: 1.2,
+                    transparent: true,
+                    opacity: 0.6,
+                    sizeAttenuation: true
+                });
+                const cubePoints = new THREE.Points(cubeGeom, cubeMat);
+                cubePoints.userData.originalPositions = new Float32Array(cubeGeom.attributes.position.array);
+                cubePoints.userData.warped = false;
+                envGroup.add(cubePoints);
+
+                const cubeWireGeom = new THREE.WireframeGeometry(cubeGeom);
+                const cubeWire = new THREE.LineSegments(cubeWireGeom, new THREE.LineBasicMaterial({
+                    color: 0x2288CC,
+                    transparent: true,
+                    opacity: 0.3,
+                    linewidth: 1
+                }));
+                envGroup.add(cubeWire);
+
+            } else if (sceneIndex === 1) { // The Walk - scattered boxes
+                for (let i = 0; i < 5; i++) {
+                    const bx = new THREE.BoxGeometry(0.5 + Math.random() * 0.4, 0.3, 0.5 + Math.random() * 0.4, 6, 4, 6);
+                    bx.translate(-3 + i * 1.5, -1.8 + Math.random() * 0.3, -2 + Math.random() * 2);
+                    const bmat = new THREE.PointsMaterial({
+                        color: 0x2288CC,
+                        size: 1.0,
+                        transparent: true,
+                        opacity: 0.5,
+                        sizeAttenuation: true
+                    });
+                    const bp = new THREE.Points(bx, bmat);
+                    bp.userData.originalPositions = new Float32Array(bx.attributes.position.array);
+                    bp.userData.warped = false;
+                    envGroup.add(bp);
+                }
+
+            } else if (sceneIndex === 2) { // The Builder - workbench/table
+                const tableGeom = new THREE.BoxGeometry(3, 0.2, 1.5, 12, 2, 6);
+                tableGeom.translate(0, -0.3, 1.5);
+                const tableMat = new THREE.PointsMaterial({
+                    color: 0x2288CC,
+                    size: 1.0,
+                    transparent: true,
+                    opacity: 0.5,
+                    sizeAttenuation: true
+                });
+                const tablePoints = new THREE.Points(tableGeom, tableMat);
+                tablePoints.userData.originalPositions = new Float32Array(tableGeom.attributes.position.array);
+                tablePoints.userData.warped = false;
+                envGroup.add(tablePoints);
+
+                // Small objects on table
+                for (let i = 0; i < 3; i++) {
+                    const objGeom = new THREE.SphereGeometry(0.15, 8, 8);
+                    objGeom.translate(-0.8 + i * 0.8, 0.1, 1.5);
+                    const objMat = new THREE.PointsMaterial({
+                        color: 0x2288CC,
+                        size: 1.0,
+                        transparent: true,
+                        opacity: 0.6,
+                        sizeAttenuation: true
+                    });
+                    const objP = new THREE.Points(objGeom, objMat);
+                    objP.userData.originalPositions = new Float32Array(objGeom.attributes.position.array);
+                    objP.userData.warped = false;
+                    envGroup.add(objP);
+                }
+
+            } else { // The Meeting - pillars and another figure
+                // Vertical pillars
+                for (let i = 0; i < 3; i++) {
+                    const pillarGeom = new THREE.CylinderGeometry(0.15, 0.15, 3, 12, 12);
+                    pillarGeom.translate(-3 + i * 3, 0, 0);
+                    const pmat = new THREE.LineBasicMaterial({
+                        color: 0x2288CC,
+                        transparent: true,
+                        opacity: 0.3,
+                        linewidth: 1
+                    });
+                    const pwire = new THREE.LineSegments(new THREE.WireframeGeometry(pillarGeom), pmat);
+                    envGroup.add(pwire);
+                }
+
+                // Second humanoid (smaller, simple points)
+                const otherBot = buildHumanoid(3, { x: 2, y: 0, z: 0 }, 0.7);
+                envGroup.add(otherBot.points);
+                envGroup.add(otherBot.wireframe);
+            }
+
+            // Ambient scattered particles
+            const particleGeom = new THREE.BufferGeometry();
+            const particleCount = 100;
+            const positions = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 20;
+                positions[i + 1] = Math.random() * 5;
+                positions[i + 2] = (Math.random() - 0.5) * 10;
+            }
+            particleGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particleMat = new THREE.PointsMaterial({
+                color: 0x2288CC,
+                size: 0.5,
+                transparent: true,
+                opacity: 0.3,
+                sizeAttenuation: true
+            });
+            const particles = new THREE.Points(particleGeom, particleMat);
+            particles.userData.originalPositions = new Float32Array(positions);
+            particles.userData.warped = false;
+            envGroup.add(particles);
+
+            return envGroup;
+        }
+
+        // ===== INITIALIZE SCENE BASED ON DAY =====
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 0);
+        const diff = now - startOfYear;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+        const sceneIndex = dayOfYear % 4;
+
+        const robotData = buildHumanoid(sceneIndex, { x: 0, y: 0, z: 0 }, 1.0);
+        scene.add(robotData.points);
+        scene.add(robotData.wireframe);
+
+        const environment = buildEnvironment(sceneIndex);
+        scene.add(environment);
+
+        // Collect all warped objects for mouse interaction
+        const warpedObjects = [robotData.points, robotData.wireframe];
+        scene.traverse(obj => {
+            if (obj.userData && obj.userData.originalPositions && obj !== robotData.points && obj !== robotData.wireframe) {
+                warpedObjects.push(obj);
+            }
+        });
+
+        // ===== MOUSE INTERACTION & WARPING =====
+        const raycaster = new THREE.Raycaster();
+        const mouseVector = new THREE.Vector2();
+        const warpPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const warpPoint = new THREE.Vector3();
+        let lastMouseX = 0, lastMouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            lastMouseX = event.clientX;
+            lastMouseY = event.clientY;
+            mouseVector.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouseVector, camera);
+            raycaster.ray.intersectPlane(warpPlane, warpPoint);
+        });
+
+        function applyWarp() {
+            const strength = 2.0;
+            const softening = 3.0;
+            const maxDisplacement = 1.5;
+
+            for (const obj of warpedObjects) {
+                if (!obj.geometry.attributes.position) continue;
+
+                const positions = obj.geometry.attributes.position.array;
+                const originalPositions = obj.userData.originalPositions;
+                const worldPos = new THREE.Vector3();
+                obj.getWorldPosition(worldPos);
+
+                for (let i = 0; i < positions.length; i += 3) {
+                    const origX = originalPositions[i];
+                    const origY = originalPositions[i + 1];
+                    const origZ = originalPositions[i + 2];
+
+                    const vx = origX + obj.position.x;
+                    const vy = origY + obj.position.y;
+                    const vz = origZ + obj.position.z;
+
+                    const dx = warpPoint.x - vx;
+                    const dy = warpPoint.y - vy;
+                    const dz = warpPoint.z - vz;
+                    const dist2 = dx * dx + dy * dy + dz * dz;
+                    const dist = Math.sqrt(dist2);
+
+                    if (dist < 15) {
+                        const magnitude = strength / (dist2 + softening);
+                        const displaceX = Math.max(-maxDisplacement, Math.min(maxDisplacement, dx * magnitude * 0.1));
+                        const displaceY = Math.max(-maxDisplacement, Math.min(maxDisplacement, dy * magnitude * 0.1));
+                        const displaceZ = Math.max(-maxDisplacement, Math.min(maxDisplacement, dz * magnitude * 0.1));
+
+                        positions[i] = origX + displaceX;
+                        positions[i + 1] = origY + displaceY;
+                        positions[i + 2] = origZ + displaceZ;
+                    } else {
+                        positions[i] = origX;
+                        positions[i + 1] = origY;
+                        positions[i + 2] = origZ;
+                    }
+                }
+
+                obj.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+
+        // ===== SCANNING LINES EFFECT =====
+        let scanLineY = -2;
+        function updateScanLines() {
+            scanLineY += 0.05;
+            if (scanLineY > 2) scanLineY = -2;
+
+            const positions = robotData.points.geometry.attributes.position.array;
+            const originalPositions = robotData.points.userData.originalPositions;
+
+            for (let i = 0; i < positions.length; i += 3) {
+                const y = originalPositions[i + 1];
+                const distToScan = Math.abs(y - scanLineY);
+                const scanAlpha = Math.max(0, 1 - distToScan * 2);
+
+                if (scanAlpha > 0.1) {
+                    // Brighten points near scan line
+                    // (In this implementation, we'd need vertex colors which is complex,
+                    // so we'll keep the effect subtle by just moving points slightly)
+                }
+            }
+        }
+
+        // ===== ANIMATION LOOP =====
+        let orbitAngle = 0;
+        let lastTime = Date.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const now = Date.now();
+            const deltaTime = (now - lastTime) / 1000;
+            lastTime = now;
+
+            // Orbit camera
+            orbitAngle += 0.03 * deltaTime;
+            const orbitRadius = 8;
+            camera.position.x = Math.cos(orbitAngle) * orbitRadius;
+            camera.position.z = Math.sin(orbitAngle) * orbitRadius;
+            camera.lookAt(0, 1, 0);
+
+            // Apply warp effect
+            applyWarp();
+
+            // Update scan lines
+            updateScanLines();
+
+            // Gentle rotation of the robot
+            robotData.points.rotation.y += 0.002;
+            robotData.wireframe.rotation.y += 0.002;
+
+            renderer.render(scene, camera);
+        }
+
+        // ===== HANDLE WINDOW RESIZE =====
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efstratios Gavves - Physical AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: #09090D;
+            color: #EAE6DE;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #EAE6DE;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 40px rgba(0, 204, 102, 0.15);
+            line-height: 1;
+        }
+
+        .hero-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            color: #8A8680;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            .hero-subtitle {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="hero-content">
+        <h1 class="hero-title">EFSTRATIOS GAVVES</h1>
+        <p class="hero-subtitle">Associate Professor · Physical AI</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true, alpha: false });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x09090D);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        camera.position.set(0, 2, 8);
+        camera.lookAt(0, 1, 0);
+
+        // Colors
+        const ROBOT_COLOR = 0x00CC66;
+        const ENV_COLOR = 0x3388CC;
+
+        // Create meshes that will be warped
+        const warpableObjects = [];
+        const originalVertexPositions = [];
+
+        // Utility: Create wireframe mesh
+        function createWireframeMesh(geometry, color) {
+            const material = new THREE.LineBasicMaterial({ color: color, linewidth: 1 });
+            const wireframe = new THREE.LineSegments(
+                new THREE.WireframeGeometry(geometry),
+                material
+            );
+            return wireframe;
+        }
+
+        // Humanoid Robot
+        function createHumanoidRobot() {
+            const group = new THREE.Group();
+
+            // Torso
+            const torsoGeo = new THREE.BoxGeometry(0.6, 1.2, 0.4);
+            const torso = createWireframeMesh(torsoGeo, ROBOT_COLOR);
+            torso.position.set(0, 0.6, 0);
+            group.add(torso);
+            warpableObjects.push(torso);
+            originalVertexPositions.push(torsoGeo.positions ? torsoGeo.positions.clone() : null);
+
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.25, 8, 8);
+            const head = createWireframeMesh(headGeo, ROBOT_COLOR);
+            head.position.set(0, 1.5, 0);
+            group.add(head);
+            warpableObjects.push(head);
+            originalVertexPositions.push(headGeo.positions ? headGeo.positions.clone() : null);
+
+            // Left arm reaching
+            const armLGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6, 4);
+            const armL = createWireframeMesh(armLGeo, ROBOT_COLOR);
+            armL.position.set(-0.5, 0.8, 0);
+            armL.rotation.z = Math.PI / 3;
+            group.add(armL);
+            warpableObjects.push(armL);
+            originalVertexPositions.push(armLGeo.positions ? armLGeo.positions.clone() : null);
+
+            // Right arm reaching
+            const armRGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.8, 6, 4);
+            const armR = createWireframeMesh(armRGeo, ROBOT_COLOR);
+            armR.position.set(0.5, 0.8, 0);
+            armR.rotation.z = -Math.PI / 3;
+            group.add(armR);
+            warpableObjects.push(armR);
+            originalVertexPositions.push(armRGeo.positions ? armRGeo.positions.clone() : null);
+
+            // Left leg
+            const legLGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.7, 6, 4);
+            const legL = createWireframeMesh(legLGeo, ROBOT_COLOR);
+            legL.position.set(-0.2, 0, 0);
+            group.add(legL);
+            warpableObjects.push(legL);
+            originalVertexPositions.push(legLGeo.positions ? legLGeo.positions.clone() : null);
+
+            // Right leg
+            const legRGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.7, 6, 4);
+            const legR = createWireframeMesh(legRGeo, ROBOT_COLOR);
+            legR.position.set(0.2, 0, 0);
+            group.add(legR);
+            warpableObjects.push(legR);
+            originalVertexPositions.push(legRGeo.positions ? legRGeo.positions.clone() : null);
+
+            group.position.set(-2, 0, 1);
+            return group;
+        }
+
+        // Industrial Robot Arm
+        function createIndustrialArm() {
+            const group = new THREE.Group();
+
+            // Base
+            const baseGeo = new THREE.CylinderGeometry(0.3, 0.4, 0.2, 8, 4);
+            const base = createWireframeMesh(baseGeo, ROBOT_COLOR);
+            base.position.y = 0.1;
+            group.add(base);
+            warpableObjects.push(base);
+            originalVertexPositions.push(baseGeo.positions ? baseGeo.positions.clone() : null);
+
+            // Segment 1
+            const seg1Geo = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 6, 4);
+            const seg1 = createWireframeMesh(seg1Geo, ROBOT_COLOR);
+            seg1.position.set(0, 0.5, 0);
+            group.add(seg1);
+            warpableObjects.push(seg1);
+            originalVertexPositions.push(seg1Geo.positions ? seg1Geo.positions.clone() : null);
+
+            // Segment 2
+            const seg2Geo = new THREE.CylinderGeometry(0.07, 0.07, 0.5, 6, 4);
+            const seg2 = createWireframeMesh(seg2Geo, ROBOT_COLOR);
+            seg2.position.set(0, 0.9, 0.3);
+            seg2.rotation.z = Math.PI / 6;
+            group.add(seg2);
+            warpableObjects.push(seg2);
+            originalVertexPositions.push(seg2Geo.positions ? seg2Geo.positions.clone() : null);
+
+            // End effector
+            const gripGeo = new THREE.SphereGeometry(0.12, 6, 6);
+            const grip = createWireframeMesh(gripGeo, ROBOT_COLOR);
+            grip.position.set(0.15, 1.3, 0.5);
+            group.add(grip);
+            warpableObjects.push(grip);
+            originalVertexPositions.push(gripGeo.positions ? gripGeo.positions.clone() : null);
+
+            group.position.set(1.5, 0, 1);
+            return group;
+        }
+
+        // Bipedal Walking Robot
+        function createBipedalRobot() {
+            const group = new THREE.Group();
+
+            // Torso
+            const torsoGeo = new THREE.BoxGeometry(0.5, 1, 0.35);
+            const torso = createWireframeMesh(torsoGeo, ROBOT_COLOR);
+            torso.position.set(0, 0.6, 0);
+            torso.rotation.z = 0.15;
+            group.add(torso);
+            warpableObjects.push(torso);
+            originalVertexPositions.push(torsoGeo.positions ? torsoGeo.positions.clone() : null);
+
+            // Head
+            const headGeo = new THREE.SphereGeometry(0.2, 8, 8);
+            const head = createWireframeMesh(headGeo, ROBOT_COLOR);
+            head.position.set(0, 1.4, 0);
+            group.add(head);
+            warpableObjects.push(head);
+            originalVertexPositions.push(headGeo.positions ? headGeo.positions.clone() : null);
+
+            // Left leg (forward)
+            const legLGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.7, 6, 4);
+            const legL = createWireframeMesh(legLGeo, ROBOT_COLOR);
+            legL.position.set(-0.2, 0.2, 0.2);
+            legL.rotation.z = Math.PI / 5;
+            group.add(legL);
+            warpableObjects.push(legL);
+            originalVertexPositions.push(legLGeo.positions ? legLGeo.positions.clone() : null);
+
+            // Right leg (back)
+            const legRGeo = new THREE.CylinderGeometry(0.09, 0.09, 0.7, 6, 4);
+            const legR = createWireframeMesh(legRGeo, ROBOT_COLOR);
+            legR.position.set(0.2, 0.2, -0.2);
+            legR.rotation.z = -Math.PI / 5;
+            group.add(legR);
+            warpableObjects.push(legR);
+            originalVertexPositions.push(legRGeo.positions ? legRGeo.positions.clone() : null);
+
+            group.position.set(0, 0, -1.5);
+            return group;
+        }
+
+        // Two Small Robots
+        function createTwoSmallRobots() {
+            const group = new THREE.Group();
+
+            // Robot 1
+            const robot1 = new THREE.Group();
+            const head1Geo = new THREE.SphereGeometry(0.15, 6, 6);
+            const head1 = createWireframeMesh(head1Geo, ROBOT_COLOR);
+            head1.position.set(-0.4, 0.3, 0);
+            robot1.add(head1);
+            warpableObjects.push(head1);
+            originalVertexPositions.push(head1Geo.positions ? head1Geo.positions.clone() : null);
+
+            const body1Geo = new THREE.BoxGeometry(0.3, 0.4, 0.25);
+            const body1 = createWireframeMesh(body1Geo, ROBOT_COLOR);
+            body1.position.set(-0.4, 0.05, 0);
+            robot1.add(body1);
+            warpableObjects.push(body1);
+            originalVertexPositions.push(body1Geo.positions ? body1Geo.positions.clone() : null);
+
+            group.add(robot1);
+
+            // Robot 2
+            const robot2 = new THREE.Group();
+            const head2Geo = new THREE.SphereGeometry(0.15, 6, 6);
+            const head2 = createWireframeMesh(head2Geo, ROBOT_COLOR);
+            head2.position.set(0.4, 0.3, 0);
+            robot2.add(head2);
+            warpableObjects.push(head2);
+            originalVertexPositions.push(head2Geo.positions ? head2Geo.positions.clone() : null);
+
+            const body2Geo = new THREE.BoxGeometry(0.3, 0.4, 0.25);
+            const body2 = createWireframeMesh(body2Geo, ROBOT_COLOR);
+            body2.position.set(0.4, 0.05, 0);
+            robot2.add(body2);
+            warpableObjects.push(body2);
+            originalVertexPositions.push(body2Geo.positions ? body2Geo.positions.clone() : null);
+
+            group.add(robot2);
+            group.position.set(-0.5, 0.2, -2);
+            return group;
+        }
+
+        // Environment setup
+        function setupEnvironment() {
+            // Ground plane
+            const groundGeo = new THREE.PlaneGeometry(10, 10, 20, 20);
+            const ground = createWireframeMesh(groundGeo, ENV_COLOR);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.5;
+            scene.add(ground);
+            warpableObjects.push(ground);
+            originalVertexPositions.push(groundGeo.positions ? groundGeo.positions.clone() : null);
+
+            // Table 1
+            const tableTopGeo = new THREE.BoxGeometry(2, 0.1, 1.2);
+            const tableTop = createWireframeMesh(tableTopGeo, ENV_COLOR);
+            tableTop.position.set(-1.5, 0.8, 0);
+            scene.add(tableTop);
+            warpableObjects.push(tableTop);
+            originalVertexPositions.push(tableTopGeo.positions ? tableTopGeo.positions.clone() : null);
+
+            const tableGeoLeg = new THREE.CylinderGeometry(0.08, 0.08, 1.2, 6, 4);
+            for (let i = 0; i < 4; i++) {
+                const leg = createWireframeMesh(tableGeoLeg, ENV_COLOR);
+                leg.position.set(-1.5 + (i % 2) * 1.8 - 0.9, 0.2, (i < 2 ? -0.4 : 0.4));
+                scene.add(leg);
+                warpableObjects.push(leg);
+                originalVertexPositions.push(tableGeoLeg.positions ? tableGeoLeg.positions.clone() : null);
+            }
+
+            // Box 1
+            const boxGeo = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+            const box = createWireframeMesh(boxGeo, ENV_COLOR);
+            box.position.set(2, 0.3, 0.5);
+            scene.add(box);
+            warpableObjects.push(box);
+            originalVertexPositions.push(boxGeo.positions ? boxGeo.positions.clone() : null);
+
+            // Walls
+            const wallGeo = new THREE.BoxGeometry(0.1, 3, 8);
+            const wall1 = createWireframeMesh(wallGeo, ENV_COLOR);
+            wall1.position.set(-5.5, 1.5, 0);
+            scene.add(wall1);
+            warpableObjects.push(wall1);
+            originalVertexPositions.push(wallGeo.positions ? wallGeo.positions.clone() : null);
+
+            const wall2 = createWireframeMesh(wallGeo, ENV_COLOR);
+            wall2.position.set(5.5, 1.5, 0);
+            scene.add(wall2);
+            warpableObjects.push(wall2);
+            originalVertexPositions.push(wallGeo.positions ? wallGeo.positions.clone() : null);
+        }
+
+        // Select daily scene
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+
+        const dayOfYear = getDayOfYear(new Date());
+        const sceneChoice = dayOfYear % 4;
+
+        // Add robots
+        setupEnvironment();
+        let robotGroup;
+        switch(sceneChoice) {
+            case 0:
+                robotGroup = createHumanoidRobot();
+                break;
+            case 1:
+                robotGroup = createIndustrialArm();
+                break;
+            case 2:
+                robotGroup = createBipedalRobot();
+                break;
+            case 3:
+                robotGroup = createTwoSmallRobots();
+                break;
+        }
+        scene.add(robotGroup);
+
+        // Gravitational warping
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const warpRadius = 3;
+        const warpStrength = 0.5;
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Store original positions for all geometries
+        const geometryOriginalPositions = new Map();
+        warpableObjects.forEach((obj) => {
+            if (obj.geometry && obj.geometry.attributes && obj.geometry.attributes.position) {
+                const positions = obj.geometry.attributes.position;
+                geometryOriginalPositions.set(obj.geometry, positions.array.slice());
+            }
+        });
+
+        function applyWarp() {
+            raycaster.setFromCamera(mouse, camera);
+            const warpPoint = raycaster.ray.getPointAt(5);
+
+            warpableObjects.forEach((obj) => {
+                if (!obj.geometry || !obj.geometry.attributes || !obj.geometry.attributes.position) return;
+
+                const positions = obj.geometry.attributes.position;
+                const original = geometryOriginalPositions.get(obj.geometry);
+
+                if (!original) return;
+
+                const worldPosition = new THREE.Vector3();
+                obj.getWorldPosition(worldPosition);
+
+                for (let i = 0; i < positions.count; i++) {
+                    const x = original[i * 3];
+                    const y = original[i * 3 + 1];
+                    const z = original[i * 3 + 2];
+
+                    const vertexWorld = new THREE.Vector3(x, y, z).applyMatrix4(obj.matrixWorld);
+                    const distToWarp = vertexWorld.distanceTo(warpPoint);
+
+                    if (distToWarp < warpRadius) {
+                        const influence = Math.max(0, 1 - (distToWarp / warpRadius));
+                        const falloff = influence * influence;
+
+                        const direction = new THREE.Vector3().subVectors(vertexWorld, warpPoint).normalize();
+                        const displacement = direction.multiplyScalar(warpStrength * falloff * 0.15);
+
+                        const localPos = new THREE.Vector3(x, y, z);
+                        localPos.add(obj.worldToLocal(displacement));
+
+                        positions.array[i * 3] = localPos.x;
+                        positions.array[i * 3 + 1] = localPos.y;
+                        positions.array[i * 3 + 2] = localPos.z;
+                    }
+                }
+
+                positions.needsUpdate = true;
+            });
+        }
+
+        // Animation loop
+        let time = 0;
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            time = clock.getElapsedTime();
+
+            // Slow orbit
+            const angle = time * 0.1;
+            const radius = 8;
+            camera.position.x = Math.sin(angle) * radius;
+            camera.position.z = Math.cos(angle) * radius;
+            camera.lookAt(0, 1, 0);
+
+            // Slight rotation of robot
+            robotGroup.rotation.y += 0.002;
+
+            applyWarp();
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

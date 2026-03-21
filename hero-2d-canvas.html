@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physical AI Hero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background-color: #09090D;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .name {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: #EAE6DE;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 30px rgba(0, 204, 102, 0.15);
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #B0AAA0;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .name {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Scanlines effect */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.08),
+                    rgba(0, 0, 0, 0.08) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="heroCanvas"></canvas>
+    <div class="overlay">
+        <div class="content">
+            <h1 class="name">EFSTRATIOS GAVVES</h1>
+            <p class="subtitle">Associate Professor · Physical AI</p>
+        </div>
+        <div class="scanlines"></div>
+    </div>
+
+    <script>
+        class MeshGrid {
+            constructor(x, y, spacing = 15) {
+                this.x = x;
+                this.y = y;
+                this.spacing = spacing;
+                this.points = [];
+                this.originalPoints = [];
+                this.connections = [];
+                this.offsetX = 0;
+                this.offsetY = 0;
+            }
+
+            createGridPoints(shapes) {
+                this.points = [];
+                this.originalPoints = [];
+                const minX = Math.min(...shapes.flatMap(s => s.points.map(p => p.x))) - 10;
+                const maxX = Math.max(...shapes.flatMap(s => s.points.map(p => p.x))) + 10;
+                const minY = Math.min(...shapes.flatMap(s => s.points.map(p => p.y))) - 10;
+                const maxY = Math.max(...shapes.flatMap(s => s.points.map(p => p.y))) + 10;
+
+                for (let py = minY; py < maxY; py += this.spacing) {
+                    for (let px = minX; px < maxX; px += this.spacing) {
+                        if (this.isPointInShapes(px, py, shapes)) {
+                            this.points.push({ x: px, y: py, vx: 0, vy: 0 });
+                            this.originalPoints.push({ x: px, y: py });
+                        }
+                    }
+                }
+                this.buildConnections();
+            }
+
+            isPointInShapes(px, py, shapes) {
+                return shapes.some(shape => this.pointInPolygon(px, py, shape.points));
+            }
+
+            pointInPolygon(x, y, polygon) {
+                let inside = false;
+                for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                    const xi = polygon[i].x, yi = polygon[i].y;
+                    const xj = polygon[j].x, yj = polygon[j].y;
+                    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+                    if (intersect) inside = !inside;
+                }
+                return inside;
+            }
+
+            buildConnections() {
+                this.connections = [];
+                const threshold = this.spacing * 1.5;
+                for (let i = 0; i < this.points.length; i++) {
+                    for (let j = i + 1; j < this.points.length; j++) {
+                        const dx = this.points[i].x - this.points[j].x;
+                        const dy = this.points[i].y - this.points[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < threshold) {
+                            this.connections.push([i, j]);
+                        }
+                    }
+                }
+            }
+
+            applyGravitationalWarp(mouseX, mouseY, strength = 50, radius = 250) {
+                for (let i = 0; i < this.points.length; i++) {
+                    const p = this.points[i];
+                    const op = this.originalPoints[i];
+                    const dx = mouseX - p.x;
+                    const dy = mouseY - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < radius && dist > 0) {
+                        const force = strength * (1 - dist / radius) / (dist + 1);
+                        p.vx += (dx / dist) * force * 0.05;
+                        p.vy += (dy / dist) * force * 0.05;
+                    }
+
+                    // Return to original position
+                    const returnDx = op.x - p.x;
+                    const returnDy = op.y - p.y;
+                    p.vx += returnDx * 0.1;
+                    p.vy += returnDy * 0.1;
+
+                    // Apply velocity with damping
+                    p.vx *= 0.92;
+                    p.vy *= 0.92;
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Subtle ambient drift
+                    p.x += Math.sin(Date.now() * 0.0005 + i) * 0.1;
+                    p.y += Math.cos(Date.now() * 0.0003 + i) * 0.1;
+                }
+            }
+
+            render(ctx, color) {
+                const points = this.points;
+                const connections = this.connections;
+
+                // Draw connections
+                ctx.strokeStyle = color.replace(')', ', 0.4)').replace('rgb', 'rgba');
+                ctx.lineWidth = 0.8;
+                for (const [i, j] of connections) {
+                    ctx.beginPath();
+                    ctx.moveTo(points[i].x, points[i].y);
+                    ctx.lineTo(points[j].x, points[j].y);
+                    ctx.stroke();
+                }
+
+                // Draw glow effect
+                ctx.shadowColor = color.replace(')', ', 0.5)').replace('rgb', 'rgba');
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = color.replace(')', ', 0.6)').replace('rgb', 'rgba');
+                for (const p of points) {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        class HeroAnimation {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.width = canvas.width = window.innerWidth;
+                this.height = canvas.height = window.innerHeight;
+                this.mouseX = this.width / 2;
+                this.mouseY = this.height / 2;
+                this.isAnimating = true;
+                this.sceneIndex = new Date().getDate() % 4;
+                this.seed = new Date().getDate();
+
+                this.robotMesh = null;
+                this.envMesh = null;
+                this.setupScene();
+                this.setupEventListeners();
+                this.setupIntersectionObserver();
+            }
+
+            setupEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                });
+
+                window.addEventListener('resize', () => {
+                    this.width = this.canvas.width = window.innerWidth;
+                    this.height = this.canvas.height = window.innerHeight;
+                });
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    this.isAnimating = entries[0].isIntersecting;
+                });
+                observer.observe(this.canvas);
+            }
+
+            setupScene() {
+                const scenes = [
+                    this.createReachingScene.bind(this),
+                    this.createPickupScene.bind(this),
+                    this.createWalkingScene.bind(this),
+                    this.createCooperationScene.bind(this)
+                ];
+
+                const { robot, env } = scenes[this.sceneIndex]();
+
+                this.robotMesh = new MeshGrid(0, 0, 18);
+                this.robotMesh.createGridPoints(robot);
+
+                this.envMesh = new MeshGrid(0, 0, 20);
+                this.envMesh.createGridPoints(env);
+            }
+
+            createReachingScene() {
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+
+                // Humanoid robot
+                const robot = [
+                    // Head
+                    {
+                        points: [
+                            { x: centerX - 20, y: centerY - 120 },
+                            { x: centerX + 20, y: centerY - 120 },
+                            { x: centerX + 20, y: centerY - 80 },
+                            { x: centerX - 20, y: centerY - 80 }
+                        ]
+                    },
+                    // Torso
+                    {
+                        points: [
+                            { x: centerX - 25, y: centerY - 75 },
+                            { x: centerX + 25, y: centerY - 75 },
+                            { x: centerX + 25, y: centerY - 10 },
+                            { x: centerX - 25, y: centerY - 10 }
+                        ]
+                    },
+                    // Left arm
+                    {
+                        points: [
+                            { x: centerX - 30, y: centerY - 50 },
+                            { x: centerX - 80, y: centerY - 70 },
+                            { x: centerX - 85, y: centerY - 50 },
+                            { x: centerX - 35, y: centerY - 30 }
+                        ]
+                    },
+                    // Right arm reaching
+                    {
+                        points: [
+                            { x: centerX + 30, y: centerY - 50 },
+                            { x: centerX + 130, y: centerY - 80 },
+                            { x: centerX + 135, y: centerY - 60 },
+                            { x: centerX + 35, y: centerY - 30 }
+                        ]
+                    },
+                    // Left leg
+                    {
+                        points: [
+                            { x: centerX - 15, y: centerY - 10 },
+                            { x: centerX - 5, y: centerY - 10 },
+                            { x: centerX - 5, y: centerY + 60 },
+                            { x: centerX - 15, y: centerY + 60 }
+                        ]
+                    },
+                    // Right leg
+                    {
+                        points: [
+                            { x: centerX + 5, y: centerY - 10 },
+                            { x: centerX + 15, y: centerY - 10 },
+                            { x: centerX + 15, y: centerY + 60 },
+                            { x: centerX + 5, y: centerY + 60 }
+                        ]
+                    }
+                ];
+
+                // Environment: table with object
+                const env = [
+                    // Ground plane
+                    {
+                        points: [
+                            { x: centerX - 400, y: centerY + 80 },
+                            { x: centerX + 400, y: centerY + 80 },
+                            { x: centerX + 400, y: centerY + 120 },
+                            { x: centerX - 400, y: centerY + 120 }
+                        ]
+                    },
+                    // Table top
+                    {
+                        points: [
+                            { x: centerX + 80, y: centerY - 40 },
+                            { x: centerX + 200, y: centerY - 40 },
+                            { x: centerX + 200, y: centerY - 30 },
+                            { x: centerX + 80, y: centerY - 30 }
+                        ]
+                    },
+                    // Table legs
+                    {
+                        points: [
+                            { x: centerX + 90, y: centerY - 30 },
+                            { x: centerX + 100, y: centerY - 30 },
+                            { x: centerX + 100, y: centerY + 80 },
+                            { x: centerX + 90, y: centerY + 80 }
+                        ]
+                    },
+                    {
+                        points: [
+                            { x: centerX + 180, y: centerY - 30 },
+                            { x: centerX + 190, y: centerY - 30 },
+                            { x: centerX + 190, y: centerY + 80 },
+                            { x: centerX + 180, y: centerY + 80 }
+                        ]
+                    },
+                    // Object on table
+                    {
+                        points: [
+                            { x: centerX + 150, y: centerY - 60 },
+                            { x: centerX + 180, y: centerY - 60 },
+                            { x: centerX + 180, y: centerY - 40 },
+                            { x: centerX + 150, y: centerY - 40 }
+                        ]
+                    }
+                ];
+
+                return { robot, env };
+            }
+
+            createPickupScene() {
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+
+                // Industrial arm robot
+                const robot = [
+                    // Base
+                    {
+                        points: [
+                            { x: centerX - 40, y: centerY },
+                            { x: centerX + 40, y: centerY },
+                            { x: centerX + 40, y: centerY + 40 },
+                            { x: centerX - 40, y: centerY + 40 }
+                        ]
+                    },
+                    // Arm segment 1
+                    {
+                        points: [
+                            { x: centerX - 10, y: centerY },
+                            { x: centerX + 10, y: centerY },
+                            { x: centerX + 20, y: centerY - 100 },
+                            { x: centerX - 20, y: centerY - 100 }
+                        ]
+                    },
+                    // Arm segment 2
+                    {
+                        points: [
+                            { x: centerX, y: centerY - 100 },
+                            { x: centerX + 30, y: centerY - 100 },
+                            { x: centerX + 40, y: centerY - 200 },
+                            { x: centerX - 10, y: centerY - 200 }
+                        ]
+                    },
+                    // End effector
+                    {
+                        points: [
+                            { x: centerX + 10, y: centerY - 200 },
+                            { x: centerX + 30, y: centerY - 200 },
+                            { x: centerX + 30, y: centerY - 180 },
+                            { x: centerX + 10, y: centerY - 180 }
+                        ]
+                    }
+                ];
+
+                // Environment: conveyor and box
+                const env = [
+                    // Ground plane
+                    {
+                        points: [
+                            { x: centerX - 400, y: centerY + 200 },
+                            { x: centerX + 400, y: centerY + 200 },
+                            { x: centerX + 400, y: centerY + 240 },
+                            { x: centerX - 400, y: centerY + 240 }
+                        ]
+                    },
+                    // Conveyor belt
+                    {
+                        points: [
+                            { x: centerX - 250, y: centerY + 80 },
+                            { x: centerX + 150, y: centerY + 80 },
+                            { x: centerX + 150, y: centerY + 120 },
+                            { x: centerX - 250, y: centerY + 120 }
+                        ]
+                    },
+                    // Box on conveyor
+                    {
+                        points: [
+                            { x: centerX - 100, y: centerY + 30 },
+                            { x: centerX - 30, y: centerY + 30 },
+                            { x: centerX - 30, y: centerY + 80 },
+                            { x: centerX - 100, y: centerY + 80 }
+                        ]
+                    }
+                ];
+
+                return { robot, env };
+            }
+
+            createWalkingScene() {
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+
+                // Bipedal walking robot
+                const robot = [
+                    // Head
+                    {
+                        points: [
+                            { x: centerX - 15, y: centerY - 140 },
+                            { x: centerX + 15, y: centerY - 140 },
+                            { x: centerX + 15, y: centerY - 110 },
+                            { x: centerX - 15, y: centerY - 110 }
+                        ]
+                    },
+                    // Torso
+                    {
+                        points: [
+                            { x: centerX - 20, y: centerY - 105 },
+                            { x: centerX + 20, y: centerY - 105 },
+                            { x: centerX + 20, y: centerY - 30 },
+                            { x: centerX - 20, y: centerY - 30 }
+                        ]
+                    },
+                    // Left arm down
+                    {
+                        points: [
+                            { x: centerX - 25, y: centerY - 80 },
+                            { x: centerX - 45, y: centerY - 80 },
+                            { x: centerX - 45, y: centerY - 40 },
+                            { x: centerX - 25, y: centerY - 40 }
+                        ]
+                    },
+                    // Right arm up
+                    {
+                        points: [
+                            { x: centerX + 25, y: centerY - 80 },
+                            { x: centerX + 50, y: centerY - 100 },
+                            { x: centerX + 55, y: centerY - 75 },
+                            { x: centerX + 30, y: centerY - 55 }
+                        ]
+                    },
+                    // Left leg forward
+                    {
+                        points: [
+                            { x: centerX - 10, y: centerY - 30 },
+                            { x: centerX + 5, y: centerY - 30 },
+                            { x: centerX + 10, y: centerY + 70 },
+                            { x: centerX - 5, y: centerY + 70 }
+                        ]
+                    },
+                    // Right leg back
+                    {
+                        points: [
+                            { x: centerX - 5, y: centerY - 30 },
+                            { x: centerX + 10, y: centerY - 30 },
+                            { x: centerX + 5, y: centerY + 50 },
+                            { x: centerX - 10, y: centerY + 50 }
+                        ]
+                    }
+                ];
+
+                // Environment: uneven terrain
+                const env = [
+                    // Terrain - hill 1
+                    {
+                        points: [
+                            { x: centerX - 300, y: centerY + 100 },
+                            { x: centerX - 100, y: centerY + 50 },
+                            { x: centerX - 100, y: centerY + 150 },
+                            { x: centerX - 300, y: centerY + 150 }
+                        ]
+                    },
+                    // Terrain - hill 2
+                    {
+                        points: [
+                            { x: centerX - 50, y: centerY + 60 },
+                            { x: centerX + 150, y: centerY + 20 },
+                            { x: centerX + 150, y: centerY + 150 },
+                            { x: centerX - 50, y: centerY + 150 }
+                        ]
+                    },
+                    // Terrain - hill 3
+                    {
+                        points: [
+                            { x: centerX + 100, y: centerY + 80 },
+                            { x: centerX + 350, y: centerY + 120 },
+                            { x: centerX + 350, y: centerY + 150 },
+                            { x: centerX + 100, y: centerY + 150 }
+                        ]
+                    }
+                ];
+
+                return { robot, env };
+            }
+
+            createCooperationScene() {
+                const centerX = this.width / 2;
+                const centerY = this.height / 2;
+
+                // Two cooperating robots
+                const robot = [
+                    // Robot 1 left
+                    // Head
+                    {
+                        points: [
+                            { x: centerX - 120, y: centerY - 120 },
+                            { x: centerX - 80, y: centerY - 120 },
+                            { x: centerX - 80, y: centerY - 80 },
+                            { x: centerX - 120, y: centerY - 80 }
+                        ]
+                    },
+                    // Torso
+                    {
+                        points: [
+                            { x: centerX - 125, y: centerY - 75 },
+                            { x: centerX - 75, y: centerY - 75 },
+                            { x: centerX - 75, y: centerY - 10 },
+                            { x: centerX - 125, y: centerY - 10 }
+                        ]
+                    },
+                    // Reaching arm
+                    {
+                        points: [
+                            { x: centerX - 75, y: centerY - 40 },
+                            { x: centerX - 30, y: centerY - 30 },
+                            { x: centerX - 30, y: centerY - 10 },
+                            { x: centerX - 75, y: centerY - 20 }
+                        ]
+                    },
+                    // Legs
+                    {
+                        points: [
+                            { x: centerX - 110, y: centerY - 10 },
+                            { x: centerX - 90, y: centerY - 10 },
+                            { x: centerX - 90, y: centerY + 60 },
+                            { x: centerX - 110, y: centerY + 60 }
+                        ]
+                    },
+
+                    // Robot 2 right
+                    // Head
+                    {
+                        points: [
+                            { x: centerX + 80, y: centerY - 120 },
+                            { x: centerX + 120, y: centerY - 120 },
+                            { x: centerX + 120, y: centerY - 80 },
+                            { x: centerX + 80, y: centerY - 80 }
+                        ]
+                    },
+                    // Torso
+                    {
+                        points: [
+                            { x: centerX + 75, y: centerY - 75 },
+                            { x: centerX + 125, y: centerY - 75 },
+                            { x: centerX + 125, y: centerY - 10 },
+                            { x: centerX + 75, y: centerY - 10 }
+                        ]
+                    },
+                    // Reaching arm
+                    {
+                        points: [
+                            { x: centerX + 75, y: centerY - 40 },
+                            { x: centerX + 30, y: centerY - 30 },
+                            { x: centerX + 30, y: centerY - 10 },
+                            { x: centerX + 75, y: centerY - 20 }
+                        ]
+                    },
+                    // Legs
+                    {
+                        points: [
+                            { x: centerX + 90, y: centerY - 10 },
+                            { x: centerX + 110, y: centerY - 10 },
+                            { x: centerX + 110, y: centerY + 60 },
+                            { x: centerX + 90, y: centerY + 60 }
+                        ]
+                    }
+                ];
+
+                // Environment: shared workspace
+                const env = [
+                    // Ground plane
+                    {
+                        points: [
+                            { x: centerX - 350, y: centerY + 100 },
+                            { x: centerX + 350, y: centerY + 100 },
+                            { x: centerX + 350, y: centerY + 140 },
+                            { x: centerX - 350, y: centerY + 140 }
+                        ]
+                    },
+                    // Central workspace platform
+                    {
+                        points: [
+                            { x: centerX - 50, y: centerY - 30 },
+                            { x: centerX + 50, y: centerY - 30 },
+                            { x: centerX + 50, y: centerY + 20 },
+                            { x: centerX - 50, y: centerY + 20 }
+                        ]
+                    },
+                    // Object being transferred
+                    {
+                        points: [
+                            { x: centerX - 20, y: centerY - 50 },
+                            { x: centerX + 20, y: centerY - 50 },
+                            { x: centerX + 20, y: centerY - 30 },
+                            { x: centerX - 20, y: centerY - 30 }
+                        ]
+                    }
+                ];
+
+                return { robot, env };
+            }
+
+            animate() {
+                if (!this.isAnimating) {
+                    requestAnimationFrame(() => this.animate());
+                    return;
+                }
+
+                this.ctx.fillStyle = '#09090D';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                // Apply gravitational warp to both meshes
+                this.envMesh.applyGravitationalWarp(this.mouseX, this.mouseY, 40, 280);
+                this.robotMesh.applyGravitationalWarp(this.mouseX, this.mouseY, 50, 280);
+
+                // Render environment first (blue)
+                this.envMesh.render(this.ctx, 'rgb(51, 136, 204)');
+
+                // Render robot on top (green)
+                this.robotMesh.render(this.ctx, 'rgb(0, 204, 102)');
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize animation when page loads
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('heroCanvas');
+            const animation = new HeroAnimation(canvas);
+            animation.animate();
+        });
+
+        // Fallback initialization if load event doesn't fire
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const canvas = document.getElementById('heroCanvas');
+                const animation = new HeroAnimation(canvas);
+                animation.animate();
+            });
+        } else {
+            const canvas = document.getElementById('heroCanvas');
+            const animation = new HeroAnimation(canvas);
+            animation.animate();
+        }
+    </script>
+</body>
+</html>

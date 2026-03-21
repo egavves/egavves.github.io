@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Efstratios Gavves — Physical AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#09090D}
+canvas{display:block;position:absolute;top:0;left:0}
+.hero-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:10;pointer-events:none}
+.hero-text h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.6rem,5vw,5.2rem);font-weight:700;color:#EAE6DE;letter-spacing:-0.03em;line-height:1;margin-bottom:0.9rem;text-shadow:0 0 40px rgba(0,221,102,0.15)}
+.hero-text .role{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.22em;text-transform:uppercase;color:#C4A96A;margin-bottom:0.3rem}
+.hero-text .inst{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(234,230,222,0.5)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="hero-text">
+  <h1>Efstratios Gavves</h1>
+  <div class="role">Associate Professor · Physical AI</div>
+  <div class="inst">University of Amsterdam</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// WIREFRAME MESH HUMANOID — Three.js WebGL
+// Dense vertex grid with wireframe lines + glowing points
+// Gravitational mouse warping, static camera
+// ═══════════════════════════════════════════════════════════════
+
+let W = window.innerWidth, H = window.innerHeight;
+
+// ── Scene ──
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x09090D);
+
+const camera = new THREE.PerspectiveCamera(38, W / H, 0.1, 100);
+camera.position.set(0, 3.3, 11);
+camera.lookAt(0, 3.0, 0);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('c'),
+  antialias: true
+});
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// ── Mouse ──
+let mouseX = W / 2, mouseY = H / 2;
+let targetMX = W / 2, targetMY = H / 2;
+let mouseActive = false;
+
+document.addEventListener('mousemove', e => {
+  targetMX = e.clientX; targetMY = e.clientY;
+  mouseActive = true;
+});
+document.addEventListener('mouseleave', () => { mouseActive = false; });
+
+// ── Soft circle texture for points (gives round glowing dots) ──
+const pointTex = (() => {
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const ctx = c.getContext('2d');
+  const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.25, 'rgba(255,255,255,0.8)');
+  g.addColorStop(0.6, 'rgba(255,255,255,0.15)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+})();
+
+// ── Materials ──
+const wireMat = new THREE.MeshBasicMaterial({
+  color: 0x00BB55,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.28,
+  depthWrite: false
+});
+
+const pointMat = new THREE.PointsMaterial({
+  color: 0x00FF88,
+  size: 0.055,
+  map: pointTex,
+  transparent: true,
+  opacity: 0.95,
+  sizeAttenuation: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+});
+
+// Fake bloom: larger, dimmer points
+const glowMat = new THREE.PointsMaterial({
+  color: 0x00FF88,
+  size: 0.16,
+  map: pointTex,
+  transparent: true,
+  opacity: 0.12,
+  sizeAttenuation: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false
+});
+
+// ── Geometry tracking for warping ──
+const allGeometries = [];
+
+function addPart(geometry) {
+  const pos = geometry.getAttribute('position');
+  geometry.userData.originals = new Float32Array(pos.array);
+  scene.add(new THREE.Mesh(geometry, wireMat));
+  scene.add(new THREE.Points(geometry, pointMat));
+  scene.add(new THREE.Points(geometry, glowMat));
+  allGeometries.push(geometry);
+}
+
+// ── Forward kinematics helper ──
+function limbEnd(jx, jy, angle, length) {
+  return {
+    x: jx + length * Math.sin(angle),
+    y: jy - length * Math.cos(angle)
+  };
+}
+
+// Place a cylinder with its TOP at (jx, jy), rotated by angle around Z
+function placeCyl(rTop, rBot, h, rSegs, hSegs, jx, jy, angle, sX, sZ) {
+  const geo = new THREE.CylinderGeometry(rTop, rBot, h, rSegs, hSegs);
+  if (sX != null) geo.scale(sX, 1, sZ != null ? sZ : 1);
+  geo.translate(0, -h / 2, 0);       // top at origin
+  geo.rotateZ(angle || 0);           // rotate around joint
+  geo.translate(jx, jy, 0);          // move to joint
+  addPart(geo);
+}
+
+// Place a sphere centered at (px, py, pz)
+function placeSph(r, wS, hS, px, py, pz, sX, sY, sZ) {
+  const geo = new THREE.SphereGeometry(r, wS, hS);
+  if (sX != null) geo.scale(sX, sY != null ? sY : 1, sZ != null ? sZ : 1);
+  geo.translate(px, py, pz || 0);
+  addPart(geo);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BUILD HUMANOID
+// ═══════════════════════════════════════════════════════════════
+
+const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+const poseIndex = dayOfYear % 4;
+
+function buildFigure(ox, oy, scale, pose) {
+  const s = scale;
+
+  // ── Pose angles (radians) ──
+  // Convention: 0 = limb points straight down
+  // positive = clockwise (screen-right for right limbs)
+  let rSh, rEl, lSh, lEl, rHi, rKn, lHi, lKn, torso, head;
+
+  switch (pose) {
+    case 0: // The Reach — right arm up
+      rSh = 2.4; rEl = -0.6;
+      lSh = 0.12; lEl = 0.2;
+      rHi = 0.04; rKn = 0; lHi = -0.04; lKn = 0;
+      torso = 0.03; head = -0.08;
+      break;
+    case 1: // The Stride — walking
+      rSh = -0.35; rEl = 0.4;
+      lSh = 0.35; lEl = 0.25;
+      rHi = -0.3; rKn = 0.3; lHi = 0.3; lKn = -0.05;
+      torso = 0.04; head = 0;
+      break;
+    case 2: // The Craft — arms working in front
+      rSh = 0.55; rEl = 1.3;
+      lSh = -0.55; lEl = -1.3;
+      rHi = 0.03; rKn = 0; lHi = -0.03; lKn = 0;
+      torso = 0.06; head = 0.12;
+      break;
+    default: // The Connection — reaching toward partner
+      rSh = 1.4; rEl = -0.4;
+      lSh = 0.15; lEl = 0.2;
+      rHi = 0.03; rKn = 0; lHi = -0.04; lKn = 0.03;
+      torso = -0.04; head = -0.08;
+  }
+
+  // ── Landmark Y positions ──
+  const feetY   = oy;
+  const ankleY  = oy + 0.15 * s;
+  const hipY    = oy + 3.1 * s;
+  const waistY  = hipY + 0.5 * s;
+  const chestY  = waistY + 0.8 * s;
+  const shouldY = chestY + 0.65 * s;
+  const neckY   = shouldY + 0.35 * s;
+  const headY   = neckY + 0.6 * s;
+
+  // ── Head ──
+  placeSph(0.48*s, 32, 24, ox, headY, 0);
+
+  // ── Neck ──
+  placeCyl(0.14*s, 0.18*s, 0.35*s, 14, 3, ox, neckY + 0.15*s, torso * 0.5);
+
+  // ── Upper chest ──
+  placeCyl(0.58*s, 0.48*s, 0.7*s, 20, 6, ox, shouldY + 0.1*s, torso, 1, 0.55);
+
+  // ── Lower chest ──
+  placeCyl(0.48*s, 0.42*s, 0.6*s, 18, 5, ox, chestY + 0.15*s, torso * 0.7, 1, 0.52);
+
+  // ── Abdomen ──
+  placeCyl(0.42*s, 0.38*s, 0.5*s, 16, 4, ox, waistY + 0.1*s, torso * 0.3, 1, 0.5);
+
+  // ── Hips ──
+  placeSph(0.42*s, 16, 10, ox, hipY + 0.05*s, 0, 1, 0.55, 0.55);
+
+  // ── Shoulder joints ──
+  const shW = 0.63 * s; // shoulder width from center
+  placeSph(0.14*s, 10, 8, ox - shW, shouldY, 0);
+  placeSph(0.14*s, 10, 8, ox + shW, shouldY, 0);
+
+  // ── Limb dimensions ──
+  const uArmL = 1.1 * s, fArmL = 1.0 * s;
+  const uLegL = 1.35 * s, lLegL = 1.25 * s;
+
+  // ── Left arm ──
+  placeCyl(0.1*s, 0.085*s, uArmL, 12, 5, ox - shW, shouldY, lSh);
+  const lElP = limbEnd(ox - shW, shouldY, lSh, uArmL);
+  const lFA = lSh + lEl;
+  placeCyl(0.085*s, 0.065*s, fArmL, 12, 4, lElP.x, lElP.y, lFA);
+  const lHand = limbEnd(lElP.x, lElP.y, lFA, fArmL);
+  placeSph(0.07*s, 8, 6, lHand.x, lHand.y, 0);
+
+  // ── Right arm ──
+  placeCyl(0.1*s, 0.085*s, uArmL, 12, 5, ox + shW, shouldY, rSh);
+  const rElP = limbEnd(ox + shW, shouldY, rSh, uArmL);
+  const rFA = rSh + rEl;
+  placeCyl(0.085*s, 0.065*s, fArmL, 12, 4, rElP.x, rElP.y, rFA);
+  const rHand = limbEnd(rElP.x, rElP.y, rFA, fArmL);
+  placeSph(0.07*s, 8, 6, rHand.x, rHand.y, 0);
+
+  // ── Left leg ──
+  const hipW = 0.22 * s;
+  placeCyl(0.16*s, 0.13*s, uLegL, 14, 6, ox - hipW, hipY - 0.05*s, lHi);
+  const lKnP = limbEnd(ox - hipW, hipY - 0.05*s, lHi, uLegL);
+  const lSA = lHi + lKn;
+  placeCyl(0.13*s, 0.09*s, lLegL, 12, 6, lKnP.x, lKnP.y, lSA);
+  const lFoot = limbEnd(lKnP.x, lKnP.y, lSA, lLegL);
+  placeSph(0.1*s, 8, 6, lFoot.x, lFoot.y - 0.02*s, 0, 1.4, 0.35, 0.8);
+
+  // ── Right leg ──
+  placeCyl(0.16*s, 0.13*s, uLegL, 14, 6, ox + hipW, hipY - 0.05*s, rHi);
+  const rKnP = limbEnd(ox + hipW, hipY - 0.05*s, rHi, uLegL);
+  const rSA = rHi + rKn;
+  placeCyl(0.13*s, 0.09*s, lLegL, 12, 6, rKnP.x, rKnP.y, rSA);
+  const rFoot = limbEnd(rKnP.x, rKnP.y, rSA, lLegL);
+  placeSph(0.1*s, 8, 6, rFoot.x, rFoot.y - 0.02*s, 0, 1.4, 0.35, 0.8);
+}
+
+// Build main figure
+buildFigure(0, 0.25, 1.0, poseIndex);
+
+// Pose 3: add a second smaller figure
+if (poseIndex === 3) {
+  buildFigure(2.8, 0.35, 0.72, 0);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GRAVITATIONAL WARPING
+// ═══════════════════════════════════════════════════════════════
+
+const WARP_RADIUS = 2.0;
+const WARP_STRENGTH = 0.5;
+const LERP_SPEED = 0.07;
+
+// Pre-allocated vectors to avoid GC
+const _v = new THREE.Vector3();
+const _closest = new THREE.Vector3();
+const _mouseWorld = new THREE.Vector3();
+const _rayDir = new THREE.Vector3();
+const _rayOrigin = new THREE.Vector3();
+const ray = new THREE.Ray();
+
+function updateWarp() {
+  // Build mouse ray
+  _mouseWorld.set((mouseX / W) * 2 - 1, -(mouseY / H) * 2 + 1, 0.5);
+  _mouseWorld.unproject(camera);
+  _rayOrigin.copy(camera.position);
+  _rayDir.copy(_mouseWorld).sub(_rayOrigin).normalize();
+  ray.set(_rayOrigin, _rayDir);
+
+  for (const geo of allGeometries) {
+    const pos = geo.getAttribute('position');
+    const arr = pos.array;
+    const orig = geo.userData.originals;
+
+    for (let i = 0, l = pos.count; i < l; i++) {
+      const i3 = i * 3;
+      _v.set(orig[i3], orig[i3 + 1], orig[i3 + 2]);
+
+      ray.closestPointToPoint(_v, _closest);
+      const dist = _v.distanceTo(_closest);
+
+      if (mouseActive && dist < WARP_RADIUS) {
+        const force = 1 - dist / WARP_RADIUS;
+        const strength = force * force * WARP_STRENGTH;
+        const tx = orig[i3]     + (_closest.x - _v.x) * strength;
+        const ty = orig[i3 + 1] + (_closest.y - _v.y) * strength;
+        const tz = orig[i3 + 2] + (_closest.z - _v.z) * strength;
+        arr[i3]     += (tx - arr[i3])     * LERP_SPEED;
+        arr[i3 + 1] += (ty - arr[i3 + 1]) * LERP_SPEED;
+        arr[i3 + 2] += (tz - arr[i3 + 2]) * LERP_SPEED;
+      } else {
+        arr[i3]     += (orig[i3]     - arr[i3])     * LERP_SPEED;
+        arr[i3 + 1] += (orig[i3 + 1] - arr[i3 + 1]) * LERP_SPEED;
+        arr[i3 + 2] += (orig[i3 + 2] - arr[i3 + 2]) * LERP_SPEED;
+      }
+    }
+    pos.needsUpdate = true;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANIMATION LOOP
+// ═══════════════════════════════════════════════════════════════
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Smooth mouse interpolation
+  mouseX += (targetMX - mouseX) * 0.08;
+  mouseY += (targetMY - mouseY) * 0.08;
+
+  updateWarp();
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// ── Resize ──
+window.addEventListener('resize', () => {
+  W = window.innerWidth;
+  H = window.innerHeight;
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+  renderer.setSize(W, H);
+});
+</script>
+</body>
+</html>
