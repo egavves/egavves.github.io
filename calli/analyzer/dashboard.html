@@ -1047,7 +1047,7 @@ const CHART_INSTANCES = {};
 const VBR_VISIBLE     = {}; // sid → number of cards currently shown
 let FEAT_DESC_MAP = {};   // feature_name → description (loaded from feature_schema.json)
 
-const IS_PROD = location.hostname === 'egavves.github.io';
+const IS_PROD = location.hostname !== 'localhost' && location.hostname !== '127.0.0.1';
 const PROXY   = IS_PROD
   ? 'https://egavves-github-io.vercel.app/api/chat'
   : 'http://localhost:5765/api/anthropic';
