@@ -26,7 +26,8 @@
       "format_column": "format",
       "format_binary": "is_youtube_short",
       "targets":   ["retention_30s", "views_public", "engagement_like_ratio",
-                    "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+                    "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential",
+                    "spread_potential"],
       "feature_groups": {
         "geo":       ["geo_us_pct", "geo_eu_pct", "geo_asia_pct", "geo_latam_pct"],
         "traffic":   ["traffic_algorithmic_pct", "traffic_subscriber_pct",
@@ -103,9 +104,11 @@
 
   "analysis": {
     "correlation_targets": ["retention_30s", "views_public", "engagement_like_ratio",
-                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential",
+                            "spread_potential"],
     "lasso_targets":       ["retention_30s", "views_public", "engagement_like_ratio",
-                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential",
+                            "spread_potential"],
     "top_n_features":      8,
     "precomputed":         true
   },
