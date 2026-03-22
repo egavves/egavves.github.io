@@ -1240,36 +1240,19 @@ function buildRadialMenu(cfg) {
     <button class="radial-spoke-btn" onclick="populateFullCanvas();toggleRadial()" title="Add all panels">📋</button>`;
   container.appendChild(loadSpoke);
 
-  // Config-driven spokes
+  // Config-driven spokes — order is bottom→top (column-reverse flex)
+  // Visual order top→bottom: Videos, YT Performance, AI Analysis, Social Media Trends, Recommendations, Ideation
   const SPOKE_MAP = [
-    { keys:['performance','perf-panel'],     id:'performance',      icon:'📊', label:'Performance'   },
-    { keys:['analysis','analysis-panel'],     id:'corr-chart',       icon:'🧠', label:'Analysis'      },
-    { keys:['trends','trend-panel'],          id:'trend-chart',      icon:'📈', label:'Trends'        },
-    { keys:['videos','video-panel'],          id:'video-browser',    icon:'🎬', label:'Video browser' },
-    { keys:['hypotheses','hyp-panel'],        id:'hypothesis',       icon:'🔬', label:'Hypotheses'    },
-    { keys:['ideation','ideation-panel'],     id:'ideation-tabs',    icon:'💡', label:'Ideation'      },
-    { keys:['data','data-panel','summary','report-panel'], id:'metrics-row', icon:'🔢', label:'Metrics' },
+    { keys:['ideation','ideation-panel'],     id:'ideation-tabs',    icon:'💡', label:'Ideation'             },
+    { keys:['hypotheses','hyp-panel'],        id:'hypothesis',       icon:'🔬', label:'Recommendations'      },
+    { keys:['trends','trend-panel'],          id:'trend-chart',      icon:'📈', label:'Social Media Trends'  },
+    { keys:['analysis','analysis-panel'],     id:'corr-chart',       icon:'🧠', label:'AI Analysis'          },
+    { keys:['performance','perf-panel'],      id:'performance',      icon:'📊', label:'YouTube Performance'  },
+    { keys:['videos','video-panel','data','data-panel','summary','report-panel'], id:'videos-combined', icon:'🎬', label:'Videos' },
   ];
 
-  const rawItems = cfg.interface?.radial_menu || [];
-  const seen = new Set();
-
-  rawItems.forEach(item => {
-    const key = (item.panel || item.id || '').toLowerCase();
-    const match = SPOKE_MAP.find(m => m.keys.some(k => key.includes(k)));
-    if (!match || seen.has(match.id)) return;
-    seen.add(match.id);
-    const spoke = document.createElement('div');
-    spoke.className = 'radial-spoke';
-    spoke.innerHTML = `
-      <span class="radial-spoke-label" onclick="emitCard('${match.id}');toggleRadial()">${item.label || match.label}</span>
-      <button class="radial-spoke-btn" onclick="emitCard('${match.id}');toggleRadial()" title="${item.label || match.label}">${item.icon || match.icon}</button>`;
-    container.appendChild(spoke);
-  });
-
-  // Fallback: add any unmapped spokes from SPOKE_MAP not already shown
+  // Always use SPOKE_MAP order (config radial_menu is ignored for ordering)
   SPOKE_MAP.forEach(m => {
-    if (seen.has(m.id)) return;
     const spoke = document.createElement('div');
     spoke.className = 'radial-spoke';
     spoke.innerHTML = `
@@ -1326,6 +1309,13 @@ function populateFullCanvas() {
 }
 
 function emitCard(type, opts = {}) {
+  // "Videos" combines metrics-row (top) + video-browser
+  // Emit video-browser first because prepend reverses visual order
+  if (type === 'videos-combined') {
+    emitCard('video-browser', opts);
+    emitCard('metrics-row', opts);
+    return;
+  }
   if (SINGLETON_TYPES.has(type)) {
     const existing = CANVAS_CARDS.find(c => c.type === type);
     if (existing) {
