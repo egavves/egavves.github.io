@@ -1,0 +1,109 @@
+{
+  "_comment": "Copy this file to projects/{your_project_id}/config.json and fill in all fields.",
+
+  "project": {
+    "id":          "my_project",
+    "name":        "My Project",
+    "tagline":     "One-line description shown in the launcher",
+    "type":        "analyzer",
+    "created":     "YYYY-MM-DD",
+    "accent":      "#a78bfa",
+    "gradient":    ["#a78bfa", "#c4b5fd"],
+    "icon":        "🎬",
+    "banner_class": "card-banner-cut"
+  },
+
+  "data": {
+    "source": "csv",
+    "_source_options": ["csv", "youtube_api", "parquet"],
+    "files": {
+      "videos":      "data/videos.csv",
+      "features":    "data/features.parquet",
+      "ml_insights": "data/ml_insights.json"
+    },
+    "schema": {
+      "id":        "video_id",
+      "title":     "title",
+      "date":      "published_at",
+      "thumbnail": "thumbnail_url",
+      "targets":   ["views", "avg_view_percentage", "retention_30s",
+                    "subscribers_gained", "cpm", "revenue"],
+      "feature_groups": {
+        "geo":       ["geo_us_pct", "geo_eu_pct", "geo_asia_pct", "geo_latam_pct"],
+        "traffic":   ["traffic_algorithmic_pct", "traffic_subscriber_pct",
+                      "traffic_search_pct", "traffic_external_pct"],
+        "audio":     ["wpm", "silence_ratio_audio", "excitement_peaks",
+                      "crosstalk_score", "hook_energy_ratio"],
+        "thumbnail": ["thumb_brightness", "thumb_colorfulness",
+                      "thumb_center_weight", "thumb_contrast_rms"],
+        "title":     ["title_shock_word_count", "title_fomo_score",
+                      "title_challenge_framing", "title_personal_you"],
+        "speech":    ["avg_sentence_length", "filler_frequency", "q_rate"]
+      }
+    }
+  },
+
+  "calliope": {
+    "model": "claude-sonnet-4-6",
+    "system_prompt": "prompts/system.txt",
+    "context_inject": ["data/ml_insights.json"],
+    "suggestions": [
+      {
+        "label": "What drives performance?",
+        "prompt": "Based on the data, what are the top 3 levers for improving the key metric?"
+      },
+      {
+        "label": "Best format to double down on",
+        "prompt": "Which content format has the best risk-adjusted performance?"
+      },
+      {
+        "label": "Generate concept",
+        "prompt": "Suggest a data-backed content concept grounded in the top correlation signals."
+      }
+    ]
+  },
+
+  "interface": {
+    "mode": "calliope-centric",
+    "radial_menu": [
+      { "id": "data",       "label": "Data",       "icon": "🗃",  "panel": "data-panel"      },
+      { "id": "analysis",   "label": "Analysis",   "icon": "📊",  "panel": "analysis-panel"  },
+      { "id": "ideation",   "label": "Ideation",   "icon": "💡",  "panel": "ideation-panel"  },
+      { "id": "social",     "label": "Social",     "icon": "💬",  "panel": "social-panel"    },
+      { "id": "hypotheses", "label": "Hypotheses", "icon": "🔬",  "panel": "hyp-panel"       },
+      { "id": "report",     "label": "Summary",    "icon": "📋",  "panel": "report-panel"    }
+    ],
+    "default_open": null,
+    "stat_cards": [
+      { "label": "Videos",    "expr": "count",         "field": "video_id",           "format": "integer" },
+      { "label": "Views",     "expr": "sum",           "field": "views",              "format": "compact" },
+      { "label": "Retention", "expr": "mean",          "field": "avg_view_percentage","format": "percent" },
+      { "label": "Formats",   "expr": "nunique",       "field": "format",             "format": "integer" }
+    ]
+  },
+
+  "ideation": {
+    "formats":          ["Format A", "Format B"],
+    "audiences":        ["Audience A", "Audience B"],
+    "image_generation": true,
+    "image_model":      "fal-ai/flux/schnell"
+  },
+
+  "analysis": {
+    "correlation_targets": ["views", "avg_view_percentage", "retention_30s"],
+    "lasso_targets":       ["views", "avg_view_percentage", "retention_30s",
+                            "subscribers_gained", "cpm"],
+    "top_n_features":      8,
+    "precomputed":         true
+  },
+
+  "social": {
+    "platforms":     [],
+    "refresh_hours": 24
+  },
+
+  "nav": {
+    "project_label":      "PROJECT",
+    "show_project_switcher": true
+  }
+}

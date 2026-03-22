@@ -1,0 +1,118 @@
+{
+  "profiles": {
+    "production": {
+      "description": "Optimized for real ideation runs. Balanced thresholds, minimal logging.",
+      "mode": "production",
+      "max_iterations": 5,
+      "max_revisions_per_stage": 1,
+      "consensus": {
+        "strategy": "weighted",
+        "avg_threshold": 6.5,
+        "hard_floor": 4,
+        "critic_floor": 6,
+        "convergence_variance": 2.5,
+        "weights": {}
+      },
+      "inter_agent_messages": true,
+      "audience_iteration": true,
+      "verbose_logging": false
+    },
+    "debug": {
+      "description": "Full logging, relaxed thresholds for testing pipeline mechanics. More iterations allowed.",
+      "mode": "debug",
+      "max_iterations": 5,
+      "max_revisions_per_stage": 2,
+      "consensus": {
+        "strategy": "simple_avg",
+        "avg_threshold": 5.0,
+        "hard_floor": 2,
+        "critic_floor": 4,
+        "convergence_variance": 4.0,
+        "weights": {}
+      },
+      "inter_agent_messages": true,
+      "audience_iteration": true,
+      "verbose_logging": true
+    },
+    "research_strict": {
+      "description": "Strict consensus for testing convergence. High thresholds force multiple iterations.",
+      "mode": "debug",
+      "max_iterations": 5,
+      "max_revisions_per_stage": 3,
+      "consensus": {
+        "strategy": "convergence",
+        "avg_threshold": 7.5,
+        "hard_floor": 5,
+        "critic_floor": 7,
+        "convergence_variance": 1.5,
+        "weights": {}
+      },
+      "inter_agent_messages": true,
+      "audience_iteration": true,
+      "verbose_logging": true
+    },
+    "fast_test": {
+      "description": "Single-pass, no iteration. For quick testing of individual stages.",
+      "mode": "debug",
+      "max_iterations": 1,
+      "max_revisions_per_stage": 0,
+      "consensus": {
+        "strategy": "simple_avg",
+        "avg_threshold": 0,
+        "hard_floor": 0,
+        "critic_floor": 0,
+        "convergence_variance": 999,
+        "weights": {}
+      },
+      "inter_agent_messages": false,
+      "audience_iteration": false,
+      "verbose_logging": true
+    }
+  },
+  "active_profile": "production",
+
+  "research_registry": {
+    "consensus_strategies": {
+      "implemented": ["simple_avg", "weighted", "convergence"],
+      "planned": ["bayesian", "multi_criteria_pareto", "persona_expertise_weighted"],
+      "notes": "weighted currently uses equal weights — TODO: add format-specific persona weights from audience config"
+    },
+    "iteration_loop": {
+      "implemented": ["audience_feedback_loop", "producer_revision_brief", "selective_title_revision"],
+      "planned": ["script_revision_on_low_engagement", "thumbnail_a_b_test", "cast_swap_on_character_complaints"],
+      "notes": "Title revision triggers when ≥2 panelists flag packaging. Could extend to other stage-specific revisions."
+    },
+    "inter_agent_messages": {
+      "implemented": ["request_tag_parsing", "data_analyst_queries", "bidirectional_graph_animation"],
+      "planned": ["agent_debate_mode", "structured_tool_calls", "memory_across_sessions"],
+      "notes": "Agents can request info via [REQUEST:agent_id: question]. Currently routed through _callAgent with 400 token limit."
+    },
+    "audience_panel": {
+      "implemented": ["5_persona_panel", "parallel_evaluation", "rating_extraction", "graph_visualization"],
+      "planned": ["dynamic_persona_generation", "persona_weight_by_format", "sentiment_beyond_rating", "audience_size_scaling"],
+      "notes": "Personas are JSON configs in agents/audience/. Panel runs in parallel via Promise.all.",
+      "known_issues": [
+        "TODO: Audience personas default to safe middle score (5/10). Improve scoring mechanics: stronger persona differentiation, anchoring examples in prompt, force-rank before scoring, pairwise comparison, require justification before number, temperature tuning per persona, few-shot examples of 2/10 and 9/10 reviews."
+      ]
+    },
+    "critic": {
+      "implemented": ["stage_by_stage_review", "approve_revise_reject_verdicts", "revision_notes_extraction"],
+      "planned": ["multi_critic_ensemble", "critic_calibration", "critic_memory_of_past_runs"],
+      "notes": "Single critic agent. Score/verdict parsed via regex from structured output."
+    },
+    "pipeline_structure": {
+      "implemented": ["sequential_10_stage", "critic_at_key_stages", "user_directive_injection"],
+      "planned": ["conditional_stage_skip", "parallel_branch_merge", "checkpoint_resume", "rollback_on_reject"],
+      "notes": "Linear sequential with critic gates. Audience loop is the only non-linear element."
+    },
+    "ml_and_analytics": {
+      "implemented": ["hypothesis_testing", "effect_size_d", "cles", "correlation_matrix", "feature_importance"],
+      "todo": [
+        "Audit all AI and hypothesis algorithms — verify statistical correctness, edge cases, multiple comparison correction, sample size requirements",
+        "From hypothesis to validation — connect significant hypothesis results to the ideation pipeline validation stage, so concepts are checked against data-backed evidence",
+        "From validation to insights — feed validation outcomes (green-light/revise/shelve + audience scores) back into the ML models as labeled training signal, closing the loop between creative output and measurable performance"
+      ],
+      "notes": "Currently ML insights are one-directional: data → hypotheses → display. The loop back from ideation validation to ML is not yet implemented."
+    }
+  }
+}

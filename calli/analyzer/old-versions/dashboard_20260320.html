@@ -1,0 +1,2547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calli Analyzer</title>
+  <!--
+    Split-pane dashboard.  Usage: dashboard.html?project=cut
+    Left : Calliope chat + radial FAB
+    Right: Living canvas — rich cards that materialize on demand and from chat.
+           Click + → radial menu (first spoke = Load full analysis).
+           Chat → relevant cards auto-surface based on what Calliope says.
+  -->
+  <link rel="stylesheet" href="../dashboards/calli-system.css">
+  <style>
+    /* ── Base ─────────────────────────────────────────────────────── */
+    html { height:100%; }
+    body { height:100%; display:flex; flex-direction:column; overflow:clip;
+           font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+           background:var(--bg); color:var(--text); }
+
+    /* ── Top bar ──────────────────────────────────────────────────── */
+    #top-bar { flex-shrink:0; height:var(--nav-h); display:flex; align-items:center;
+               gap:12px; padding:0 16px; background:var(--bg-alt);
+               border-bottom:1px solid var(--border); }
+    #project-icon { font-size:18px; line-height:1; }
+    #project-name { font-size:14px; font-weight:700; color:var(--text); }
+    #project-type { font-size:10px; font-weight:600; text-transform:uppercase;
+                    letter-spacing:.08em; color:var(--muted); background:var(--surface2);
+                    border-radius:4px; padding:2px 7px; }
+    .top-spacer  { flex:1; }
+    .top-stat    { display:flex; flex-direction:column; align-items:center; }
+    .top-stat-val{ font-size:13px; font-weight:700; color:var(--accent); }
+    .top-stat-lbl{ font-size:9px; color:var(--muted); text-transform:uppercase;
+                   letter-spacing:.06em; }
+    .top-divider { width:1px; height:24px; background:var(--border); margin:0 4px; }
+    #top-status  { font-size:10.5px; color:var(--muted); display:flex; align-items:center;
+                   gap:5px; }
+    #top-status-dot { width:6px; height:6px; border-radius:50%; background:var(--muted2);
+                      transition:background .3s; }
+    #top-status-dot.ok  { background:var(--positive); }
+    #top-status-dot.err { background:var(--negative); }
+    #settings-btn { background:none; border:1px solid var(--border);
+                    border-radius:var(--r-md); padding:4px 10px; font-size:12px;
+                    color:var(--muted); cursor:pointer;
+                    transition:border-color .15s,color .15s; }
+    #settings-btn:hover { border-color:var(--accent); color:var(--text); }
+
+    /* ── Split pane ───────────────────────────────────────────────── */
+    #app-body   { flex:1; display:flex; overflow:hidden; }
+    #left-pane  { flex:0 0 42%; min-width:280px; display:flex;
+                  flex-direction:column; overflow:clip; position:relative; }
+    #pane-divider { flex:0 0 4px; cursor:col-resize; background:var(--border);
+                    transition:background .15s; position:relative; }
+    #pane-divider::after { content:''; position:absolute; inset:0 -4px; }
+    #pane-divider:hover, #pane-divider.dragging { background:var(--accent); }
+    #right-pane { flex:1; min-width:300px; display:flex; flex-direction:column;
+                  overflow:hidden; background:var(--bg); container-type:inline-size; }
+
+    /* ── Canvas header ────────────────────────────────────────────── */
+    #canvas-header { flex-shrink:0; height:var(--nav-h); display:flex;
+                     align-items:center; gap:8px; padding:0 16px;
+                     background:var(--bg-alt); border-bottom:1px solid var(--border); }
+    #canvas-title  { font-size:13px; font-weight:700; color:var(--text); }
+    #canvas-count  { display:none; font-size:10px; font-weight:700;
+                     background:rgba(124,106,247,.18); color:var(--accent);
+                     border-radius:10px; padding:2px 7px; }
+    #canvas-clear-btn { display:none; margin-left:auto; background:none;
+                        border:1px solid var(--border); border-radius:var(--r-md);
+                        padding:3px 10px; font-size:11px; color:var(--muted);
+                        cursor:pointer; transition:border-color .15s,color .15s; }
+    #canvas-clear-btn:hover { border-color:var(--negative); color:var(--negative); }
+
+    /* ── Canvas body ──────────────────────────────────────────────── */
+    #canvas-body { flex:1; overflow-y:auto; overflow-x:hidden; }
+    #canvas-body::-webkit-scrollbar { width:4px; }
+    #canvas-body::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+    /* Empty state */
+    #canvas-empty { display:flex; flex-direction:column; align-items:center;
+                    justify-content:center; gap:12px; height:100%;
+                    padding:40px 32px; text-align:center; }
+    #ce-icon  { font-size:36px; opacity:.2; }
+    #ce-title { font-size:14px; font-weight:600; color:var(--text-dim); opacity:.55; }
+    #ce-sub   { font-size:12px; color:var(--muted2); max-width:260px; line-height:1.6; }
+    #ce-cta   { margin-top:8px; background:var(--accent2); border:none;
+                border-radius:8px; color:#fff; font-size:13px; font-weight:600;
+                padding:9px 22px; cursor:pointer;
+                transition:background .15s,transform .1s;
+                box-shadow:0 4px 14px rgba(124,106,247,.3); }
+    #ce-cta:hover  { background:var(--accent); }
+    #ce-cta:active { transform:scale(.97); }
+
+    /* Grid */
+    #canvas-grid { display:grid;
+                   grid-template-columns:repeat(2,minmax(0,1fr));
+                   gap:14px; padding:16px; align-content:start; }
+    @container (max-width:520px) {
+      #canvas-grid { grid-template-columns:1fr; } }
+
+    /* ── Canvas cards ─────────────────────────────────────────────── */
+    .cc { background:var(--surface); border:1px solid var(--border);
+          border-radius:10px; padding:14px 16px;
+          animation:cardIn .3s cubic-bezier(.25,.8,.25,1);
+          position:relative; min-width:0; overflow:visible; }
+    .cc.wide { grid-column:1/-1; }
+    .cc-title { font-size:10px; font-weight:700; color:var(--muted);
+                text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
+    .cc-close { position:absolute; top:8px; right:8px; background:none;
+                border:none; color:var(--muted); font-size:12px; cursor:pointer;
+                padding:2px 5px; border-radius:4px;
+                opacity:0; transition:opacity .15s,background .15s; }
+    .cc:hover .cc-close { opacity:1; }
+    .cc-close:hover { background:var(--surface2); color:var(--text); }
+    .cc-chart-wrap { position:relative; height:240px; margin-top:4px; }
+
+    /* Metrics row */
+    .cc-metric-row { display:flex; gap:10px; flex-wrap:wrap; }
+    .cc-metric-cell { flex:1; min-width:80px; background:var(--surface2);
+                      border:1px solid var(--border); border-radius:8px;
+                      padding:10px 12px; }
+    .cc-metric-val  { font-size:20px; font-weight:700; color:var(--accent);
+                      line-height:1; }
+    .cc-metric-lbl  { font-size:10px; color:var(--muted); text-transform:uppercase;
+                      letter-spacing:.06em; margin-top:4px; }
+
+    /* ── Features Explorer ────────────────────────────────────────── */
+    .feat-filter-bar { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+    .feat-search { flex:1; min-width:120px; background:var(--surface2);
+                   border:1px solid var(--border2); border-radius:7px;
+                   padding:5px 10px; font-size:12px; color:var(--text);
+                   outline:none; }
+    .feat-search:focus { border-color:rgba(124,106,247,.5); }
+    .feat-search::placeholder { color:var(--muted); }
+    .feat-sort-sel { background:var(--surface2); border:1px solid var(--border2);
+                     border-radius:7px; color:var(--text); font-size:11.5px;
+                     padding:5px 8px; cursor:pointer; outline:none; }
+    .feat-table { display:flex; flex-direction:column; gap:1px; }
+    .feat-row   { display:grid;
+                  grid-template-columns:160px 1fr 90px 90px 56px;
+                  align-items:center; gap:10px;
+                  padding:6px 4px; border-radius:6px;
+                  transition:background .12s; cursor:default; }
+    .feat-row:hover { background:var(--surface2); }
+    .feat-name  { font-size:11.5px; color:var(--text-dim); overflow:hidden;
+                  text-overflow:ellipsis; white-space:nowrap; }
+    .feat-bar-wrap { height:6px; background:var(--surface2); border-radius:3px;
+                     overflow:hidden; }
+    .feat-bar   { height:100%; border-radius:3px; }
+    .feat-bar.pos { background:var(--accent); }
+    .feat-bar.neg { background:var(--negative); }
+    .feat-extreme { display:flex; align-items:center; gap:5px; }
+    .feat-thumb { width:36px; height:20px; object-fit:cover; border-radius:3px;
+                  background:var(--surface3); flex-shrink:0; }
+    .feat-val   { font-size:10px; color:var(--muted); white-space:nowrap;
+                  overflow:hidden; text-overflow:ellipsis; }
+    .feat-r     { font-size:10.5px; font-weight:700; text-align:right; }
+    .feat-r.pos { color:var(--accent); }
+    .feat-r.neg { color:var(--negative); }
+    .feat-head  { display:grid;
+                  grid-template-columns:160px 1fr 90px 90px 56px;
+                  gap:10px; padding:0 4px 6px;
+                  border-bottom:1px solid var(--border); margin-bottom:4px; }
+    .feat-head span { font-size:9.5px; font-weight:700; color:var(--muted2);
+                      text-transform:uppercase; letter-spacing:.06em; }
+
+    /* ── Video Browser ────────────────────────────────────────────── */
+    .vbr-filter-bar { display:flex; align-items:center; gap:8px; margin-bottom:12px;
+                      flex-wrap:wrap; }
+    .vbr-search { flex:1; min-width:140px; background:var(--surface2);
+                  border:1px solid var(--border2); border-radius:7px;
+                  padding:6px 11px; font-size:12.5px; color:var(--text);
+                  outline:none; }
+    .vbr-search:focus { border-color:rgba(124,106,247,.5); }
+    .vbr-search::placeholder { color:var(--muted); }
+    .vbr-sort   { background:var(--surface2); border:1px solid var(--border2);
+                  border-radius:7px; color:var(--text); font-size:11.5px;
+                  padding:6px 8px; cursor:pointer; outline:none; }
+    .vbr-chip   { background:var(--surface2); border:1px solid var(--border2);
+                  border-radius:14px; padding:4px 11px; font-size:11px;
+                  color:var(--muted); cursor:pointer;
+                  transition:border-color .12s,color .12s,background .12s; }
+    .vbr-chip.on { background:rgba(124,106,247,.15); border-color:var(--accent);
+                   color:var(--text); }
+    .vbr-grid   { display:grid;
+                  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+                  gap:8px; }
+    .vbr-card   { background:var(--surface2); border:1px solid var(--border);
+                  border-radius:7px; overflow:hidden; cursor:pointer;
+                  transition:transform .15s,border-color .15s; }
+    .vbr-card:hover { transform:translateY(-2px); border-color:var(--accent); }
+    .vbr-thumb  { width:100%; aspect-ratio:16/9; object-fit:cover; display:block;
+                  background:var(--surface3); }
+    .vbr-body   { padding:5px 7px 7px; }
+    .vbr-title  { font-size:10px; font-weight:600; color:var(--text); line-height:1.35;
+                  display:-webkit-box; -webkit-line-clamp:2;
+                  -webkit-box-orient:vertical; overflow:hidden; }
+    .vbr-meta   { font-size:9.5px; color:var(--muted); margin-top:2px; }
+    .vbr-count  { font-size:11px; color:var(--muted); padding:8px 0; text-align:center; }
+    .vbr-load-more { width:100%; margin-top:10px; padding:8px; background:var(--surface2);
+                     border:1px solid var(--border2); border-radius:7px; color:var(--text-dim);
+                     font-size:12px; font-weight:600; cursor:pointer;
+                     transition:border-color .15s,color .15s; }
+    .vbr-load-more:hover { border-color:var(--accent); color:var(--text); }
+    .vbr-load-more:disabled { opacity:.35; cursor:default; }
+
+    /* ── ML Signals panel ─────────────────────────────────────────── */
+    .ml-filter-bar { display:flex; gap:7px; flex-wrap:wrap; align-items:center;
+                     margin-bottom:12px; }
+
+    /* Pill dropdown trigger */
+    .ml-dd       { position:relative; }
+    .ml-dd-btn   { display:inline-flex; align-items:center; gap:5px;
+                   background:rgba(255,255,255,.07);
+                   border:1px solid rgba(255,255,255,.11);
+                   border-radius:999px; padding:5px 11px 5px 12px;
+                   color:var(--text); cursor:pointer; font-family:inherit;
+                   white-space:nowrap; user-select:none;
+                   transition:border-color .18s,background .18s,box-shadow .18s; }
+    .ml-dd-btn:hover,
+    .ml-dd.visible .ml-dd-btn { border-color:rgba(124,106,247,.55);
+                              background:rgba(124,106,247,.13);
+                              box-shadow:0 0 0 3px rgba(124,106,247,.15); }
+    .ml-dd-dim  { font-size:9.5px; color:var(--muted); text-transform:uppercase;
+                  letter-spacing:.07em; }
+    .ml-dd-val  { font-size:11.5px; font-weight:700; color:var(--text); }
+    .ml-dd-chev { width:9px; height:9px; flex-shrink:0; margin-left:2px;
+                  color:var(--muted); transition:transform .18s; }
+    .ml-dd.visible .ml-dd-chev { transform:rotate(180deg); }
+
+    /* Floating options panel */
+    .ml-dd-panel { position:absolute; top:calc(100% + 7px); left:0; z-index:300;
+                   background:var(--surface2); border:1px solid rgba(255,255,255,.1);
+                   border-radius:12px; padding:5px; min-width:140px;
+                   box-shadow:0 12px 40px rgba(0,0,0,.55); display:none; }
+    .ml-dd.visible .ml-dd-panel { display:block; }
+    .ml-dd-opt  { padding:7px 11px; border-radius:8px; font-size:11.5px;
+                  cursor:pointer; color:var(--text-dim);
+                  display:flex; align-items:center; gap:6px;
+                  opacity:0; transform:translateY(-6px);
+                  transition:background .1s,color .1s,opacity .15s ease-out,transform .15s ease-out; }
+    .ml-dd.open .ml-dd-opt { opacity:1; transform:translateY(0); }
+    .ml-dd.open .ml-dd-opt:nth-child(1)  { transition-delay:.01s; }
+    .ml-dd.open .ml-dd-opt:nth-child(2)  { transition-delay:.03s; }
+    .ml-dd.open .ml-dd-opt:nth-child(3)  { transition-delay:.05s; }
+    .ml-dd.open .ml-dd-opt:nth-child(4)  { transition-delay:.07s; }
+    .ml-dd.open .ml-dd-opt:nth-child(5)  { transition-delay:.09s; }
+    .ml-dd.open .ml-dd-opt:nth-child(6)  { transition-delay:.10s; }
+    .ml-dd.open .ml-dd-opt:nth-child(7)  { transition-delay:.11s; }
+    .ml-dd.open .ml-dd-opt:nth-child(8)  { transition-delay:.12s; }
+    .ml-dd.open .ml-dd-opt:nth-child(9)  { transition-delay:.13s; }
+    .ml-dd.open .ml-dd-opt:nth-child(10) { transition-delay:.14s; }
+    .ml-dd.open .ml-dd-opt:nth-child(11) { transition-delay:.15s; }
+    .ml-dd.open .ml-dd-opt:nth-child(12) { transition-delay:.16s; }
+    .ml-dd.open .ml-dd-opt:nth-child(n+13){ transition-delay:.17s; }
+    .ml-dd-opt:hover   { background:rgba(124,106,247,.15); color:var(--text); }
+    .ml-dd-opt.sel     { color:var(--accent); font-weight:600;
+                         background:rgba(124,106,247,.1); }
+    .ml-dd-opt::before { content:''; display:inline-block; width:10px;
+                         font-size:10px; flex-shrink:0; }
+    .ml-dd-opt.sel::before { content:'✓'; }
+
+    /* Method tab bar */
+    .ml-tab-bar  { display:flex; border-bottom:1px solid var(--border);
+                   margin-bottom:12px; gap:0; }
+    .ml-tab-btn  { padding:6px 13px; font-size:11.5px; font-weight:500;
+                   border:none; background:none; color:var(--muted); cursor:pointer;
+                   border-bottom:2px solid transparent; margin-bottom:-1px;
+                   font-family:inherit; transition:color .15s; white-space:nowrap; }
+    .ml-tab-btn:hover  { color:var(--text); }
+    .ml-tab-btn.active { color:var(--text); border-bottom-color:var(--accent);
+                         font-weight:600; }
+
+    /* ── Performance panel ────────────────────────────────────────── */
+    .perf-section      { border-bottom:1px solid var(--border); }
+    .perf-section:last-child { border-bottom:none; }
+    .perf-hdr          { display:flex; align-items:center; gap:8px; padding:10px 0;
+                         cursor:pointer; user-select:none; }
+    .perf-hdr:hover     { opacity:.85; }
+    .perf-hdr-icon     { font-size:14px; flex-shrink:0; }
+    .perf-hdr-title    { font-size:11.5px; font-weight:700; text-transform:uppercase;
+                         letter-spacing:.06em; color:var(--text); flex:1; }
+    .perf-hdr-hero     { font-size:13px; font-weight:700; color:var(--text); }
+    .perf-hdr-delta    { font-size:10px; font-weight:600; padding:2px 6px;
+                         border-radius:10px; margin-left:4px; }
+    .perf-hdr-delta.up   { color:#34d399; background:rgba(52,211,153,.12); }
+    .perf-hdr-delta.down { color:#f87171; background:rgba(248,113,113,.12); }
+    .perf-hdr-delta.flat { color:var(--muted); background:rgba(255,255,255,.06); }
+    .perf-hdr-chev     { width:10px; height:10px; color:var(--muted);
+                         transition:transform .2s; flex-shrink:0; }
+    .perf-section.open .perf-hdr-chev { transform:rotate(180deg); }
+    .perf-body          { max-height:0; overflow:hidden;
+                         transition:max-height .25s ease; padding:0 2px; }
+    .perf-section.open .perf-body { max-height:600px; }
+    .perf-row           { display:flex; justify-content:space-between;
+                         align-items:center; padding:5px 0;
+                         font-size:12px; color:var(--text-dim); }
+    .perf-row-lbl      { flex:1; }
+    .perf-row-val      { font-weight:700; color:var(--text); margin-right:4px; }
+    .perf-row-delta    { font-size:10px; font-weight:600; }
+    .perf-row-delta.up   { color:#34d399; }
+    .perf-row-delta.down { color:#f87171; }
+    .perf-row-delta.flat { color:var(--muted); }
+    .perf-empty         { padding:8px 0; font-size:11px; color:var(--muted);
+                         font-style:italic; }
+    .perf-outlier       { display:flex; align-items:center; gap:8px; padding:5px 0; }
+    .perf-outlier-thumb { width:48px; height:27px; object-fit:cover;
+                         border-radius:4px; background:var(--surface3); flex-shrink:0; }
+    .perf-outlier-info  { flex:1; min-width:0; }
+    .perf-outlier-title { font-size:11px; font-weight:600; color:var(--text);
+                         white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .perf-outlier-meta  { font-size:10px; color:var(--muted); }
+
+    /* ── Ideation Tabs ────────────────────────────────────────────── */
+    .ideo-tab-bar { display:flex; gap:0; border-bottom:1px solid var(--border);
+                    margin-bottom:14px; overflow-x:auto; flex-wrap:nowrap;
+                    scrollbar-width:none; }
+    .ideo-tab-bar::-webkit-scrollbar { display:none; }
+    .ideo-tab-btn { background:none; border:none; border-bottom:2px solid transparent;
+                    padding:7px 13px; font-size:12px; font-weight:600;
+                    color:var(--muted); cursor:pointer; flex-shrink:0;
+                    transition:color .15s,border-color .15s; white-space:nowrap; }
+    .ideo-tab-btn:hover { color:var(--text-dim); }
+    .ideo-tab-btn.active { color:var(--text); border-bottom-color:var(--accent); }
+    .ideo-tab-pane { display:none; flex-direction:column; gap:11px; }
+    .ideo-tab-pane.active { display:flex; }
+    .ideo-lbl  { font-size:10.5px; font-weight:600; color:var(--muted);
+                 text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+    /* ── Ideation References / Upload ───────────────────────────── */
+    .ideo-ref-section { border:1px dashed var(--border2); border-radius:8px;
+                        padding:10px 12px; margin-bottom:12px; background:var(--surface2); }
+    .ideo-ref-hdr  { display:flex; justify-content:space-between; align-items:center;
+                     margin-bottom:8px; }
+    .ideo-ref-title { font-size:10.5px; font-weight:600; color:var(--muted);
+                      text-transform:uppercase; letter-spacing:.06em; }
+    .ideo-ref-toggle { font-size:10px; color:var(--accent); cursor:pointer;
+                       background:none; border:none; padding:0; font-family:inherit; }
+    .ideo-dropzone { border:1px dashed var(--border2); border-radius:6px;
+                     padding:6px 11px; cursor:pointer; display:flex;
+                     align-items:center; gap:7px;
+                     transition:border-color .15s,background .15s; margin-bottom:6px; }
+    .ideo-dropzone:hover,.ideo-dropzone.over { border-color:var(--accent);
+                                               background:rgba(124,106,247,.07); }
+    .ideo-dropzone-icon { font-size:13px; flex-shrink:0; }
+    .ideo-dropzone-text { font-size:11px; color:var(--muted); }
+    .ideo-dropzone-sub  { font-size:10px; color:var(--muted); opacity:.55; margin-left:auto; }
+    .ideo-fname { font-size:10.5px; color:var(--accent); margin-bottom:4px; display:none; }
+    .ideo-fname.vis { display:block; }
+    .ideo-ref-url { width:100%; background:var(--surface3); border:1px solid var(--border2);
+                    border-radius:6px; padding:6px 10px; box-sizing:border-box;
+                    font-size:11.5px; color:var(--text); font-family:inherit;
+                    outline:none; margin-top:6px; }
+    .ideo-ref-url:focus { border-color:rgba(124,106,247,.5); }
+    .ideo-chips { display:flex; flex-wrap:wrap; gap:6px; }
+    .ideo-chip  { background:var(--surface2); border:1px solid var(--border2);
+                  border-radius:14px; padding:4px 12px; font-size:11.5px;
+                  color:var(--muted); cursor:pointer;
+                  transition:border-color .15s,color .15s,background .15s; }
+    .ideo-chip.sel { background:rgba(124,106,247,.18); border-color:var(--accent);
+                     color:var(--text); }
+    .ideo-chip:hover { border-color:var(--accent); color:var(--text); }
+    .ideo-ta   { width:100%; height:60px; background:var(--surface2);
+                 border:1px solid var(--border2); border-radius:8px;
+                 padding:8px 12px; box-sizing:border-box; font-size:12px;
+                 color:var(--text); font-family:inherit; resize:none; outline:none; }
+    .ideo-ta:focus { border-color:rgba(124,106,247,.5); }
+    .ideo-gen-btn { background:var(--accent2); border:none; border-radius:8px;
+                    color:#fff; font-size:13px; font-weight:600;
+                    padding:8px 18px; cursor:pointer; align-self:flex-start;
+                    transition:background .15s; }
+    .ideo-gen-btn:hover { background:var(--accent); }
+    .ideo-ideate-btn { width:100%; padding:10px; font-size:14px; font-weight:700;
+                       letter-spacing:.02em; border-radius:9px; margin-bottom:14px;
+                       align-self:stretch; }
+    .ideo-ideate-btn:disabled { opacity:.5; cursor:default; }
+    .ideo-result { background:var(--surface2); border:1px solid var(--border);
+                   border-radius:8px; padding:12px 14px; font-size:12.5px;
+                   line-height:1.7; color:var(--text-dim); display:none;
+                   min-height:60px; }
+    .ideo-result.vis { display:block; }
+    .ideo-result p  { margin:0 0 6px; }
+    .ideo-result p:last-child { margin-bottom:0; }
+    .ideo-result strong { color:var(--accent); }
+
+    /* Hypothesis card */
+    .cc-hyp-row { padding:7px 0; border-bottom:1px solid var(--border); }
+    .cc-hyp-row:last-child { border-bottom:none; }
+    .cc-hyp-header { display:flex; gap:8px; align-items:baseline; margin-bottom:4px; }
+    .cc-hyp-feat { font-size:12px; font-weight:700; color:var(--accent); }
+    .cc-hyp-tgt  { font-size:11px; color:var(--muted); }
+    .cc-hyp-p    { font-size:11px; font-weight:700; }
+    .cc-hyp-p.sig { color:var(--positive); }
+    .cc-hyp-p.ns  { color:var(--muted); }
+    .cc-hyp-effect { font-size:11px; color:var(--text-dim); }
+    .cc-hyp-means  { display:flex; gap:16px; margin-top:6px; font-size:11px; }
+    .cc-hyp-grp    { display:flex; flex-direction:column; gap:2px; }
+    .cc-hyp-val    { font-weight:700; color:var(--text); }
+    .cc-hyp-lbl    { color:var(--muted); font-size:9.5px; text-transform:uppercase; }
+    .cc-hyp-interp { font-size:11px; color:var(--text-dim); line-height:1.5;
+                     margin-top:6px; padding:6px 9px; border-radius:6px;
+                     background:rgba(255,255,255,.03); border-left:2px solid var(--border2); }
+    .cc-hyp-ab     { font-size:10.5px; color:var(--muted); line-height:1.5;
+                     margin-top:4px; padding:5px 9px; border-radius:6px;
+                     background:rgba(124,106,247,.05); border-left:2px solid rgba(124,106,247,.3); }
+    .cc-hyp-ab strong { color:var(--accent); font-weight:600; }
+    .cc-hyp-filters { display:flex; gap:6px; margin-bottom:12px; }
+    .cc-hyp-chip  { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+                    border-radius:999px; padding:4px 12px; font-size:11px; font-weight:600;
+                    color:var(--muted); cursor:pointer; font-family:inherit;
+                    transition:border-color .15s, background .15s, color .15s; }
+    .cc-hyp-chip:hover { border-color:rgba(124,106,247,.4); color:var(--text); }
+    .cc-hyp-chip.sel   { background:rgba(124,106,247,.15); border-color:rgba(124,106,247,.5);
+                         color:var(--text); }
+
+    /* Empty-data placeholder inside a card */
+    .cc-empty { display:flex; flex-direction:column; align-items:center;
+                justify-content:center; gap:6px; padding:24px 12px;
+                color:var(--muted); font-size:12px; text-align:center; }
+    .cc-empty code { background:var(--surface2); border-radius:3px;
+                     padding:1px 5px; font-family:'SF Mono',monospace;
+                     font-size:11px; }
+
+    /* ── Left pane — chat ─────────────────────────────────────────── */
+    #chat-messages { flex:1; overflow-y:auto; padding:24px 18px 12px;
+                     display:flex; flex-direction:column; gap:14px;
+                     scroll-behavior:smooth; }
+    #chat-messages::-webkit-scrollbar { width:4px; }
+    #chat-messages::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+    #chat-welcome { flex:1; display:flex; flex-direction:column;
+                    align-items:center; justify-content:center;
+                    gap:12px; text-align:center; padding:0 36px;
+                    opacity:1; transition:opacity .3s; }
+    #chat-welcome.hidden { opacity:0; pointer-events:none; }
+    #welcome-icon  { font-size:36px; }
+    #welcome-title { font-size:20px; font-weight:700; color:var(--text); }
+    #welcome-sub   { font-size:12.5px; color:var(--muted); max-width:340px;
+                     line-height:1.6; }
+    .msg         { display:flex; gap:10px; max-width:88%; animation:fadeUp .2s ease; }
+    .msg.user    { align-self:flex-end; flex-direction:row-reverse; }
+    .msg.assistant { align-self:flex-start; }
+    .msg-avatar  { width:26px; height:26px; border-radius:50%; flex-shrink:0;
+                   display:flex; align-items:center; justify-content:center;
+                   font-size:12px; }
+    .msg.assistant .msg-avatar { background:linear-gradient(135deg,var(--accent2),var(--accent)); }
+    .msg.user     .msg-avatar  { background:var(--surface3); }
+    .msg-bubble  { padding:9px 13px; border-radius:14px; font-size:12.5px;
+                   line-height:1.65; }
+    .msg.user    .msg-bubble { background:var(--surface3);
+                               border-radius:14px 2px 14px 14px; }
+    .msg.assistant .msg-bubble { background:var(--surface); border:1px solid var(--border);
+                                  border-radius:2px 14px 14px 14px; }
+    .msg-bubble p { margin:0 0 8px; }
+    .msg-bubble p:last-child { margin-bottom:0; }
+    .msg-bubble strong { color:var(--accent); }
+    .msg-bubble code { background:var(--surface2); border-radius:3px;
+                       padding:1px 5px; font-family:'SF Mono',monospace;
+                       font-size:11px; }
+    .msg-typing .dot { display:inline-block; width:6px; height:6px;
+                       border-radius:50%; background:var(--accent); margin:0 2px;
+                       animation:blink 1.2s infinite; }
+    .msg-typing .dot:nth-child(2) { animation-delay:.2s; }
+    .msg-typing .dot:nth-child(3) { animation-delay:.4s; }
+    #suggestion-row { flex-shrink:0; display:flex; gap:7px; padding:7px 18px;
+                      overflow-x:auto; flex-wrap:wrap; }
+    #suggestion-row::-webkit-scrollbar { display:none; }
+    .sugg-chip  { flex-shrink:0; background:var(--surface2);
+                  border:1px solid var(--border2); border-radius:20px;
+                  padding:4px 13px; font-size:11.5px; color:var(--muted);
+                  cursor:pointer; white-space:nowrap;
+                  transition:border-color .15s,color .15s,background .15s; }
+    .sugg-chip:hover { border-color:var(--accent); color:var(--text);
+                       background:var(--surface3); }
+    #input-bar  { flex-shrink:0; display:flex; gap:8px; align-items:flex-end;
+                  padding:10px 16px 14px; border-top:1px solid var(--border);
+                  background:var(--bg-alt); }
+    #chat-input { flex:1; min-height:38px; max-height:120px;
+                  background:var(--surface2); border:1px solid var(--border2);
+                  border-radius:12px; padding:9px 14px; font-size:13px;
+                  color:var(--text); font-family:inherit; resize:none;
+                  outline:none; line-height:1.5;
+                  transition:border-color .15s; overflow-y:auto; }
+    #chat-input:focus { border-color:rgba(124,106,247,.5); }
+    #chat-input::placeholder { color:var(--muted); }
+    #send-btn   { flex-shrink:0; width:38px; height:38px; background:var(--accent2);
+                  border:none; border-radius:10px; color:#fff; font-size:16px;
+                  cursor:pointer; display:flex; align-items:center;
+                  justify-content:center;
+                  transition:background .15s,transform .1s; }
+    #send-btn:hover  { background:var(--accent); }
+    #send-btn:active { transform:scale(.93); }
+    #send-btn:disabled { background:var(--surface3); cursor:not-allowed; }
+
+    /* ── Radial FAB ───────────────────────────────────────────────── */
+    #fab-anchor { position:absolute; bottom:68px; right:14px; width:46px; z-index:200; }
+    #radial-fab { -webkit-appearance:none; appearance:none; width:46px; height:46px;
+                  padding:0; margin:0; border-radius:50%; border:none; outline:none;
+                  box-sizing:border-box;
+                  background:linear-gradient(135deg,var(--accent2),var(--accent));
+                  color:#fff; font-size:22px; font-weight:300; line-height:1;
+                  cursor:pointer; display:flex; align-items:center;
+                  justify-content:center;
+                  box-shadow:0 4px 16px rgba(124,106,247,.35);
+                  transition:transform .2s,box-shadow .2s; }
+    #radial-fab:hover  { transform:scale(1.08); box-shadow:0 6px 22px rgba(124,106,247,.55); }
+    #radial-fab.open   { transform:rotate(45deg); }
+    /* Scrim behind radial menu */
+    .radial-scrim { position:absolute; inset:0; z-index:150;
+                    background:rgba(10,10,18,.7); backdrop-filter:blur(3px);
+                    opacity:0; pointer-events:none; transition:opacity .2s; }
+    .radial-scrim.open { opacity:1; pointer-events:all; }
+    .radial-spokes { position:absolute; bottom:52px; right:0; display:flex;
+                     flex-direction:column-reverse; gap:8px; align-items:flex-end;
+                     opacity:0; pointer-events:none; transition:opacity .18s; }
+    .radial-spokes.open { opacity:1; pointer-events:all; }
+    .radial-spoke { display:flex; align-items:center; gap:8px;
+                    transform:translateX(16px); opacity:0;
+                    transition:transform .2s,opacity .2s; }
+    .radial-spokes.open .radial-spoke { transform:translateX(0); opacity:1; }
+    .radial-spokes.open .radial-spoke:nth-child(1)  { transition-delay:.02s; }
+    .radial-spokes.open .radial-spoke:nth-child(2)  { transition-delay:.05s; }
+    .radial-spokes.open .radial-spoke:nth-child(3)  { transition-delay:.08s; }
+    .radial-spokes.open .radial-spoke:nth-child(4)  { transition-delay:.11s; }
+    .radial-spokes.open .radial-spoke:nth-child(5)  { transition-delay:.14s; }
+    .radial-spokes.open .radial-spoke:nth-child(6)  { transition-delay:.17s; }
+    .radial-spokes.open .radial-spoke:nth-child(7)  { transition-delay:.20s; }
+    .radial-spoke-label { background:var(--surface); border:1px solid var(--border);
+                          border-radius:20px; padding:4px 12px; font-size:12px;
+                          font-weight:600; color:var(--text-dim); white-space:nowrap;
+                          cursor:pointer; }
+    .radial-spoke-btn   { width:38px; height:38px; border-radius:50%;
+                          background:var(--surface2); border:1px solid var(--border2);
+                          font-size:16px; cursor:pointer; display:flex;
+                          align-items:center; justify-content:center;
+                          transition:background .15s,border-color .15s,transform .15s; }
+    .radial-spoke-btn:hover { background:var(--surface3); border-color:var(--accent);
+                              transform:scale(1.1); }
+    .radial-spoke-btn.active { background:rgba(124,106,247,.15); border-color:var(--accent); }
+    /* First spoke (Load Analysis) gets accent styling */
+    .radial-spoke:last-child .radial-spoke-btn { background:rgba(124,106,247,.18);
+                                                 border-color:var(--accent); }
+
+    /* ── Animations ───────────────────────────────────────────────── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)}  to{opacity:1;transform:none} }
+    @keyframes blink  { 0%,80%,100%{opacity:.3;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
+    @keyframes cardIn { from{opacity:0;transform:translateY(12px) scale(.97)} to{opacity:1;transform:none} }
+    @keyframes cardOut{ to{opacity:0;transform:scale(.94)} }
+    @keyframes spin   { to{transform:rotate(360deg)} }
+  </style>
+</head>
+<body>
+
+<div id="top-bar">
+  <span id="project-icon">⬡</span>
+  <span id="project-name">Loading…</span>
+  <span id="project-type">analyzer</span>
+  <div class="top-spacer"></div>
+  <div id="stat-pills" style="display:flex;gap:16px;align-items:center;"></div>
+  <div class="top-divider"></div>
+  <div id="top-status">
+    <div id="top-status-dot"></div>
+    <span id="top-status-label">…</span>
+  </div>
+  <div class="top-divider"></div>
+  <button id="settings-btn" onclick="CALLI.toggleSettings()">⚙︎ Settings</button>
+</div>
+
+<div id="app-body">
+
+  <!-- LEFT PANE -->
+  <div id="left-pane">
+    <div id="chat-welcome">
+      <div id="welcome-icon">✦</div>
+      <div id="welcome-title">Ask Calliope</div>
+      <div id="welcome-sub">I have your project data loaded. Ask what drives views, which formats to double down on, or generate a data-backed concept.</div>
+    </div>
+    <div id="chat-messages" style="display:none;"></div>
+    <div id="suggestion-row"></div>
+    <div id="input-bar">
+      <textarea id="chat-input" placeholder="Ask Calliope anything about your content…" rows="1"></textarea>
+      <button id="send-btn" title="Send">▶</button>
+    </div>
+    <div class="radial-scrim" id="radial-scrim" onclick="toggleRadial()"></div>
+    <div id="fab-anchor">
+      <div class="radial-spokes" id="radial-spokes"></div>
+      <button id="radial-fab" onclick="toggleRadial()" title="Quick actions">+</button>
+    </div>
+  </div>
+
+  <div id="pane-divider" title="Drag to resize"></div>
+
+  <!-- RIGHT PANE -->
+  <div id="right-pane">
+    <div id="canvas-header">
+      <span id="canvas-title">✦ Canvas</span>
+      <span id="canvas-count"></span>
+      <button id="canvas-clear-btn" onclick="clearCanvas()">✕ Clear</button>
+    </div>
+    <div id="canvas-body">
+      <div id="canvas-empty">
+        <div id="ce-icon">✦</div>
+        <div id="ce-title">Calliope will paint insights here</div>
+        <div id="ce-sub">As you chat, relevant charts, videos, and analyses surface automatically.</div>
+        <button id="ce-cta" onclick="populateFullCanvas()">✦ Load full analysis</button>
+      </div>
+      <div id="canvas-grid" style="display:none;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="../dashboards/calli-system.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════
+   CALLI ANALYZER — split-pane + living canvas
+   ═══════════════════════════════════════════════════════════════════════ */
+
+let CONFIG      = null;
+let ML_INSIGHTS = null;
+let VIDEOS      = [];
+let PROJECT_ID  = '';
+let CHAT_HISTORY= [];
+let FEAT_GROUP_MAP = {};   // feature_name → group_name  (loaded from feature_schema.json)
+let IS_STREAMING= false;
+let ACTIVE_CTRL = null;
+
+let CANVAS_CARDS      = [];
+const CHART_INSTANCES = {};
+const VBR_VISIBLE     = {}; // sid → number of cards currently shown
+
+const IS_PROD = location.hostname === 'egavves.github.io';
+const PROXY   = IS_PROD
+  ? 'https://egavves-github-io.vercel.app/api/chat'
+  : 'http://localhost:5765/api/anthropic';
+
+
+/* ── Bootstrap ────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  CALLI.init();
+  initResizer();
+  PROJECT_ID = new URLSearchParams(location.search).get('project') || '';
+  if (!PROJECT_ID) { showFatal('No project specified. Use ?project=cut'); return; }
+  await loadProject(PROJECT_ID);
+});
+
+
+/* ── Project loader ───────────────────────────────────────────────── */
+async function loadProject(id) {
+  setStatus('loading', 'Loading…');
+  try {
+    const r = await fetch(`./projects/${id}/config.json`);
+    if (!r.ok) throw new Error(`config.json HTTP ${r.status}`);
+    CONFIG = await r.json();
+  } catch(e) { showFatal(`Could not load project "${id}": ${e.message}`); return; }
+
+  applyConfig(CONFIG);
+
+  try {
+    const mir = await fetch(`./projects/${id}/${CONFIG.data.files.ml_insights}`);
+    if (mir.ok) ML_INSIGHTS = await mir.json();
+  } catch(_) {}
+
+  // Load feature schema → build feature→group lookup
+  try {
+    const fsr = await fetch(`./projects/${id}/data/feature_schema.json`);
+    if (fsr.ok) {
+      const schema = await fsr.json();
+      FEAT_GROUP_MAP = {};
+      for (const [group, feats] of Object.entries(schema)) {
+        for (const f of feats) FEAT_GROUP_MAP[f.name || f] = group;
+      }
+    }
+  } catch(_) {}
+
+  try { VIDEOS = await loadCSV(`./projects/${id}/${CONFIG.data.files.videos}`); }
+  catch(_) {}
+
+  buildStatCards(CONFIG, VIDEOS);
+  buildSuggestionChips(CONFIG);
+  buildRadialMenu(CONFIG);
+  checkAPIStatus();
+  setStatus('ok', ML_INSIGHTS ? 'ML loaded' : 'No data');
+}
+
+
+/* ── Config ───────────────────────────────────────────────────────── */
+function applyConfig(cfg) {
+  const p = cfg.project;
+  document.title = `${p.name} — Calli Analyzer`;
+  document.getElementById('project-icon').textContent  = p.icon || '⬡';
+  document.getElementById('project-name').textContent  = p.name;
+  document.getElementById('welcome-title').textContent = 'Ask Calliope';
+  document.getElementById('welcome-sub').textContent   =
+    `I have "${p.name}" data loaded. Ask what drives ${
+      (cfg.analysis?.correlation_targets || ['views'])[0]
+    }, which formats to double down on, or generate a data-backed concept.`;
+  if (p.accent) {
+    document.documentElement.style.setProperty('--accent',  p.accent);
+    document.documentElement.style.setProperty('--accent2', p.accent);
+  }
+}
+
+
+/* ── Stat cards (top bar) ─────────────────────────────────────────── */
+function buildStatCards(cfg, videos) {
+  const pills = document.getElementById('stat-pills');
+  pills.innerHTML = '';
+  (cfg.interface?.stat_cards || []).forEach((sc, i) => {
+    const val = computeStat(sc, videos);
+    if (i > 0) pills.insertAdjacentHTML('beforeend', '<div class="top-divider"></div>');
+    const el = document.createElement('div');
+    el.className = 'top-stat';
+    el.innerHTML = `<span class="top-stat-val">${val}</span>
+                    <span class="top-stat-lbl">${sc.label}</span>`;
+    pills.appendChild(el);
+  });
+}
+
+function computeStat(sc, rows) {
+  if (!rows.length) return '—';
+  const nums = rows.map(r => parseFloat(r[sc.field])).filter(n => !isNaN(n));
+  let v;
+  if      (sc.expr === 'count')   v = rows.length;
+  else if (sc.expr === 'sum')     v = nums.reduce((a,b)=>a+b,0);
+  else if (sc.expr === 'mean')    v = nums.reduce((a,b)=>a+b,0)/(nums.length||1);
+  else if (sc.expr === 'nunique') v = new Set(rows.map(r=>r[sc.field])).size;
+  else v = nums[0] || 0;
+  if      (sc.format === 'compact')  return fmtCompact(v);
+  else if (sc.format === 'percent')  return `${v.toFixed(1)}%`;
+  else if (sc.format === 'integer')  return Math.round(v).toLocaleString();
+  return v;
+}
+
+
+/* ── Suggestion chips ─────────────────────────────────────────────── */
+function buildSuggestionChips(cfg) {
+  const row = document.getElementById('suggestion-row');
+  row.innerHTML = '';
+  (cfg.calliope?.suggestions || []).forEach(s => {
+    const chip = document.createElement('button');
+    chip.className = 'sugg-chip';
+    chip.textContent = s.label;
+    chip.onclick = () => sendMessage(s.prompt);
+    row.appendChild(chip);
+  });
+}
+
+
+/* ── Radial FAB ───────────────────────────────────────────────────── */
+function buildRadialMenu(cfg) {
+  const container = document.getElementById('radial-spokes');
+  container.innerHTML = '';
+
+  // First spoke: Load full analysis (always shown, accent-styled via CSS :last-child)
+  const loadSpoke = document.createElement('div');
+  loadSpoke.className = 'radial-spoke';
+  loadSpoke.innerHTML = `
+    <span class="radial-spoke-label" onclick="populateFullCanvas();toggleRadial()">✦ All panels</span>
+    <button class="radial-spoke-btn" onclick="populateFullCanvas();toggleRadial()" title="Add all panels">📋</button>`;
+  container.appendChild(loadSpoke);
+
+  // Config-driven spokes
+  const SPOKE_MAP = [
+    { keys:['performance','perf-panel'],     id:'performance',      icon:'📊', label:'Performance'   },
+    { keys:['analysis','analysis-panel'],     id:'corr-chart',       icon:'🧠', label:'Analysis'      },
+    { keys:['trends','trend-panel'],          id:'trend-chart',      icon:'📈', label:'Trends'        },
+    { keys:['videos','video-panel'],          id:'video-browser',    icon:'🎬', label:'Video browser' },
+    { keys:['hypotheses','hyp-panel'],        id:'hypothesis',       icon:'🔬', label:'Hypotheses'    },
+    { keys:['ideation','ideation-panel'],     id:'ideation-tabs',    icon:'💡', label:'Ideation'      },
+    { keys:['data','data-panel','summary','report-panel'], id:'metrics-row', icon:'🔢', label:'Metrics' },
+  ];
+
+  const rawItems = cfg.interface?.radial_menu || [];
+  const seen = new Set();
+
+  rawItems.forEach(item => {
+    const key = (item.panel || item.id || '').toLowerCase();
+    const match = SPOKE_MAP.find(m => m.keys.some(k => key.includes(k)));
+    if (!match || seen.has(match.id)) return;
+    seen.add(match.id);
+    const spoke = document.createElement('div');
+    spoke.className = 'radial-spoke';
+    spoke.innerHTML = `
+      <span class="radial-spoke-label" onclick="emitCard('${match.id}');toggleRadial()">${item.label || match.label}</span>
+      <button class="radial-spoke-btn" onclick="emitCard('${match.id}');toggleRadial()" title="${item.label || match.label}">${item.icon || match.icon}</button>`;
+    container.appendChild(spoke);
+  });
+
+  // Fallback: add any unmapped spokes from SPOKE_MAP not already shown
+  SPOKE_MAP.forEach(m => {
+    if (seen.has(m.id)) return;
+    const spoke = document.createElement('div');
+    spoke.className = 'radial-spoke';
+    spoke.innerHTML = `
+      <span class="radial-spoke-label" onclick="emitCard('${m.id}');toggleRadial()">${m.label}</span>
+      <button class="radial-spoke-btn" onclick="emitCard('${m.id}');toggleRadial()" title="${m.label}">${m.icon}</button>`;
+    container.appendChild(spoke);
+  });
+}
+
+let radialOpen = false;
+function toggleRadial() {
+  radialOpen = !radialOpen;
+  document.getElementById('radial-fab').classList.toggle('open', radialOpen);
+  document.getElementById('radial-spokes').classList.toggle('open', radialOpen);
+  document.getElementById('radial-scrim').classList.toggle('open', radialOpen);
+}
+document.addEventListener('click', e => {
+  if (radialOpen && !document.getElementById('fab-anchor').contains(e.target)
+      && e.target.id !== 'radial-scrim') {
+    radialOpen = false;
+    document.getElementById('radial-fab').classList.remove('open');
+    document.getElementById('radial-spokes').classList.remove('open');
+    document.getElementById('radial-scrim').classList.remove('open');
+  }
+});
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CANVAS — card system
+   ═══════════════════════════════════════════════════════════════════════ */
+
+// Cards that span both grid columns
+const WIDE_TYPES = new Set([
+  'corr-chart','trend-chart','video-grid','video-browser',
+  'metrics-row','features-explorer','ideation-tabs','hypothesis','performance',
+]);
+// Only one instance of these allowed at a time
+const SINGLETON_TYPES = new Set([
+  'corr-chart','trend-chart','video-browser','metrics-row',
+  'features-explorer','ideation-tabs','hypothesis','performance',
+]);
+
+/** Populate the canvas with the full analysis suite in one shot. */
+function populateFullCanvas() {
+  clearCanvas();
+  emitCard('metrics-row',       {});
+  emitCard('performance',       {});
+  emitCard('features-explorer', {});
+  emitCard('corr-chart',        {});
+  emitCard('video-browser',     {});
+  emitCard('trend-chart',       {});
+  emitCard('hypothesis',        {});
+  emitCard('ideation-tabs',     {});
+}
+
+function emitCard(type, opts = {}) {
+  if (SINGLETON_TYPES.has(type)) {
+    const existing = CANVAS_CARDS.find(c => c.type === type);
+    if (existing) { existing.opts = {...existing.opts, ...opts}; refreshCard(existing); return; }
+  }
+  const id   = `cc-${Date.now()}-${Math.random().toString(36).slice(2,5)}`;
+  const card = { id, type, opts };
+  CANVAS_CARDS.push(card);
+  renderCardEl(card);
+  updateCanvasState();
+  setTimeout(() => {
+    const el = document.getElementById(card.id);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, 60);
+}
+
+function renderCardEl(card) {
+  const grid = document.getElementById('canvas-grid');
+  const el   = document.createElement('div');
+  el.className = `cc${WIDE_TYPES.has(card.type) ? ' wide' : ''}`;
+  el.id = card.id;
+  el.innerHTML = buildCardHTML(card) +
+    `<button class="cc-close" onclick="removeCard('${card.id}')" title="Remove">✕</button>`;
+  grid.appendChild(el);
+  afterCardInsert(card);
+}
+
+function refreshCard(card) {
+  if (CHART_INSTANCES[card.id]) {
+    CHART_INSTANCES[card.id].destroy();
+    delete CHART_INSTANCES[card.id];
+  }
+  const el = document.getElementById(card.id);
+  if (!el) return;
+  el.innerHTML = buildCardHTML(card) +
+    `<button class="cc-close" onclick="removeCard('${card.id}')" title="Remove">✕</button>`;
+  afterCardInsert(card);
+}
+
+function afterCardInsert(card) {
+  if (card.type === 'corr-chart')  initCorrChart(card);
+  if (card.type === 'trend-chart') initTrendChart(card);
+  // Wire up video browser filters
+  if (card.type === 'video-browser') {
+    const sid = card.id;
+    const searchEl = document.getElementById(`vbr-search-${sid}`);
+    const sortEl   = document.getElementById(`vbr-sort-${sid}`);
+    if (searchEl) searchEl.addEventListener('input',  () => { VBR_VISIBLE[sid] = 12; renderVbrGrid(sid); });
+    if (sortEl)   sortEl.addEventListener('change',   () => { VBR_VISIBLE[sid] = 12; renderVbrGrid(sid); });
+    // Initial render
+    renderVbrGrid(sid);
+  }
+  // Wire up feature search
+  if (card.type === 'features-explorer') {
+    const fSearchEl = document.getElementById(`feat-search-${card.id}`);
+    const fSortEl   = document.getElementById(`feat-sort-${card.id}`);
+    if (fSearchEl) fSearchEl.addEventListener('input',  () => renderFeatRows(card.id));
+    if (fSortEl)   fSortEl.addEventListener('change',   () => renderFeatRows(card.id));
+  }
+}
+
+function removeCard(id) {
+  const el = document.getElementById(id);
+  if (el) { el.style.animation = 'cardOut .2s ease forwards'; setTimeout(()=>el.remove(),200); }
+  if (CHART_INSTANCES[id]) { CHART_INSTANCES[id].destroy(); delete CHART_INSTANCES[id]; }
+  CANVAS_CARDS = CANVAS_CARDS.filter(c => c.id !== id);
+  setTimeout(updateCanvasState, 220);
+}
+
+function clearCanvas() {
+  Object.values(CHART_INSTANCES).forEach(c => c.destroy());
+  Object.keys(CHART_INSTANCES).forEach(k => delete CHART_INSTANCES[k]);
+  CANVAS_CARDS = [];
+  document.getElementById('canvas-grid').innerHTML = '';
+  updateCanvasState();
+}
+
+function updateCanvasState() {
+  const n     = CANVAS_CARDS.length;
+  const empty = document.getElementById('canvas-empty');
+  const grid  = document.getElementById('canvas-grid');
+  const count = document.getElementById('canvas-count');
+  const clear = document.getElementById('canvas-clear-btn');
+  if (n > 0) {
+    empty.style.display = 'none'; grid.style.display  = 'grid';
+    count.textContent   = n;      count.style.display = 'inline';
+    clear.style.display = 'block';
+  } else {
+    empty.style.display = 'flex'; grid.style.display  = 'none';
+    count.style.display = 'none'; clear.style.display = 'none';
+  }
+  Object.values(CHART_INSTANCES).forEach(c => c.resize());
+}
+
+
+/* ── Card HTML builders ───────────────────────────────────────────── */
+function buildCardHTML(card) {
+  switch (card.type) {
+    case 'metrics-row':       return buildMetricsRowHTML();
+    case 'performance':       return buildPerformanceHTML(card);
+    case 'corr-chart':        return buildCorrChartHTML(card);
+    case 'trend-chart':       return buildTrendChartHTML(card);
+    case 'video-grid':        return buildVideoGridHTML(card.opts);
+    case 'video-browser':     return buildVideoBrowserHTML(card);
+    case 'features-explorer': return buildFeaturesExplorerHTML(card);
+    case 'ideation-tabs':     return buildIdeationTabsHTML(card);
+    case 'hypothesis':        return buildHypothesisHTML(card);
+    case 'insight':           return buildInsightHTML(card.opts);
+    case 'concept-result':    return buildConceptResultHTML(card.opts);
+    default: return `<div class="cc-title">${card.type}</div>`;
+  }
+}
+
+/* Metrics row */
+function buildMetricsRowHTML() {
+  const cells = (CONFIG?.interface?.stat_cards || []).map(sc => {
+    const val = computeStat(sc, VIDEOS);
+    return `<div class="cc-metric-cell">
+      <div class="cc-metric-val">${val}</div>
+      <div class="cc-metric-lbl">${sc.label}</div>
+    </div>`;
+  });
+  if (!cells.length) return `<div class="cc-title">Metrics</div><div class="cc-empty"><div>No stat cards configured</div></div>`;
+  return `<div class="cc-title">Key Metrics</div>
+    <div class="cc-metric-row">${cells.join('')}</div>`;
+}
+
+/* ── Custom pill dropdown builder ─────────────────────────────────── */
+/* opts: [{val, label}], defaultVal: string                           */
+function buildMLDd(sid, key, dimLabel, opts, defaultVal) {
+  const curLabel = opts.find(o => o.val === defaultVal)?.label || defaultVal;
+  const chevron  = `<svg class="ml-dd-chev" viewBox="0 0 10 6" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+  const items = opts.map(o =>
+    `<div class="ml-dd-opt${o.val===defaultVal?' sel':''}"
+          data-val="${o.val}"
+          onclick="selectMLDdOpt(this)">${o.label}</div>`
+  ).join('');
+  return `<div class="ml-dd" data-sid="${sid}" data-key="${key}" id="ml-dd-${key}-${sid}">
+    <input type="hidden" id="ml-${key}-${sid}" value="${defaultVal}">
+    <button class="ml-dd-btn" type="button" onclick="toggleMLDd(this)">
+      <span class="ml-dd-dim">${dimLabel}</span>
+      <span class="ml-dd-val" id="ml-ddval-${key}-${sid}">${curLabel}</span>
+      ${chevron}
+    </button>
+    <div class="ml-dd-panel">${items}</div>
+  </div>`;
+}
+
+/* ML Signals panel — Correlations / Lasso / Random Forest tabs */
+function buildCorrChartHTML(card) {
+  const sid     = card.id;
+  const curTab  = card.opts.mlTab || 'corr';
+
+  /* ── Build complete target list from config + actual ML data ─── */
+  const configTargets = CONFIG?.analysis?.correlation_targets || [];
+  const lassoTargets  = CONFIG?.analysis?.lasso_targets || [];
+  const schemaTargets = CONFIG?.data?.schema?.targets || [];
+  const mlTargets     = ML_INSIGHTS?.targets || [];
+  const outlierTargets = ['outlier_potential'];
+  const allTargets    = [...new Set([
+    ...configTargets, ...lassoTargets, ...schemaTargets, ...mlTargets, ...outlierTargets
+  ])];
+  if (!allTargets.length) allTargets.push('views');
+  const curTarget = card.opts.target || allTargets[0];
+
+  /* ── Build feature group list from loaded schema ──────────────── */
+  const groupSet = new Set(Object.values(FEAT_GROUP_MAP));
+  const groupOpts = [{ val: 'all', label: 'All groups' }];
+  for (const g of [...groupSet].sort()) {
+    groupOpts.push({ val: g, label: fmtLabel(g) });
+  }
+
+  /* ── Pill dropdowns ───────────────────────────────────────────── */
+  const targetDd = buildMLDd(sid, 'target', 'Target',
+    allTargets.map(t => ({ val: t, label: fmtLabel(t) })), curTarget);
+  const groupDd  = buildMLDd(sid, 'fgroup', 'Features',
+    groupOpts, 'all');
+  const topnDd   = buildMLDd(sid, 'topn', 'Show', [
+    {val:'10', label:'Top 10'}, {val:'15', label:'Top 15'},
+    {val:'20', label:'Top 20'}, {val:'999',label:'All'},
+  ], '15');
+  const dirDd    = buildMLDd(sid, 'dir', 'Direction', [
+    {val:'all', label:'All'},
+    {val:'pos', label:'Positive ↑'},
+    {val:'neg', label:'Negative ↓'},
+  ], 'all');
+
+  const TABS = [
+    {id:'corr',  emoji:'📊', label:'Correlations'},
+    {id:'lasso', emoji:'🎯', label:'Lasso'},
+    {id:'rf',    emoji:'🌲', label:'Random Forest'},
+  ];
+  const tabBtns = TABS.map(t =>
+    `<button class="ml-tab-btn${t.id===curTab?' active':''}"
+             onclick="switchMLTab('${sid}','${t.id}',this)">${t.emoji} ${t.label}</button>`
+  ).join('');
+
+  return `<div class="cc-title">ML Signals</div>
+
+    <!-- ▸ Pill filter bar ───────────────────────────────────────── -->
+    <div class="ml-filter-bar">${targetDd}${groupDd}${topnDd}${dirDd}</div>
+
+    <!-- ▸ Method tabs ───────────────────────────────────────────── -->
+    <div class="ml-tab-bar">${tabBtns}</div>
+
+    <!-- ▸ Chart area ────────────────────────────────────────────── -->
+    <div class="cc-chart-wrap" id="ml-wrap-${sid}">
+      <canvas id="chart-canvas-${sid}"></canvas>
+    </div>`;
+}
+
+/* ── Performance panel ─────────────────────────────────────────────── */
+
+function _perfChevSvg() {
+  return `<svg class="perf-hdr-chev" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+/* Delta badge helper: returns HTML like "+12.3%" or "−4.1%" */
+function _deltaBadge(cur, prev) {
+  if (prev == null || prev === 0 || cur == null) return '';
+  const pct = ((cur - prev) / Math.abs(prev)) * 100;
+  if (Math.abs(pct) < 0.5) return `<span class="perf-hdr-delta flat">~0%</span>`;
+  const cls = pct > 0 ? 'up' : 'down';
+  const sign = pct > 0 ? '+' : '';
+  return `<span class="perf-hdr-delta ${cls}">${sign}${pct.toFixed(1)}%</span>`;
+}
+function _rowDelta(cur, prev) {
+  if (prev == null || prev === 0 || cur == null) return '';
+  const pct = ((cur - prev) / Math.abs(prev)) * 100;
+  if (Math.abs(pct) < 0.5) return `<span class="perf-row-delta flat">~0%</span>`;
+  const cls = pct > 0 ? 'up' : 'down';
+  const sign = pct > 0 ? '+' : '';
+  return `<span class="perf-row-delta ${cls}">${sign}${pct.toFixed(1)}%</span>`;
+}
+
+/* Compute performance data from VIDEOS for a given period */
+function _perfCompute(periodDays) {
+  if (!VIDEOS.length) return null;
+  const dateFld = CONFIG?.data?.schema?.date || 'published_at';
+  const now     = new Date();
+  const cutoff  = new Date(now - periodDays * 86400000);
+  const prevCut = new Date(cutoff - periodDays * 86400000);
+
+  const recent = VIDEOS.filter(v => new Date(v[dateFld]) >= cutoff);
+  const prev   = VIDEOS.filter(v => {
+    const d = new Date(v[dateFld]);
+    return d >= prevCut && d < cutoff;
+  });
+
+  const sum  = (arr, f) => arr.reduce((a,v) => a + (parseFloat(v[f]) || 0), 0);
+  const mean = (arr, f) => { const n = arr.filter(v => v[f] != null && v[f] !== ''); return n.length ? sum(n, f) / n.length : 0; };
+
+  const fmtFld  = CONFIG?.data?.schema?.format || 'format';
+  const titleFld = CONFIG?.data?.schema?.title || 'title';
+  const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail_url';
+
+  // Monthly totals
+  const totals = {
+    views:    { cur: sum(recent, 'views'),                prev: sum(prev, 'views') },
+    retention:{ cur: mean(recent, 'avg_view_percentage'), prev: mean(prev, 'avg_view_percentage') },
+    ret30s:   { cur: mean(recent, 'retention_30s'),       prev: mean(prev, 'retention_30s') },
+    subs:     { cur: sum(recent, 'subscribers_gained'),   prev: sum(prev, 'subscribers_gained') },
+    cpm:      { cur: mean(recent, 'cpm'),                 prev: mean(prev, 'cpm') },
+    revenue:  { cur: sum(recent, 'revenue'),              prev: sum(prev, 'revenue') },
+    published:{ cur: recent.length,                       prev: prev.length },
+  };
+
+  // Outliers — highest/lowest by views
+  const sortedByViews = [...recent].sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
+  const topVideos = sortedByViews.slice(0, 3);
+  const bottomVideos = sortedByViews.slice(-3).reverse();
+
+  // Format / series breakdown
+  const formatMap = {};
+  recent.forEach(v => {
+    const fmt = v[fmtFld] || 'Unknown';
+    if (!formatMap[fmt]) formatMap[fmt] = { views: 0, count: 0, rev: 0 };
+    formatMap[fmt].views += parseFloat(v.views) || 0;
+    formatMap[fmt].count += 1;
+    formatMap[fmt].rev   += parseFloat(v.revenue) || 0;
+  });
+
+  return { recent, prev, totals, topVideos, bottomVideos, formatMap, titleFld, thumbFld };
+}
+
+function buildPerformanceHTML(card) {
+  const sid  = card.id;
+  const chev = _perfChevSvg();
+  const noData = !VIDEOS.length;
+  const empty  = `<div class="perf-empty">No data yet — run the pipeline to populate.</div>`;
+
+  // Period pill
+  const periodDd = buildMLDd(sid, 'period', 'Period', [
+    { val: '30',  label: 'Last 30 days' },
+    { val: '90',  label: 'Last 90 days' },
+    { val: '180', label: 'Last 6 months' },
+    { val: '365', label: 'Last year' },
+    { val: '9999',label: 'All time' },
+  ], card.opts.period || '90');
+
+  const days = parseInt(document.getElementById(`ml-period-${sid}`)?.value || card.opts.period || '90');
+  const d    = noData ? null : _perfCompute(days);
+
+  /* ── Section builders ── */
+  function section(id, icon, title, heroVal, heroDelta, bodyHTML, openByDefault = false) {
+    return `<div class="perf-section${openByDefault ? ' open' : ''}" id="perf-sec-${sid}-${id}">
+      <div class="perf-hdr" onclick="togglePerfSection('${sid}','${id}')">
+        <span class="perf-hdr-icon">${icon}</span>
+        <span class="perf-hdr-title">${title}</span>
+        <span class="perf-hdr-hero">${heroVal}</span>
+        ${heroDelta}
+        ${chev}
+      </div>
+      <div class="perf-body">${bodyHTML}</div>
+    </div>`;
+  }
+
+  function row(label, val, delta = '') {
+    return `<div class="perf-row"><span class="perf-row-lbl">${label}</span>
+      <span class="perf-row-val">${val}</span>${delta}</div>`;
+  }
+
+  function outlierRow(v) {
+    const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail_url';
+    const titleFld = CONFIG?.data?.schema?.title || 'title';
+    return `<div class="perf-outlier">
+      <img class="perf-outlier-thumb" src="${v[thumbFld]||''}" loading="lazy"
+           onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+      <div class="perf-outlier-info">
+        <div class="perf-outlier-title">${escHtml(v[titleFld]||'Untitled')}</div>
+        <div class="perf-outlier-meta">${fmtCompact(parseFloat(v.views)||0)} views</div>
+      </div></div>`;
+  }
+
+  /* ── 1. Overview / Monthly Totals ── */
+  let overviewBody, overviewHero, overviewDelta;
+  if (d) {
+    overviewBody =
+      row('Total views',      fmtCompact(d.totals.views.cur),          _rowDelta(d.totals.views.cur, d.totals.views.prev)) +
+      row('Videos published', d.totals.published.cur,                   _rowDelta(d.totals.published.cur, d.totals.published.prev)) +
+      row('Avg retention',    `${d.totals.retention.cur.toFixed(1)}%`,  _rowDelta(d.totals.retention.cur, d.totals.retention.prev)) +
+      row('30s retention',    `${d.totals.ret30s.cur.toFixed(1)}%`,     _rowDelta(d.totals.ret30s.cur, d.totals.ret30s.prev)) +
+      row('Net subscribers',  fmtCompact(d.totals.subs.cur),           _rowDelta(d.totals.subs.cur, d.totals.subs.prev));
+    overviewHero  = fmtCompact(d.totals.views.cur) + ' views';
+    overviewDelta = _deltaBadge(d.totals.views.cur, d.totals.views.prev);
+  } else {
+    overviewBody  = row('Total views','—') + row('Videos published','—') +
+                    row('Avg retention','—') + row('30s retention','—') + row('Net subscribers','—');
+    overviewHero  = '—';
+    overviewDelta = '';
+  }
+
+  /* ── 2. Outliers ── */
+  let outlierBody;
+  if (d && d.topVideos.length) {
+    outlierBody =
+      `<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:4px 0">Top performers</div>` +
+      d.topVideos.map(v => outlierRow(v)).join('') +
+      `<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:8px 0 4px">Lowest performers</div>` +
+      d.bottomVideos.map(v => outlierRow(v)).join('');
+  } else {
+    outlierBody = empty;
+  }
+
+  /* ── 3. Revenue ── */
+  let revenueBody, revHero, revDelta;
+  if (d) {
+    revenueBody =
+      row('Total revenue', `$${fmtCompact(d.totals.revenue.cur)}`, _rowDelta(d.totals.revenue.cur, d.totals.revenue.prev)) +
+      row('Avg CPM',       `$${d.totals.cpm.cur.toFixed(2)}`,      _rowDelta(d.totals.cpm.cur, d.totals.cpm.prev));
+    revHero  = '$' + fmtCompact(d.totals.revenue.cur);
+    revDelta = _deltaBadge(d.totals.revenue.cur, d.totals.revenue.prev);
+  } else {
+    revenueBody = row('Total revenue','—') + row('Avg CPM','—');
+    revHero = '—'; revDelta = '';
+  }
+
+  /* ── 4. Series / Format breakdown ── */
+  let seriesBody, seriesHero;
+  if (d) {
+    const fmtEntries = Object.entries(d.formatMap).sort((a,b) => b[1].views - a[1].views);
+    seriesBody = fmtEntries.length
+      ? fmtEntries.map(([fmt, s]) =>
+          row(`${fmt} <span style="opacity:.5">(${s.count})</span>`, fmtCompact(s.views) + ' views')
+        ).join('')
+      : `<div class="perf-empty">No format data</div>`;
+    seriesHero = `${fmtEntries.length} formats`;
+  } else {
+    seriesBody = empty; seriesHero = '—';
+  }
+
+  /* ── 5. Engagement ── */
+  const engBody = d
+    ? row('Net subscribers', fmtCompact(d.totals.subs.cur), _rowDelta(d.totals.subs.cur, d.totals.subs.prev))
+    : row('Net subscribers','—');
+  const engHero = d ? fmtCompact(d.totals.subs.cur) + ' subs' : '—';
+
+  /* ── 6. Retention deep-dive ── */
+  const retBody = d
+    ? row('Avg % viewed',  `${d.totals.retention.cur.toFixed(1)}%`, _rowDelta(d.totals.retention.cur, d.totals.retention.prev)) +
+      row('30s retention', `${d.totals.ret30s.cur.toFixed(1)}%`,    _rowDelta(d.totals.ret30s.cur, d.totals.ret30s.prev)) +
+      `<div class="perf-empty" style="margin-top:4px">Spike / drop detection requires per-second retention curves (YouTube Analytics API).</div>`
+    : row('Avg % viewed','—') + row('30s retention','—');
+  const retHero = d ? `${d.totals.retention.cur.toFixed(1)}%` : '—';
+
+  /* ── 7. Traffic (placeholder) ── */
+  const trafficBody =
+    `<div class="perf-empty">Connect YouTube Analytics API to populate:</div>` +
+    row('Recommendations (Browse + Suggested)','—') +
+    row('Search','—') + row('External','—') +
+    row('Device type','—') + row('Geography','—');
+
+  /* ── 8. Audience (placeholder) ── */
+  const audienceBody =
+    `<div class="perf-empty">Connect YouTube Analytics API to populate:</div>` +
+    row('Gender distribution','—') + row('Age distribution','—');
+
+  /* ── Build all sections ── */
+  const sections =
+    section('overview', '📊', 'Performance',  overviewHero, overviewDelta, overviewBody, true) +
+    section('outliers', '🏆', 'Outliers',     d ? `${d.topVideos.length} top` : '—', '', outlierBody, true) +
+    section('retention','📈', 'Retention',     retHero, '', retBody) +
+    section('revenue',  '💰', 'Revenue',      revHero, revDelta, revenueBody) +
+    section('series',   '🎬', 'Series',       seriesHero, '', seriesBody) +
+    section('engage',   '💬', 'Engagement',   engHero, '', engBody) +
+    section('traffic',  '🔀', 'Traffic',      '—', '', trafficBody) +
+    section('audience', '👥', 'Audience',      '—', '', audienceBody);
+
+  return `<div class="cc-title">Performance</div>
+    <div class="ml-filter-bar">${periodDd}</div>
+    ${sections}`;
+}
+
+/* Toggle accordion section */
+function togglePerfSection(sid, secId) {
+  const el = document.getElementById(`perf-sec-${sid}-${secId}`);
+  if (el) el.classList.toggle('open');
+}
+
+/* Re-render performance card when period changes */
+function refreshPerformanceCard(sid) {
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (!card) return;
+  card.opts.period = document.getElementById(`ml-period-${sid}`)?.value || '90';
+  refreshCard(card);
+}
+
+/* Trend chart */
+function buildTrendChartHTML(card) {
+  const metric  = card.opts.metric || 'views';
+  const metrics = ['views','avg_view_percentage','cpm','subscribers_gained'];
+  const opts    = metrics.map(m =>
+    `<option value="${m}"${m===metric?' selected':''}>${fmtLabel(m)}</option>`).join('');
+  return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">
+      <span>Trends Over Time</span>
+      <select style="margin-left:auto;background:var(--surface2);border:1px solid var(--border2);
+        color:var(--text);border-radius:5px;font-size:11px;padding:2px 6px"
+        onchange="updateTrendMetric('${card.id}',this.value)">${opts}</select>
+    </div>
+    <div class="cc-chart-wrap"><canvas id="chart-canvas-${card.id}"></canvas></div>`;
+}
+
+/* Video grid (simple, used when Calliope mentions top videos) */
+function buildVideoGridHTML(opts) {
+  const sort  = opts.sort  || 'views';
+  const limit = opts.limit || 8;
+  if (!VIDEOS.length) return `<div class="cc-title">Top Videos</div>
+    <div class="cc-empty"><div>🎬</div><div>No video data</div><div><code>features/pipeline.py</code></div></div>`;
+  const idFld=CONFIG.data.schema.id, titleFld=CONFIG.data.schema.title, thumbFld=CONFIG.data.schema.thumbnail;
+  const sorted = [...VIDEOS].sort((a,b)=>(parseFloat(b[sort])||0)-(parseFloat(a[sort])||0));
+  const cards  = sorted.slice(0,limit).map(v => videoCardHTML(v,idFld,titleFld,thumbFld)).join('');
+  return `<div class="cc-title">Top Videos</div>
+    <div class="vbr-grid">${cards}</div>`;
+}
+
+/* Video browser with search / sort / filter chips */
+function buildVideoBrowserHTML(card) {
+  const sid = card.id;
+  const formats = VIDEOS.length && CONFIG?.data?.schema?.format
+    ? [...new Set(VIDEOS.map(v=>v[CONFIG.data.schema.format]).filter(Boolean))].slice(0,8)
+    : [];
+  const fmtChips = formats.map(f =>
+    `<button class="vbr-chip" id="vbr-fmt-${sid}-${f.replace(/\W/g,'_')}"
+       onclick="toggleVbrChip(this,'${sid}')">${f}</button>`).join('');
+  return `<div class="cc-title">Video Library
+    <span style="font-weight:400;color:var(--muted2);margin-left:4px"
+          id="vbr-count-${sid}">(${VIDEOS.length})</span>
+    </div>
+    <div class="vbr-filter-bar">
+      <input id="vbr-search-${sid}" class="vbr-search"
+             placeholder="Search by title…">
+      <select id="vbr-sort-${sid}" class="vbr-sort">
+        <option value="views">Views ↓</option>
+        <option value="avg_view_percentage">Retention ↓</option>
+        <option value="published_at">Date ↓</option>
+        <option value="cpm">CPM ↓</option>
+      </select>
+      ${fmtChips}
+    </div>
+    <div id="vbr-grid-${sid}" class="vbr-grid"></div>
+    <button class="vbr-load-more" id="vbr-more-${sid}"
+            onclick="vbrLoadMore('${sid}')" style="display:none">
+      Load 10 more
+    </button>`;
+}
+
+function toggleVbrChip(el, sid) {
+  el.classList.toggle('on');
+  VBR_VISIBLE[sid] = 12; // reset to first page on filter change
+  renderVbrGrid(sid);
+}
+
+function vbrLoadMore(sid) {
+  VBR_VISIBLE[sid] = (VBR_VISIBLE[sid] || 12) + 10;
+  renderVbrGrid(sid);
+}
+
+function renderVbrGrid(sid, resetPage = false) {
+  if (!VIDEOS.length || !CONFIG) return;
+  if (resetPage) VBR_VISIBLE[sid] = 12;
+  if (!(sid in VBR_VISIBLE)) VBR_VISIBLE[sid] = 12;
+
+  const search = document.getElementById(`vbr-search-${sid}`)?.value?.toLowerCase() || '';
+  const sort   = document.getElementById(`vbr-sort-${sid}`)?.value || 'views';
+  const fmtField = CONFIG.data.schema.format;
+  const activeFormats = fmtField
+    ? Array.from(document.querySelectorAll(`[id^="vbr-fmt-${sid}-"].on`))
+        .map(el => el.textContent)
+    : [];
+
+  let rows = [...VIDEOS];
+  if (search) rows = rows.filter(v => {
+    const title = (v[CONFIG.data.schema.title] || '').toLowerCase();
+    return title.includes(search);
+  });
+  if (activeFormats.length && fmtField) {
+    rows = rows.filter(v => activeFormats.includes(v[fmtField]));
+  }
+  rows.sort((a,b) => {
+    if (sort === 'published_at') return new Date(b[sort]||0) - new Date(a[sort]||0);
+    return (parseFloat(b[sort])||0) - (parseFloat(a[sort])||0);
+  });
+
+  const limit   = VBR_VISIBLE[sid];
+  const idFld   = CONFIG.data.schema.id;
+  const titleFld = CONFIG.data.schema.title;
+  const thumbFld = CONFIG.data.schema.thumbnail;
+  const gridEl  = document.getElementById(`vbr-grid-${sid}`);
+  const countEl = document.getElementById(`vbr-count-${sid}`);
+  const moreEl  = document.getElementById(`vbr-more-${sid}`);
+
+  if (gridEl) {
+    const slice = rows.slice(0, limit);
+    gridEl.innerHTML = slice.length
+      ? slice.map(v => videoCardHTML(v, idFld, titleFld, thumbFld)).join('')
+      : `<div style="grid-column:1/-1;padding:18px 0;text-align:center;color:var(--muted);font-size:12px">No videos match your search.</div>`;
+  }
+  if (countEl) countEl.textContent = `(${rows.length})`;
+  if (moreEl) {
+    const remaining = rows.length - limit;
+    if (remaining > 0) {
+      moreEl.style.display = 'block';
+      moreEl.textContent   = `Load 10 more  ·  ${remaining} remaining`;
+    } else {
+      moreEl.style.display = 'none';
+    }
+  }
+}
+
+function videoCardHTML(v, idFld, titleFld, thumbFld) {
+  const views = fmtCompact(parseFloat(v.views)||0);
+  const ret   = v.avg_view_percentage ? `${parseFloat(v.avg_view_percentage).toFixed(0)}% ret` : '';
+  return `<div class="vbr-card" onclick="askAboutVideo('${esc(v[idFld]||'')}','${esc(v[titleFld]||'')}')">
+    <img class="vbr-thumb" src="${v[thumbFld]||''}" loading="lazy"
+         onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+    <div class="vbr-body">
+      <div class="vbr-title">${escHtml(v[titleFld]||'Untitled')}</div>
+      <div class="vbr-meta">${views}${ret ? ' · '+ret : ''}</div>
+    </div>
+  </div>`;
+}
+
+/* Features explorer: each feature with corr bar + min/max video examples */
+function buildFeaturesExplorerHTML(card) {
+  const sid = card.id;
+  return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">
+      <span>Features Explorer</span>
+      <select id="feat-sort-${sid}" class="feat-sort-sel" style="margin-left:auto">
+        <option value="abs_r">Sort by |correlation|</option>
+        <option value="name">Sort by name</option>
+      </select>
+    </div>
+    <div class="feat-filter-bar">
+      <input id="feat-search-${sid}" class="feat-search" placeholder="Filter features…">
+    </div>
+    <div class="feat-head">
+      <span>Feature</span>
+      <span>Correlation with views</span>
+      <span>Min value example</span>
+      <span>Max value example</span>
+      <span style="text-align:right">r</span>
+    </div>
+    <div id="feat-rows-${sid}" class="feat-table"></div>`;
+}
+
+function renderFeatRows(sid) {
+  const rowsEl  = document.getElementById(`feat-rows-${sid}`);
+  if (!rowsEl) return;
+
+  const query   = (document.getElementById(`feat-search-${sid}`)?.value || '').toLowerCase();
+  const sortBy  = document.getElementById(`feat-sort-${sid}`)?.value || 'abs_r';
+  const target  = (CONFIG?.analysis?.correlation_targets || ['views'])[0];
+
+  // Build feature list from ML_INSIGHTS correlations
+  if (!ML_INSIGHTS?.correlations?.[target]) {
+    rowsEl.innerHTML = `<div class="cc-empty"><div>No ML data</div><div><code>AI/pipeline.py</code></div></div>`;
+    return;
+  }
+
+  const corrData = ML_INSIGHTS.correlations[target];
+  let features = Object.entries(corrData)
+    .filter(([f,v]) => v.spearman_r != null)
+    .map(([f,v]) => ({ feat: f, r: v.spearman_r }));
+
+  // Apply search filter
+  if (query) features = features.filter(({feat}) => feat.toLowerCase().includes(query));
+
+  // Sort
+  if (sortBy === 'abs_r') features.sort((a,b) => Math.abs(b.r) - Math.abs(a.r));
+  else                    features.sort((a,b) => a.feat.localeCompare(b.feat));
+
+  const thumbFld  = CONFIG?.data?.schema?.thumbnail;
+  const titleFld  = CONFIG?.data?.schema?.title;
+  const idFld     = CONFIG?.data?.schema?.id;
+  const MAX_ROWS  = 20;
+
+  rowsEl.innerHTML = features.slice(0, MAX_ROWS).map(({feat, r}) => {
+    const absR = Math.abs(r);
+    const barW = `${(absR * 100).toFixed(0)}%`;
+    const sign = r >= 0 ? 'pos' : 'neg';
+
+    // Compute min/max from VIDEOS
+    let minVid = null, maxVid = null;
+    if (VIDEOS.length) {
+      const sorted = [...VIDEOS]
+        .filter(v => v[feat] != null && !isNaN(parseFloat(v[feat])))
+        .sort((a,b) => parseFloat(a[feat]) - parseFloat(b[feat]));
+      if (sorted.length) {
+        minVid = sorted[0];
+        maxVid = sorted[sorted.length - 1];
+      }
+    }
+
+    const thumbOf = (v, label) => v ? `
+      <div class="feat-extreme" title="${escHtml(v[titleFld]||'')} (${parseFloat(v[feat]).toFixed(2)})"
+           onclick="askAboutVideo('${esc(v[idFld]||'')}','${esc(v[titleFld]||'')}');event.stopPropagation()"
+           style="cursor:pointer">
+        <img class="feat-thumb" src="${v[thumbFld]||''}"
+             onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+        <span class="feat-val">${parseFloat(v[feat]).toFixed(2)}</span>
+      </div>` : `<span class="feat-val">—</span>`;
+
+    return `<div class="feat-row">
+      <span class="feat-name" title="${feat}">${fmtFeatureName(feat)}</span>
+      <div>
+        <div class="feat-bar-wrap">
+          <div class="feat-bar ${sign}" style="width:${barW}"></div>
+        </div>
+      </div>
+      ${thumbOf(minVid, 'Min')}
+      ${thumbOf(maxVid, 'Max')}
+      <span class="feat-r ${sign}">${r>=0?'+':''}${r.toFixed(2)}</span>
+    </div>`;
+  }).join('');
+}
+
+/* Ideation studio with tabs: Concept | Storyboard | Script | Casting */
+function buildIdeationTabsHTML(card) {
+  if (!CONFIG) return `<div class="cc-title">Ideation Studio</div>`;
+  const sid = card.id;
+  const formats   = CONFIG.ideation?.formats   || [];
+  const audiences = CONFIG.ideation?.audiences || [];
+
+  const fmtChips = formats.map((f,i) =>
+    `<button class="ideo-chip${i===0?' sel':''}" onclick="toggleIdeoChip(this,'fmt-${sid}')">${f}</button>`).join('');
+  const audChips = audiences.map((a,i) =>
+    `<button class="ideo-chip${i===0?' sel':''}" onclick="toggleIdeoChip(this,'aud-${sid}')">${a}</button>`).join('');
+
+  const TABS = [
+    { id:'concept',      emoji:'💡', label:'Concept'      },
+    { id:'storyboard',   emoji:'🎬', label:'Storyboard'   },
+    { id:'script',       emoji:'📝', label:'Script'        },
+    { id:'casting',      emoji:'🎭', label:'Casting'       },
+    { id:'production',   emoji:'🎥', label:'Production'   },
+    { id:'titles',       emoji:'✏️', label:'Titles'        },
+    { id:'thumbnails',   emoji:'🖼️', label:'Thumbnails'   },
+    { id:'distribution', emoji:'🌐', label:'Distribution' },
+    { id:'evidence',     emoji:'📊', label:'Evidence'     },
+  ];
+  const tabBtns = TABS.map((t,i) =>
+    `<button class="ideo-tab-btn${i===0?' active':''}"
+       onclick="switchIdeoTab('${sid}','${t.id}',this)">${t.emoji} ${t.label}</button>`).join('');
+
+  /* Evidence tab — pre-render ML data inline */
+  let evidenceHTML = '';
+  const hyps = ML_INSIGHTS?.hypotheses || {};
+  let sigCount = 0;
+  for (const [feat, tgtData] of Object.entries(hyps)) {
+    for (const [tgt, vals] of Object.entries(tgtData)) {
+      if (vals.skipped || vals.p_value >= 0.05) continue;
+      evidenceHTML += `<p style="margin:0 0 7px"><strong>${fmtFeatureName(feat)}</strong> → ${fmtLabel(tgt)}:
+        p&nbsp;=&nbsp;<strong>${vals.p_value?.toFixed(3)}</strong>,
+        d&nbsp;=&nbsp;${vals.effect_size_d?.toFixed(2)},
+        CLES&nbsp;${(vals.cles*100).toFixed(0)}%</p>`;
+      if (++sigCount >= 10) break;
+    }
+    if (sigCount >= 10) break;
+  }
+  if (!evidenceHTML) evidenceHTML = `<em style="color:var(--muted)">No significant results yet — run the ML pipeline to populate.</em>`;
+
+  const durChips = [
+    { val:'short',  label:'< 3 min' },
+    { val:'medium', label:'3–10 min', sel:true },
+    { val:'long',   label:'10+ min' },
+  ].map(d => `<button class="ideo-chip${d.sel?' sel':''}"
+    onclick="toggleIdeoChip(this,'dur-${sid}')" data-val="${d.val}">${d.label}</button>`).join('');
+
+  const novChips = [
+    { val:'0.4', label:'🧊 Safe' },
+    { val:'0.7', label:'⚖️ Balanced', sel:true },
+    { val:'1.0', label:'🔥 Bold' },
+  ].map(n => `<button class="ideo-chip${n.sel?' sel':''}"
+    onclick="toggleIdeoChip(this,'nov-${sid}')" data-val="${n.val}">${n.label}</button>`).join('');
+
+  return `<div class="cc-title">Ideation Studio</div>
+
+    <!-- ▸ Shared filters: Format · Audience · Duration · Novelty (one row) ── -->
+    <div style="display:flex;gap:6px 22px;flex-wrap:wrap;align-items:flex-start;margin-bottom:12px">
+      ${formats.length ? `<div>
+        <div class="ideo-lbl">Format</div>
+        <div class="ideo-chips" id="fmt-${sid}">${fmtChips}</div>
+      </div>` : ''}
+      ${audiences.length ? `<div>
+        <div class="ideo-lbl">Audience</div>
+        <div class="ideo-chips" id="aud-${sid}">${audChips}</div>
+      </div>` : ''}
+      <div>
+        <div class="ideo-lbl">Duration</div>
+        <div class="ideo-chips" id="dur-${sid}">${durChips}</div>
+      </div>
+      <div>
+        <div class="ideo-lbl">Novelty</div>
+        <div class="ideo-chips" id="nov-${sid}">${novChips}</div>
+      </div>
+    </div>
+
+    <!-- ▸ Shared brief ───────────────────────────────────────────── -->
+    <div style="margin-bottom:8px">
+      <div class="ideo-lbl">Brief / Angle <span style="font-weight:400;opacity:.6">(optional)</span></div>
+      <textarea class="ideo-ta" id="ideo-brief-${sid}" style="height:56px"
+        placeholder="Describe your episode idea — theme, guest type, twist, inspiration…"></textarea>
+    </div>
+
+    <!-- ▸ Upload strip + Ideate button (co-located row) ─────────── -->
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px">
+      <div style="flex:1;min-width:0">
+        <div class="ideo-dropzone" id="ideo-dz-${sid}"
+             ondragover="ideoRefDragOver(event,'${sid}')"
+             ondragleave="ideoRefDragLeave(event,'${sid}')"
+             ondrop="ideoRefDrop(event,'${sid}')"
+             onclick="document.getElementById('ideo-file-${sid}').click()">
+          <span class="ideo-dropzone-icon">📄</span>
+          <span class="ideo-dropzone-text">Drag doc · or <u>browse</u></span>
+          <span class="ideo-dropzone-sub">.txt · .md</span>
+        </div>
+        <input type="file" id="ideo-file-${sid}" accept=".txt,.docx,.md"
+               style="display:none" onchange="loadIdeoRefFile(this,'${sid}')">
+        <div class="ideo-fname" id="ideo-fname-${sid}"></div>
+      </div>
+      <button class="ideo-gen-btn" id="ideo-ideate-btn-${sid}"
+              style="flex-shrink:0;padding:8px 16px;font-size:13px;font-weight:700;border-radius:8px;letter-spacing:.02em;white-space:nowrap"
+              onclick="runAllIdeoActions('${sid}')">✦ Ideate</button>
+    </div>
+
+    <!-- ▸ Tab bar ───────────────────────────────────────────────── -->
+    <div class="ideo-tab-bar">${tabBtns}</div>
+
+    <!-- 💡 Concept -->
+    <div class="ideo-tab-pane active" id="itab-${sid}-concept">
+      <div class="ideo-result" id="ideo-out-${sid}-concept"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 🎬 Storyboard -->
+    <div class="ideo-tab-pane" id="itab-${sid}-storyboard">
+      <div class="ideo-result" id="ideo-out-${sid}-storyboard"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 📝 Script -->
+    <div class="ideo-tab-pane" id="itab-${sid}-script">
+      <div class="ideo-result" id="ideo-out-${sid}-script"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 🎭 Casting -->
+    <div class="ideo-tab-pane" id="itab-${sid}-casting">
+      <div class="ideo-result" id="ideo-out-${sid}-casting"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 🎥 Production -->
+    <div class="ideo-tab-pane" id="itab-${sid}-production">
+      <div class="ideo-result" id="ideo-out-${sid}-production"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- ✏️ Titles -->
+    <div class="ideo-tab-pane" id="itab-${sid}-titles">
+      <div class="ideo-result" id="ideo-out-${sid}-titles"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 🖼️ Thumbnails -->
+    <div class="ideo-tab-pane" id="itab-${sid}-thumbnails">
+      <div class="ideo-result" id="ideo-out-${sid}-thumbnails"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 🌐 Distribution -->
+    <div class="ideo-tab-pane" id="itab-${sid}-distribution">
+      <div class="ideo-result" id="ideo-out-${sid}-distribution"
+           style="display:none;min-height:60px"></div>
+    </div>
+
+    <!-- 📊 Evidence -->
+    <div class="ideo-tab-pane" id="itab-${sid}-evidence">
+      <div class="ideo-lbl" style="margin-bottom:8px">Statistically significant signals from ML pipeline</div>
+      <div class="ideo-result vis" id="ideo-out-${sid}-evidence"
+           style="display:block;font-size:12px;line-height:1.7">
+        ${evidenceHTML}
+      </div>
+    </div>`;
+}
+
+function switchIdeoTab(sid, tab, btn) {
+  // Deactivate all tabs in this card
+  document.querySelectorAll(`[id^="itab-${sid}-"]`).forEach(el => el.classList.remove('active'));
+  btn.closest('.cc').querySelectorAll('.ideo-tab-btn').forEach(b => b.classList.remove('active'));
+  // Activate selected
+  document.getElementById(`itab-${sid}-${tab}`)?.classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleIdeoChip(el, groupId) {
+  document.getElementById(groupId)?.querySelectorAll('.ideo-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+/* ── Ideation reference / file-upload helpers ────────────────── */
+function toggleIdeoRef(sid) {
+  const body = document.getElementById(`ideo-ref-body-${sid}`);
+  const btn  = document.querySelector(`#ideo-ref-${sid} .ideo-ref-toggle`);
+  if (!body) return;
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  if (btn) btn.textContent = hidden ? '▼ Hide' : '▶ Show';
+}
+
+function ideoRefDragOver(event, sid) {
+  event.preventDefault();
+  document.getElementById(`ideo-dz-${sid}`)?.classList.add('over');
+}
+
+function ideoRefDragLeave(event, sid) {
+  document.getElementById(`ideo-dz-${sid}`)?.classList.remove('over');
+}
+
+function ideoRefDrop(event, sid) {
+  event.preventDefault();
+  document.getElementById(`ideo-dz-${sid}`)?.classList.remove('over');
+  const file = event.dataTransfer?.files?.[0];
+  if (file) loadIdeoRefFile({ files: [file] }, sid);
+}
+
+function loadIdeoRefFile(input, sid) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const fnEl = document.getElementById(`ideo-fname-${sid}`);
+  if (fnEl) { fnEl.textContent = `📄 ${file.name}`; fnEl.classList.add('vis'); }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ta = document.getElementById(`ideo-ref-doc-${sid}`);
+    if (ta) ta.value = e.target.result;
+  };
+  reader.readAsText(file);
+}
+
+async function runAllIdeoActions(sid) {
+  const btn = document.getElementById(`ideo-ideate-btn-${sid}`);
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Ideating…'; }
+  const ACTIONS = ['concept','storyboard','script','casting','production','titles','thumbnails','distribution'];
+  ACTIONS.forEach(a => {
+    const el = document.getElementById(`ideo-out-${sid}-${a}`);
+    if (el) { el.innerHTML = '<em style="color:var(--muted)">Generating…</em>'; el.style.display = 'block'; }
+  });
+  try {
+    await Promise.all(ACTIONS.map(a => runIdeoAction(sid, a)));
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✦ Ideate'; }
+  }
+}
+
+async function runIdeoAction(sid, action) {
+  if (action === 'evidence') return; // pre-rendered
+  const fmt    = document.querySelector(`#fmt-${sid} .ideo-chip.sel`)?.textContent?.trim() || '';
+  const aud    = document.querySelector(`#aud-${sid} .ideo-chip.sel`)?.textContent?.trim() || '';
+  const dur    = document.querySelector(`#dur-${sid} .ideo-chip.sel`)?.dataset?.val || 'medium';
+  const temp   = parseFloat(document.querySelector(`#nov-${sid} .ideo-chip.sel`)?.dataset?.val || '0.7');
+  const brief  = document.getElementById(`ideo-brief-${sid}`)?.value?.trim() || '';
+  const refDoc = document.getElementById(`ideo-ref-doc-${sid}`)?.value?.trim() || '';
+  const refUrl = document.getElementById(`ideo-ref-url-${sid}`)?.value?.trim() || '';
+  const outEl  = document.getElementById(`ideo-out-${sid}-${action}`);
+  if (!outEl) return;
+  outEl.innerHTML = '<em style="color:var(--muted)">Generating…</em>';
+  outEl.style.display = 'block';
+
+  const ctx      = ML_INSIGHTS ? `\n\nTop ML signals: ${ML_INSIGHTS.summary_text || ''}` : '';
+  const name     = CONFIG?.project?.name || 'this project';
+  const refCtx   = refDoc ? `\n\nProduction document:\n${refDoc.substring(0, 900)}` : '';
+  const urlCtx   = refUrl ? `\n\nReference episode: ${refUrl}` : '';
+  const concept  = brief || `a ${fmt} video for ${aud}`;
+  const durLabel = dur === 'short' ? 'under 3 min' : dur === 'long' ? '10+ min' : '3–10 min';
+
+  const PROMPTS = {
+    concept: `You are a creative strategist for ${name}.${ctx}${refCtx}${urlCtx}
+Generate a specific, original video concept:
+Format: ${fmt || 'any'} · Audience: ${aud || 'general'} · Brief: ${brief || 'open'}
+Output: 1) Compelling title 2) 40-word concept 3) Why data suggests this will perform well.`,
+
+    storyboard: `You are a video director for ${name}.
+Concept: "${concept}" · Duration: ${durLabel}${refCtx}${urlCtx}
+Write a 4-scene storyboard. Each scene: number, visual description (2 sentences), on-screen action or dialogue (1 sentence), mood.`,
+
+    script: `You are a scriptwriter for ${name}.
+Write a tight video script for: "${concept}"${refCtx}${urlCtx}
+Include: hook (first 5 sec), body (3 key beats), CTA. Format with speaker notes.
+Keep it punchy and true to the ${fmt} format.`,
+
+    casting: `You are a casting director for ${name}.
+Ideal on-screen talent for a "${fmt}" episode targeting "${aud}": "${concept}"${refCtx}${urlCtx}
+Cover: Energy & personality, Age & demographic match, Relevant experience, Voice & style, Red flags to avoid.`,
+
+    production: `You are a production manager for ${name}.
+Concise production plan for: "${concept}" (${durLabel})${refCtx}${urlCtx}
+Cover: 1) Shooting setup & location 2) Props & wardrobe 3) Crew 4) Pacing & editing notes 5) Key risks.`,
+
+    titles: `You are a YouTube title strategist for ${name}.${ctx}${refCtx}
+Episode: "${concept}"
+Generate 8 title options — vary tone: curiosity, FOMO, identity, humor, vulnerability.
+For each: the title, then one sentence on why it works (data-backed where possible).`,
+
+    thumbnails: `You are a thumbnail art director for ${name}.${ctx}${refCtx}
+Episode: "${concept}"
+Generate 4 distinct thumbnail concepts. Each:
+1) Visual composition 2) Facial expression / body language 3) Text overlay 4) Color mood 5) Psychological hook.`,
+
+    distribution: `You are a distribution strategist for ${name}.${ctx}${refCtx}
+Episode: "${concept}"
+Plan: 1) Optimal posting time & cadence 2) Platform cuts (Shorts / Reels / TikTok) 3) Caption hook 4) Community post idea 5) Collab angle.`,
+  };
+
+  try {
+    const text = await callClaude(PROMPTS[action], { temperature: temp, maxTokens: 700, system: false });
+    outEl.innerHTML = marked.parse(text);
+  } catch(e) {
+    outEl.innerHTML = `<span style="color:var(--negative)">Error: ${e.message}</span>`;
+  }
+}
+
+/* ── Hypothesis interpretation helpers ────────────────────────────── */
+
+/* Map feature name to a human-readable category and actionable noun */
+function _hypFeatureContext(feat) {
+  const f = feat.toLowerCase();
+  if (f.includes('title'))  return { cat: 'title',     noun: 'title style',       action: 'titling approach' };
+  if (f.includes('thumb'))  return { cat: 'thumbnail',  noun: 'thumbnail property', action: 'thumbnail design' };
+  if (f.includes('wpm') || f.includes('speech') || f.includes('silence') ||
+      f.includes('filler') || f.includes('crosstalk') || f.includes('pitch'))
+    return { cat: 'audio', noun: 'audio/speech pattern', action: 'speaking style' };
+  if (f.includes('segment') || f.includes('pacing') || f.includes('escalat') ||
+      f.includes('intensity') || f.includes('dynamic') || f.includes('ending'))
+    return { cat: 'narrative', noun: 'narrative structure', action: 'story structure' };
+  if (f.includes('peak') || f.includes('surprise') || f.includes('reveal') ||
+      f.includes('moment') || f.includes('shareab'))
+    return { cat: 'moments', noun: 'moment pattern', action: 'moment placement' };
+  if (f.includes('comment') || f.includes('genz') || f.includes('parasocial') ||
+      f.includes('rewatch') || f.includes('share_intent'))
+    return { cat: 'engagement', noun: 'engagement signal', action: 'engagement strategy' };
+  if (f.includes('geo') || f.includes('traffic') || f.includes('duration'))
+    return { cat: 'metadata', noun: 'distribution factor', action: 'distribution strategy' };
+  if (f.includes('speaker') || f.includes('cast') || f.includes('chemistry') ||
+      f.includes('laughter') || f.includes('question_exchange'))
+    return { cat: 'cast', noun: 'cast dynamic', action: 'casting choice' };
+  return { cat: 'feature', noun: 'content property', action: 'creative approach' };
+}
+
+/* Generate plain-English interpretation */
+function _hypInterpretation(feat, target, vals) {
+  const fn    = fmtFeatureName(feat);
+  const tn    = fmtLabel(target);
+  const sig   = vals.p_value < 0.05;
+  const d     = vals.effect_size_d || 0;
+  const dir   = d > 0 ? 'higher' : 'lower';
+  const mag   = Math.abs(d);
+  const size  = mag >= 0.8 ? 'large' : mag >= 0.5 ? 'medium' : mag >= 0.2 ? 'small' : 'negligible';
+  const hMean = fmtCompact(vals.group_high_mean);
+  const lMean = fmtCompact(vals.group_low_mean);
+
+  if (!sig) {
+    return `No statistically significant link between <strong>${fn}</strong> and <strong>${tn}</strong>. ` +
+           `The ${size} effect (d\u2009=\u2009${d.toFixed(2)}) could be due to chance (high: ${hMean}, low: ${lMean}).`;
+  }
+  return `Videos with high <strong>${fn}</strong> tend to have ${dir} <strong>${tn}</strong> ` +
+         `(${hMean} vs ${lMean}). This is a <strong>${size}</strong> and statistically significant effect.`;
+}
+
+/* Generate A/B experiment suggestion */
+function _hypExperiment(feat, target, vals) {
+  const ctx = _hypFeatureContext(feat);
+  const tn  = fmtLabel(target).toLowerCase();
+  const d   = vals.effect_size_d || 0;
+  const dir = d > 0 ? 'higher' : 'lower';
+
+  const experiments = {
+    title:     `Publish two episodes with identical content but different titles — one using a high-${fmtFeatureName(feat).toLowerCase()} approach, one neutral. Compare ${tn} after 7 days.`,
+    thumbnail: `A/B test two thumbnails on the same video — one optimized for high ${fmtFeatureName(feat).toLowerCase()}, one control. Measure CTR and ${tn} difference over 48 hours.`,
+    audio:     `Record two versions of an intro segment — one with ${dir} ${ctx.noun} intensity, one standard. Track ${tn} and 30s retention across both.`,
+    narrative: `Structure two episodes differently — one emphasizing the ${ctx.noun} pattern (${dir} values), one with standard structure. Compare ${tn} and retention curves.`,
+    moments:   `Plan two episodes: one front-loaded with early peaks/surprises, one with standard pacing. Measure ${tn} and audience retention shape.`,
+    cast:      `Film two episodes with different ${ctx.action} configurations. Compare ${tn} and engagement metrics across the pair.`,
+    engagement:`Track whether episodes that naturally produce ${dir} ${ctx.noun} signals also sustain ${tn} gains over 30 days.`,
+    metadata:  `Test different publishing strategies (time, tags, description) to see if ${ctx.noun} changes map to ${tn} improvements.`,
+    feature:   `Create two content variants — one optimized for high ${fmtFeatureName(feat).toLowerCase()}, one control. Measure ${tn} after 7 days.`,
+  };
+
+  return experiments[ctx.cat] || experiments.feature;
+}
+
+/* Hypothesis card */
+function buildHypothesisHTML(card) {
+  const opts = card.opts || card;  // backwards-compat if called with plain opts
+  const sid  = card.id || 'hyp';
+  const hyps = opts.hyps || ML_INSIGHTS?.hypotheses;
+  if (!hyps) return `<div class="cc-title">Hypothesis Tests</div>
+    <div class="cc-empty"><div>🔬</div><div>No hypothesis data</div><div><code>AI/pipeline.py</code></div></div>`;
+
+  /* ── Strength filter chips ── */
+  const chips = `<div class="cc-hyp-filters" id="hyp-filters-${sid}">
+    <button class="cc-hyp-chip sel" onclick="filterHyp('${sid}','all',this)">All</button>
+    <button class="cc-hyp-chip" onclick="filterHyp('${sid}','strong',this)">Strong</button>
+    <button class="cc-hyp-chip" onclick="filterHyp('${sid}','moderate',this)">Moderate</button>
+    <button class="cc-hyp-chip" onclick="filterHyp('${sid}','weak',this)">Weak</button>
+  </div>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin:-6px 0 10px 2px;line-height:1.4;">
+    <span><b style="color:var(--text)">Strong</b> — significant (p &lt; 0.05) &amp; medium+ effect (|d| ≥ 0.5)</span>
+    <span><b style="color:var(--text)">Moderate</b> — significant (p &lt; 0.05) &amp; small effect (|d| &lt; 0.5)</span>
+    <span><b style="color:var(--text)">Weak</b> — not significant (p ≥ 0.05)</span>
+  </div>`;
+
+  let rows = '';
+  for (const [feat, targetData] of Object.entries(hyps)) {
+    for (const [target, vals] of Object.entries(targetData)) {
+      if (vals.skipped) continue;
+      const sig  = vals.p_value < 0.05;
+      const d    = Math.abs(vals.effect_size_d || 0);
+      /* Classify: strong = sig + |d|≥0.5, moderate = sig + |d|<0.5, weak = not sig */
+      const strength = sig ? (d >= 0.5 ? 'strong' : 'moderate') : 'weak';
+      const interp = _hypInterpretation(feat, target, vals);
+      const abExp  = _hypExperiment(feat, target, vals);
+      rows += `<div class="cc-hyp-row" data-strength="${strength}">
+        <div class="cc-hyp-header">
+          <span class="cc-hyp-feat">${fmtFeatureName(feat)}</span>
+          <span class="cc-hyp-tgt">→ ${fmtLabel(target)}</span>
+          <span class="cc-hyp-p ${sig?'sig':'ns'}">p = ${vals.p_value?.toFixed(3)}</span>
+        </div>
+        <div class="cc-hyp-effect">Cohen's d = ${vals.effect_size_d?.toFixed(2)} · CLES = ${(vals.cles*100).toFixed(0)}%</div>
+        <div class="cc-hyp-means">
+          <div class="cc-hyp-grp">
+            <span class="cc-hyp-val">${fmtCompact(vals.group_high_mean)}</span>
+            <span class="cc-hyp-lbl">High (n=${vals.group_high_n})</span>
+          </div>
+          <div class="cc-hyp-grp">
+            <span class="cc-hyp-val">${fmtCompact(vals.group_low_mean)}</span>
+            <span class="cc-hyp-lbl">Low (n=${vals.group_low_n})</span>
+          </div>
+        </div>
+        <div class="cc-hyp-interp">${interp}</div>
+        <div class="cc-hyp-ab"><strong>A/B test:</strong> ${abExp}</div>
+      </div>`;
+    }
+  }
+
+  return `<div class="cc-title">Hypothesis Tests</div>
+    ${chips}
+    <div id="hyp-rows-${sid}">${rows}</div>`;
+}
+
+/* Filter hypothesis rows by strength */
+function filterHyp(sid, strength, chipEl) {
+  // Update chip selection
+  const bar = document.getElementById(`hyp-filters-${sid}`);
+  bar?.querySelectorAll('.cc-hyp-chip').forEach(c => c.classList.remove('sel'));
+  chipEl.classList.add('sel');
+  // Show/hide rows
+  const container = document.getElementById(`hyp-rows-${sid}`);
+  if (!container) return;
+  container.querySelectorAll('.cc-hyp-row').forEach(row => {
+    if (strength === 'all' || row.dataset.strength === strength) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+/* Insight (text) card */
+function buildInsightHTML(opts) {
+  const findings = opts.findings || ML_INSIGHTS?.top_findings?.slice(0,5) || [];
+  if (!findings.length) return `<div class="cc-title">ML Insights</div>
+    <div class="cc-empty"><div>No insights</div><div><code>AI/pipeline.py</code></div></div>`;
+  const rows = findings.map(f => {
+    if (f.type === 'correlation') {
+      const dir = f.r >= 0 ? '↑' : '↓';
+      return `<p><strong>${fmtFeatureName(f.feature)}</strong> ${dir} ${fmtLabel(f.target)} <span style="opacity:.65">(r = ${f.r?.toFixed(2)})</span></p>`;
+    }
+    if (f.type === 'hypothesis') {
+      return `<p><strong>${fmtFeatureName(f.feature)}</strong> significantly affects ${fmtLabel(f.target)} <span style="opacity:.65">(d = ${f.effect_size_d?.toFixed(2)})</span></p>`;
+    }
+    return '';
+  }).join('');
+  return `<div class="cc-title">ML Insights</div>
+    <div style="font-size:12.5px;color:var(--text-dim);line-height:1.65">${rows}</div>`;
+}
+
+/* Concept result card */
+function buildConceptResultHTML(opts) {
+  return `<div class="cc-title">Generated Concept</div>
+    <div style="font-size:12.5px;line-height:1.7;color:var(--text-dim);
+                background:var(--surface2);border:1px solid var(--border);
+                border-radius:8px;padding:12px 14px">${opts.html||''}</div>`;
+}
+
+
+/* ── Chart initialisers ───────────────────────────────────────────── */
+
+/* Shared helper: reset chart wrap to a fresh canvas */
+function _resetMLWrap(sid) {
+  const wrap = document.getElementById(`ml-wrap-${sid}`);
+  if (!wrap) return null;
+  wrap.innerHTML = `<canvas id="chart-canvas-${sid}"></canvas>`;
+  return document.getElementById(`chart-canvas-${sid}`);
+}
+
+function initCorrChart(card) {
+  const sid    = card.id;
+  const method = card.opts.mlTab || 'corr';
+  const target = document.getElementById(`ml-target-${sid}`)?.value
+    || card.opts.target
+    || CONFIG?.analysis?.correlation_targets?.[0] || 'views';
+  const topN   = parseInt(document.getElementById(`ml-topn-${sid}`)?.value || '15');
+  const dir    = document.getElementById(`ml-dir-${sid}`)?.value || 'all';
+  const fgroup = document.getElementById(`ml-fgroup-${sid}`)?.value || 'all';
+
+  // Always restore canvas before rendering
+  const canvas = _resetMLWrap(sid);
+  if (!canvas) return;
+
+  if (!ML_INSIGHTS) {
+    document.getElementById(`ml-wrap-${sid}`).innerHTML =
+      `<div class="cc-empty"><div>📊</div><div>No ML insights</div><div><code>AI/pipeline.py</code></div></div>`;
+    return;
+  }
+
+  /* ── Pull raw entries per method ── */
+  let entries = [];   // { feat, val }
+  let xAxisLabel = '';
+  let tooltipFn  = v => v.toFixed(3);
+
+  if (method === 'corr') {
+    const raw = (ML_INSIGHTS.correlations || {})[target] || {};
+    entries = Object.entries(raw)
+      .filter(([,v]) => v?.spearman_r != null)
+      .map(([f,v]) => ({ feat: f, val: v.spearman_r }));
+    xAxisLabel = 'Spearman r';
+    tooltipFn  = v => `r = ${v>=0?'+':''}${v.toFixed(3)}`;
+
+  } else if (method === 'lasso') {
+    /* ml_insights.lasso[target].coefficients = { feature: number } */
+    const lassoBlock = (ML_INSIGHTS.lasso || {})[target] || {};
+    const raw = lassoBlock.coefficients || {};
+    entries = Object.entries(raw)
+      .filter(([,v]) => v != null && v !== 0)
+      .map(([f,v]) => ({ feat: f, val: v }));
+    xAxisLabel = 'Lasso coefficient';
+    tooltipFn  = v => `coef = ${v>=0?'+':''}${v.toFixed(2)}`;
+
+  } else if (method === 'rf') {
+    /* ml_insights.random_forest[target].feature_importances = { feature: number } */
+    const rfBlock = (ML_INSIGHTS.random_forest || {})[target] || {};
+    const raw = rfBlock.feature_importances || {};
+    entries = Object.entries(raw)
+      .filter(([,v]) => v != null)
+      .map(([f,v]) => ({ feat: f, val: v }));
+    xAxisLabel = 'RF importance';
+    tooltipFn  = v => `importance = ${v.toFixed(4)}`;
+  }
+
+  /* ── Feature group filter ── */
+  if (fgroup !== 'all' && Object.keys(FEAT_GROUP_MAP).length) {
+    entries = entries.filter(e => FEAT_GROUP_MAP[e.feat] === fgroup);
+  }
+
+  /* ── Direction filter ── */
+  if (dir === 'pos') entries = entries.filter(e => e.val > 0);
+  if (dir === 'neg') entries = entries.filter(e => e.val < 0);
+
+  /* ── Sort by absolute value, limit ── */
+  entries.sort((a,b) => Math.abs(b.val) - Math.abs(a.val));
+  entries = entries.slice(0, topN);
+
+  if (!entries.length) {
+    const groupNote = fgroup !== 'all' ? ` in ${fmtLabel(fgroup)}` : '';
+    document.getElementById(`ml-wrap-${sid}`).innerHTML =
+      `<div class="cc-empty"><div>No data for <strong>${fmtLabel(target)}</strong>${groupNote} · ${method.toUpperCase()}</div>
+       <div style="font-size:10px;opacity:.55;margin-top:4px">Run <code>AI/pipeline.py</code> to populate</div></div>`;
+    return;
+  }
+
+  /* ── Render chart ── */
+  const labels = entries.map(e => fmtFeatureName(e.feat));
+  const values = entries.map(e => e.val);
+  const isRF   = method === 'rf';
+  const colors = values.map(v => isRF || v>=0 ? 'rgba(124,106,247,.7)' : 'rgba(239,68,68,.7)');
+  const bords  = values.map(v => isRF || v>=0 ? 'rgb(124,106,247)'     : 'rgb(239,68,68)');
+
+  if (CHART_INSTANCES[sid]) CHART_INSTANCES[sid].destroy();
+  CHART_INSTANCES[sid] = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets:[{data:values,backgroundColor:colors,
+                               borderColor:bords,borderWidth:1,borderRadius:4}] },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:ctx => ` ${tooltipFn(ctx.raw)}`}} },
+      scales:{
+        x:{ min: isRF ? 0 : undefined,
+            grid:{color:'rgba(255,255,255,.05)'},
+            ticks:{color:'#94a3b8',font:{size:10}},
+            title:{display:true,text:xAxisLabel,color:'#94a3b8',font:{size:9}} },
+        y:{ grid:{display:false}, ticks:{color:'#e2e4f0',font:{size:10}} }
+      }
+    }
+  });
+}
+
+/* Switch method tab */
+function switchMLTab(sid, method, btn) {
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (!card) return;
+  card.opts.mlTab = method;
+  btn.closest('.ml-tab-bar')?.querySelectorAll('.ml-tab-btn')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  initCorrChart(card);
+}
+
+/* Any filter value changed — re-render chart */
+function updateMLFilters(sid) {
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (card) initCorrChart(card);
+}
+
+/* ── Pill dropdown interaction ────────────────────────────────────── */
+function toggleMLDd(btnEl) {
+  const dd = btnEl.closest('.ml-dd');
+  const wasOpen = dd.classList.contains('open');
+  // Close every open dropdown first
+  document.querySelectorAll('.ml-dd.open, .ml-dd.visible').forEach(d => {
+    d.classList.remove('open'); d.classList.remove('visible');
+  });
+  if (!wasOpen) {
+    // Frame 1: make panel visible (display:block) so browser computes layout
+    dd.classList.add('visible');
+    // Frame 2: trigger staggered item transitions
+    requestAnimationFrame(() => requestAnimationFrame(() => dd.classList.add('open')));
+  }
+}
+
+function selectMLDdOpt(optEl) {
+  const dd  = optEl.closest('.ml-dd');
+  const sid = dd.dataset.sid;
+  const key = dd.dataset.key;
+  const val = optEl.dataset.val;
+  // Update hidden input
+  const inp = document.getElementById(`ml-${key}-${sid}`);
+  if (inp) inp.value = val;
+  // Update selection highlight
+  dd.querySelectorAll('.ml-dd-opt').forEach(o => o.classList.remove('sel'));
+  optEl.classList.add('sel');
+  // Update visible label
+  const valEl = document.getElementById(`ml-ddval-${key}-${sid}`);
+  if (valEl) valEl.textContent = optEl.textContent.trim();
+  dd.classList.remove('open'); dd.classList.remove('visible');
+  // Route to the right card handler
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (card?.type === 'performance') refreshPerformanceCard(sid);
+  else updateMLFilters(sid);
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.ml-dd'))
+    document.querySelectorAll('.ml-dd.open, .ml-dd.visible').forEach(d => {
+      d.classList.remove('open'); d.classList.remove('visible');
+    });
+});
+
+/* Legacy shim — kept for any existing references */
+function updateCorrTarget(cardId, target) {
+  const card = CANVAS_CARDS.find(c => c.id === cardId);
+  if (card) { card.opts.target = target; initCorrChart(card); }
+}
+
+function initTrendChart(card) {
+  const metric  = card.opts.metric || 'views';
+  const canvas  = document.getElementById(`chart-canvas-${card.id}`);
+  if (!canvas) return;
+
+  if (!VIDEOS.length) {
+    canvas.closest('.cc-chart-wrap').innerHTML =
+      `<div class="cc-empty"><div>📈</div><div>No video data</div></div>`;
+    return;
+  }
+
+  const dateField = CONFIG?.data?.schema?.date || 'published_at';
+  const monthly   = {};
+  VIDEOS.forEach(v => {
+    const d = new Date(v[dateField]);
+    if (isNaN(d)) return;
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (!monthly[key]) monthly[key] = [];
+    const val = parseFloat(v[metric]);
+    if (!isNaN(val)) monthly[key].push(val);
+  });
+
+  const labels = Object.keys(monthly).sort();
+  if (!labels.length) {
+    canvas.closest('.cc-chart-wrap').innerHTML = `<div class="cc-empty"><div>No date data</div></div>`;
+    return;
+  }
+
+  const values = labels.map(k => { const a=monthly[k]; return a.reduce((x,y)=>x+y,0)/a.length; });
+  const counts = labels.map(k => monthly[k].length);
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#a78bfa';
+
+  if (CHART_INSTANCES[card.id]) CHART_INSTANCES[card.id].destroy();
+  CHART_INSTANCES[card.id] = new Chart(canvas, {
+    type:'line',
+    data:{labels, datasets:[
+      {label:fmtLabel(metric),data:values,borderColor:accent,
+       backgroundColor:'rgba(124,106,247,.1)',borderWidth:2,
+       pointRadius:3,fill:true,tension:.35,yAxisID:'y'},
+      {label:'Videos published',data:counts,
+       borderColor:'rgba(100,116,139,.5)',backgroundColor:'transparent',
+       borderWidth:1.5,borderDash:[4,3],pointRadius:2,fill:false,tension:.2,yAxisID:'y2'}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true,labels:{color:'#94a3b8',font:{size:10},boxWidth:12}},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.datasetIndex===0?fmtCompact(ctx.raw):ctx.raw}`}}
+      },
+      scales:{
+        x: {grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#94a3b8',font:{size:10},maxTicksLimit:10}},
+        y: {position:'left',grid:{color:'rgba(255,255,255,.05)'},
+            ticks:{color:'#94a3b8',font:{size:10},callback:v=>fmtCompact(v)}},
+        y2:{position:'right',grid:{display:false},ticks:{color:'#64748b',font:{size:10}}}
+      }
+    }
+  });
+}
+
+function updateTrendMetric(cardId, metric) {
+  const card = CANVAS_CARDS.find(c => c.id === cardId);
+  if (card) { card.opts.metric = metric; initTrendChart(card); }
+}
+
+
+/* ── Post-processing: auto-surface cards from Calliope responses ──── */
+function postProcessResponse(text) {
+  const t = text.toLowerCase();
+  // Correlations → correlation chart (also re-render features explorer)
+  if (t.match(/correlat|predictor|feature.?import|driver|lasso|coefficient/)) {
+    emitCard('corr-chart', {});
+    emitCard('features-explorer', {});
+  }
+  // Trends
+  if (t.match(/trend|over.time|month|week|season|growth pattern/)) {
+    emitCard('trend-chart', {});
+  }
+  // Videos
+  if (t.match(/top video|best.?perform|most.?viewed|viral|episode|thumbnail/)) {
+    emitCard('video-browser', {});
+  }
+  // Hypotheses
+  if (t.match(/hypothesis|p.value|statistical.?signif|mann.?whitney|cohen.?d|effect.size/)) {
+    emitCard('hypothesis', {});
+  }
+  // Metrics
+  if (t.match(/total video|total views|average retention|here are.*(stat|metric|number)/)) {
+    emitCard('metrics-row', {});
+  }
+
+  // After-render: if features-explorer card exists, re-render its rows
+  const featCard = CANVAS_CARDS.find(c => c.type === 'features-explorer');
+  if (featCard) setTimeout(() => renderFeatRows(featCard.id), 100);
+
+  // If video-browser card exists, ensure it renders
+  const vbrCard = CANVAS_CARDS.find(c => c.type === 'video-browser');
+  if (vbrCard) setTimeout(() => renderVbrGrid(vbrCard.id), 100);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   DRAG-TO-RESIZE
+   ═══════════════════════════════════════════════════════════════════════ */
+function initResizer() {
+  const divider=document.getElementById('pane-divider');
+  const leftPane=document.getElementById('left-pane');
+  const appBody=document.getElementById('app-body');
+  let dragging=false, startX, startW;
+  divider.addEventListener('mousedown', e=>{
+    dragging=true; startX=e.clientX;
+    startW=leftPane.getBoundingClientRect().width;
+    divider.classList.add('dragging');
+    document.body.style.cursor='col-resize';
+    document.body.style.userSelect='none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e=>{
+    if (!dragging) return;
+    const total=appBody.getBoundingClientRect().width;
+    const newW=Math.min(Math.max(startW+(e.clientX-startX),280),total-300);
+    leftPane.style.flex=`0 0 ${newW}px`;
+    Object.values(CHART_INSTANCES).forEach(c=>c.resize());
+  });
+  document.addEventListener('mouseup', ()=>{
+    if (!dragging) return;
+    dragging=false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor='';
+    document.body.style.userSelect='';
+  });
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CALLIOPE CHAT
+   ═══════════════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  const ta=document.getElementById('chat-input');
+  if (ta) {
+    ta.addEventListener('input', ()=>{
+      ta.style.height='auto';
+      ta.style.height=Math.min(ta.scrollHeight,120)+'px';
+    });
+    ta.addEventListener('keydown', e=>{
+      if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleSend();}
+    });
+  }
+  document.getElementById('send-btn').addEventListener('click', handleSend);
+});
+
+function handleSend() {
+  const text=document.getElementById('chat-input').value.trim();
+  if (!text||IS_STREAMING) return;
+  sendMessage(text);
+}
+
+async function sendMessage(text) {
+  if (IS_STREAMING) return;
+  document.getElementById('chat-welcome').classList.add('hidden');
+  const msgs=document.getElementById('chat-messages');
+  msgs.style.display='flex';
+  const ta=document.getElementById('chat-input');
+  ta.value=''; ta.style.height='auto';
+  appendBubble('user', text);
+  CHAT_HISTORY.push({role:'user',content:text});
+  const typingId=appendTyping();
+  IS_STREAMING=true;
+  document.getElementById('send-btn').disabled=true;
+  try {
+    const response=await callClaudeStream(text, chunk=>updateTyping(typingId,chunk));
+    finaliseTyping(typingId, response);
+    CHAT_HISTORY.push({role:'assistant',content:response});
+  } catch(e) {
+    finaliseTyping(typingId, `*Error: ${e.message}*`);
+  } finally {
+    IS_STREAMING=false;
+    document.getElementById('send-btn').disabled=false;
+    document.getElementById('chat-input').focus();
+  }
+}
+
+function appendBubble(role, text) {
+  const msgs=document.getElementById('chat-messages');
+  const div=document.createElement('div');
+  div.className=`msg ${role}`;
+  div.innerHTML=`<div class="msg-avatar">${role==='assistant'?'✦':'→'}</div>
+    <div class="msg-bubble">${role==='assistant'?marked.parse(text):escHtml(text)}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const msgs=document.getElementById('chat-messages');
+  const id='typing-'+Date.now();
+  const div=document.createElement('div');
+  div.className='msg assistant'; div.id=id;
+  div.innerHTML=`<div class="msg-avatar">✦</div>
+    <div class="msg-bubble msg-typing">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return id;
+}
+
+function updateTyping(id, fullText) {
+  const el=document.getElementById(id);
+  if (!el) return;
+  el.querySelector('.msg-bubble').innerHTML=marked.parse(fullText);
+  document.getElementById('chat-messages').scrollTop=9999;
+}
+
+function finaliseTyping(id, fullText) {
+  const el=document.getElementById(id);
+  if (!el) return;
+  el.querySelector('.msg-bubble').innerHTML=marked.parse(fullText);
+  document.getElementById('chat-messages').scrollTop=9999;
+  postProcessResponse(fullText);
+}
+
+function askAboutVideo(id, title) {
+  sendMessage(`Tell me about the video "${title}" — what does the data say about its performance?`);
+}
+
+
+/* ── Claude API ───────────────────────────────────────────────────── */
+function buildSystemPrompt() {
+  let sys=`You are Calliope, an AI analyst for ${CONFIG?.project?.name||'this project'}. You are data-driven, sharp, and concise.`;
+  if (ML_INSIGHTS) {
+    sys+=`\n\nML CONTEXT:\n${JSON.stringify({
+      summary:ML_INSIGHTS.summary_text,top_findings:ML_INSIGHTS.top_findings,
+      n_videos:ML_INSIGHTS.n_videos,targets:ML_INSIGHTS.targets},null,2)}`;
+  }
+  return sys;
+}
+
+async function callClaudeStream(userText, onChunk) {
+  const key   =localStorage.getItem('anthropic_api_key')||localStorage.getItem('anthropicKey')||'';
+  const model =CONFIG?.calliope?.model||'claude-sonnet-4-6';
+  const history=CHAT_HISTORY.slice(-12);
+  const body  =JSON.stringify({model,max_tokens:1024,system:buildSystemPrompt(),messages:history,stream:true});
+  ACTIVE_CTRL=new AbortController();
+  const r=(!IS_PROD&&key)
+    ?await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',signal:ACTIVE_CTRL.signal,
+        headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01',
+                 'x-api-key':key,'anthropic-dangerous-direct-browser-access':'true'},body})
+    :await fetch(PROXY,{method:'POST',signal:ACTIVE_CTRL.signal,
+        headers:{'Content-Type':'application/json'},body});
+  return readSSEStream(r,onChunk);
+}
+
+async function readSSEStream(response,onChunk) {
+  if (!response.ok) {
+    const err=await response.json().catch(()=>({error:{message:`HTTP ${response.status}`}}));
+    throw new Error(err?.error?.message||`HTTP ${response.status}`);
+  }
+  const reader=response.body.getReader();
+  const dec=new TextDecoder();
+  let fullText='',buf='';
+  while(true) {
+    const{value,done}=await reader.read();
+    if (done) break;
+    buf+=dec.decode(value,{stream:true});
+    const lines=buf.split('\n'); buf=lines.pop();
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data=line.slice(6).trim();
+      if (data==='[DONE]') break;
+      try {
+        const p=JSON.parse(data);
+        const delta=p.delta?.text||p.choices?.[0]?.delta?.content||'';
+        if (delta){fullText+=delta;onChunk(fullText);}
+      } catch(_){}
+    }
+  }
+  return fullText;
+}
+
+async function callClaude(prompt,{temperature=0.7,maxTokens=800,system=true}={}) {
+  const key  =localStorage.getItem('anthropic_api_key')||localStorage.getItem('anthropicKey')||'';
+  const model=CONFIG?.calliope?.model||'claude-sonnet-4-6';
+  const sys  =system?buildSystemPrompt():'You are a helpful creative strategist.';
+  const bodyObj={model,max_tokens:maxTokens,system:sys,temperature,messages:[{role:'user',content:prompt}]};
+  const r=(!IS_PROD&&key)
+    ?await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01',
+                 'x-api-key':key,'anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify(bodyObj)})
+    :await fetch(PROXY,{method:'POST',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify(bodyObj)});
+  if (!r.ok){const e=await r.json().catch(()=>{});throw new Error(e?.error?.message||`HTTP ${r.status}`);}
+  const data=await r.json();
+  return data.content?.[0]?.text||'';
+}
+
+
+/* ── Status helpers ───────────────────────────────────────────────── */
+async function checkAPIStatus() {
+  const dot=document.getElementById('top-status-dot');
+  const lbl=document.getElementById('top-status-label');
+  if (IS_PROD){dot.className='ok';lbl.textContent='Proxy';return;}
+  const key=localStorage.getItem('anthropic_api_key')||localStorage.getItem('anthropicKey')||'';
+  if (key){dot.className='ok';lbl.textContent='API key set';}
+  else    {dot.className='err';lbl.textContent='No API key';}
+}
+function setStatus(state,text) {
+  document.getElementById('top-status-dot').className=state==='ok'?'ok':state==='err'?'err':'';
+  document.getElementById('top-status-label').textContent=text;
+}
+
+
+/* ── Utilities ────────────────────────────────────────────────────── */
+async function loadCSV(url) {
+  return new Promise((resolve,reject)=>{
+    Papa.parse(url,{download:true,header:true,skipEmptyLines:true,
+      complete:r=>resolve(r.data),error:e=>reject(new Error(e.message))});
+  });
+}
+function fmtCompact(n){
+  if(isNaN(n)||n==null)return'—';
+  if(n>=1e9)return(n/1e9).toFixed(1)+'B';
+  if(n>=1e6)return(n/1e6).toFixed(1)+'M';
+  if(n>=1e3)return(n/1e3).toFixed(1)+'K';
+  return Math.round(n).toString();
+}
+const LABEL_MAP = {
+  outlier_spike_score: 'Outlier Spike Score',
+  outlier_retention_score: 'Outlier Retention Score',
+  outlier_potential: 'Outlier Potential',
+  avg_view_percentage: 'Avg View %',
+  retention_30s: 'Retention 30s',
+  subscribers_gained: 'Subscribers Gained',
+  cpm: 'CPM',
+};
+function fmtLabel(str){return LABEL_MAP[str]||(str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+function fmtFeatureName(str){
+  return(str||'').replace(/_/g,' ')
+    .replace(/\b(thumb|title|wpm|avg|pct|std|nlp)\b/g,s=>s.toUpperCase());
+}
+function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function showFatal(msg){
+  document.body.innerHTML=`<div style="display:flex;height:100%;align-items:center;
+    justify-content:center;flex-direction:column;gap:16px;color:var(--muted);
+    font-size:14px;text-align:center;padding:40px">
+    <div style="font-size:32px">⚠</div><div>${msg}</div>
+    <a href="../analyzer/index.html" style="color:var(--accent)">← Back to projects</a>
+  </div>`;
+}
+</script>
+</body>
+</html>

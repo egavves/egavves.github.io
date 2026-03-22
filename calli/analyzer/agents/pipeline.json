@@ -1,0 +1,127 @@
+{
+  "$schema": "calli-pipeline-v1",
+  "name": "Calli Production Pipeline",
+  "version": "1.0.0",
+  "description": "Sequential multi-agent ideation pipeline with feedback loops and critic review",
+
+  "execution": {
+    "mode": "sequential",
+    "max_revisions_per_stage": 2,
+    "critic_review": "after_each_stage",
+    "user_checkpoints": ["after_concept", "after_validation"],
+    "timeout_per_stage_ms": 60000
+  },
+
+  "stages": [
+    {
+      "id": "concept",
+      "agent": "orchestrator",
+      "delegates_to": "writer",
+      "critic_review": true,
+      "user_checkpoint": true,
+      "inputs": ["config", "ml_insights", "ref_doc", "user_brief"],
+      "outputs": ["concept_text", "formula", "title"],
+      "description": "Generate the core concept using chain-of-thought. Writer drafts, Orchestrator shapes, Critic reviews."
+    },
+    {
+      "id": "storyboard",
+      "agent": "creative_director",
+      "critic_review": true,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "config"],
+      "outputs": ["storyboard_scenes"],
+      "can_request": ["data_analyst"],
+      "description": "Visual story structure. Can ask Data Analyst for retention benchmarks mid-generation."
+    },
+    {
+      "id": "script",
+      "agent": "writer",
+      "critic_review": true,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "storyboard_scenes", "config"],
+      "outputs": ["script_text"],
+      "can_request": ["data_analyst"],
+      "description": "Dialogue and beats. Receives storyboard as input so scenes are consistent."
+    },
+    {
+      "id": "casting",
+      "agent": "creative_director",
+      "critic_review": false,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "script_text", "config"],
+      "outputs": ["casting_notes"],
+      "description": "Talent profiles based on the written script and concept."
+    },
+    {
+      "id": "production",
+      "agent": "orchestrator",
+      "critic_review": false,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "storyboard_scenes", "script_text", "casting_notes", "config"],
+      "outputs": ["production_plan"],
+      "description": "Logistics plan informed by all creative outputs so far."
+    },
+    {
+      "id": "titles",
+      "agent": "writer",
+      "critic_review": true,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "ml_insights", "config"],
+      "outputs": ["title_options"],
+      "can_request": ["data_analyst"],
+      "description": "Title options. Data Analyst can supply CTR correlations."
+    },
+    {
+      "id": "thumbnails",
+      "agent": "creative_director",
+      "critic_review": true,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "title_options", "ml_insights", "config"],
+      "outputs": ["thumbnail_concepts"],
+      "description": "Visual thumbnail concepts tied to winning titles."
+    },
+    {
+      "id": "distribution",
+      "agent": "orchestrator",
+      "critic_review": false,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "title_options", "thumbnail_concepts", "config"],
+      "outputs": ["distribution_plan"],
+      "description": "Platform strategy using final creative package."
+    },
+    {
+      "id": "audience_panel",
+      "agent": "audience",
+      "critic_review": false,
+      "user_checkpoint": true,
+      "inputs": ["concept_text", "title_options", "thumbnail_concepts", "storyboard_scenes"],
+      "outputs": ["audience_votes", "audience_feedback"],
+      "description": "5 audience personas independently react and vote. Results feed validation."
+    },
+    {
+      "id": "validation",
+      "agent": "critic",
+      "critic_review": false,
+      "user_checkpoint": false,
+      "inputs": ["concept_text", "storyboard_scenes", "script_text", "audience_votes", "audience_feedback", "ml_insights"],
+      "outputs": ["validation_report"],
+      "description": "Final validation synthesizing Critic's notes, audience panel, and ML evidence."
+    }
+  ],
+
+  "feedback_loops": {
+    "critic_rejection": {
+      "trigger": "critic rates stage < 6/10",
+      "action": "send_back_to_stage_agent with critic notes",
+      "max_iterations": 2
+    },
+    "user_intervention": {
+      "trigger": "user sends message via Calliope during pipeline",
+      "action": "pause_pipeline, inject_user_note, resume_from_current_or_specified_stage"
+    },
+    "cross_agent_request": {
+      "trigger": "agent includes [REQUEST:agent_id] tag in output",
+      "action": "route request to target agent, inject response, continue generation"
+    }
+  }
+}

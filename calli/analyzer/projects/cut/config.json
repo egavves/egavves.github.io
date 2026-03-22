@@ -1,0 +1,123 @@
+{
+  "project": {
+    "id":           "cut",
+    "name":         "CUT Analytics",
+    "tagline":      "YouTube performance intelligence for Cut.com",
+    "type":         "analyzer",
+    "created":      "2026-03-19",
+    "accent":       "#a78bfa",
+    "gradient":     ["#a78bfa", "#c4b5fd"],
+    "icon":         "🎬",
+    "banner_class": "card-banner-cut"
+  },
+
+  "data": {
+    "source": "csv",
+    "files": {
+      "videos":      "data/videos.csv",
+      "features":    "data/features.parquet",
+      "ml_insights": "data/ml_insights.json"
+    },
+    "schema": {
+      "id":        "video_id",
+      "title":     "title",
+      "date":      "published_at",
+      "thumbnail": "thumbnail_url",
+      "format_column": "format",
+      "format_binary": "is_youtube_short",
+      "targets":   ["retention_30s", "views_public", "engagement_like_ratio",
+                    "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+      "feature_groups": {
+        "geo":       ["geo_us_pct", "geo_eu_pct", "geo_asia_pct", "geo_latam_pct"],
+        "traffic":   ["traffic_algorithmic_pct", "traffic_subscriber_pct",
+                      "traffic_search_pct", "traffic_external_pct"],
+        "audio":     ["wpm", "silence_ratio_audio", "excitement_peaks",
+                      "crosstalk_score", "hook_energy_ratio"],
+        "thumbnail": ["thumb_brightness", "thumb_colorfulness",
+                      "thumb_center_weight", "thumb_contrast_rms"],
+        "title":     ["title_shock_word_count", "title_fomo_score",
+                      "title_challenge_framing", "title_personal_you"],
+        "speech":    ["avg_sentence_length", "filler_frequency", "q_rate"]
+      }
+    }
+  },
+
+  "calliope": {
+    "model": "claude-sonnet-4-6",
+    "system_prompt": "prompts/system.txt",
+    "context_inject": ["data/ml_insights.json"],
+    "suggestions": [
+      {
+        "label": "What drives retention?",
+        "prompt": "Based on the CUT data, what are the top 3 levers for improving 30-second retention?"
+      },
+      {
+        "label": "Best format to double down on",
+        "prompt": "Which CUT format (Truth or Drink, Lineup, Keep It 100, Dating) has the best risk-adjusted performance across views and CPM?"
+      },
+      {
+        "label": "Generate episode concept",
+        "prompt": "Suggest a data-backed video concept for this week grounded in the top correlation signals from the CUT dataset."
+      },
+      {
+        "label": "Thumbnail strategy",
+        "prompt": "What thumbnail characteristics most strongly predict high click-through rate in the CUT data?"
+      }
+    ]
+  },
+
+  "interface": {
+    "mode": "calliope-centric",
+    "radial_menu": [
+      { "id": "data",       "label": "Data",       "icon": "🗃",  "panel": "data-panel"      },
+      { "id": "analysis",   "label": "Analysis",   "icon": "📊",  "panel": "analysis-panel"  },
+      { "id": "ideation",   "label": "Ideation",   "icon": "💡",  "panel": "ideation-panel"  },
+      { "id": "social",     "label": "Social",     "icon": "💬",  "panel": "social-panel"    },
+      { "id": "hypotheses", "label": "Hypotheses", "icon": "🔬",  "panel": "hyp-panel"       },
+      { "id": "report",     "label": "Summary",    "icon": "📋",  "panel": "report-panel"    }
+    ],
+    "default_open": null,
+    "stat_cards": [
+      { "label": "Videos",    "expr": "count",  "field": "video_id",            "format": "integer" },
+      { "label": "Views",     "expr": "sum",    "field": "views",               "format": "compact" },
+      { "label": "Retention", "expr": "mean",   "field": "avg_view_percentage", "format": "percent" },
+      { "label": "Formats",   "expr": "nunique","field": "format",              "format": "integer" }
+    ]
+  },
+
+  "formats": {
+    "channel_formats": [
+      "Truth or Drink", "Button", "Keep it 100", "Lineup", "Fear Pong", "Other"
+    ],
+    "video_types": ["longform", "shorts"],
+    "format_column": "format",
+    "format_binary": "is_youtube_short"
+  },
+
+  "ideation": {
+    "formats":          ["Truth or Drink", "Button", "Keep it 100", "Lineup", "Fear Pong"],
+    "audiences":        ["Gen Z", "Millennials", "Mixed 18-35"],
+    "image_generation": true,
+    "image_model":      "fal-ai/flux/schnell"
+  },
+
+  "analysis": {
+    "correlation_targets": ["retention_30s", "views_public", "engagement_like_ratio",
+                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+    "lasso_targets":       ["retention_30s", "views_public", "engagement_like_ratio",
+                            "engagement_comment_ratio", "engagement_overall_ratio", "outlier_potential"],
+    "top_n_features":      8,
+    "precomputed":         true
+  },
+
+  "social": {
+    "platforms":     ["youtube_comments", "reddit"],
+    "subreddits":    ["r/CutVideos"],
+    "refresh_hours": 24
+  },
+
+  "nav": {
+    "project_label":         "CUT",
+    "show_project_switcher": true
+  }
+}

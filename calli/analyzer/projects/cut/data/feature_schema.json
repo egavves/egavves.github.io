@@ -1,0 +1,1516 @@
+{
+  "audio": [
+    {
+      "name": "wpm",
+      "type": "continuous",
+      "description": "Words per minute \u2014 pacing signal",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "silence_ratio_audio",
+      "type": "percentage",
+      "description": "Fraction of audio that is silence (>300ms gaps)",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "filler_frequency",
+      "type": "continuous",
+      "description": "Rate of filler words (um, uh, like, ...) per minute",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "q_rate",
+      "type": "continuous",
+      "description": "Questions per minute in speech",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "avg_sentence_length",
+      "type": "continuous",
+      "description": "Mean words per sentence \u2014 shorter = faster pace",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "speech_rate_std",
+      "type": "continuous",
+      "description": "Std dev of local speech rate \u2014 pacing variation signal",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "crosstalk_score",
+      "type": "percentage",
+      "description": "Fraction of time with overlapping speech",
+      "requires_columns": [],
+      "requires_external": "transcript",
+      "default_enabled": true
+    },
+    {
+      "name": "excitement_peaks",
+      "type": "count",
+      "description": "Count of audio energy spikes per minute (laughter, reactions)",
+      "requires_columns": [],
+      "requires_external": "audio_file",
+      "default_enabled": true
+    },
+    {
+      "name": "hook_energy_ratio",
+      "type": "continuous",
+      "description": "Ratio of audio energy in first 30s vs full video mean; >1.3 predicts higher algorithmic traffic",
+      "requires_columns": [],
+      "requires_external": "audio_file",
+      "default_enabled": true
+    },
+    {
+      "name": "pitch_mean",
+      "type": "continuous",
+      "description": "Mean fundamental frequency (Hz) \u2014 voice register",
+      "requires_columns": [],
+      "requires_external": "audio_file",
+      "default_enabled": true
+    },
+    {
+      "name": "pitch_std",
+      "type": "continuous",
+      "description": "Pitch variation \u2014 monotone vs expressive delivery",
+      "requires_columns": [],
+      "requires_external": "audio_file",
+      "default_enabled": true
+    }
+  ],
+  "cast": [
+    {
+      "name": "speaker_count",
+      "type": "count",
+      "description": "Number of distinct speakers detected (diarisation)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "speaker_balance",
+      "type": "continuous",
+      "description": "Evenness of speaking time across speakers (1.0 = perfectly balanced, 0 = monologue). Normalised Shannon entropy: H / log(n_speakers).",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "dominant_speaker_share",
+      "type": "percentage",
+      "description": "Fraction of total speaking time held by the dominant speaker",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "is_monologue",
+      "type": "binary",
+      "description": "1 if single speaker holds >90% of time, 0 otherwise",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "turn_count",
+      "type": "count",
+      "description": "Total speaker turns across the video",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "turns_per_minute",
+      "type": "continuous",
+      "description": "Speaker turns per minute \u2014 higher = more dynamic conversation",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "avg_turn_duration_s",
+      "type": "continuous",
+      "description": "Mean duration of a speaker turn in seconds",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "turn_duration_cv",
+      "type": "continuous",
+      "description": "Coefficient of variation of turn durations (high = mix of quick banter + longer stretches)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "rapid_exchange_ratio",
+      "type": "percentage",
+      "description": "Fraction of turns shorter than 10 seconds \u2014 banter signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "dominant_speaker_sentiment_range",
+      "type": "continuous",
+      "description": "Sentiment max - min for the dominant speaker (emotional range)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "dominant_speaker_sentiment_std",
+      "type": "continuous",
+      "description": "Sentiment std dev for dominant speaker \u2014 consistency vs. volatility",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "dominant_speaker_energy_range",
+      "type": "continuous",
+      "description": "Audio energy max - min for the dominant speaker",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "cast_sentiment_range_mean",
+      "type": "continuous",
+      "description": "Mean sentiment range across all speakers \u2014 overall cast emotional breadth",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "levity_intensity_ratio",
+      "type": "continuous",
+      "description": "Ratio of positive-sentiment segments to negative-sentiment segments (values 0.5-2.0 are ideal; pure comedy or pure drama scores lower)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "energy_variance_across_speakers",
+      "type": "continuous",
+      "description": "Variance of mean energy across speakers \u2014 diverse energy = diverse cast",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "question_exchange_rate",
+      "type": "percentage",
+      "description": "Fraction of segments containing questions \u2014 interview/conversation signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "laughter_marker_count",
+      "type": "count",
+      "description": "Count of laughter markers in transcript (haha, lol, [laughter], etc.)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "new_speaker_rate",
+      "type": "continuous",
+      "description": "Rate at which new speakers appear (speakers introduced / duration_min). Higher = more dynamic cast reveals.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "first_new_voice_s",
+      "type": "continuous",
+      "description": "Time in seconds until a second speaker appears (early = conversational hook)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "character_depth_score",
+      "type": "continuous",
+      "description": "LLM-assessed depth and distinctiveness of characters/participants (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    },
+    {
+      "name": "chemistry_score",
+      "type": "continuous",
+      "description": "LLM-assessed chemistry and dynamic between participants (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    },
+    {
+      "name": "personality_strength_score",
+      "type": "continuous",
+      "description": "LLM-assessed how personality-driven the content is (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    }
+  ],
+  "engagement": [
+    {
+      "name": "comment_sentiment_mean",
+      "type": "continuous",
+      "description": "Mean VADER compound sentiment of top comments (-1 to +1)",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "comment_sentiment_std",
+      "type": "continuous",
+      "description": "Std dev of comment sentiment \u2014 polarisation signal",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "genz_score",
+      "type": "percentage",
+      "description": "Fraction of comments using Gen Z language patterns",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "share_intent_score",
+      "type": "percentage",
+      "description": "Fraction of comments expressing intent to share",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "parasocial_score",
+      "type": "percentage",
+      "description": "Fraction expressing personal connection to creator",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "comment_question_rate",
+      "type": "percentage",
+      "description": "Fraction of comments that are questions",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "emoji_density",
+      "type": "continuous",
+      "description": "Average emoji count per comment \u2014 emotional intensity",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "comment_avg_length",
+      "type": "continuous",
+      "description": "Mean word count per comment \u2014 engagement depth",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "comment_count_used",
+      "type": "count",
+      "description": "Number of comments processed (for QA)",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "satisfaction_score",
+      "type": "percentage",
+      "description": "Fraction of comments expressing satisfaction, praise, or positive completion",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "dissatisfaction_score",
+      "type": "percentage",
+      "description": "Fraction of comments expressing disappointment, frustration, or unmet expectations",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "rewatch_intent",
+      "type": "percentage",
+      "description": "Fraction of comments expressing intent to rewatch or indicating they rewatched",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    },
+    {
+      "name": "moment_reference_rate",
+      "type": "percentage",
+      "description": "Fraction of comments referencing specific moments (timestamps, 'the part where')",
+      "requires_columns": [],
+      "requires_external": "comments",
+      "default_enabled": true
+    }
+  ],
+  "moments": [
+    {
+      "name": "peak_count",
+      "type": "count",
+      "description": "Number of multimodal peak moments (convergent signals above threshold)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "peak_intensity_max",
+      "type": "continuous",
+      "description": "Composite intensity of the single biggest moment",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "peak_to_baseline_ratio",
+      "type": "continuous",
+      "description": "Biggest peak composite score / mean baseline (how much peaks stand out)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "peaks_per_minute",
+      "type": "continuous",
+      "description": "Rate of peak moments \u2014 too few = boring, too many = exhausting",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "first_peak_position",
+      "type": "percentage",
+      "description": "Position of first peak as fraction of video (early hook signal)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "last_peak_position",
+      "type": "percentage",
+      "description": "Position of last peak as fraction of video (payoff timing)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "peak_spacing_cv",
+      "type": "continuous",
+      "description": "Coefficient of variation of inter-peak intervals (regular vs. clustered)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "surprise_event_count",
+      "type": "count",
+      "description": "Segments with surprise language markers",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "reveal_event_count",
+      "type": "count",
+      "description": "Segments with reveal/confession language markers",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "surprise_rate_per_min",
+      "type": "continuous",
+      "description": "Surprise events per minute",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "forced_variety_count",
+      "type": "count",
+      "description": "Segments with simultaneous topic shift + visual change (scene cuts)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "visual_audio_convergence",
+      "type": "count",
+      "description": "Segments where both visual (scene cuts) and audio (energy spike) peak together",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "silence_before_peak_mean",
+      "type": "continuous",
+      "description": "Mean silence ratio in segment before peak \u2014 tension buildup signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "energy_contrast_at_peaks",
+      "type": "continuous",
+      "description": "Mean energy difference between peak and preceding segment",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "rewatch_spike_count",
+      "type": "count",
+      "description": "Points where retention > 100% (rewatch moments)",
+      "requires_columns": [],
+      "requires_external": "retention_csv",
+      "default_enabled": true
+    },
+    {
+      "name": "max_rewatch_magnitude",
+      "type": "continuous",
+      "description": "Highest rewatch spike magnitude (how much above 100%)",
+      "requires_columns": [],
+      "requires_external": "retention_csv",
+      "default_enabled": true
+    },
+    {
+      "name": "moment_impact_score",
+      "type": "continuous",
+      "description": "LLM-assessed impact of peak moments (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    },
+    {
+      "name": "shareability_score",
+      "type": "continuous",
+      "description": "LLM-assessed shareability of peak moments (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    }
+  ],
+  "multiscale": [
+    {
+      "name": "ms_sentiment_range_max",
+      "type": "continuous",
+      "description": "Cross-scale max of sentiment_range \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_sentiment_range_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where sentiment_range peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_sentiment_range_scale_var",
+      "type": "continuous",
+      "description": "Variance of sentiment_range across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_sentiment_mean_max",
+      "type": "continuous",
+      "description": "Cross-scale max of sentiment_mean \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_sentiment_mean_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where sentiment_mean peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_sentiment_mean_scale_var",
+      "type": "continuous",
+      "description": "Variance of sentiment_mean across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_max_max",
+      "type": "continuous",
+      "description": "Cross-scale max of emotional_intensity_max \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_max_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where emotional_intensity_max peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_max_scale_var",
+      "type": "continuous",
+      "description": "Variance of emotional_intensity_max across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_mean_max",
+      "type": "continuous",
+      "description": "Cross-scale max of emotional_intensity_mean \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_mean_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where emotional_intensity_mean peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_emotional_intensity_mean_scale_var",
+      "type": "continuous",
+      "description": "Variance of emotional_intensity_mean across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_surprise_density_max",
+      "type": "continuous",
+      "description": "Cross-scale max of surprise_density \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_surprise_density_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where surprise_density peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_surprise_density_scale_var",
+      "type": "continuous",
+      "description": "Variance of surprise_density across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_reveal_density_max",
+      "type": "continuous",
+      "description": "Cross-scale max of reveal_density \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_reveal_density_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where reveal_density peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_reveal_density_scale_var",
+      "type": "continuous",
+      "description": "Variance of reveal_density across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_question_density_max",
+      "type": "continuous",
+      "description": "Cross-scale max of question_density \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_question_density_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where question_density peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_question_density_scale_var",
+      "type": "continuous",
+      "description": "Variance of question_density across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_vocab_richness_mean_max",
+      "type": "continuous",
+      "description": "Cross-scale max of vocab_richness_mean \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_vocab_richness_mean_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where vocab_richness_mean peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_vocab_richness_mean_scale_var",
+      "type": "continuous",
+      "description": "Variance of vocab_richness_mean across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_range_max",
+      "type": "continuous",
+      "description": "Cross-scale max of energy_range \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_range_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where energy_range peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_range_scale_var",
+      "type": "continuous",
+      "description": "Variance of energy_range across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_mean_max",
+      "type": "continuous",
+      "description": "Cross-scale max of energy_mean \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_mean_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where energy_mean peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_energy_mean_scale_var",
+      "type": "continuous",
+      "description": "Variance of energy_mean across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_topic_coherence_max",
+      "type": "continuous",
+      "description": "Cross-scale max of topic_coherence \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_topic_coherence_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where topic_coherence peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_topic_coherence_scale_var",
+      "type": "continuous",
+      "description": "Variance of topic_coherence across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_word_density_max",
+      "type": "continuous",
+      "description": "Cross-scale max of word_density \u2014 most salient value across all temporal scales",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_word_density_argmax_scale",
+      "type": "continuous",
+      "description": "Temporal scale (seconds) where word_density peaked \u2014 the natural loop length for this signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_word_density_scale_var",
+      "type": "continuous",
+      "description": "Variance of word_density across scales \u2014 high means scale-sensitive, low means scale-invariant",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_natural_loop_length_s",
+      "type": "continuous",
+      "description": "Median argmax_scale across all features \u2014 the video's dominant loop duration in seconds",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_scale_agreement",
+      "type": "continuous",
+      "description": "How much features agree on the natural scale (1 - normalised entropy of argmax distribution)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_n_valid_scales",
+      "type": "count",
+      "description": "Number of temporal scales with enough windows for analysis",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_finest_active_scale",
+      "type": "continuous",
+      "description": "Finest (shortest) scale that had valid windows \u2014 lower bound of loop length",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_coarsest_active_scale",
+      "type": "continuous",
+      "description": "Coarsest (longest) scale that had valid windows \u2014 upper bound of loop length",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_llm_loop_completeness",
+      "type": "continuous",
+      "description": "LLM-assessed fraction of windows at best scale that form complete mini-stories (beginning-tension-resolution). 0-1 scale.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_llm_loop_variety",
+      "type": "continuous",
+      "description": "LLM-assessed variety across windows \u2014 are loops diverse in content or repetitive? 1=identical loops, 5=rich variety with escalation.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_llm_boundary_quality",
+      "type": "continuous",
+      "description": "LLM-assessed quality of window boundaries \u2014 do they align with natural topic transitions? 1=arbitrary splits, 5=perfect boundaries.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_llm_escalation_across_loops",
+      "type": "continuous",
+      "description": "LLM-assessed escalation \u2014 do later loops raise the stakes? 1=flat/declining, 5=masterful escalation.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ms_llm_dominant_loop_type",
+      "type": "categorical",
+      "description": "LLM-classified loop archetype: challenge, reaction, story, tutorial, conversation, reveal, competition, montage, or mixed.",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    }
+  ],
+  "narrative": [
+    {
+      "name": "segment_count",
+      "type": "count",
+      "description": "Number of detected narrative segments (topic/energy boundaries)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "avg_segment_duration_s",
+      "type": "continuous",
+      "description": "Mean segment length in seconds",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "segment_duration_regularity",
+      "type": "continuous",
+      "description": "Coefficient of variation of segment durations (low=regular loops, high=irregular)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "topic_shift_count",
+      "type": "count",
+      "description": "Number of significant topic shifts (Jaccard > 0.6 between segments)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "topic_shift_rate_per_min",
+      "type": "continuous",
+      "description": "Topic shifts per minute \u2014 pacing signal",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "escalation_sentiment",
+      "type": "continuous",
+      "description": "Slope of sentiment trajectory across segments (positive=escalating emotion)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "escalation_energy",
+      "type": "continuous",
+      "description": "Slope of audio energy across segments (positive=building intensity)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "escalation_intensity",
+      "type": "continuous",
+      "description": "Slope of emotional vocabulary intensity across segments",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "intensity_at_3min_ratio",
+      "type": "continuous",
+      "description": "Emotional intensity at 3-minute mark relative to opening (>1 = story evolving)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "first_major_shift_s",
+      "type": "continuous",
+      "description": "Time in seconds of first significant topic/energy shift",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "sentiment_arc_type",
+      "type": "categorical",
+      "description": "Narrative arc shape: rising, falling, peak_valley, U_shape, flat, escalating",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "dynamic_range",
+      "type": "continuous",
+      "description": "Max segment sentiment minus min \u2014 breadth of emotional journey",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "final_segment_sentiment",
+      "type": "continuous",
+      "description": "Sentiment of the last segment \u2014 positive = good payoff",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "ending_vs_mean_sentiment",
+      "type": "continuous",
+      "description": "Last segment sentiment minus overall mean (>0 = ends on a high)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "resolution_language_score",
+      "type": "percentage",
+      "description": "Density of resolution/conclusion language in final 15%",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "cliffhanger_score",
+      "type": "percentage",
+      "description": "Density of open-loop/suspension language at end",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "scene_cut_rate_per_min",
+      "type": "continuous",
+      "description": "Scene cuts per minute \u2014 visual variety pacing",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "visual_variety_std",
+      "type": "continuous",
+      "description": "Std dev of scene cuts across segments \u2014 uneven = forced variety moments",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "retention_loop_count",
+      "type": "count",
+      "description": "Re-engagement spikes in retention curve (loop restart signal)",
+      "requires_columns": [],
+      "requires_external": "retention_csv",
+      "default_enabled": true
+    },
+    {
+      "name": "end_retention_ratio",
+      "type": "continuous",
+      "description": "Last 20% retention / overall mean (>1 = strong payoff, people stay)",
+      "requires_columns": [],
+      "requires_external": "retention_csv",
+      "default_enabled": true
+    },
+    {
+      "name": "loop_quality_score",
+      "type": "continuous",
+      "description": "LLM-assessed quality of loop structure (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    },
+    {
+      "name": "payoff_satisfaction_score",
+      "type": "continuous",
+      "description": "LLM-assessed ending satisfaction (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    },
+    {
+      "name": "pacing_quality_score",
+      "type": "continuous",
+      "description": "LLM-assessed pacing quality (1-5 scale)",
+      "requires_columns": [],
+      "requires_external": "llm_annotation",
+      "default_enabled": true
+    }
+  ],
+  "text_nlp": [
+    {
+      "name": "title_shock_word_count",
+      "type": "count",
+      "description": "Number of shock/clickbait words in title",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_fomo_score",
+      "type": "binary",
+      "description": "FOMO signal \u2014 presence of scarcity/urgency language",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_challenge_framing",
+      "type": "binary",
+      "description": "Title frames content as a challenge, test, or dare",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_personal_you",
+      "type": "binary",
+      "description": "Title addresses viewer directly (you, your, ...)",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_length_words",
+      "type": "count",
+      "description": "Number of words in title (sweet spot 6\u201310 for CTR)",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_has_number",
+      "type": "binary",
+      "description": "Title contains a digit (e.g. '5 reasons', '3am')",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_all_caps_ratio",
+      "type": "percentage",
+      "description": "Fraction of characters that are uppercase",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_question",
+      "type": "binary",
+      "description": "Title contains a question mark",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_sentiment",
+      "type": "continuous",
+      "description": "VADER compound sentiment score (-1 to +1)",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_emotional_words",
+      "type": "count",
+      "description": "Count of strong emotional words in title",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "title_colon_split",
+      "type": "binary",
+      "description": "Title uses 'X: Y' or 'X | Y' split pattern",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "desc_length_words",
+      "type": "count",
+      "description": "Word count of video description",
+      "requires_columns": [
+        "description"
+      ],
+      "requires_external": null,
+      "default_enabled": false
+    },
+    {
+      "name": "desc_has_links",
+      "type": "binary",
+      "description": "Description contains URLs",
+      "requires_columns": [
+        "description"
+      ],
+      "requires_external": null,
+      "default_enabled": false
+    },
+    {
+      "name": "desc_has_timestamps",
+      "type": "binary",
+      "description": "Description contains timestamp markers (e.g. 2:30)",
+      "requires_columns": [
+        "description"
+      ],
+      "requires_external": null,
+      "default_enabled": false
+    }
+  ],
+  "video_meta": [
+    {
+      "name": "duration_seconds",
+      "type": "continuous",
+      "description": "Video length in seconds",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "duration_bucket",
+      "type": "categorical",
+      "description": "Duration category: short/medium/long/verylong",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "is_short",
+      "type": "binary",
+      "description": "YouTube Short (<= 60s)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "format_type",
+      "type": "categorical",
+      "description": "Inferred format: challenge, reaction, vlog, interview, list, tutorial, documentary, other",
+      "requires_columns": [
+        "title"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "publish_hour",
+      "type": "count",
+      "description": "Hour of day published (0\u201323)",
+      "requires_columns": [
+        "published_at"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "publish_day_of_week",
+      "type": "count",
+      "description": "Day of week published (0=Mon, 6=Sun)",
+      "requires_columns": [
+        "published_at"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "publish_weekend",
+      "type": "binary",
+      "description": "Published on Saturday or Sunday",
+      "requires_columns": [
+        "published_at"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "days_since_publish",
+      "type": "continuous",
+      "description": "Days between publish date and data snapshot",
+      "requires_columns": [
+        "published_at"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "tags_count",
+      "type": "count",
+      "description": "Number of tags on the video",
+      "requires_columns": [
+        "tags"
+      ],
+      "requires_external": null,
+      "default_enabled": false
+    },
+    {
+      "name": "geo_us_pct",
+      "type": "percentage",
+      "description": "Fraction of views from United States",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_eu_pct",
+      "type": "percentage",
+      "description": "Fraction of views from EU aggregate",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_latam_pct",
+      "type": "percentage",
+      "description": "Fraction of views from Latin America",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_asia_pct",
+      "type": "percentage",
+      "description": "Fraction of views from Asia",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_nl_pct",
+      "type": "percentage",
+      "description": "Fraction of views from Netherlands",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_be_pct",
+      "type": "percentage",
+      "description": "Fraction of views from Belgium",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "geo_other_pct",
+      "type": "percentage",
+      "description": "Fraction of views from other regions",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "traffic_algorithmic_pct",
+      "type": "percentage",
+      "description": "Fraction of views from algorithm (Browse + Suggested)",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "traffic_subscriber_pct",
+      "type": "percentage",
+      "description": "Fraction of views from subscriber feed",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "traffic_search_pct",
+      "type": "percentage",
+      "description": "Fraction of views from YouTube Search",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "traffic_external_pct",
+      "type": "percentage",
+      "description": "Fraction of views from external sources",
+      "requires_columns": [],
+      "requires_external": null,
+      "default_enabled": true
+    }
+  ],
+  "visual": [
+    {
+      "name": "thumb_brightness",
+      "type": "continuous",
+      "description": "Mean perceptual luminance (0\u2013255, ITU-R BT.601)",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_colorfulness",
+      "type": "continuous",
+      "description": "Hasler-S\u00fcsstrunk colorfulness metric",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_center_weight",
+      "type": "percentage",
+      "description": "Fraction of visual energy in center 40% of frame",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_contrast_rms",
+      "type": "continuous",
+      "description": "Root-mean-square contrast of grayscale",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_face_present",
+      "type": "binary",
+      "description": "Face detected in thumbnail (Haar cascade)",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_face_size",
+      "type": "percentage",
+      "description": "Fraction of frame area covered by largest detected face",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_face_count",
+      "type": "count",
+      "description": "Number of faces detected in thumbnail",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_text_present",
+      "type": "binary",
+      "description": "Text overlay detected in thumbnail",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_sharpness",
+      "type": "continuous",
+      "description": "Laplacian variance \u2014 proxy for image quality/sharpness",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_edge_density",
+      "type": "percentage",
+      "description": "Canny edge pixel ratio \u2014 visual complexity",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_dominant_hue",
+      "type": "continuous",
+      "description": "Dominant hue angle (0\u2013360) from HSV histogram peak",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    },
+    {
+      "name": "thumb_saturation_mean",
+      "type": "continuous",
+      "description": "Mean saturation in HSV \u2014 vibrancy signal",
+      "requires_columns": [
+        "thumbnail_url"
+      ],
+      "requires_external": null,
+      "default_enabled": true
+    }
+  ]
+}
