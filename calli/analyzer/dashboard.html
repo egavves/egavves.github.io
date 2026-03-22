@@ -2178,7 +2178,7 @@ function buildIdeationTabsHTML(card) {
   window._IDEO_CATS = IDEO_CATS;  // expose for validation builder
 
   const TABS_PRIMARY = [
-    { id:'concept',     emoji:'💡', label:'Concept',    locked:true },
+    { id:'concept',     emoji:'📋', label:'Production Note', locked:true },
     { id:'validation',  emoji:'✅', label:'Validation',  locked:true },
     { id:'experience',  emoji:'📋', label:'Experience'  },
     { id:'running',     emoji:'⚙️', label:'Running'     },
@@ -2331,7 +2331,7 @@ function buildIdeationTabsHTML(card) {
     <div class="ideo-tab-pane" id="itab-${sid}-concept">
       <div class="ideo-result" id="ideo-out-${sid}-concept"
            style="display:none;min-height:60px">
-        <em style="color:var(--muted)">Run ideation to generate a concept.</em>
+        <em style="color:var(--muted)">Run ideation to generate a production note.</em>
       </div>
     </div>
 
@@ -2339,7 +2339,7 @@ function buildIdeationTabsHTML(card) {
     <div class="ideo-tab-pane" id="itab-${sid}-validation">
       <div class="ideo-result vis" id="ideo-out-${sid}-validation"
            style="display:block;font-size:12.5px;line-height:1.7">
-        <em style="color:var(--muted)">Click <strong>✦ Ideate</strong> to generate a concept, then AI will validate why it works.</em>
+        <em style="color:var(--muted)">Click <strong>✦ Ideate</strong> to generate a production note, then AI will validate why it works.</em>
       </div>
     </div>
 
