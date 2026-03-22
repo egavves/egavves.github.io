@@ -1051,6 +1051,56 @@ let ML_FORMATS = [];
 let VIDEOS      = [];
 let PROJECT_ID  = '';
 let CHAT_HISTORY= [];
+
+/* ── Spread Potential: composite fandom/virality score ──
+   Combines engagement signals into one index, then bins into categorical tiers.
+   Components (all 0–1 range after normalization):
+     share_intent_score  — fraction of comments with sharing language
+     shareability_score  — LLM-assessed clippability (1–5, normalized to 0–1)
+     parasocial_score    — fraction of comments expressing personal connection
+     rewatch_intent      — fraction of comments indicating rewatch
+   Weights reflect relative importance for predicting organic spread.
+   Output columns added to each video row:
+     spread_potential       — continuous composite (0–1)
+     spread_tier            — categorical: Viral | Shareable | Moderate | Low Spread
+*/
+function _computeSpreadPotential(videos) {
+  if (!videos || !videos.length) return;
+  const WEIGHTS = { share_intent_score: 0.30, shareability_score: 0.25, parasocial_score: 0.25, rewatch_intent: 0.20 };
+  const FIELDS = Object.keys(WEIGHTS);
+  // Normalize shareability_score from 1–5 to 0–1; others are already 0–1 fractions
+  const norm = (v, field) => {
+    const f = parseFloat(v[field]);
+    if (!isFinite(f)) return NaN;
+    if (field === 'shareability_score') return Math.max(0, Math.min(1, (f - 1) / 4));
+    return Math.max(0, Math.min(1, f));
+  };
+  // Pass 1: compute raw composite
+  const scores = [];
+  videos.forEach(v => {
+    let wSum = 0, wTotal = 0;
+    for (const fld of FIELDS) {
+      const n = norm(v, fld);
+      if (isFinite(n)) { wSum += n * WEIGHTS[fld]; wTotal += WEIGHTS[fld]; }
+    }
+    const sp = wTotal > 0 ? wSum / wTotal : NaN;
+    v.spread_potential = isFinite(sp) ? sp : NaN;
+    if (isFinite(sp)) scores.push(sp);
+  });
+  if (!scores.length) return;
+  // Pass 2: bin into tiers using channel-relative percentiles
+  scores.sort((a, b) => a - b);
+  const pct = p => scores[Math.min(scores.length - 1, Math.floor(p * scores.length))];
+  const p85 = pct(0.85), p50 = pct(0.50), p20 = pct(0.20);
+  videos.forEach(v => {
+    const sp = v.spread_potential;
+    if (!isFinite(sp)) { v.spread_tier = 'Unknown'; return; }
+    v.spread_tier = sp >= p85 ? 'Viral' : sp >= p50 ? 'Shareable' : sp >= p20 ? 'Moderate' : 'Low Spread';
+  });
+  const tierCounts = {};
+  videos.forEach(v => { tierCounts[v.spread_tier] = (tierCounts[v.spread_tier] || 0) + 1; });
+  console.info(`[Spread Potential] Computed for ${scores.length}/${videos.length} videos. Distribution:`, tierCounts);
+}
 let FEAT_GROUP_MAP = {};   // feature_name → group_name  (loaded from feature_schema.json)
 let IS_STREAMING= false;
 let ACTIVE_CTRL = null;
@@ -1155,6 +1205,9 @@ async function loadProject(id) {
 
   try { VIDEOS = await loadCSV(`./projects/${id}/${CONFIG.data.files.videos}?t=${Date.now()}`); }
   catch(_) {}
+
+  /* ── Compute spread_potential composite + categorical tier ── */
+  _computeSpreadPotential(VIDEOS);
 
   buildStatCards(CONFIG, VIDEOS);
   buildSuggestionChips(CONFIG);
@@ -1784,7 +1837,70 @@ function buildPerformanceHTML(card) {
     : row('Avg % viewed','—') + row('30s retention','—');
   const retHero = d ? `${d.totals.retention.cur.toFixed(1)}%` : '—';
 
-  /* ── 7. Traffic (placeholder) ── */
+  /* ── 7. Spread Potential & Content DNA ── */
+  const _spreadStats = (vs) => {
+    const sp = vs.filter(v => isFinite(parseFloat(v.spread_potential))).map(v => parseFloat(v.spread_potential));
+    const dna = vs.filter(v => isFinite(parseFloat(v.cut_dna_score))).map(v => parseFloat(v.cut_dna_score));
+    const avg = arr => arr.length ? (arr.reduce((s,v) => s+v, 0) / arr.length) : NaN;
+    const tierCount = (vs, field) => { const c = {}; vs.forEach(v => { const t = v[field]; if (t) c[t] = (c[t]||0)+1; }); return c; };
+    return { spreadAvg: avg(sp), spreadN: sp.length, dnaAvg: avg(dna), dnaN: dna.length,
+             spreadTiers: tierCount(vs, 'spread_tier'), dnaTiers: tierCount(vs, 'cut_dna_tier') };
+  };
+  const tierBadges = (tiers) => Object.entries(tiers).map(([t,n]) => `<span style="font-size:9.5px;padding:1px 5px;border-radius:4px;background:var(--surface2);margin:0 2px">${t}: ${n}</span>`).join('');
+  const ss = d ? _spreadStats(d.recent) : null;
+  let spreadBody, spreadHero;
+  if (ss && (ss.spreadN > 0 || ss.dnaN > 0)) {
+    spreadBody = '';
+    if (ss.spreadN > 0) {
+      spreadBody += row('Avg Spread Potential', `${(ss.spreadAvg*100).toFixed(1)}%`) +
+        `<div class="perf-row" style="flex-wrap:wrap;gap:3px"><span class="perf-row-lbl">Distribution</span>${tierBadges(ss.spreadTiers)}</div>`;
+    }
+    if (ss.dnaN > 0) {
+      spreadBody += row('Avg Content DNA', `${(ss.dnaAvg*100).toFixed(1)}%`) +
+        `<div class="perf-row" style="flex-wrap:wrap;gap:3px"><span class="perf-row-lbl">Distribution</span>${tierBadges(ss.dnaTiers)}</div>`;
+    }
+    spreadHero = ss.spreadN > 0 ? `${(ss.spreadAvg*100).toFixed(0)}% spread` : ss.dnaN > 0 ? `${(ss.dnaAvg*100).toFixed(0)}% DNA` : '—';
+  } else {
+    spreadBody = `<div class="perf-empty">Run the pipeline with composites to compute Spread Potential and Content DNA.</div>`;
+    spreadHero = '—';
+  }
+
+  /* ── 8. Upload Cadence ── */
+  const _cadenceStats = (vs) => {
+    const c14 = vs.filter(v => isFinite(parseFloat(v.upload_cadence_14d))).map(v => parseFloat(v.upload_cadence_14d));
+    const dgap = vs.filter(v => isFinite(parseFloat(v.days_since_prev))).map(v => parseFloat(v.days_since_prev));
+    const avg = arr => arr.length ? (arr.reduce((s,v) => s+v, 0) / arr.length) : NaN;
+    return { cadence14Avg: avg(c14), cadenceN: c14.length, gapAvg: avg(dgap), gapN: dgap.length };
+  };
+  const cs = d ? _cadenceStats(d.recent) : null;
+  let cadenceBody, cadenceHero;
+  if (cs && cs.cadenceN > 0) {
+    cadenceBody = row('Avg videos per 2 weeks', cs.cadence14Avg.toFixed(1)) +
+      row('Avg days between uploads', cs.gapN > 0 ? cs.gapAvg.toFixed(1) : '—');
+    cadenceHero = `${cs.cadence14Avg.toFixed(1)}/2wk`;
+  } else {
+    cadenceBody = `<div class="perf-empty">Run the pipeline with cadence features to populate.</div>`;
+    cadenceHero = '—';
+  }
+
+  /* ── 9. AI Discoverability ── */
+  const _aiStats = (vs) => {
+    const ai = vs.filter(v => isFinite(parseFloat(v.ai_discoverability_score))).map(v => parseFloat(v.ai_discoverability_score));
+    const avg = arr => arr.length ? (arr.reduce((s,v) => s+v, 0) / arr.length) : NaN;
+    return { aiAvg: avg(ai), aiN: ai.length };
+  };
+  const as = d ? _aiStats(d.recent) : null;
+  let aiBody, aiHero;
+  if (as && as.aiN > 0) {
+    aiBody = row('Avg AI Discoverability', `${(as.aiAvg*100).toFixed(1)}%`) +
+      row('Videos scored', `${as.aiN}`);
+    aiHero = `${(as.aiAvg*100).toFixed(0)}%`;
+  } else {
+    aiBody = `<div class="perf-empty">Run the pipeline with AI discoverability features to populate.</div>`;
+    aiHero = '—';
+  }
+
+  /* ── 10. Traffic (placeholder) ── */
   const trafficBody =
     `<div class="perf-empty">Connect YouTube Analytics API to populate:</div>` +
     row('Recommendations (Browse + Suggested)','—') +
@@ -1804,6 +1920,9 @@ function buildPerformanceHTML(card) {
     section('revenue',  '💰', 'Revenue',      revHero, revDelta, revenueBody) +
     section('series',   '🎬', 'Series',       seriesHero, '', seriesBody) +
     section('engage',   '💬', 'Engagement',   engHero, '', engBody) +
+    section('spread',   '🔥', 'Spread & DNA', spreadHero, '', spreadBody) +
+    section('cadence',  '📅', 'Upload Cadence', cadenceHero, '', cadenceBody) +
+    section('aiDisc',   '🤖', 'AI Discovery',  aiHero, '', aiBody) +
     section('traffic',  '🔀', 'Traffic',      '—', '', trafficBody) +
     section('audience', '👥', 'Audience',      '—', '', audienceBody);
 
@@ -4367,35 +4486,45 @@ async function runIdeoAction(sid, action, extraContext = '') {
   const durLabel = customDur ? customDur : (dur === 'short' ? 'under 3 min' : dur === 'long' ? '10+ min' : '3–10 min');
 
   const PROMPTS = {
-    concept: `You are a creative strategist for ${name}, a YouTube channel about relationships — telling delightful stories of emotional courage.${ctx}${refCtx}${urlCtx}
+    concept: `You are a senior creative producer for ${name}, a YouTube channel about relationships — telling delightful stories of emotional courage.${ctx}${refCtx}${urlCtx}
 
-Generate a specific, original video concept using a structured IDEATION process. Work through each step explicitly:
+Generate a PRODUCTION NOTE for an original video concept. Write as a producer who has made 500 episodes — direct, opinionated, specific. Do NOT write analytical steps, ideation process, or chain-of-thought. No "STEP 1", "STEP 2". Write the finished production note.
 
-**STEP 1 — Topic**: Pick from: Dating & Attraction | Secrets, Sex & Taboo | Relationship Drama | Ranking & Social Perception. Why this topic?
+Follow this exact structure:
 
-**STEP 2 — Loop**: Pick from: Gatekeeper, Truth/Pressure, Reaction, Mystery, Social Elimination, Gamble, Compatibility/Pairing, Transaction, Challenge Trial, Shock Truth, Transformation, Commit/Reveal. Describe the repeating mechanic (Hook→Tension→Resolution→Output). How does each iteration independently drive delight?
+## Concept
+One paragraph premise with core tension and a "but" clause. Then:
+**The Hook:** Why a viewer can't scroll past (2-3 sentences, specific curiosity gap).
+**The WTF Moment:** The single most viral clip — name people, quote dialogue.
 
-**STEP 3 — Setup Amplifier**: Pick from: in the dark, trapped together, first time meeting, live audience, time limit, physical proximity, or invent one. Why does it multiply the hook?
+## Cast
+3-6 characters, each with: **Name — Archetype Title**, 2-3 sentence personality/arc, and **Reveal:** line. End with **Chemistry & Group Dynamic** paragraph.
 
-**STEP 4 — Psych Drivers**: Which 2-3 drivers from: Status Sensitivity, Belonging/Rejection, Loss Aversion, Curiosity Gap, Dopamine/Anticipation, Emotional Contagion, Moral Judgment, Fairness Aversion, Schadenfreude, Competence/Mastery, Contrast/Change, Narrative Closure, Prediction Error?
+## The Loop
+**Core Loop:** One sentence with arrows (action → tension → resolution → consequence)
+**Currency of tension:** What's at risk each round
+**Ramp:** Escalation pattern (staircase/tightrope/hybrid)
+**Payoff:** The question the viewer needs answered
 
-**STEP 5 — Stakes & Characters**: What's at risk (Rejection/Embarrassment/Judgment/Exposure/Relationship/Personal)? Which archetypes (Hero/Villain/Underdog/Overconfident Player/Chaotic Wildcard/Super Fun/Heartwarming)?
+## Story Structure
+3-4 Acts with time ranges, story intent, and bullet beats. Then Cold Open (25 seconds, shot-by-shot). Then First Three Minutes (Context & Format, Stakes & Cast, First Conflict).
 
-**STEP 6 — Early Retention**: What happens in the first 30 seconds? What's the 1-minute escalation?
+## Emotional Design
+Tone, Dominant Emotions, Emotional Arc, Tension Source, Humor. Then 3-5 Peak Moments with timestamp, emotion, description.
 
-**STEP 7 — Reason to Watch to The End**: What's the final reveal/payoff? What emotionally changes?
+## Production Design
+Set, Camera, Graphics, Music & Sound, Testimonials — one concrete sentence each.
 
-**STEP 8 — Packaging**: One-sentence title. Curiosity gap in one line.
+## Questions & Prompts
+Actual questions organized by: Icebreakers, Provocative/Reveal Triggers, Emotional Depth.
 
-**STEP 9 — Brand Check**: Provocative? Playful? Heartfelt? Thoughtful? Real? (one word each)
+## Packaging
+Title, Title Anatomy (Provocative Action, Inherent Conflict, Zoo Effect, Core Conceit), Thumbnail strategy, 3 Alt Titles.
 
-Format: ${fmt || 'any'} · Audience: ${aud || 'general'}${genderCtx} · Duration: ${durLabel} · Brief: ${brief || 'open'}
+## Performance Notes
+What Works, What Doesn't, Retention Notes, Audience Sentiment — name specific cast and timestamps.
 
-After working through all steps, output:
-## [Compelling Title]
-**Concept** (50 words max): [the concept]
-**Formula**: Topic + Loop + Setup
-**Why it works** (30 words): [data-backed reasoning]`,
+Format: ${fmt || 'any'} · Audience: ${aud || 'general'}${genderCtx} · Duration: ${durLabel} · Brief: ${brief || 'open'}`,
 
     storyboard: `You are a video director for ${name}.
 Concept: "${concept}" · Duration: ${durLabel}${refCtx}${urlCtx}
@@ -4796,6 +4925,19 @@ const FEAT_ACTION = [
   {k:'intensity_at_3min',      up:'Keep Intensity High at the 3-Minute Mark — That\'s the Drop-Off Cliff',   down:'Let Intensity Dip at 3 min — Recover Later',                             what:'emotional intensity at the 3-minute mark divided by intensity at the opening'},
   {k:'moment_impact',          up:'Make Key Moments Higher Impact (Volume, Reactions, Visual Cues)',           down:'Keep Moments Subtler — Understatement Over Spectacle',                   what:'AI-assessed impact of the top 5 peaks (1–5 scale): jaw-dropping, laugh-out-loud, or deeply moving'},
   {k:'payoff_satisfaction',     up:'Deliver Stronger Payoffs — Make the Wait Worth It',                        down:'Reduce Payoff Expectations — Keep Things Casual',                        what:'AI-assessed ending satisfaction (1–5 scale): emotional resolution, sense of completion, rewatch desire'},
+  // ── Upload cadence ──
+  {k:'upload_cadence_14d',     up:'Increase Upload Frequency — More Videos in the Same 2-Week Window',         down:'Space Out Uploads — Give Each Video More Breathing Room',                what:'number of videos published within ±7 days of this video'},
+  {k:'upload_cadence_30d',     up:'Sustain a Higher Monthly Upload Pace',                                      down:'Reduce Monthly Volume — Quality Over Quantity',                          what:'number of videos published within ±15 days of this video'},
+  {k:'days_since_prev',        up:'Leave More Gap Between Uploads — Don\'t Cannibalize Attention',              down:'Upload More Frequently — Shorter Gaps Between Videos',                   what:'days since the previous video was published on the channel'},
+  {k:'days_until_next',        up:'Leave More Recovery Time After This Video',                                  down:'Follow Up Quickly While Momentum Is Hot',                                what:'days until the next video was published after this one'},
+  // ── AI discoverability ──
+  {k:'ai_title_specificity',   up:'Make Titles More Descriptive and Specific ("Muslims Play Truth or Drink")',  down:'Use More Abstract or Teaser Titles',                                     what:'how specific and descriptive the title is — concrete nouns, named entities, clear topics (0–1 scale)'},
+  {k:'ai_title_searchability', up:'Write Titles That Match How People Search ("How X Works", "Why Y")',         down:'Use More Creative/Non-Search-Friendly Titles',                           what:'how well the title would match a natural-language search query in ChatGPT or Google (0–1 scale)'},
+  {k:'ai_desc_keyword',        up:'Front-Load the Description with Topic Keywords in the First 160 Characters', down:'Keep Descriptions More Casual and Less Keyword-Dense',                  what:'ratio of meaningful content words to filler in the first 160 characters (what AI chatbots can see)'},
+  {k:'ai_discoverability',     up:'Optimize Title + Description for AI Chatbot Search Discovery',               down:'Prioritize YouTube-Native Clickability Over AI Findability',             what:'composite AI discoverability score: 40% title specificity + 35% title searchability + 25% description keyword density'},
+  // ── Composite scores ──
+  {k:'cut_dna_score',          up:'Strengthen Core Content DNA — Loop, Cast, Moments, Payoff, Hook',            down:'Experiment Outside the Proven Formula',                                  what:'weighted composite of loop quality (20%) + chemistry (20%) + moment impact (20%) + payoff satisfaction (15%) + hook energy (15%) + pacing (10%)'},
+  {k:'cut_dna_tier',           up:'Aim for "Excellent" Content DNA Rating',                                     down:'Explore New Directions Outside the Standard Formula',                    what:'categorical tier (Excellent / Good / Average / Weak) based on channel percentiles of the CUT DNA composite'},
 ];
 
 function _hypTitle(feat, target, dir) {
@@ -4951,6 +5093,14 @@ function _producerCritic(card) {
     card.qWarnings.push(`Title says "reduce" but the data suggests higher values → better results.`);
   }
 
+  // Step 5: Duration context warning (2025 algorithm pivot — Little Dot Studios / Tubular Labs data)
+  const fl = card.feat.toLowerCase();
+  if ((fl.includes('duration') || fl.includes('length') || fl.includes('runtime')) && card.dir === 'up') {
+    cot.push(`⚠️ DURATION WARNING: Data says "go longer" but the 2025 YouTube algorithm pivot reversed the ultra-longform advantage. Average top-video length dropped 21% (35m→28m) in 6 months. The algorithm no longer structurally favors any single duration — format advantage is not a constant.`);
+    card.qWarnings = card.qWarnings || [];
+    card.qWarnings.push(`Industry warning: YouTube's Jan 2025 algorithm update ended the ultra-longform era. Top-video average length dropped 21% (from 35 min to 28 min). Ultra-long (180+ min) content revenue fell from 46% to 17%. The platform now distributes views more evenly across all durations. "Go longer" may not be the right move — test carefully. (Source: Little Dot Studios / Tubular Labs, 2025)`);
+  }
+
   // Log chain of thought (visible in browser console for debugging)
   console.debug(`[Producer Critic] ${card.id} ${card.feat}:\n  ${cot.join('\n  ')}`);
 
@@ -4962,12 +5112,14 @@ const NON_ACTIONABLE = new Set([
   'engagement_like_ratio', 'engagement_comment_ratio', 'comment_sentiment_mean',
   'comment_avg_length', 'comment_question_ratio', 'comment_question_rate',
   'views_public', 'end_retention_ratio',
+  'spread_potential', 'spread_tier',  // composite outcomes — usable as targets, not as predictors
 ]);
-function _synthesizeHypotheses(SRC) {
+function _synthesizeHypotheses(SRC, targetOverride) {
   if (!SRC) return [];
   const corr = SRC.correlations || {}, lasso = SRC.lasso || {}, rf = SRC.random_forest || {}, hyps = SRC.hypotheses || {};
   const targets = Object.keys(corr); if (!targets.length) return [];
-  const primaryTarget = targets.includes('retention_30s') ? 'retention_30s' : targets[0];
+  const primaryTarget = targetOverride && targets.includes(targetOverride) ? targetOverride
+    : targets.includes('retention_30s') ? 'retention_30s' : targets[0];
   const fe = {};
   for (const [feat, v] of Object.entries(corr[primaryTarget] || {})) { if (!v?.spearman_r || Math.abs(v.spearman_r)<0.05) continue; if (!fe[feat]) fe[feat]={}; fe[feat].corr={r:v.spearman_r,p:v.p_value,n:v.n}; }
   const ld = lasso[primaryTarget] || {};
@@ -5034,7 +5186,10 @@ function buildHypothesisHTML(card) {
   const curLens = card.opts.hypLens || (hasContent ? 'content' : 'full');
   card.opts.hypLens = curLens;
   const SRC = (curLens === 'content' && ML_INSIGHTS_CONTENT) ? ML_INSIGHTS_CONTENT : ML_INSIGHTS;
-  const cards=_synthesizeHypotheses(SRC);
+  // Target selector: which outcome are we optimizing for?
+  const curTarget = card.opts.hypTarget || null;  // null = auto (retention_30s)
+  const availTargets = Object.keys(SRC?.correlations || {});
+  const cards=_synthesizeHypotheses(SRC, curTarget);
   if (!cards.length) return `<div class="cc-title">🔬 Hypotheses & Recommendations</div><div class="cc-empty"><div>🔬</div><div>No ML data to generate hypotheses</div><div style="font-size:10px;opacity:.55;margin-top:4px">Run <code>AI/pipeline.py</code></div></div>`;
   const catSet=new Map(); cards.forEach(c=>catSet.set(c.cat.key,c.cat));
   const tc={gold:0,silver:0,bronze:0}; cards.forEach(c=>tc[c.tier]++);
@@ -5046,6 +5201,11 @@ function buildHypothesisHTML(card) {
     { title:'Pin a Top Comment Within 30 Minutes of Publishing', desc:'A pinned comment from the creator boosts early comment velocity and signals engagement to the algorithm. Ask a question related to the video to spark replies (e.g., "What would YOUR answer be?").', cat:'💬 Community', source:'Roberto Blake, Think Media, Creator Insider'},
     { title:'Use Chapters (Timestamps) for Videos Over 10 Minutes', desc:'Chapters improve watch time by letting viewers jump to relevant sections instead of bouncing. They also generate rich snippets in Google Search, driving more organic traffic. Format: "0:00 Intro" in the description.', cat:'📖 Discoverability', source:'YouTube Help — "Add chapters to your video"'},
     { title:'Retest Thumbnails After 48 Hours if Click-Through Rate is Below 4%', desc:'YouTube\'s "Test & Compare" feature (or manual swap via re-upload) lets you iterate on thumbnails. The biggest click-through lever is facial expression + contrast + minimal text. If a video underperforms in the first 48 hours, the thumbnail is the first thing to change.', cat:'🎨 Thumbnail Ops', source:'YouTube Test & Compare (2024 rollout), MrBeast methodology'},
+    { title:'The 2025 Duration Pivot: No Single Length Wins Anymore', desc:'In Jan 2025, YouTube\'s algorithm update ended the ultra-longform era. Average top-video length dropped 21% (from 35m34s to 28m06s) in 6 months. Ultra-long (180+ min) content revenue collapsed from 46% to 17%. The 2025 views-per-video curve is now flat across all durations — meaning no format has a structural advantage. The 45–60 min range currently delivers the best upload-to-revenue ratio (40% of uploads → 40% of revenue). Don\'t default to "longer = better" — test what works for your audience.', cat:'⏱️ Duration Strategy', source:'Little Dot Studios / Tubular Labs whitepaper (2025), data from 10,000 top-viewed videos'},
+    { title:'93.9% of Views Go to the Top 10% of Channels — Compete on Craft', desc:'YouTube is a winner-takes-most economy: the top decile of channels captures 93.9% of all global views. The next decile gets 3.8%, and it drops to <1% from there. This means marginal improvements in packaging, retention, and consistency compound enormously. A few points of click-through rate, a few points of retention — these small gains are what separate the top decile from everyone else.', cat:'📊 Industry Reality', source:'Tubefilter / ESHAP analysis (May 2025), 4.58M channels per decile'},
+    { title:'15% of Viewership Now Comes from YouTube Premium Subscribers', desc:'Premium subscriber share jumped from 4% (2020) to 15% (2025) — a 275% increase. Premium viewers watch longer, deliver 1.3× higher revenue per thousand views, and their watch time is strongly correlated with channel revenue. Channels with longer average watch time attract disproportionately more Premium revenue. This matters because Premium viewers don\'t see ads — their revenue comes from subscription allocation weighted by watch time.', cat:'💰 Monetization', source:'Little Dot Studios internal data (2025), 500+ managed channels'},
+    { title:'Optimize Titles and Descriptions for AI Chatbot Discovery', desc:'Views from ChatGPT across managed channels grew 75× in one year (600 → 45,000/month). AI chatbots surface videos via keyword matching on titles and descriptions — not watch history or YouTube\'s recommendation algorithm. "Guides" and "how-to" content performs best. YouTube also features in Perplexity and Google AI top-10 sources (13.9% and 18.8% share). Write titles and descriptions that clearly state what the video teaches or covers — AI search rewards clarity over clickbait.', cat:'🤖 AI Discovery', source:'Little Dot Studios / OneLittleWeb data (2025), Profound analysis of ChatGPT citations'},
+    { title:'Build for Fandoms, Not Just Audiences', desc:'The fundamental shift on YouTube: audiences follow channels, but fandoms binge, rewatch, and program themselves. Superfans signal to the recommendation algorithm what to surface next. This means community-building content (recurring cast, inside jokes, callbacks, parasocial hooks) compounds over time in ways that one-off viral videos don\'t. The algorithm increasingly rewards the behavioral patterns of committed fans — not just raw view counts.', cat:'👥 Community', source:'Little Dot Studios whitepaper (2025), YouTube Creator Insider'},
   ];
   const catChips=[...catSet.values()].map(c=>`<button class="hyp-chip" onclick="filterHyp('${sid}','cat:${c.key}',this)">${c.emoji} ${c.label}</button>`).join('');
   const lensToggle = hasContent ? `<div class="ml-lens-toggle" style="margin-left:auto">
@@ -5054,6 +5214,14 @@ function buildHypothesisHTML(card) {
     <button class="ml-lens-btn${curLens==='content'?' active':''}"
             onclick="switchHypLens('${sid}','content',this)">Content</button>
   </div>` : '';
+  /* Target selector — switch which outcome the hypotheses optimize for */
+  const TARGET_LABELS = {retention_30s:'🎯 Retention',views_public:'👀 Views',spread_potential:'🔥 Spread Potential',engagement_like_ratio:'👍 Likes',engagement_comment_ratio:'💬 Comments',engagement_overall_ratio:'📈 Engagement',outlier_potential:'⚡ Outlier'};
+  const targetBtns = availTargets.length > 1 ? availTargets.map(t => {
+    const sel = (curTarget === t) || (!curTarget && t === (availTargets.includes('retention_30s') ? 'retention_30s' : availTargets[0]));
+    const lbl = TARGET_LABELS[t] || fmtLabel(t);
+    return `<button class="ml-lens-btn${sel?' active':''}" onclick="switchHypTarget('${sid}','${t}',this)" style="font-size:10px">${lbl}</button>`;
+  }).join('') : '';
+  const targetToggle = targetBtns ? `<div class="ml-lens-toggle" style="margin-top:4px"><span style="font-size:9px;opacity:.5;margin-right:4px">Optimize for:</span>${targetBtns}</div>` : '';
   const fb=`<div class="hyp-filters" id="hyp-filters-${sid}" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
     <button class="hyp-chip sel" onclick="filterHyp('${sid}','all',this)">All (${cards.length + YT_TIPS.length})</button>
     ${tc.gold?`<button class="hyp-chip" onclick="filterHyp('${sid}','gold',this)">🏆 Gold (${tc.gold})</button>`:''}
@@ -5063,7 +5231,7 @@ function buildHypothesisHTML(card) {
     <button class="hyp-chip hyp-cat-toggle" onclick="toggleHypCats('${sid}')">Categories ▼</button>
     <div class="hyp-cat-drawer collapsed" id="hyp-cat-drawer-${sid}">${catChips}</div>
     ${lensToggle}
-  </div>`;
+  </div>${targetToggle}`;
   const grid=cards.map(c=>{
     const catStyle=`background:${c.cat.color}0c;color:${c.cat.color}99;border:1px solid ${c.cat.color}22`;
     const tierLabel=c.tier==='gold'?'🏆 Gold':c.tier==='silver'?'🥈 Silver':'🥉 Bronze';
@@ -5132,6 +5300,15 @@ function switchHypLens(sid, lens, btn) {
   const card = CANVAS_CARDS.find(c => c.id === sid);
   if (!card) return;
   card.opts.hypLens = lens;
+  btn.closest('.ml-lens-toggle')?.querySelectorAll('.ml-lens-btn')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  refreshCard(card);
+}
+function switchHypTarget(sid, target, btn) {
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (!card) return;
+  card.opts.hypTarget = target;
   btn.closest('.ml-lens-toggle')?.querySelectorAll('.ml-lens-btn')
     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -6540,6 +6717,8 @@ const LABEL_MAP = {
   retention_30s: 'Retention 30s',
   subscribers_gained: 'Subscribers Gained',
   cpm: 'CPM',
+  spread_potential: 'Spread Potential',
+  spread_tier: 'Spread Tier',
 };
 function fmtLabel(str){return LABEL_MAP[str]||(str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
 const FEAT_NICE_NAMES = {
@@ -6572,6 +6751,12 @@ const FEAT_NICE_NAMES = {
   sentiment_arc_type: 'Emotional Shape of the Episode', cliffhanger_score: 'Strength of End Cliffhanger',
   pacing_quality_score: 'Pacing Evenness (No Dead Spots)', payoff_satisfaction_score: 'How Well Setups Get Paid Off',
   shareability_score: 'How Clippable the Best Moments Are (1-5)', moment_impact_score: 'Strength of the Biggest Moment',
+  spread_potential: 'Spread Potential (Virality + Fandom Composite)', spread_tier: 'Spread Tier (Viral / Shareable / Moderate / Low)',
+  cut_dna_score: 'Content DNA Score (Loop + Cast + Moments + Payoff)', cut_dna_tier: 'Content DNA Tier (Excellent / Good / Average / Weak)',
+  upload_cadence_14d: 'Upload Cadence (Videos per 2 Weeks)', upload_cadence_30d: 'Upload Cadence (Videos per Month)',
+  days_since_prev: 'Days Since Previous Upload', days_until_next: 'Days Until Next Upload',
+  ai_title_specificity: 'Title Specificity for AI Search', ai_title_searchability: 'Title Searchability Score',
+  ai_desc_keyword_density: 'Description Keyword Density (AI Preview)', ai_discoverability_score: 'AI Discoverability Score (Composite)',
   peak_count: 'Total Emotional Peaks', peaks_per_minute: 'Emotional Peaks per Minute',
   ms_llm_loop_completeness: 'Do Setups Get Resolved?', ms_llm_loop_variety: 'How Many Different Loop Types Used',
   ms_llm_boundary_quality: 'How Clean Are Segment Transitions',
