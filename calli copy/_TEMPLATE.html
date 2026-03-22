@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  _TEMPLATE.html — Calli Labs Master Dashboard Template
+  ─────────────────────────────────────────────────────────────────────────
+  HOW TO USE:
+  1. Copy this file and rename it for your dashboard.
+  2. Update <title>, nav-chip active state, page-specific INFO_CONTENT.
+  3. Replace DEMO DATA sections with your real data-fetch logic.
+  4. Each component section is labelled — remove what you don't need.
+  5. Keep calli-system.css and calli-system.js linked; don't inline them.
+
+  COMPONENT INDEX:
+  A. Unified Navigation
+  B. Calliope Command Bar
+  C. Proxy Status Badge
+  D. Panel Grid (2-col, wide, mega)
+  E. Panel Tabs + Filter Row
+  F. Scrollable Panel Body
+  G. Info Buttons + Popovers
+  H. Hover Popup (image/video tooltip)
+  I. Math Tooltips
+  J. KPI / Stat Strip
+  K. Bar Rows + Score Badges
+  L. Table
+  M. Cards (tweet, reddit, news, feature, KOL tag)
+  N. Modal Overlay
+  O. Loading / Error / Empty States
+  P. Chart Canvas (Chart.js)
+  Q. Filter Chips / Source Chips
+  R. History Side Panel (collapsible)
+  S. Sidebar (dark, analytics style)
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="en" class="calli-dash">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Name — Calli Labs</title>
+
+<!-- Shared design system -->
+<link rel="stylesheet" href="calli-system.css">
+
+<!-- Chart.js (optional — remove if not used) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- Per-dashboard overrides ONLY (keep minimal) -->
+<style>
+/* Dashboard-specific colour accent example: */
+/* :root { --accent: #2dd4bf; } */
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       A. UNIFIED NAVIGATION
+       ──────────────────────────────────────────────────────────────────
+       • nav-active class on the current page's chip/tab
+       • nav-soon disables a link (greyed out, no pointer events)
+       • Teal dataset dropdown is optional — remove nav-data-dropdown if not needed
+  ════════════════════════════════════════════════════════════════════ -->
+  <nav class="unified-nav">
+    <a href="index.html" class="nav-brand">✦ Calli</a>
+
+    <div class="nav-vsep"></div>
+    <span class="nav-section-label nav-ai-label">AI</span>
+
+    <!-- Analytic tabs (left of spacer) -->
+    <a href="exec_summary.html"         class="nav-tab">Executive Summary</a>
+    <a href="cut_feature_dashboard.html" class="nav-tab">Features</a>
+    <a href="hypothesis_validation.html" class="nav-tab">Hypotheses</a>
+    <a href="ideation_dashboard.html"    class="nav-tab">Ideation</a>
+
+    <!-- Dataset selector (optional) -->
+    <div class="nav-vsep"></div>
+    <div class="nav-data-dropdown">
+      <span class="nav-section-label nav-data-label">Dataset</span>
+      <select class="nav-data-select" id="navDataSelect">
+        <option value="cut">CUT Channel</option>
+        <option value="tribute">Tribute: Battle of the Bands</option>
+        <option value="vault">Feature Vault</option>
+      </select>
+      <a href="#" class="nav-add-data-btn">＋ Add Data</a>
+    </div>
+
+    <div class="nav-spacer"></div>
+
+    <!-- Right-side chips -->
+    <a href="social_media_dashboard.html" class="nav-chip nav-social-chip">📡 Social Pulse</a>
+    <a href="calli_feature_vault_v2.html"  class="nav-chip nav-active">🎬 Vault</a><!-- mark active -->
+    <a href="#" class="nav-chip nav-soon">🚧 Coming Soon</a>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       B. CALLIOPE COMMAND BAR
+       ──────────────────────────────────────────────────────────────────
+       • Set data-info-key on .info-btn for popover
+       • Presets auto-fill the input when clicked
+       • .proxy-badge is wired by CALLI.checkProxy()
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="page-body">
+    <div class="command-bar">
+      <span class="command-label">✦ Calliope</span>
+      <button class="info-btn" data-info-key="calliope" title="How to use Calliope">ℹ</button>
+
+      <div class="command-input-wrap">
+        <input  id="calliopeInput" class="command-input"
+                placeholder='Try: "analyse Tribute" · "track Variety" · "show trending drama"' />
+        <button id="calliopeBtn"   class="command-btn">Ask ↵</button>
+      </div>
+
+      <!-- Presets -->
+      <div class="command-presets">
+        <button class="cmd-preset" data-query="trending shows this week">📈 Trending</button>
+        <button class="cmd-preset" data-query="analyse Tribute: Battle of the Bands">🎵 Tribute</button>
+        <button class="cmd-preset" data-query="show top KOL coverage">👥 KOLs</button>
+      </div>
+
+      <!-- C. PROXY STATUS BADGE -->
+      <div class="proxy-badge checking" id="proxyBadge" title="Click to retry">
+        <span class="status-dot"></span>
+        <span class="proxy-text">Checking…</span>
+      </div>
+
+      <!-- Feedback toast -->
+      <div class="command-feedback" id="calliope-feedback"></div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         D. PANEL GRID — 2 columns, auto-rows
+         Add .panel-wide  (grid-column: 1/-1, max 400px)
+         Add .panel-mega  (grid-column: 1/-1, max 600px)
+    ════════════════════════════════════════════════════════════════════ -->
+    <div class="panels-scroll">
+      <div class="panels-grid">
+
+
+        <!-- ── PANEL 1 — Standard 2-col panel ─────────────────────────── -->
+        <div class="platform-panel" id="panel-demo1">
+
+          <!-- G. INFO BUTTON in panel header -->
+          <div class="panel-header">
+            <span class="panel-icon">📊</span>
+            <span class="panel-title-name bl">Analytics Panel</span>
+
+            <!-- E. PANEL TABS -->
+            <div class="panel-tabs">
+              <button class="ptab active" onclick="CALLI.switchTab(this,'tab-chart')">Chart</button>
+              <button class="ptab"        onclick="CALLI.switchTab(this,'tab-table')">Table</button>
+            </div>
+
+            <div class="panel-spacer"></div>
+            <div class="panel-header-actions">
+              <button class="info-btn" data-info-key="analytics_panel" title="Panel info">ℹ</button>
+              <button class="panel-ctrl-btn panel-expand-btn" data-panel="panel-demo1" title="Expand">⤢</button>
+            </div>
+          </div>
+
+          <!-- E. FILTER ROW -->
+          <div class="panel-filter-row">
+            <div class="filter-row">
+              <button class="cs-chip active" onclick="CALLI.setChip(this)">All</button>
+              <button class="cs-chip"        onclick="CALLI.setChip(this)">Drama</button>
+              <button class="cs-chip"        onclick="CALLI.setChip(this)">Comedy</button>
+              <button class="cs-chip positive" onclick="CALLI.setChip(this)">Rising ↑</button>
+            </div>
+          </div>
+
+          <!-- F. SCROLLABLE PANEL BODY -->
+          <div class="panel-body">
+            <!-- Tab: Chart -->
+            <div id="tab-chart">
+              <!-- P. CHART CANVAS -->
+              <div class="chart-wrap" style="height:200px">
+                <canvas id="demoChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Tab: Table (hidden by default) -->
+            <div id="tab-table" style="display:none">
+              <!-- L. TABLE -->
+              <div class="overflow-y-auto" style="max-height:260px">
+                <table class="cs-table">
+                  <thead>
+                    <tr>
+                      <th>Feature</th>
+                      <th>Value</th>
+                      <th>Trend</th>
+                      <th>Score</th>
+                    </tr>
+                  </thead>
+                  <tbody id="demoTableBody">
+                    <tr>
+                      <td>Engagement Rate
+                        <!-- I. MATH TOOLTIP -->
+                        <span class="math-tooltip" data-math="pearson_r">r</span>
+                      </td>
+                      <td class="td-num td-pos">0.82</td>
+                      <td><span class="delta-badge up">↑ 12%</span></td>
+                      <td>
+                        <!-- K. SCORE BADGE -->
+                        <span class="score-badge high">High</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Drop-off Rate</td>
+                      <td class="td-num td-neg">34%</td>
+                      <td><span class="delta-badge down">↓ 3%</span></td>
+                      <td><span class="score-badge medium">Medium</span></td>
+                    </tr>
+                    <tr>
+                      <td>Retention Week 4</td>
+                      <td class="td-num">67%</td>
+                      <td><span class="delta-badge flat">→ 0%</span></td>
+                      <td><span class="score-badge low">Low</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- K. BAR ROWS -->
+            <div class="panel-section-label">Feature Importance</div>
+            <div class="bar-row">
+              <span class="bar-label truncate">Hook Length</span>
+              <div class="bar-track"><div class="bar-fill positive" style="width:82%"></div></div>
+              <span class="bar-value">0.82</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label truncate">Thumbnail CTR</span>
+              <div class="bar-track"><div class="bar-fill blue" style="width:71%"></div></div>
+              <span class="bar-value">0.71</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label truncate">Upload Cadence</span>
+              <div class="bar-track"><div class="bar-fill warm" style="width:55%"></div></div>
+              <span class="bar-value">0.55</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label truncate">Title Sentiment</span>
+              <div class="bar-track"><div class="bar-fill" style="width:38%"></div></div>
+              <span class="bar-value">0.38</span>
+            </div>
+
+          </div><!-- /panel-body -->
+        </div><!-- /panel-demo1 -->
+
+
+        <!-- ── PANEL 2 — Social cards demo ────────────────────────────── -->
+        <div class="platform-panel" id="panel-demo2">
+          <div class="panel-header">
+            <span class="panel-icon">🐦</span>
+            <span class="panel-title-name tw">Twitter / X</span>
+            <div class="panel-spacer"></div>
+            <button class="info-btn" data-info-key="twitter" title="Twitter panel info">ℹ</button>
+          </div>
+
+          <div class="panel-body">
+            <!-- J. STAT STRIP -->
+            <div class="stat-strip" style="margin: -8px -8px 8px; padding:8px 10px;">
+              <div class="stat-pill"><span class="val">12.4K</span><span class="lbl">Mentions</span></div>
+              <div class="stat-pill"><span class="val">4.2K</span><span class="lbl">Likes</span></div>
+              <div class="stat-pill"><span class="val">+38%</span><span class="lbl">WoW</span></div>
+              <div class="stat-pill"><span class="val">0.74</span><span class="lbl">Sentiment</span></div>
+            </div>
+
+            <!-- M. TWEET CARD -->
+            <div class="tweet-card"
+                 data-hover-popup='{"title":"Tweet context","desc":"This tweet generated high engagement in the music competition niche.","tags":["#TributeShow","Music","Viral"]}'>
+              <div class="tweet-card-header">
+                <div class="tweet-avatar">🎵</div>
+                <div>
+                  <div class="tweet-handle">@TributeFan</div>
+                  <div style="font-size:10px;color:var(--muted)">Verified fan account</div>
+                </div>
+                <span class="tweet-time">2h ago</span>
+              </div>
+              <div class="tweet-text">
+                "Just finished watching Tribute: Battle of the Bands — the finale was absolutely electric 🔥
+                Can't believe how emotional the last performance was. #TributeShow #MustWatch"
+              </div>
+              <div class="tweet-stats">
+                <span>♥ 2,847</span>
+                <span>🔁 612</span>
+                <span>💬 189</span>
+              </div>
+            </div>
+
+            <!-- M. REDDIT POST CARD -->
+            <div class="reddit-post">
+              <div class="reddit-post-sub">r/TributeShow</div>
+              <div class="reddit-post-title">
+                The Season 2 finale was the best music competition TV moment I've seen in years
+              </div>
+              <div class="reddit-post-meta">
+                <span>⬆ 4,210</span>
+                <span>💬 387 comments</span>
+                <span>6h ago</span>
+              </div>
+            </div>
+
+            <!-- M. NEWS CARD -->
+            <div class="news-card">
+              <div class="news-card-title">
+                'Tribute: Battle of the Bands' Dominates Streaming Charts — Third Week Running
+              </div>
+              <div class="news-card-meta">
+                <span class="news-card-source">Variety</span>
+                <span>3h ago</span>
+                <!-- H. HOVER POPUP trigger on source chips -->
+                <span class="src-chip" style="border-color:rgba(245,158,11,.4);color:var(--news);background:rgba(245,158,11,.08)"
+                      data-hover-popup='{"title":"Variety","desc":"Leading trade publication covering film, TV, and streaming. High influence score for CUT/music-competition content.","tags":["Trade","KOL","Entertainment"]}'>
+                  📰 Variety
+                </span>
+              </div>
+              <div class="news-card-summary">
+                The competition reality show continues its record-breaking run on streaming,
+                with the season 2 finale drawing 4.2M viewers in its first 24 hours…
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /panel-demo2 -->
+
+
+        <!-- ── PANEL 3 WIDE — KOL Radar (full-width) ──────────────────── -->
+        <div class="platform-panel panel-wide" id="panel-kol">
+          <div class="panel-header">
+            <span class="panel-icon">👥</span>
+            <span class="panel-title-name kl">KOL Radar</span>
+            <div class="panel-tabs">
+              <button class="ptab active">Grid</button>
+              <button class="ptab">Feed</button>
+            </div>
+            <div class="panel-spacer"></div>
+            <button class="cs-btn sm teal" id="addKolBtn">＋ Add KOL</button>
+            <button class="info-btn" data-info-key="kol" title="KOL Radar info">ℹ</button>
+          </div>
+
+          <!-- Filter row with source chips -->
+          <div class="panel-filter-row">
+            <div class="filter-row">
+              <button class="cs-chip active">All</button>
+              <button class="cs-chip">Trade</button>
+              <button class="cs-chip">Blog</button>
+              <button class="cs-chip">Podcast</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- M. KOL TAG grid -->
+            <div class="filter-row flex-wrap gap-6" id="kolTagContainer">
+              <span class="kol-tag">Variety <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">Deadline <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">THR <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">IndieWire <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">TVLine <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">AV Club <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">Collider <button class="kol-remove" title="Remove">✕</button></span>
+              <span class="kol-tag">Screen Rant <button class="kol-remove" title="Remove">✕</button></span>
+            </div>
+
+            <!-- KPI row -->
+            <div class="kpi-grid" style="margin-top:10px">
+              <div class="kpi-card">
+                <span class="kpi-label">KOLs Tracked</span>
+                <span class="kpi-value">10</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-label">Coverage</span>
+                <span class="kpi-value">8/10</span>
+                <span class="kpi-delta pos">↑ 2 new</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-label">Avg Sentiment</span>
+                <span class="kpi-value kpi-delta pos">+0.74</span>
+              </div>
+              <div class="kpi-card">
+                <span class="kpi-label">Hot Outlets</span>
+                <span class="kpi-value">Variety</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ── PANEL 4 MEGA — Cross-Platform Intelligence ─────────────── -->
+        <div class="platform-panel panel-mega" id="panel-intel">
+          <div class="panel-header">
+            <span class="panel-icon">🌐</span>
+            <span class="panel-title-name cx">Cross-Platform Intelligence</span>
+            <div class="panel-spacer"></div>
+            <button class="info-btn" data-info-key="intel" title="Intelligence panel info">ℹ</button>
+          </div>
+
+          <div class="panel-body no-pad" style="overflow:hidden">
+            <div class="panel-3col" style="height:100%">
+
+              <!-- Col 1: Headlines -->
+              <div style="display:flex;flex-direction:column;overflow:hidden">
+                <div class="panel-filter-row" style="border-bottom:1px solid var(--border)">
+                  <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">📰 Headlines</span>
+                </div>
+                <div class="panel-body" style="flex:1">
+                  <div class="news-card">
+                    <div class="news-card-title">'Tribute' Finale Breaks Streaming Record</div>
+                    <div class="news-card-meta"><span class="news-card-source">Deadline</span><span>1h ago</span></div>
+                  </div>
+                  <div class="news-card">
+                    <div class="news-card-title">Review: Season 2 Delivers on Every Front</div>
+                    <div class="news-card-meta"><span class="news-card-source">IndieWire</span><span>4h ago</span></div>
+                  </div>
+                  <div class="news-card">
+                    <div class="news-card-title">Why 'Tribute' Is TV's Best Kept Secret</div>
+                    <div class="news-card-meta"><span class="news-card-source">AV Club</span><span>12h ago</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Col 2: Source Breakdown -->
+              <div style="display:flex;flex-direction:column;overflow:hidden">
+                <div class="panel-filter-row" style="border-bottom:1px solid var(--border)">
+                  <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">📊 Source Breakdown</span>
+                </div>
+                <div class="panel-body" style="flex:1">
+                  <div class="bar-row"><span class="bar-label">Twitter</span><div class="bar-track"><div class="bar-fill" style="width:90%;background:var(--twitter)"></div></div><span class="bar-value">12.4K</span></div>
+                  <div class="bar-row"><span class="bar-label">Reddit</span><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--reddit)"></div></div><span class="bar-value">8.1K</span></div>
+                  <div class="bar-row"><span class="bar-label">Google</span><div class="bar-track"><div class="bar-fill positive" style="width:78%"></div></div><span class="bar-value">94</span></div>
+                  <div class="bar-row"><span class="bar-label">KOLs</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--kol)"></div></div><span class="bar-value">8/10</span></div>
+                  <div class="bar-row"><span class="bar-label">News</span><div class="bar-track"><div class="bar-fill warm" style="width:55%"></div></div><span class="bar-value">24</span></div>
+                  <!-- Momentum with math tooltip -->
+                  <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:8px;border:1px solid var(--border2)">
+                    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">
+                      Momentum Score <span class="math-tooltip" data-math="momentum_score">ℹ</span>
+                    </div>
+                    <div style="font-size:22px;font-weight:700;color:var(--accent)">847</div>
+                    <div style="font-size:11px;color:var(--positive);margin-top:2px">↑ 38% vs last week</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Col 3: KOL Coverage -->
+              <div style="display:flex;flex-direction:column;overflow:hidden">
+                <div class="panel-filter-row" style="border-bottom:1px solid var(--border)">
+                  <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">👥 KOL Coverage</span>
+                </div>
+                <div class="panel-body" style="flex:1">
+                  <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                      <span style="font-size:12px;font-weight:600;color:var(--news);flex:1">Variety</span>
+                      <span class="score-badge high">★ Covered</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                      <span style="font-size:12px;font-weight:600;color:var(--news);flex:1">Deadline</span>
+                      <span class="score-badge high">★ Covered</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+                      <span style="font-size:12px;color:var(--muted);flex:1">THR</span>
+                      <span class="score-badge low">No coverage</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
+                      <span style="font-size:12px;font-weight:600;color:var(--news);flex:1">IndieWire</span>
+                      <span class="score-badge medium">Partial</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /panel-3col -->
+          </div>
+        </div><!-- /panel-intel -->
+
+
+        <!-- ── PANEL 5 — History side panel demo (inline, collapsible) ── -->
+        <div class="platform-panel" id="panel-history" style="flex-direction:row">
+          <!-- R. HISTORY / SESSION PANEL -->
+          <div class="hist-panel" id="histPanel">
+            <div class="hist-header">
+              <span class="hist-header-label">Sessions</span>
+              <button class="hist-new-btn">New</button>
+              <button class="hist-collapse-btn" id="histCollapseBtn" title="Collapse">‹</button>
+            </div>
+            <div class="hist-body">
+              <div class="hist-item active">
+                <div class="hist-item-body">
+                  <div class="hist-item-title">Tribute: Battle of the Bands</div>
+                  <div class="hist-item-meta">
+                    <span>Today 14:32</span>
+                    <span class="hist-badge">Draft</span>
+                  </div>
+                </div>
+                <div class="hist-action-btns">
+                  <button class="hist-edit-btn"   title="Rename">✎</button>
+                  <button class="hist-delete-btn" title="Delete">✕</button>
+                </div>
+              </div>
+              <div class="hist-item">
+                <div class="hist-item-body">
+                  <div class="hist-item-title">CUT Channel S2 Analysis</div>
+                  <div class="hist-item-meta"><span>Yesterday</span></div>
+                </div>
+                <div class="hist-action-btns">
+                  <button class="hist-edit-btn"   title="Rename">✎</button>
+                  <button class="hist-delete-btn" title="Delete">✕</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main area beside history -->
+          <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+            <div class="panel-header">
+              <span class="panel-icon">📝</span>
+              <span class="panel-title-name ih">Ideation Area</span>
+            </div>
+            <div class="panel-body">
+              <!-- O. LOADING / ERROR / EMPTY STATES -->
+              <div class="cs-loading" id="demoLoading">
+                <div class="cs-spinner"></div>
+                Loading insights…
+              </div>
+              <div class="cs-error" id="demoError" style="display:none">
+                <span class="cs-error-icon">⚠</span>
+                Failed to connect to proxy. Make sure the proxy is running.
+              </div>
+              <div class="cs-empty" id="demoEmpty" style="display:none">
+                <span class="cs-empty-icon">🔍</span>
+                No results match your query. Try broadening your search.
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ── PANEL 6 — Feature / hypothesis cards ────────────────────── -->
+        <div class="platform-panel" id="panel-features">
+          <div class="panel-header">
+            <span class="panel-icon">🔬</span>
+            <span class="panel-title-name">Feature Analysis</span>
+            <div class="panel-spacer"></div>
+            <button class="info-btn" data-info-key="features" title="Feature panel info">ℹ</button>
+          </div>
+
+          <!-- Format bar / pill filter -->
+          <div class="fmt-bar">
+            <span class="fmt-bar-label">Format:</span>
+            <button class="fmt-btn active" style="--fc:#3b82f6">Series</button>
+            <button class="fmt-btn"        style="--fc:#f59e0b">Film</button>
+            <button class="fmt-btn"        style="--fc:#a78bfa">Doc</button>
+            <button class="fmt-btn-all">All</button>
+          </div>
+
+          <div class="panel-body">
+            <!-- M. FEATURE CARD -->
+            <div class="feature-card"
+                 data-hover-popup='{"title":"Hook Length","desc":"Duration of opening hook segment. Strong positive correlation with completion rate in 18-34 demo.","tags":["Duration","Engagement","Top Feature"]}'>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="flex:1">
+                  <div class="feature-card-name">Hook Length (0-30s)</div>
+                  <div class="feature-card-type">Temporal · Continuous</div>
+                </div>
+                <div class="feature-card-score">0.82</div>
+                <span class="score-badge high">High</span>
+              </div>
+              <div class="bar-track" style="margin-top:8px"><div class="bar-fill positive" style="width:82%"></div></div>
+            </div>
+
+            <!-- Hypothesis card -->
+            <div class="hyp-card" onclick="this.querySelector('.hyp-body').classList.toggle('open')">
+              <div class="hyp-header">
+                <div class="cat-badge" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#60a5fa">📈 Engagement</div>
+                <div class="hyp-title">Hook quality drives 3× completion rate lift</div>
+                <div class="hyp-tagline">A strong 30-second hook is the single biggest predictor of full-episode completion.</div>
+              </div>
+              <div class="hyp-meta">
+                <span class="hyp-tag">r = 0.82</span>
+                <span class="hyp-tag fmt" style="color:#3b82f6;border-color:#3b82f633;background:#3b82f60d">Series</span>
+              </div>
+              <div class="hyp-body">
+                <div class="hyp-brief">
+                  Across 140 CUT episodes, hook quality (rated by blind reviewers 1-10) correlates
+                  strongly with 7-day completion rate. Episodes with hooks scored ≥7 see 3× completion.
+                </div>
+                <div class="evidence-list">
+                  <div class="ev-item quant"><span class="ev-icon">📊</span>r=0.82, p&lt;0.001, n=140 episodes</div>
+                  <div class="ev-item qual"><span class="ev-icon">💬</span>"First 30 seconds determined whether I finished it" — audience survey</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div><!-- /panel-features -->
+
+      </div><!-- /panels-grid -->
+    </div><!-- /panels-scroll -->
+
+  </div><!-- /page-body -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       N. MODAL OVERLAY
+       ──────────────────────────────────────────────────────────────────
+       Open: CALLI.openModal('demoModal')
+       Close: CALLI.closeModal('demoModal') or click backdrop or Esc
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="demoModal">
+    <div class="modal">
+      <button class="modal-close">✕</button>
+      <div class="modal-title">Episode Details</div>
+      <div class="modal-section">
+        <div class="modal-section-title">Overview</div>
+        <p style="font-size:13px;color:var(--text-dim);line-height:1.6">
+          Season 2, Episode 8 — "The Final Showdown". Hook length 42s. Completion 91%.
+          Highest-performing episode across all KPIs this season.
+        </p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Key Metrics</div>
+        <div class="kpi-grid">
+          <div class="kpi-card"><span class="kpi-label">Views 7d</span><span class="kpi-value">4.2M</span></div>
+          <div class="kpi-card"><span class="kpi-label">Completion</span><span class="kpi-value kpi-delta pos">91%</span></div>
+          <div class="kpi-card"><span class="kpi-label">Sentiment</span><span class="kpi-value kpi-delta pos">+0.88</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button class="cs-btn" onclick="CALLI.closeModal('demoModal')">Close</button>
+        <button class="cs-btn primary">Open Full Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add KOL Modal -->
+  <div class="modal-overlay" id="addKolModal">
+    <div class="modal" style="max-width:420px">
+      <button class="modal-close">✕</button>
+      <div class="modal-title">Add KOL / Outlet</div>
+      <div class="modal-section">
+        <label class="cs-label">Name</label>
+        <input type="text" id="kolNameInput" class="cs-input" placeholder="e.g. Variety, AV Club, The Ringer">
+      </div>
+      <div class="modal-section">
+        <label class="cs-label">Handle (optional)</label>
+        <input type="text" id="kolHandleInput" class="cs-input" placeholder="@handle or URL">
+      </div>
+      <div class="modal-section">
+        <label class="cs-label">Type</label>
+        <select id="kolTypeInput" class="cs-select" style="width:100%">
+          <option value="trade">Trade Publication</option>
+          <option value="blog">Blog / Newsletter</option>
+          <option value="podcast">Podcast</option>
+          <option value="journalist">Journalist</option>
+          <option value="analyst">Analyst</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+        <button class="cs-btn" onclick="CALLI.closeModal('addKolModal')">Cancel</button>
+        <button class="cs-btn teal" id="saveKolBtn">Add KOL</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+
+<!-- Shared JS -->
+<script src="calli-system.js"></script>
+
+<script>
+/* ── PAGE-SPECIFIC CONFIG ─────────────────────────────────────────────── */
+
+// Info content for this dashboard's panels
+CALLI.INFO_CONTENT.analytics_panel = {
+  title: '📊 Analytics Panel',
+  body: `<p>Shows feature importance scores and engagement metrics for the selected dataset.</p>
+         <p><strong>Tabs:</strong> Switch between Chart and Table views.</p>
+         <p><strong>Filters:</strong> Filter by content format (Drama, Comedy, etc.).</p>
+         <p>Hover over <span class="math-tooltip" style="cursor:default">r</span> symbols for formula explanations.</p>`
+};
+CALLI.INFO_CONTENT.twitter = {
+  title: '🐦 Twitter / X Panel',
+  body: `<p>Real-time social mentions pulled via the Calli Proxy.</p>
+         <p><strong>Metrics:</strong> Mentions · Likes · Week-on-week delta · Sentiment score.</p>
+         <p><strong>Sentiment:</strong> 0–1 scale; >0.6 = positive, <0.4 = negative.</p>
+         <p>Hover cards show engagement context and topic tags.</p>`
+};
+CALLI.INFO_CONTENT.kol = {
+  title: '👥 KOL Radar',
+  body: `<p>Track Key Opinion Leaders and trade outlets relevant to your content.</p>
+         <p><strong>Add:</strong> Click ＋ Add KOL or type <code>track Variety</code> in Calliope.</p>
+         <p><strong>Remove:</strong> Click ✕ on a tag, or type <code>remove Variety</code>.</p>
+         <p>Coverage score = fraction of KOLs that have published about your query.</p>`
+};
+CALLI.INFO_CONTENT.intel = {
+  title: '🌐 Cross-Platform Intelligence',
+  body: `<p>Aggregated signal from all platforms in one view.</p>
+         <p><strong>Momentum Score</strong> = base social score boosted by multi-platform presence:</p>
+         <p><code>score × (1 + crossPlatforms × 0.6)</code></p>
+         <p>Higher cross-platform presence amplifies the base signal significantly.</p>`
+};
+CALLI.INFO_CONTENT.features = {
+  title: '🔬 Feature Analysis',
+  body: `<p>ML-derived feature importance scores (SHAP or Pearson r).</p>
+         <p>Click any hypothesis card to expand evidence.</p>
+         <p><strong>Score interpretation:</strong></p>
+         <p>≥0.7 = High · 0.4–0.7 = Medium · <0.4 = Low</p>
+         <p>Hover feature cards for detailed definitions and context.</p>`
+};
+
+
+/* ── CALLIOPE INIT ─────────────────────────────────────────────────── */
+CALLI.initCalliope({
+  inputSel:    '#calliopeInput',
+  btnSel:      '#calliopeBtn',
+  feedbackSel: '#calliope-feedback',
+  presetSel:   '.cmd-preset',
+  onQuery: async (query, showFeedback) => {
+    showFeedback(`✓ Searching: "${query}"`, 2500);
+    // TODO: route to specific panel refresh based on query intent
+    console.log('[Calliope] query:', query);
+  }
+});
+
+
+/* ── HISTORY PANEL COLLAPSE ────────────────────────────────────────── */
+document.getElementById('histCollapseBtn').addEventListener('click', () => {
+  const panel = document.getElementById('histPanel');
+  panel.classList.toggle('collapsed');
+  document.getElementById('histCollapseBtn').textContent =
+    panel.classList.contains('collapsed') ? '›' : '‹';
+});
+
+
+/* ── ADD KOL MODAL ─────────────────────────────────────────────────── */
+document.getElementById('addKolBtn').addEventListener('click', () => {
+  CALLI.openModal('addKolModal');
+});
+document.getElementById('saveKolBtn').addEventListener('click', async () => {
+  const name   = document.getElementById('kolNameInput').value.trim();
+  const handle = document.getElementById('kolHandleInput').value.trim();
+  const type   = document.getElementById('kolTypeInput').value;
+  if (!name) return;
+  try {
+    await CALLI.fetchProxy('/api/kol/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, handle, type, topics: [] })
+    });
+    CALLI.closeModal('addKolModal');
+    document.getElementById('kolNameInput').value   = '';
+    document.getElementById('kolHandleInput').value = '';
+    // Refresh KOL tags
+    document.dispatchEvent(new CustomEvent('calli:kol-updated'));
+  } catch (err) {
+    alert('Could not add KOL: ' + err.message);
+  }
+});
+
+
+/* ── KOL TAG REMOVE WIRING ─────────────────────────────────────────── */
+document.getElementById('kolTagContainer').addEventListener('click', e => {
+  if (e.target.classList.contains('kol-remove')) {
+    const tag  = e.target.closest('.kol-tag');
+    const name = tag.textContent.trim().replace('✕','').trim();
+    if (confirm(`Remove "${name}" from KOL list?`)) {
+      CALLI.fetchProxy('/api/kol/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name })
+      }).then(() => tag.remove()).catch(err => alert(err.message));
+    }
+  }
+});
+
+
+/* ── PANEL TAB HELPER ──────────────────────────────────────────────── */
+CALLI.switchTab = function(btn, targetId) {
+  const panel = btn.closest('.platform-panel');
+  panel.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  // Show/hide corresponding content divs
+  // Expects: each tab button data-panel-tab or positional convention
+  const contentIds = ['tab-chart','tab-table'];
+  contentIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (id === targetId) ? 'block' : 'none';
+  });
+};
+
+
+/* ── CHIP SINGLE-SELECT HELPER ─────────────────────────────────────── */
+CALLI.setChip = function(btn) {
+  const row = btn.closest('.filter-row, .panel-filter-row');
+  if (row) row.querySelectorAll('.cs-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+
+/* ── FORMAT BAR ────────────────────────────────────────────────────── */
+document.querySelectorAll('.fmt-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.fmt-bar').querySelectorAll('.fmt-btn,.fmt-btn-all')
+       .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+document.querySelectorAll('.fmt-btn-all').forEach(btn => {
+  btn.addEventListener('click', () => {
+    btn.closest('.fmt-bar').querySelectorAll('.fmt-btn,.fmt-btn-all')
+       .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+
+/* ── DEMO CHART (Chart.js) ─────────────────────────────────────────── */
+(function() {
+  const ctx = document.getElementById('demoChart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'Engagement',
+        data: [4200, 5800, 5100, 7200, 8900, 12400, 11200],
+        borderColor: '#a78bfa', backgroundColor: 'rgba(167,139,250,.12)',
+        tension: 0.4, fill: true, pointRadius: 3
+      },{
+        label: 'Mentions',
+        data: [1200, 2100, 1800, 3400, 4200, 6800, 5900],
+        borderColor: '#2dd4bf', backgroundColor: 'rgba(45,212,191,.08)',
+        tension: 0.4, fill: true, pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#7a7f9a', font: { size: 11 } } } },
+      scales: {
+        x: { grid: { color: 'rgba(45,49,85,.4)' }, ticks: { color: '#7a7f9a', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(45,49,85,.4)' }, ticks: { color: '#7a7f9a', font: { size: 11 } } }
+      }
+    }
+  });
+})();
+
+
+/* ── DEMO: simulate loading then empty state ───────────────────────── */
+setTimeout(() => {
+  document.getElementById('demoLoading').style.display = 'none';
+  document.getElementById('demoEmpty').style.display   = 'flex';
+}, 2000);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calli Feature Vault Universal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0F1729;
+            color: #E5E7EB;
+            line-height: 1.6;
+        }
+
+        .agent-interface {
+            background: linear-gradient(135deg, #1a2a4a 0%, #0f1729 100%);
+            border-bottom: 2px solid #3B82F6;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .agent-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F59E0B;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .agent-modes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-mode {
+            background-color: #1E2D4A;
+            border: 1px solid #3B82F6;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .agent-mode h3 {
+            color: #3B82F6;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-mode p {
+            color: #D1D5DB;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .pipeline-diagram {
+            background-color: #1E2D4A;
+            border: 1px solid #F59E0B;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .pipeline-step {
+            background-color: #0F1729;
+            border: 2px solid #3B82F6;
+            border-radius: 6px;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #F59E0B;
+            min-width: 120px;
+        }
+
+        .pipeline-arrow {
+            color: #3B82F6;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .agent-note {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3B82F6;
+            padding: 1rem;
+            border-radius: 4px;
+            color: #BCD6FF;
+            font-size: 0.9rem;
+        }
+
+        .stats-bar {
+            background-color: #1E2D4A;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            border-bottom: 1px solid #3B82F6;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #F59E0B;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #9CA3AF;
+            margin-top: 0.25rem;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #F59E0B;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #3B82F6;
+            padding-bottom: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: #D1D5DB;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            border-left: 2px solid transparent;
+            padding-left: 0.8rem;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            color: #3B82F6;
+            border-left-color: #3B82F6;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .search-filter {
+            background-color: #1E2D4A;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1rem;
+            background-color: #0F1729;
+            border: 1px solid #3B82F6;
+            border-radius: 6px;
+            color: #E5E7EB;
+            font-size: 0.95rem;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background-color: #0F1729;
+            border: 1px solid #3B82F6;
+            border-radius: 6px;
+            color: #3B82F6;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: #3B82F6;
+            color: #0F1729;
+        }
+
+        .filter-btn:hover {
+            background-color: #3B82F6;
+            color: #0F1729;
+        }
+
+        .modality-section {
+            margin-bottom: 4rem;
+        }
+
+        .modality-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #F59E0B;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3B82F6;
+        }
+
+        .modality-num {
+            color: #3B82F6;
+            font-size: 1.3rem;
+        }
+
+        .modality-description {
+            color: #9CA3AF;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background-color: #1E2D4A;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: #3B82F6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .feature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .feature-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #E5E7EB;
+            flex: 1;
+        }
+
+        .feature-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #9CA3AF;
+            display: block;
+            margin-top: 0.25rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+        }
+
+        .badge-implemented {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            border: 1px solid #3B82F6;
+        }
+
+        .badge-proposed {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 1px solid #F59E0B;
+        }
+
+        .feature-description {
+            color: #D1D5DB;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .feature-section {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #374151;
+        }
+
+        .feature-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #F59E0B;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-content {
+            color: #9CA3AF;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .example-value {
+            background-color: #0F1729;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-top: 0.3rem;
+        }
+
+        .genre-examples {
+            background-color: rgba(245, 158, 11, 0.05);
+            padding: 0.8rem;
+            border-left: 3px solid #F59E0B;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .genre-example {
+            font-size: 0.8rem;
+            color: #D1D5DB;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .genre-example:last-child {
+            margin-bottom: 0;
+        }
+
+        .genre-example-label {
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+        .genre-map-section {
+            background-color: #1E2D4A;
+            border: 1px solid #3B82F6;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .genre-map-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #F59E0B;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .genre-matrix {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .matrix-table th, .matrix-table td {
+            padding: 0.6rem;
+            text-align: center;
+            border: 1px solid #374151;
+        }
+
+        .matrix-table th {
+            background-color: #0F1729;
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+        .matrix-table td:first-child {
+            text-align: left;
+            background-color: #0F1729;
+            color: #D1D5DB;
+            font-weight: 600;
+            min-width: 150px;
+        }
+
+        .matrix-critical {
+            background-color: rgba(245, 158, 11, 0.3);
+            color: #FCD34D;
+            font-weight: 600;
+        }
+
+        .matrix-important {
+            background-color: rgba(59, 130, 246, 0.3);
+            color: #93C5FD;
+        }
+
+        .matrix-supporting {
+            background-color: rgba(107, 114, 128, 0.2);
+            color: #9CA3AF;
+        }
+
+        .footer {
+            background-color: #1E2D4A;
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            border-top: 1px solid #3B82F6;
+            color: #9CA3AF;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+
+            .agent-modes {
+                grid-template-columns: 1fr;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="agent-interface">
+        <div class="agent-container">
+            <div class="agent-title">How the Calli Agent Uses These Features</div>
+
+            <div class="agent-modes">
+                <div class="agent-mode">
+                    <h3>Mode 1: Existing Video Analysis</h3>
+                    <p><strong>User Input:</strong> Video URL, title, or description of existing content</p>
+                    <p><strong>Agent Process:</strong></p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 0.8rem;">
+                        <li>Extract all applicable features from the video</li>
+                        <li>Compute correlations against outcome metrics (views, retention, engagement, CPM, box office)</li>
+                        <li>Generate causal hypotheses about performance drivers</li>
+                        <li>Report findings with evidence and confidence scores</li>
+                    </ul>
+                    <p><strong>Output:</strong> Feature breakdown, performance analysis, and actionable insights</p>
+                </div>
+
+                <div class="agent-mode">
+                    <h3>Mode 2: Prospective Brief Analysis</h3>
+                    <p><strong>User Input:</strong> Intended video description and story/script outline</p>
+                    <p><strong>Agent Process:</strong></p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 0.8rem;">
+                        <li>Map brief against the feature space</li>
+                        <li>Retrieve pre-training priors from billions of comparable content</li>
+                        <li>Predict likely performance drivers for the concept</li>
+                        <li>Recommend creative adjustments before production</li>
+                    </ul>
+                    <p><strong>Output:</strong> Feature recommendations, risk analysis, optimization suggestions</p>
+                </div>
+            </div>
+
+            <div class="pipeline-diagram">
+                <div style="color: #9CA3AF; margin-bottom: 1.5rem; font-weight: 600;">Agent Pipeline Architecture</div>
+                <div class="pipeline-flow">
+                    <div class="pipeline-step">BRIEF / DESCRIPTION</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">FEATURE EXTRACTION</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">CORRELATION ENGINE</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">CAUSAL HYPOTHESES</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">RECOMMENDATIONS</div>
+                </div>
+                <div class="agent-note">
+                    <strong>Note:</strong> Each feature in this vault is a callable tool in the agent's toolchain. The agent autonomously decides which tools to run based on content type, genre, and context.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">250+</div>
+            <div class="stat-label">Features</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">13</div>
+            <div class="stat-label">Modalities</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">15+</div>
+            <div class="stat-label">Genres Covered</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Genre-Agnostic</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar scrollbar-hide">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Modalities</div>
+                <a href="#modality-1" class="sidebar-link">Visual Entry Point</a>
+                <a href="#modality-2" class="sidebar-link">Textual Framing</a>
+                <a href="#modality-3" class="sidebar-link">Cinematography</a>
+                <a href="#modality-4" class="sidebar-link">Script & Dialogue</a>
+                <a href="#modality-5" class="sidebar-link">Audio & Sound Design</a>
+                <a href="#modality-6" class="sidebar-link">Narrative Structure</a>
+                <a href="#modality-7" class="sidebar-link">Genre Intelligence</a>
+                <a href="#modality-8" class="sidebar-link">Emotional Architecture</a>
+                <a href="#modality-9" class="sidebar-link">Character & Arc</a>
+                <a href="#modality-10" class="sidebar-link">World-Building</a>
+                <a href="#modality-11" class="sidebar-link">Pacing & Rhythm</a>
+                <a href="#modality-12" class="sidebar-link">Cultural & Public Signal</a>
+                <a href="#modality-13" class="sidebar-link">Cross-Modal Synthesis</a>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Reference</div>
+                <a href="#genre-map" class="sidebar-link">Genre Coverage Map</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="search-filter">
+                <input type="text" class="search-box" id="searchBox" placeholder="Search features...">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="implemented">Implemented</button>
+                <button class="filter-btn" data-filter="proposed">Proposed</button>
+            </div>
+
+            <!-- MODALITY 1: VISUAL ENTRY POINT -->
+            <div class="modality-section" id="modality-1">
+                <h2 class="modality-header"><span class="modality-num">1</span> Visual Entry Point</h2>
+                <p class="modality-description">Thumbnail, poster, cover art, or title card analysis. Universal features applicable to YouTube thumbnails, movie posters, streaming covers, and any visual-first introduction to content.</p>
+
+                <div class="features-grid" data-modality="1">
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Face Count</div>
+                                <div class="feature-code">face_count</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Number of human faces prominently visible in the visual.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Face detection using deep learning (OpenCV, MediaPipe)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0, 1, 2-4, 5+</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Single face = intrigue; multiple faces = ensemble credibility</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Documentary:</span> Single expert/subject establishes authority</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy Ensemble:</span> 4-6 faces promises group dynamics and humor</div>
+                                <div class="genre-example"><span class="genre-example-label">Horror:</span> Isolated single face creates dread</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Contrast Percentile</div>
+                                <div class="feature-code">contrast_percentile</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Visual contrast between foreground and background (0-100 scale).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">CLAHE contrast calculation across ROI</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">15, 42, 75, 95</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High contrast improves thumbnail legibility at small sizes (YouTube 168x94px)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Action:</span> High contrast (80+) emphasizes protagonist against explosion/battle</div>
+                                <div class="genre-example"><span class="genre-example-label">Horror:</span> Low contrast (20-40) creates fog/obscurity—what can't you see?</div>
+                                <div class="genre-example"><span class="genre-example-label">Romance:</span> Medium contrast (50-65) balances softness with legibility</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Saliency Entropy</div>
+                                <div class="feature-code">saliency_entropy</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">How distributed or concentrated is visual attention. Low entropy = single focal point; high entropy = scattered attention.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Saliency map generation + entropy calculation</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">1.2, 2.8, 4.5, 6.7</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Low entropy (clear focal point) drives faster cognitive processing</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Thriller:</span> Low entropy (1-2) isolates suspect/victim—where is the danger?</div>
+                                <div class="genre-example"><span class="genre-example-label">Sci-Fi Spectacle:</span> Higher entropy (5-6) spreads attention across alien landscape</div>
+                                <div class="genre-example"><span class="genre-example-label">Character Drama:</span> Very low entropy (0.8-1.5) focuses on face and emotion</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Edge Density</div>
+                                <div class="feature-code">edge_density</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Proportion of pixels that are edges (lines, boundaries, transitions).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Canny edge detection + pixel ratio</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">8%, 15%, 28%, 42%</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Moderate edge density (15-25%) signals visual clarity; too high = chaos</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Animation:</span> High edge density (35-40%) from bold linework and character shapes</div>
+                                <div class="genre-example"><span class="genre-example-label">Minimalist Drama:</span> Low density (5-10%) from soft, diffused lighting</div>
+                                <div class="genre-example"><span class="genre-example-label">Action:</span> High density (25-35%) from multiple elements (weapons, explosions, figures)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Laplacian Variance</div>
+                                <div class="feature-code">laplacian_var</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Measure of image sharpness and focus. High = sharp and in-focus; low = blurry or soft-focused.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Laplacian kernel convolution + variance across image</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">50, 200, 800, 2500</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Balanced sharpness (400-1200) indicates professional production value</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Documentary:</span> High sharpness (1500+) signals credibility and clarity</div>
+                                <div class="genre-example"><span class="genre-example-label">Indie Romance:</span> Soft focus (200-600) creates atmospheric beauty</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Film:</span> Intentional selective focus (medium-high) guides viewer's eye</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Contrast Ratio</div>
+                                <div class="feature-code">contrast_ratio</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Ratio of brightest to darkest pixels in the image.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Max pixel value / min pixel value in LAB space</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">2.1, 5.3, 12.8, 25.4</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High ratio (>8) improves visibility across devices and viewing contexts</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Horror:</span> Extreme ratio (15+) with bright subject against pure black background = fear</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy:</span> Moderate ratio (5-8) prevents overwhelming the viewer</div>
+                                <div class="genre-example"><span class="genre-example-label">Family Film:</span> Lower ratio (3-6) creates accessibility and warmth</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Largest Face Percentage</div>
+                                <div class="feature-code">largest_face_pct</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Percentage of image occupied by the largest detected face.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Largest face bounding box area / total image area × 100</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">5%, 15%, 35%, 60%</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">25-45% face occupation balances intimacy and context. Too small = depersonalization; too large = claustrophobia</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Character Drama:</span> 40-55% face occupation emphasizes emotion and interiority</div>
+                                <div class="genre-example"><span class="genre-example-label">Epic Action:</span> 10-20% face, dominated by environment/scale</div>
+                                <div class="genre-example"><span class="genre-example-label">Thriller/Suspense:</span> 30-45% with ominous background = vulnerable protagonist</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Rule of Thirds Alignment</div>
+                                <div class="feature-code">rule_of_thirds_exp</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">How closely the main subject aligns with rule-of-thirds intersection points (composition principle).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Distance from subject center to nearest rule-of-thirds gridline (normalized)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.92, 0.78, 0.45, 0.12</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Higher alignment (>0.75) signals professional composition training</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Cinematic Drama:</span> High alignment (0.85+) creates formal, composed aesthetic</div>
+                                <div class="genre-example"><span class="genre-example-label">Documentary:</span> Variable alignment reflects candid/observational capture</div>
+                                <div class="genre-example"><span class="genre-example-label">YouTube Vlog:</span> Center-focused (low alignment) mirrors selfie/direct address norm</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">LAB Warmth</div>
+                                <div class="feature-code">lab_warmth</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Average warmth/coolness in LAB color space. Positive = warm (red/orange/yellow); negative = cool (blue/green).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Mean a-channel value (LAB) across image</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">-15, -2, 8, 25</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Warm palettes (5-25) signal emotion, energy, comfort; cool palettes (-15 to -5) signal tension, isolation, technology</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Romance/Comedy:</span> Warm (15-30) = accessibility and intimacy</div>
+                                <div class="genre-example"><span class="genre-example-label">Sci-Fi/Thriller:</span> Cool (-20 to -5) = otherness and danger</div>
+                                <div class="genre-example"><span class="genre-example-label">Holiday/Family:</span> Warm-golden (20-35) = nostalgia and togetherness</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Genre Convention Adherence Score</div>
+                                <div class="feature-code">genre_visual_convention_score</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does the visual signal its genre correctly? Measures alignment with audience expectations for visual genre markers.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Weighted classifier trained on genre-specific visual patterns; cross-entropy loss vs genre expectations</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.42, 0.71, 0.88, 0.96</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High adherence (0.80+) reduces friction between promise and delivery; misalignment causes viewer disappointment</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Horror:</span> Dark, tight framing, faces in shadow, ominous lighting = high adherence</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy:</span> Bright, open, colorful, characters grinning or in amusing poses = high adherence</div>
+                                <div class="genre-example"><span class="genre-example-label">Sci-Fi:</span> Futuristic tech, alien environments, cold color grading = high adherence</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Color Temperature as Genre Signal</div>
+                                <div class="feature-code">color_temperature_genre_alignment</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Kelvin temperature (warm to cool) analyzed as a genre expectation signal.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Color temperature estimation (2000K-8000K+) from RGB distribution</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">2500K, 4000K, 5600K, 7200K</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Warm (3000-4500K) for approachable; cool (6000K+) for otherworldly or threatening</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Romance/Family:</span> Warm golden (3500-4500K) = intimacy, comfort, belonging</div>
+                                <div class="genre-example"><span class="genre-example-label">Horror/Thriller:</span> Cool blue (6500-7500K) = dread, isolation, danger</div>
+                                <div class="genre-example"><span class="genre-example-label">Sci-Fi Prestige:</span> Neutral-cool (5600-6500K) = intelligence and otherness</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Silhouette Recognizability</div>
+                                <div class="feature-code">silhouette_character_recognizability</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Can key characters be identified from silhouette alone? (Star Wars principle: iconic silhouettes).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Edge extraction to pure silhouette; shape descriptor matching against known character silhouettes</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.15, 0.45, 0.72, 0.94</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High recognizability (0.75+) creates instant character identification and memorability</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Superhero/Action:</span> High (0.85+) = iconic costume silhouettes (cape, mask, armor)</div>
+                                <div class="genre-example"><span class="genre-example-label">Character Drama:</span> Lower (0.35-0.55) = subtlety and ordinariness</div>
+                                <div class="genre-example"><span class="genre-example-label">Animated Feature:</span> High (0.80+) = broad character shapes for animation clarity</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Motion Blur / Implied Action</div>
+                                <div class="feature-code">implied_motion_energy</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Static vs kinetic energy suggested by composition and blur patterns in still image.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Motion blur detection; directional gradient analysis; dynamic pose assessment</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.1 (static), 0.4 (moderate), 0.7 (dynamic), 0.95 (chaotic)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High motion energy (0.65+) signals action/excitement; low (0.1-0.3) signals contemplation/mystery</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Action/Sports:</span> High (0.75+) = velocity, collision, struggle</div>
+                                <div class="genre-example"><span class="genre-example-label">Psychological Thriller:</span> Very low (0.05-0.15) = stillness and unease</div>
+                                <div class="genre-example"><span class="genre-example-label">Adventure:</span> Medium (0.5-0.65) = readiness without chaos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Foreground-Background Tension</div>
+                                <div class="feature-code">compositional_depth_contrast</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Compositional contrast between subject and environment. Low = subject isolated; high = environmental storytelling.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Segmentation of foreground vs background; texture and saturation difference calculation</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.2, 0.5, 0.75, 0.95</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High tension (0.75+) creates visual interest and environmental narrative; low tension (0.1-0.3) focuses attention entirely on subject</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Epic/Spectacle:</span> High (0.80+) = protagonist against vast landscape</div>
+                                <div class="genre-example"><span class="genre-example-label">Thriller/Suspense:</span> Medium (0.5-0.65) = threat suggested by environment</div>
+                                <div class="genre-example"><span class="genre-example-label">Character Portrait:</span> Low (0.15-0.35) = soft, neutral background emphasizes face</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Typography Style as Genre Cue</div>
+                                <div class="feature-code">text_typography_genre_signal</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Font choice analysis: serif vs sans-serif, weight, style as genre indicators.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">OCR + font classification; serif/sans determination; weight and style detection</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">serif_classic, sans_bold, handwritten_indie, monospace_tech</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Font choice is often unconscious but powerful genre signal; mismatched fonts create cognitive dissonance</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Drama/Literary:</span> Serif (Garamond, Times) = gravitas, history, seriousness</div>
+                                <div class="genre-example"><span class="genre-example-label">Action/Sci-Fi:</span> Bold sans-serif = modernity, strength, confidence</div>
+                                <div class="genre-example"><span class="genre-example-label">Indie Romance:</span> Handwritten/script fonts = intimacy, handmade authenticity</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Cultural Specificity of Visual</div>
+                                <div class="feature-code">cultural_universality_index</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">How culturally universal vs niche is the visual? Universal imagery crosses borders; specific imagery targets narrower audiences.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Visual concept analysis; cultural symbol recognition; geographic/cultural metadata</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.25 (very specific), 0.55 (regional), 0.80 (broadly universal)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Universal imagery (0.75+) enables global reach; specific imagery builds passionate niche audiences but limits scale</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Global Action Blockbuster:</span> High universality (0.85+) = recognizable hero archetypes, global settings</div>
+                                <div class="genre-example"><span class="genre-example-label">Historical Drama:</span> Lower universality (0.45-0.65) = period costumes, regional architecture</div>
+                                <div class="genre-example"><span class="genre-example-label">Bollywood/Korean Cinema:</span> Culturally specific (0.30-0.50) = attracts diaspora and culture enthusiasts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODALITY 2: TEXTUAL FRAMING -->
+            <div class="modality-section" id="modality-2">
+                <h2 class="modality-header"><span class="modality-num">2</span> Textual Framing</h2>
+                <p class="modality-description">Title, logline, tagline, series title, episode title analysis. Applies to all text-based content promises: YouTube titles, IMDb descriptions, Netflix loglines, film festival submissions, episode names.</p>
+
+                <div class="features-grid" data-modality="2">
+                    <div class="feature-card" data-status="implemented">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Title Length</div>
+                                <div class="feature-code">title_length</div>
+                            </div>
+                            <span class="badge badge-implemented">Implemented</span>
+                        </div>
+                        <div class="feature-description">Character count of the primary title.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">String length in characters</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">5, 25, 65, 120</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">YouTube truncates titles at 60 chars on mobile; ideal: 40-50 chars for retention in feed</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Action Blockbuster:</span> Short, punchy (2-4 words, 10-25 chars) = "Avatar" "Inception" "Dunkirk"</div>
+                                <div class="genre-example"><span class="genre-example-label">Literary Drama:</span> Longer, poetic (4-8 words, 30-60 chars) = "The Remains of the Day"</div>
+                                <div class="genre-example"><span class="genre-example-label">YouTube Content:</span> Medium (30-55 chars) = room for curiosity hook without truncation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Genre Signal Strength in Title</div>
+                                <div class="feature-code">title_genre_clarity_score</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does the title alone convey the genre? High = title explicitly promises genre experience; low = title is ambiguous about genre.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Genre keyword matching; semantic similarity to genre-typical titles; classification confidence</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.18, 0.52, 0.81, 0.96</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High clarity (0.75+) attracts target audience; low clarity (0.2-0.4) requires compelling thumbnail/description to hook</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Horror - High Clarity:</span> "Insidious" "Sinister" "The Ring" = title promises dread</div>
+                                <div class="genre-example"><span class="genre-example-label">Drama - Lower Clarity:</span> "Moonlight" "Parasite" "Whiplash" = titles don't announce genre; requires knowledge</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy - Medium Clarity:</span> "Bridesmaids" "The Wedding Singer" = hints at humor without stating it</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Logline Clarity Score</div>
+                                <div class="feature-code">logline_clarity_index</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">For films/shows: protagonist + goal + obstacle clarity. Does the one-sentence description answer "Who? What do they want? What's in the way?"</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">NLP entity extraction (protagonist, goal, obstacle); presence scoring and coherence</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.35, 0.62, 0.84, 0.97</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High clarity (0.80+) = faster audience understanding = faster engagement = higher CTR on YouTube</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Action High Clarity:</span> "A cop must stop a terrorist bomb before it detonates" = Crystal clear</div>
+                                <div class="genre-example"><span class="genre-example-label">Experimental Drama Lower:</span> "A woman confronts the passage of time" = Oblique, poetic</div>
+                                <div class="genre-example"><span class="genre-example-label">Horror Clear:</span> "A family discovers their house is haunted" = Immediate stakes and threat</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Stakes Lexicon Density</div>
+                                <div class="feature-code">stakes_keyword_density</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Presence of words implying high stakes: death, last, final, origin, war, end, destiny, only, etc.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Keyword matching for 40+ stakes-implying terms; ratio to total words</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0%, 5%, 12%, 28%</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Higher density (10-25%) signals urgency and consequence; too high (30%+) reads as melodramatic</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Thriller High:</span> "The Last Stand" "Final Destination" = explicit stakes</div>
+                                <div class="genre-example"><span class="genre-example-label">Romance Low:</span> "When Harry Met Sally" = implied emotional stakes only</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Drama Moderate:</span> "Life or Death" "The Last Temptation" = thematic stakes</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Character Name as Title</div>
+                                <div class="feature-code">character_name_title_signal</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Boolean: is the title a single character name? (Signal of character-driven narrative)</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">NLP entity recognition; pattern matching against known character name patterns</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">True, False</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Character-named titles signal intimate character study; attracts audiences seeking strong character work</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Character Drama - True:</span> "Sylvia" "Oppenheimer" "Frida" = focus on individual interiority</div>
+                                <div class="genre-example"><span class="genre-example-label">Action - False:</span> "Die Hard" "Speed" "The Matrix" = focus on situation, not person</div>
+                                <div class="genre-example"><span class="genre-example-label">Biopic - Often True:</span> "Lincoln" "Milk" "Hidden Figures" = historical figure as centerpiece</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Question as Title</div>
+                                <div class="feature-code">interrogative_title_signal</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Boolean: does title pose a question? (Invites cognitive engagement and mystery)</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Regex pattern matching for question marks and interrogative structure</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">True, False</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Question titles create cognitive loop; audience wants to watch to answer the question = higher engagement draw</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Mystery/Thriller:</span> "Who Killed JonBenét?" "What Ever Happened to Baby Jane?" = intrigue engine</div>
+                                <div class="genre-example"><span class="genre-example-label">Documentary:</span> "Why We Fight" "How to Survive a Plague?" = inquiry-driven</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy:</span> Rare; "Harold & Kumar Go to White Castle" not a question</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Intertextual Reference Density</div>
+                                <div class="feature-code">intertextual_allusion_count</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does the title allude to existing works, mythology, literature, or cultural touchstones?</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Semantic matching against database of 100k+ cultural references; similarity scoring</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0, 1, 3, 5+</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">1-2 references attracts educated audiences and prestige positioning; too many (3+) can read as derivative</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Literary/Prestige Drama:</span> High allusions = "Mulholland Drive" (David Lynch / street name / lost dreams)</div>
+                                <div class="genre-example"><span class="genre-example-label">Superhero/IP:</span> Zero allusions = original character titles or simple descriptors</div>
+                                <div class="genre-example"><span class="genre-example-label">Indie Comedy:</span> Medium = playful subversions of known titles/tropes</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Sequel/Franchise Signal</div>
+                                <div class="feature-code">sequel_franchise_explicit_marker</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does the title explicitly signal franchise status? (Numbered entries, subtitles, "Returns," "Reloaded," etc.)</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Regex for Roman numerals, Arabic numerals, franchise keywords; pattern recognition</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">no_signal, weak_signal, strong_signal</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Strong franchise signal attracts existing fans; weak signal (unmarked sequel) can confuse new audiences</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Action Franchise:</span> Strong = "Die Hard 5: A Good Day to Die Hard" = numbered, subtitled</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Drama:</span> Often weak = "Buster Scruggs" (standalone despite anthology context)</div>
+                                <div class="genre-example"><span class="genre-example-label">Marvel Cinematic:</span> Strong = full numbering and subtitle system</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Promise-Premise Gap</div>
+                                <div class="feature-code">title_content_alignment_score</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does the title under- or over-promise relative to actual content? Gap = viewer disappointment.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Semantic analysis of title + full synopsis; divergence scoring</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">-0.35, -0.05, +0.02, +0.42</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Perfect alignment (±0.05) = best retention; gaps >±0.2 predict dissatisfaction and low reviews</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Bait-and-Switch Horror:</span> Intentional gap = "A Babysitter's Guide to Monster Hunting" (comedy, not horror)</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Thriller:</span> Close alignment = title and content work in harmony</div>
+                                <div class="genre-example"><span class="genre-example-label">Cult Film:</span> Large gap acceptable = "Rubber" (about killer tire) subverts expectations</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Irony Detection in Title</div>
+                                <div class="feature-code">irony_subversion_signal</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does title subvert expectations through irony, contradiction, or unexpected pairing?</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Contradiction detection in title semantics; sentiment inversion; expectation-subversion patterns</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">no_irony, subtle, obvious</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Subtle irony (0.4-0.6) attracts sophisticated audiences; obvious irony can read as gimmicky</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Dark Comedy High Irony:</span> "The Death of Stalin" (comedic treatment of tragedy)</div>
+                                <div class="genre-example"><span class="genre-example-label">Thriller Subtle:</span> "Happy Death Day" (title pairs joy + death)</div>
+                                <div class="genre-example"><span class="genre-example-label">Family Film - None:</span> Straightforward titles = "Finding Nemo" directly describes content</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODALITY 3: CINEMATOGRAPHY & VISUAL LANGUAGE (sample features) -->
+            <div class="modality-section" id="modality-3">
+                <h2 class="modality-header"><span class="modality-num">3</span> Cinematography & Visual Language</h2>
+                <p class="modality-description">Frame-by-frame and scene-level analysis. Covers lens choice, color grading, shot composition, camera movement, depth of field, lighting mood, VFX, aspect ratio, and visual storytelling techniques.</p>
+
+                <div class="features-grid" data-modality="3">
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Production Value Tier</div>
+                                <div class="feature-code">production_budget_tier</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Estimated production tier from lens quality, set dressing, VFX presence, and general polish.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Multi-factor assessment: lens aberration patterns, set complexity, color grading sophistication, VFX density</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">ultra_low, indie, mid, prestige, blockbuster</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Perceived production value = perceived legitimacy and investment = trust signal for audience</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Blockbuster Action:</span> Blockbuster tier = IMAX cameras, crane rigs, 200+ VFX shots</div>
+                                <div class="genre-example"><span class="genre-example-label">Indie Horror:</span> Ultra-low tier = phone cameras, practical effects, gritty aesthetic = authenticity</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Drama:</span> Prestige tier = sophisticated cinematography without spectacle</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Color Grading Aesthetic</div>
+                                <div class="feature-code">color_grade_style_classification</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Dominant color grading style: teal-orange, desaturated, high-key, monochrome, neon noir, warm nostalgia, etc.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Color distribution analysis; dominant hue detection; saturation and brightness profiling</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">teal_orange, desaturated, high_key, monochrome, neon_noir, warm, cool</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Consistent color grading creates visual brand; distinctive palettes are memorable</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Thriller/Prestige:</span> Desaturated cool = tension, authenticity, seriousness</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy:</span> High-key warm = approachable, fun, energy</div>
+                                <div class="genre-example"><span class="genre-example-label">Cyberpunk/Sci-Fi:</span> Neon noir = future-shock, danger, allure</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Shot Type Distribution</div>
+                                <div class="feature-code">shot_composition_distribution</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Ratio of wide establishing / medium / close-up / extreme CU / POV shots across runtime.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Frame segmentation; object detection; focal length estimation from visual information</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">25% wide, 35% medium, 25% CU, 15% extreme CU</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High close-up ratio = intimacy/emotion; high wide ratio = spectacle/scale; balanced = dynamic storytelling</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Intimate Drama:</span> 40% CU + extreme CU = focus on face and emotion</div>
+                                <div class="genre-example"><span class="genre-example-label">Landscape Epic:</span> 50% wide, 30% medium = world > character</div>
+                                <div class="genre-example"><span class="genre-example-label">Action:</span> Balanced across all types for spatial clarity and impact</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Camera Movement Grammar</div>
+                                <div class="feature-code">camera_movement_classification</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Dominant camera movement style: static authority, handheld intimacy, crane/drone spectacle, steadicam pursuit, pan/tilt, etc.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Optical flow analysis; motion vector calculation; movement pattern classification</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">static, handheld, steadicam, crane, pan/tilt, dolly_in/out</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Movement creates kinetic energy; static creates authority; handheld creates immediacy</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Found Footage Horror:</span> Handheld = immediacy and terror</div>
+                                <div class="genre-example"><span class="genre-example-label">Prestige Drama:</span> Static + slow dolly = composed formalism</div>
+                                <div class="genre-example"><span class="genre-example-label">Action/Sci-Fi:</span> Crane/drone = spectacle and world-scale</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Aspect Ratio</div>
+                                <div class="feature-code">aspect_ratio_classification</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Detected aspect ratio: 4:3 (intimacy), 16:9 (modern broadcast), 2.39:1 (cinematic scope), 9:16 (vertical/mobile-first).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Frame geometry analysis; aspect ratio calculation</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">4:3, 16:9, 2.39:1, 9:16</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Aspect ratio signals distribution channel and intended viewing context</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Theatrical Cinema:</span> 2.39:1 = widescreen spectacle</div>
+                                <div class="genre-example"><span class="genre-example-label">TV/Streaming Drama:</span> 16:9 = broadcast standard</div>
+                                <div class="genre-example"><span class="genre-example-label">YouTube/TikTok Content:</span> 9:16 = mobile-first native</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Lighting Mood Taxonomy</div>
+                                <div class="feature-code">lighting_mood_classification</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Dominant lighting approach: high-key comedy, chiaroscuro drama, naturalistic indie, magic hour romance, horror underlighting, etc.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Brightness histogram; shadow-to-highlight ratio; color temperature of key light</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">high_key, low_key, chiaroscuro, naturalistic, magic_hour, under_lit</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Lighting is invisible but crucial; wrong lighting undermines credibility immediately</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Comedy:</span> High-key bright = accessibility and lightness</div>
+                                <div class="genre-example"><span class="genre-example-label">Thriller/Noir:</span> Chiaroscuro = danger lurking in shadows</div>
+                                <div class="genre-example"><span class="genre-example-label">Romance:</span> Magic hour warm = intimacy and beauty</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Depth of Field Intentionality</div>
+                                <div class="feature-code">focus_dof_strategy</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Shallow DoF (focus on character interiority) vs deep DoF (environmental context) strategy and consistency.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Blur map calculation; in-focus region segmentation; focus tracking across shots</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">shallow_selective, medium_contextual, deep_environmental</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Intentional DoF control signals cinematographic sophistication; random DoF signals amateurism</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Character Drama:</span> Shallow DoF = isolation and interiority focus</div>
+                                <div class="genre-example"><span class="genre-example-label">World-Building (Sci-Fi/Fantasy):</span> Deep DoF = environment tells the story</div>
+                                <div class="genre-example"><span class="genre-example-label">Action:</span> Deep DoF = spatial clarity for action choreography</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Genre Visual Grammar Adherence</div>
+                                <div class="feature-code">genre_visual_convention_adherence</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Does cinematography follow genre visual conventions? Horror: under-lit, confined; sci-fi: wide/cold; romance: soft/warm; etc.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Multi-factor scoring: lighting, color grading, shot type distribution, movement style alignment to genre norms</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.35, 0.62, 0.81, 0.95</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High adherence (0.80+) meets audience visual expectations; deviation signals artistic boldness or tonal confusion</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Horror High Adherence:</span> Dim lighting, unsettling colors, tight framing</div>
+                                <div class="genre-example"><span class="genre-example-label">Elevated Horror Low Adherence:</span> Bright, beautiful cinematography subverts genre</div>
+                                <div class="genre-example"><span class="genre-example-label">Comedy High Adherence:</span> Bright, open, dynamic camera movement</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODALITY 4: SCRIPT & DIALOGUE (sample features) -->
+            <div class="modality-section" id="modality-4">
+                <h2 class="modality-header"><span class="modality-num">4</span> Script & Dialogue</h2>
+                <p class="modality-description">Dialogue-to-action ratio, exposition density, subtext index, character voice distinctiveness, humor density, conflict escalation, vocabulary specificity, moral dilemmas.</p>
+
+                <div class="features-grid" data-modality="4">
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Dialogue-to-Action Ratio</div>
+                                <div class="feature-code">dialogue_action_runtime_ratio</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">What proportion of runtime is people talking vs doing? High = talk-driven (drama); low = action-driven (action films).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Speech detection; action sequence identification; percentage of runtime in each state</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">30% dialogue, 50% dialogue, 75% dialogue, 90% dialogue</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Genre-dependent ideal; mismatched ratio signals wrong expectations</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Character Drama:</span> 70-85% dialogue = intimacy through conversation</div>
+                                <div class="genre-example"><span class="genre-example-label">Action Blockbuster:</span> 25-40% dialogue = spectacle dominates</div>
+                                <div class="genre-example"><span class="genre-example-label">Thriller:</span> 45-60% dialogue = balanced exposition and action</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Exposition Density</div>
+                                <div class="feature-code">explicit_exposition_percentage</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Proportion of dialogue that conveys necessary information vs natural character conversation. High = tell; low = show.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">NLP dialogue analysis; information-bearing vs natural speech detection; contextual dependency scoring</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">5%, 15%, 35%, 60%</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Lower exposition (5-15%) = sophisticated writing; higher (40%+) = clunky or genre-conventional (acceptable in action/sci-fi)</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Prestige Drama Low:</span> 8-12% = information revealed through action and implication</div>
+                                <div class="genre-example"><span class="genre-example-label">Sci-Fi High:</span> 30-45% = necessary worldbuilding exposition</div>
+                                <div class="genre-example"><span class="genre-example-label">Action Moderate:</span> 20-30% = quick exposition to keep plot moving</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Humor Density</div>
+                                <div class="feature-code">joke_punchline_frequency</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Jokes and punchlines per minute, and classification by type (observational, physical, absurdist, dark, timing-based).</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Punchline detection; joke structure recognition; humor type classification via NLP</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.2/min, 0.8/min, 2.1/min, 4.5/min</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">Genre-dependent; comedy sustains 2-4 jokes/min; drama 0-0.5/min; miscalibration = tonal discord</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Comedy High Density:</span> 2.5-4/min observational + physical humor</div>
+                                <div class="genre-example"><span class="genre-example-label">Dark Comedy Moderate:</span> 1-2/min dark/absurdist jokes</div>
+                                <div class="genre-example"><span class="genre-example-label">Drama Minimal:</span> 0-0.3/min, character humor only</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="feature-card" data-status="proposed">
+                        <div class="feature-header">
+                            <div>
+                                <div class="feature-name">Character Voice Distinctiveness</div>
+                                <div class="feature-code">character_dialogue_fingerprint_uniqueness</div>
+                            </div>
+                            <span class="badge badge-proposed">Proposed</span>
+                        </div>
+                        <div class="feature-description">Can you identify each speaker from dialogue alone? High = distinct character voices; low = generic dialogue.</div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Computation</div>
+                            <div class="section-content">Speaker identification by dialogue style; vocabulary uniqueness per character; speech pattern distinctiveness</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Example Values</div>
+                            <div class="example-value">0.25, 0.55, 0.78, 0.92</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="section-label">Performance Relevance</div>
+                            <div class="section-content">High distinctiveness (0.75+) = memorable characters and quotable dialogue</div>
+                        </div>
+
+                        <div class="feature-section">
+                            <div class="genre-examples">
+                                <div class="genre-example"><span class="genre-example-label">Tarantino Films High:</span> Each character has distinctive vocabulary and cadence</div>
+                                <div class="genre-example"><span class="genre-example-label">Generic Action Low:</span> All soldiers speak the same military shorthand</div>
+                                <div class="genre-example"><span class="genre-example-label">Ensemble Comedy High:</span> Each character has unique comedic voice</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Continue with remaining modalities (5-13) in summary form -->
+            <div class="modality-section" id="modality-5">
+                <h2 class="modality-header"><span class="modality-num">5</span> Audio & Sound Design</h2>
+                <p class="modality-description">Score genre, diegetic-to-non-diegetic ratio, leitmotif count, music-emotion sync, silence as tool, foley richness, voice acting quality, environmental audio.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features covering musical composition, sound design, voice direction, and audio narrative.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Click the "Audio & Sound Design" link in the sidebar to expand.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-6">
+                <h2 class="modality-header"><span class="modality-num">6</span> Narrative Structure</h2>
+                <p class="modality-description">Three-act adherence, Save the Cat beats, Hero's Journey, inciting incident timing, midpoint inversion, climax pacing, plot twist count, stakes escalation, resolution type.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ structural features covering story architecture across all formats.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Critical foundation for predicting engagement and retention.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-7">
+                <h2 class="modality-header"><span class="modality-num">7</span> Genre Intelligence</h2>
+                <p class="modality-description">Primary genre classification, genre blending, convention adherence, subversion intentionality, audience expectation fulfillment, tonal consistency, genre evolution signals.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features for multi-genre classification and cross-genre appeal estimation.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Covers 15+ major genres with nuanced sub-genre support.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-8">
+                <h2 class="modality-header"><span class="modality-num">8</span> Emotional Architecture</h2>
+                <p class="modality-description">Emotional valence trajectory across runtime, emotional range breadth, peak emotional moment timing, catharsis score, tension-release cycles, emotional surprise count.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features mapping the emotional journey and audience affective response.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Predicts viewer satisfaction and sharing likelihood.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-9">
+                <h2 class="modality-header"><span class="modality-num">9</span> Character & Arc</h2>
+                <p class="modality-description">Protagonist introduction speed, likeability score, agency, antagonist clarity and motivation, character arc completeness, ensemble balance, anti-hero quotient, power dynamics.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features for character development and interpersonal dynamics.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Strong character work is often the strongest predictor of audience attachment.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-10">
+                <h2 class="modality-header"><span class="modality-num">10</span> World-Building</h2>
+                <p class="modality-description">Setting establishment speed, lore density, visual vs expository worldbuilding, internal consistency, setting familiarity, production design distinctiveness, technology/magic system clarity.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features for immersive world design and environmental storytelling.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Critical for sci-fi, fantasy, and period pieces.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-11">
+                <h2 class="modality-header"><span class="modality-num">11</span> Pacing & Rhythm</h2>
+                <p class="modality-description">Average scene duration, edit frequency, narrative momentum, dead scene ratio, hook strength, mid-point tempo shift, climax pacing, runtime-to-content ratio, episode arc pacing.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features for temporal flow, rhythm, and momentum control.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Pacing mistakes are invisible until they kill retention; sophisticated pacing is invisible when it works.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-12">
+                <h2 class="modality-header"><span class="modality-num">12</span> Cultural & Public Signal</h2>
+                <p class="modality-description">Critical consensus score, audience vs critic divergence, cultural moment alignment, representation signal, pre-release buzz, controversy quotient, nostalgia activation, awards positioning.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>15+ features for cultural positioning, marketing resonance, and social conversation.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Correlates external factors (buzz, controversy, representation) with outcomes.</p>
+                </div>
+            </div>
+
+            <div class="modality-section" id="modality-13">
+                <h2 class="modality-header"><span class="modality-num">13</span> Cross-Modal Synthesis</h2>
+                <p class="modality-description">Genre promise coherence across modalities, emotional promise vs delivery, character-score alignment, visual-dialogue irony, tone consistency, multi-modal hook strength, climax convergence.</p>
+                <div style="text-align: center; color: #9CA3AF; padding: 2rem; background-color: #1E2D4A; border-radius: 8px;">
+                    <p>20+ features for multi-modal coherence and integrated storytelling.</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">The best works feel like all elements are designed in concert.</p>
+                </div>
+            </div>
+
+            <!-- GENRE COVERAGE MAP -->
+            <div class="genre-map-section" id="genre-map">
+                <h2 class="genre-map-title">Genre Feature Coverage Matrix</h2>
+                <p style="text-align: center; color: #9CA3AF; margin-bottom: 2rem;">Which features are critical (gold), important (blue), or supporting (grey) for each genre?</p>
+
+                <div class="genre-matrix">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>Feature Category</th>
+                                <th>Action</th>
+                                <th>Comedy</th>
+                                <th>Horror</th>
+                                <th>Sci-Fi</th>
+                                <th>Drama</th>
+                                <th>Romance</th>
+                                <th>Thriller</th>
+                                <th>Historical</th>
+                                <th>Documentary</th>
+                                <th>Animation</th>
+                                <th>Sports</th>
+                                <th>Family</th>
+                                <th>Prestige</th>
+                                <th>Musical</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Visual Entry Point</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Textual Framing</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                            </tr>
+                            <tr>
+                                <td>Cinematography</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Script & Dialogue</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Audio & Sound</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Narrative Structure</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Genre Intelligence</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Emotional Architecture</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Character & Arc</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                            </tr>
+                            <tr>
+                                <td>World-Building</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                            </tr>
+                            <tr>
+                                <td>Pacing & Rhythm</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                            <tr>
+                                <td>Cultural & Public</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-supporting">Support</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                            </tr>
+                            <tr>
+                                <td>Cross-Modal Sync</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-important">Important</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                                <td class="matrix-critical">Critical</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background-color: rgba(59, 130, 246, 0.1); border-left: 4px solid #3B82F6; border-radius: 4px;">
+                    <p style="color: #BCD6FF; font-size: 0.9rem;"><strong>How to read this matrix:</strong> Each cell indicates the priority level of a feature category for a given genre. <span style="color: #FCD34D; font-weight: 600;">Critical (Gold)</span> features are essential predictors of success; <span style="color: #93C5FD; font-weight: 600;">Important (Blue)</span> features are significant but not absolute; <span style="color: #9CA3AF; font-weight: 600;">Supporting (Grey)</span> features provide context but are not decision-making drivers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Calli Feature Vault Universal</strong> — An agent-driven content analysis system covering 250+ features across 13 modalities and 15+ genres.</p>
+        <p style="margin-top: 1rem; font-size: 0.85rem;">Each feature is a callable tool in the Calli Agent's toolchain. The agent autonomously decides which tools to invoke based on content type, brief, and intended outcomes.</p>
+        <p style="margin-top: 0.8rem; font-size: 0.85rem;">Last Updated: March 2026 | Universal Genre Coverage | All Video Types Supported</p>
+    </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('keyup', function(e) {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.feature-card');
+
+            cards.forEach(card => {
+                const name = card.querySelector('.feature-name').textContent.toLowerCase();
+                const description = card.querySelector('.feature-description').textContent.toLowerCase();
+                const code = card.querySelector('.feature-code').textContent.toLowerCase();
+
+                if (name.includes(query) || description.includes(query) || code.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+                const cards = document.querySelectorAll('.feature-card');
+
+                cards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else if (filter === 'implemented' && card.dataset.status === 'implemented') {
+                        card.style.display = 'block';
+                    } else if (filter === 'proposed' && card.dataset.status === 'proposed') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Sidebar active link tracking
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Highlight sidebar link on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.modality-section, .genre-map-section');
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

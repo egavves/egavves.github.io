@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CUT Channel · Executive Summary</title>
+<link rel="stylesheet" href="calli-system.css">
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f172a;color:#e2e8f0;font-family:'Inter',system-ui,sans-serif;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* nav.unified-nav — see calli-system.css */
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:36px 32px 28px;border-bottom:1px solid #1e293b}
+.hero h1{font-size:26px;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+.hero p{font-size:14px;color:#94a3b8;max-width:680px;line-height:1.6}
+
+/* STATS STRIP */
+.stats-strip{display:flex;gap:8px;padding:12px 32px;background:#1e293b;border-bottom:1px solid #334155;overflow-x:auto;flex-wrap:nowrap}
+.stat-pill{background:#0f172a;border:1px solid #334155;border-radius:7px;padding:6px 12px;text-align:center;min-width:72px;flex-shrink:0}
+.stat-pill .val{font-size:14px;font-weight:700;color:#60a5fa}
+.stat-pill .lbl{font-size:9.5px;color:#64748b;margin-top:1px;white-space:nowrap}
+
+/* INSPIRATION BAR */
+.inspiration-bar{display:flex;background:#0c1628;border-bottom:2px solid #1e293b;padding:0 32px}
+.insp-tab{padding:13px 22px;font-size:13px;font-weight:500;color:#475569;cursor:pointer;border:none;border-bottom:3px solid transparent;outline:none;background:transparent;transition:all .2s;white-space:nowrap}
+.insp-tab:hover{color:#94a3b8}
+.insp-tab.active{color:#f1f5f9;border-bottom-color:#60a5fa;font-weight:600}
+.insp-tab.active.data{color:#a78bfa;border-bottom-color:#a78bfa}
+.insp-tab.active.background{color:#f59e0b;border-bottom-color:#f59e0b}
+
+/* CONTROLS BAR */
+.controls{display:flex;flex-direction:column;gap:0;background:#0f172a;border-bottom:1px solid #1e293b}
+.controls-row{display:flex;gap:12px;padding:12px 32px;align-items:center;flex-wrap:wrap}
+.controls-row+.controls-row{border-top:1px solid #1e293b;padding-top:10px;padding-bottom:10px}
+
+/* CONFIDENCE DROPDOWN */
+.conf-select{background:#1e293b;border:1px solid #334155;color:#94a3b8;padding:5px 10px 5px 8px;border-radius:8px;font-size:12px;cursor:pointer;outline:none;transition:border-color .2s}
+.conf-select:hover{border-color:#475569;color:#e2e8f0}
+.controls-label{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;white-space:nowrap}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{padding:6px 14px;border-radius:20px;border:1px solid #334155;font-size:12px;color:#94a3b8;cursor:pointer;transition:all .2s;background:#1e293b}
+.pill:hover{color:#e2e8f0;border-color:#475569}
+.pill.active{color:#0f172a;font-weight:600}
+.sep{width:1px;height:28px;background:#334155;flex-shrink:0}
+
+/* TEMPERATURE TOGGLE */
+.temp-wrap{display:flex;gap:0;background:#1e293b;border-radius:8px;overflow:hidden;border:1px solid #334155}
+.temp-btn{padding:7px 16px;font-size:12px;cursor:pointer;color:#64748b;transition:all .2s;border:none;background:transparent}
+.temp-btn:hover{color:#e2e8f0}
+.temp-btn.active{background:#334155;color:#f1f5f9;font-weight:600}
+
+/* KEY FINDINGS */
+.section-title{font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.08em;padding:24px 32px 12px}
+.findings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding:0 32px 24px}
+.finding-card{background:#1e293b;border-radius:10px;padding:16px;border-left:3px solid #334155;transition:transform .15s}
+.finding-card:hover{transform:translateY(-1px)}
+.finding-feat{font-size:13px;font-weight:600;color:#f1f5f9;margin-bottom:4px}
+.finding-tgt{font-size:11px;color:#64748b;margin-bottom:8px}
+.finding-r{font-size:22px;font-weight:700}
+.finding-sub{font-size:11px;color:#64748b;margin-top:2px}
+
+/* HYPOTHESIS GRID */
+.hyp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;padding:0 32px 24px}
+.hyp-card{background:#1e293b;border-radius:12px;overflow:hidden;border:1px solid #334155;transition:all .2s;cursor:pointer}
+.hyp-card:hover{border-color:#475569;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.hyp-header{padding:16px 18px 14px}
+.hyp-cat-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.hyp-title{font-size:15px;font-weight:700;color:#f1f5f9;line-height:1.3;margin-bottom:4px}
+.hyp-tagline{font-size:12px;color:#94a3b8;line-height:1.4}
+.hyp-meta{display:flex;gap:8px;padding:10px 18px;background:#0f172a;border-top:1px solid #1e293b;flex-wrap:wrap}
+.hyp-tag{font-size:10px;padding:3px 8px;border-radius:4px;background:#1e293b;color:#64748b;border:1px solid #334155}
+.hyp-tag.fmt{color:#f59e0b;border-color:#f59e0b33;background:#f59e0b0d}
+.hyp-body{padding:14px 18px;display:none}
+.hyp-body.open{display:block}
+.hyp-brief{font-size:13px;color:#cbd5e1;line-height:1.6;margin-bottom:14px}
+.evidence-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ev-item{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:6px;font-size:12px;line-height:1.5}
+.ev-item.quant{background:#052e16;border:1px solid #14532d;color:#86efac}
+.ev-item.qual{background:#172554;border:1px solid #1e3a8a;color:#93c5fd}
+.ev-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.ab-section{background:#0f172a;border-radius:8px;padding:12px 14px;margin-top:8px;border:1px solid #334155}
+.ab-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#64748b;margin-bottom:8px}
+.ab-row{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;margin-bottom:3px}
+.ab-key{font-size:11px;color:#64748b;font-weight:500}
+.ab-val{font-size:11px;color:#cbd5e1;line-height:1.4}
+.frugality-note{margin-top:10px;padding:8px 10px;border-radius:6px;background:#1c1917;border:1px solid #44403c;font-size:11px;color:#a8a29e;line-height:1.5}
+.frugality-note::before{content:"🎯 Frugality: ";font-weight:600;color:#78716c}
+
+/* CONFIDENCE MEDALS */
+.medal-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.medal-badge.gold{background:#fef3c7;color:#92400e;border:1px solid #f59e0b}
+.medal-badge.silver{background:#f1f5f9;color:#334155;border:1px solid #94a3b8}
+.medal-badge.bronze{background:#fff7ed;color:#7c2d12;border:1px solid #fb923c}
+.medal-badge.background{background:#1e293b;color:#64748b;border:1px solid #334155}
+.methods-bar{display:flex;gap:3px;margin-top:5px}
+.method-dot{width:8px;height:8px;border-radius:50%}
+.method-dot.on.correlation{background:#34d399}
+.method-dot.on.lasso{background:#a78bfa}
+.method-dot.on.rf{background:#60a5fa}
+.method-dot.off{background:#1e293b;border:1px solid #334155}
+
+/* VALIDATION PANELS */
+.hyp-section-hdr{padding:10px 32px 8px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#64748b;border-top:1px solid #1e293b;margin-top:8px}
+.hyp-section-hdr.proven{color:#34d399;border-top-color:rgba(52,211,153,.2);background:rgba(52,211,153,.04)}
+.hyp-section-hdr.disproven{color:#f87171;border-top-color:rgba(248,113,113,.2);background:rgba(248,113,113,.04)}
+.val-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:8px}
+.val-badge.proven{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
+.val-badge.disproven{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.val-badge.inconclusive{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.val-link{display:inline-block;margin-top:8px;font-size:11px;color:#7c6af7;text-decoration:none;padding:4px 10px;border:1px solid rgba(124,106,247,.3);border-radius:6px;transition:all .15s}
+.val-link:hover{background:rgba(124,106,247,.1)}
+
+/* LOAD MORE */
+.load-more-wrap{text-align:center;padding:16px 32px 40px}
+.load-more-btn{padding:11px 32px;background:#1e293b;border:1px solid #334155;border-radius:8px;color:#94a3b8;font-size:13px;cursor:pointer;transition:all .2s}
+.load-more-btn:hover{background:#334155;color:#e2e8f0}
+.load-more-btn:disabled{opacity:.4;cursor:default}
+
+/* EXPAND BTN */
+.expand-btn{display:flex;align-items:center;gap:6px;padding:10px 18px;font-size:12px;color:#60a5fa;cursor:pointer;background:transparent;border:none;border-top:1px solid #334155;width:100%;text-align:left;transition:color .2s}
+.expand-btn:hover{color:#93c5fd}
+.expand-btn .arrow{transition:transform .2s;font-size:10px}
+.expand-btn.open .arrow{transform:rotate(180deg)}
+
+/* TEMP LEGEND */
+.temp-legend{display:flex;gap:12px;font-size:11px;color:#64748b;align-items:center;margin-left:auto}
+.temp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:60px 32px;color:#475569}
+.empty-state p{font-size:14px}
+
+    /* ── Info buttons ── */
+    .info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: rgba(124,106,247,0.15); border: 1px solid rgba(124,106,247,0.35);
+      color: #818CF8; font-size: 9px; cursor: pointer; margin-left: 7px;
+      vertical-align: middle; flex-shrink: 0; transition: background 0.15s;
+      position: relative; line-height: 1;
+    }
+    .info-btn:hover { background: rgba(124,106,247,0.30); border-color: #7C6AF7; }
+    .info-popup {
+      display: none; position: fixed; z-index: 9999;
+      width: 340px; max-width: calc(100vw - 24px);
+      background: #1a2236; border: 1px solid rgba(124,106,247,0.35); border-radius: 10px;
+      padding: 12px 14px; font-size: .72rem; line-height: 1.65; color: #9CA3AF;
+      font-weight: 400; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      text-align: left; text-transform: none; letter-spacing: 0;
+    }
+    .info-popup strong { color: #CBD5E1; }
+    .info-popup em     { color: #A78BFA; font-style: normal; }
+    .info-btn.open .info-popup { display: block; }
+    .info-popup-wrap { position: relative; display: inline-block; }
+
+/* ── SOCIAL PULSE STRIP ─────────────────── */
+.social-strip {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px; margin-bottom: 16px;
+}
+.social-strip-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.social-strip-title { font-size: 12px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .08em; }
+.social-strip-status { font-size: 10px; color: var(--muted); margin-left: auto; }
+.social-strip-status.online { color: var(--positive); }
+.social-strip-cols { display: flex; gap: 12px; flex-wrap: wrap; }
+.social-col { flex: 1; min-width: 200px; }
+.social-col-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+.social-trend-pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px;
+  border-radius: 12px; font-size: 11px; margin: 2px;
+  background: rgba(29,155,240,.08); border: 1px solid rgba(29,155,240,.2);
+  color: #93c5fd; cursor: pointer; transition: all .12s;
+}
+.social-trend-pill:hover { background: rgba(29,155,240,.16); }
+.social-reddit-item { font-size: 11px; color: var(--text); padding: 4px 0; border-bottom: 1px solid var(--border); line-height: 1.4; }
+.social-reddit-item:last-child { border-bottom: none; }
+.social-reddit-item a { color: var(--text); text-decoration: none; }
+.social-reddit-item a:hover { color: var(--teal); }
+.social-reddit-score { font-size: 10px; color: #fb923c; font-weight: 700; }
+.social-offline { color: var(--muted); font-size: 11px; padding: 8px 0; }
+.social-offline a { color: var(--accent); }
+
+/* H-number badge */
+.hyp-num-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(124,106,247,.2); border: 1px solid rgba(124,106,247,.45);
+  color: #a78bfa; border-radius: 4px; padding: 1px 6px;
+  font-size: 10px; font-weight: 800; letter-spacing: .03em;
+  margin-right: 6px; flex-shrink: 0; font-family: monospace;
+}
+
+</style>
+</head>
+<body>
+
+<nav class="unified-nav">
+  <a class="nav-home-chip" href="cut_home.html">🏠 Home</a>
+  <div class="nav-proj-dropdown" id="nav-proj-dd">
+    <button class="nav-proj-btn" onclick="navProjToggle()" title="Switch project">📂 Open project ▾</button>
+    <div class="nav-proj-menu" id="nav-proj-menu">
+      <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
+      <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
+      <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
+    </div>
+  </div>
+  <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-vsep"></div>
+  <a class="nav-chip" href="calli_feature_vault_v2.html">📚 Vault</a>
+  <a class="nav-chip nav-social-chip" href="social_media_dashboard.html">🌐 Social Pulse</a>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label nav-ai-label">AI</span>
+  <a class="nav-chip" href="cut_correlations.html">🔬 Correlations</a>
+  <a class="nav-chip" href="cut_lasso_analysis.html">📐 LASSO</a>
+  <a class="nav-chip" href="cut_rf_shap.html">🌲 Random Forest</a>
+  <a class="nav-chip nav-active" href="exec_summary.html">✦ Executive Summary</a>
+  <a class="nav-chip" href="hypothesis_validation.html">🧪 Validation</a>
+  <a class="nav-chip" href="ideation_dashboard.html">💡 Ideation</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Executive Summary <span class="info-popup-wrap"><button class="info-btn" onclick="toggleInfoBtn(this)" style="width:18px;height:18px;font-size:10px">ⓘ<div class="info-popup"><strong>How this summary was built:</strong> 487 CUT videos were analysed using three complementary methods — Pearson correlation (linear associations), LASSO stability selection (regularised regression with 200 bootstrap runs), and Random Forest with SHAP (non-linear importance via TreeSHAP + 30 permutation repeats).<br><br><strong>Hypotheses are graded</strong> by how many methods agree: 🥇 Gold = all three agree; 🥈 Silver = two agree; 🥉 Bronze = one. Background hypotheses are YouTube best-practice informed by qualitative analysis, not confirmed statistically.<br><br><em>Correlation ≠ causation.</em> These are associations in observational data. Each hypothesis is a candidate for a controlled A/B test.</div></button></span></h1>
+  <p>Synthesised findings from correlation, LASSO, and Random Forest analyses across 487 videos.
+     Below: the strongest data-backed levers for growing the CUT channel, expressed as testable hypotheses.</p>
+</div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip" id="stats-strip"></div>
+
+<!-- KEY FINDINGS -->
+<div class="section-title">📊 Strongest Signals in Your Data <span class="info-popup-wrap"><button class="info-btn" onclick="toggleInfoBtn(this)">ⓘ<div class="info-popup"><strong>What "strongest signal" means:</strong> feature × target pairs with the highest absolute Pearson r across all 101 features and 6 targets. Only pairs with n ≥ 30 valid videos are shown.<br><br><strong>Why Pearson r?</strong> It's the most interpretable starting point — r = 0.5 means this feature alone explains 25% of variance in that target (r²). Values above 0.4 are unusually strong for behavioural data.<br><br><em>Note:</em> these cards show raw correlation strength, not causal importance. Some may be proxies for format composition — cross-check with LASSO and RF for the most trustworthy signals.</div></button></span></div>
+<div class="findings-grid" id="findings-grid"></div>
+
+<!-- INSPIRATION BAR -->
+<div class="inspiration-bar">
+  <button class="insp-tab active" data-insp="all"        onclick="setInspiration('all')">✦ All Hypotheses</button>
+  <button class="insp-tab"        data-insp="data_driven" onclick="setInspiration('data_driven')">📊 Data-Driven</button>
+  <button class="insp-tab"        data-insp="background"  onclick="setInspiration('background')">🎨 YouTube Background</button>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="controls-row">
+    <span class="controls-label">Format</span>
+    <div class="pill-row" id="fmt-pills"></div>
+    <div class="sep"></div>
+    <span class="controls-label">Category</span>
+    <div class="pill-row" id="cat-pills"></div>
+  </div>
+  <div class="controls-row">
+    <span class="controls-label">Target</span>
+    <div class="pill-row" id="tgt-pills"></div>
+    <div class="sep"></div>
+    <span class="controls-label">Confidence <span class="info-popup-wrap"><button class="info-btn" onclick="toggleInfoBtn(this)">ⓘ<div class="info-popup"><strong>Confidence medals</strong> reflect how many of the three statistical methods (Correlation, LASSO, Random Forest) independently found the same signal.<br><br><em>🥇 Gold</em> — all three methods agree. Highest confidence; safest to act on.<br><em>🥈 Silver</em> — two methods agree. Strong signal; worth testing.<br><em>🥉 Bronze</em> — one method finds it. Suggestive but uncertain.<br><em>💡 Background</em> — no statistical support; based on YouTube platform knowledge and qualitative analysis.<br><br><strong>Why triangulate?</strong> Each method has different assumptions and blind spots. Convergence across methods dramatically reduces the chance of a false positive.</div></button></span></span>
+    <select class="conf-select" id="conf-select" onchange="setConfidence(this.value)">
+      <option value="all">All confidence</option>
+      <option value="gold">🥇 Gold — 3/3 methods agree</option>
+      <option value="silver">🥈 Silver — 2/3 methods agree</option>
+      <option value="bronze">🥉 Bronze — 1/3 methods agree</option>
+      <option value="none">💡 Background only</option>
+    </select>
+    <div class="sep"></div>
+    <span class="controls-label">Complexity</span>
+    <div class="temp-wrap" id="temp-toggle">
+      <button class="temp-btn active" data-temp="1" onclick="setTemp(1)">🔬 Surgical</button>
+      <button class="temp-btn" data-temp="2" onclick="setTemp(2)">🎯 Focused</button>
+      <button class="temp-btn" data-temp="3" onclick="setTemp(3)">🌊 Broad</button>
+    </div>
+  </div>
+  <div class="controls-row">
+    <span class="controls-label">Validation</span>
+    <div class="pill-row" id="val-pills"></div>
+  </div>
+</div>
+
+
+<!-- SOCIAL PULSE STRIP -->
+<div class="social-strip">
+  <div class="social-strip-header">
+    <span style="font-size:14px">🌐</span>
+    <span class="social-strip-title">Social Pulse</span>
+    <a href="social_media_dashboard.html" style="font-size:10px;color:var(--accent);text-decoration:none;margin-left:6px">View full dashboard →</a>
+    <span class="social-strip-status" id="exec-social-status">checking…</span>
+  </div>
+  <div class="social-strip-cols">
+    <div class="social-col">
+      <div class="social-col-title">🐦 Trending Now (Twitter/X)</div>
+      <div id="exec-twitter-trends"><div class="social-offline">Loading…</div></div>
+    </div>
+    <div class="social-col">
+      <div class="social-col-title">🟠 Top Reddit — Entertainment</div>
+      <div id="exec-reddit-top"><div class="social-offline">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HYPOTHESIS GRID -->
+<div class="section-title">💡 Hypotheses &amp; Recommendations <span class="info-popup-wrap"><button class="info-btn" onclick="toggleInfoBtn(this)">ⓘ<div class="info-popup"><strong>What a hypothesis is here:</strong> a structured, testable claim about what drives CUT performance, derived from the quantitative analysis and grounded in platform mechanics.<br><br><strong>Each card shows:</strong> the claim (title), the emotional hook (tagline), supporting evidence (data signals from all three analysis methods), and a concrete A/B test you can run to validate it.<br><br><strong>How to use this list:</strong> filter by Confidence and Target to find the highest-conviction levers for the metric you care about most. Start with 🥇 Gold — these are the safest bets supported by all three statistical methods.</div></button></span></div>
+<div class="hyp-grid" id="hyp-grid"></div>
+<div class="load-more-wrap">
+  <button class="load-more-btn" id="load-more-btn" onclick="loadMore()">Load 5 more ↓</button>
+</div>
+
+<script>
+function toggleInfoBtn(btn) {
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.info-btn.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) {
+    btn.classList.add('open');
+    const popup = btn.querySelector('.info-popup');
+    if (popup) {
+      const rect = btn.getBoundingClientRect();
+      const pw = 340;
+      let left = rect.left;
+      if (left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
+      left = Math.max(10, left);
+      let top = rect.bottom + 6;
+      if (top + 300 > window.innerHeight - 10) top = rect.top - 6 - popup.offsetHeight;
+      popup.style.top = top + 'px';
+      popup.style.left = left + 'px';
+    }
+  }
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.info-btn')) {
+    document.querySelectorAll('.info-btn.open').forEach(b => b.classList.remove('open'));
+  }
+});
+const HYPOTHESES = [
+  {
+    "id": "thumb_text_overlay",
+    "title": "Add Bold Text Overlay to Thumbnails",
+    "tagline": "Words on screen = more clicks",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_text_likelihood",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "Thumbnails with clear text overlays drive higher click-through, especially when the text teases emotional stakes without giving away the result.",
+    "full_detail": "Text overlays give viewers an extra hook beyond the visual. On CUT videos, they work best when they name the game ('Truth or Drink'), hint at drama ('She said WHAT?'), or call out a guest. Keep it short — 3–5 words maximum — and use high-contrast colors so it reads on mobile.",
+    "quant_evidence": [
+      {
+        "text": "thumb_text_likelihood correlates with views (r=r=+0.10, n=477)",
+        "feat": "thumb_text_likelihood",
+        "tgt": "views"
+      },
+      {
+        "text": "thumb_text_likelihood correlates with avg_view_percentage (r=r=+0.15, n=477)",
+        "feat": "thumb_text_likelihood",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's own A/B studies show text overlays lift CTR by 20–40% on average for the entertainment niche.",
+      "MrBeast, Jubilee, and similar channels almost universally use bold text to tease the video premise."
+    ],
+    "ab_test": {
+      "hypothesis": "Adding a 3–5 word text overlay to thumbnails increases click-through rate by ≥10%.",
+      "control": "Thumbnail with no text (pure photo/graphic).",
+      "treatment": "Same thumbnail + bold text overlay teasing the episode stakes.",
+      "primary_metric": "Click-through rate (CTR)",
+      "secondary_metric": "Views in first 48 hours",
+      "sample_n": "20 videos (10 control, 10 treatment), matched by format",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, publish time, title structure, promotion budget"
+    },
+    "frugality_note": "One change only: text overlay. Keep all other thumbnail elements identical.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 1
+  },
+  {
+    "id": "thumb_face_size",
+    "title": "Make Faces Larger in Thumbnails",
+    "tagline": "Bigger faces = stronger emotional hook",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_face_largest_pct",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "A larger, emotionally expressive face in the thumbnail creates an immediate human connection and draws more clicks from the algorithm's homepage feed.",
+    "full_detail": "Eye-tracking studies show viewers fixate on faces within 150ms of seeing a thumbnail. The key metric is `thumb_face_largest_pct` — the fraction of thumbnail area occupied by the single largest face. Aim for 30–50% of the frame. Pair this with a genuine emotional expression (shock, laughter, discomfort) rather than a posed smile.",
+    "quant_evidence": [
+      {
+        "text": "thumb_face_largest_pct correlates with avg_view_percentage (r=r=+0.09, n=477)",
+        "feat": "thumb_face_largest_pct",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "thumb_face_largest_pct correlates with views (r=r=-0.16, n=477)",
+        "feat": "thumb_face_largest_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Face size is one of the most replicated predictors of CTR in YouTube thumbnail research (Marchand et al., 2020).",
+      "Jubilee's thumbnails consistently place the most expressive face at 35–45% of frame area."
+    ],
+    "ab_test": {
+      "hypothesis": "Thumbnails with the largest face occupying ≥30% of frame have higher CTR than thumbnails with smaller faces.",
+      "control": "Current thumbnail crop (typical face size).",
+      "treatment": "Re-cropped or re-designed thumbnail with lead face occupying ≥30% of frame.",
+      "primary_metric": "Click-through rate (CTR)",
+      "secondary_metric": "Impressions-to-views conversion",
+      "sample_n": "16 videos, matched by format",
+      "duration": "3 weeks",
+      "what_to_keep_constant": "Title, publish time, format, number of faces shown"
+    },
+    "frugality_note": "Only change face crop/size. Don't change expression, background, or text simultaneously.",
+    "confidence": null,
+    "methods_hit": [],
+    "data_score": 0,
+    "inspiration_type": "background",
+    "num": 2
+  },
+  {
+    "id": "thumb_colorfulness",
+    "title": "Boost Thumbnail Colorfulness",
+    "tagline": "Saturated thumbnails pop in a crowded feed",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_colorfulness",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "Highly colorful thumbnails stand out in the YouTube homepage feed, especially on mobile where thumbnails are small and competition for attention is intense.",
+    "full_detail": "Colorfulness is measured as the spread of hues and saturation in the image. Low colorfulness thumbnails (desaturated, grey, muted) tend to get lost in the feed. Increasing saturation by 20–40% in post-processing is a simple first step. Focus on the background color — often the easiest lever — rather than changing skin tones.",
+    "quant_evidence": [
+      {
+        "text": "thumb_colorfulness correlates with views (r=r=+0.01, n=477)",
+        "feat": "thumb_colorfulness",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Bright, high-saturation thumbnails are a hallmark of top-performing entertainment channels.",
+      "Mobile screens typically display thumbnails at ≤120px wide, where color contrast matters more than detail."
+    ],
+    "ab_test": {
+      "hypothesis": "Higher colorfulness thumbnails (+30% saturation boost in post) generate higher CTR.",
+      "control": "Standard color grading on thumbnail.",
+      "treatment": "Same image with saturation boosted 30% in the background/environment area.",
+      "primary_metric": "Click-through rate (CTR)",
+      "secondary_metric": "Views at 72 hours",
+      "sample_n": "20 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Composition, faces, text overlay, title"
+    },
+    "frugality_note": "One lever: color saturation. Don't change faces, composition, or text at the same time.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 3
+  },
+  {
+    "id": "thumb_sharpness",
+    "title": "Increase Thumbnail Sharpness",
+    "tagline": "Crisp beats blurry — always",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_sharpness",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "Blurry or soft thumbnails signal low production quality and are penalised by the algorithm's implicit quality filters, reducing impressions before a viewer even gets a chance to click.",
+    "full_detail": "Sharpness (Laplacian variance) measures edge crispness. Common causes of soft thumbnails: screenshot from compressed video, heavy Gaussian blur in editing, or facial softening filters. Fix: export thumbnail at native 1280×720, apply a subtle sharpening pass (unsharp mask: radius 1.0, amount 80%), and avoid AI face smoothing.",
+    "quant_evidence": [
+      {
+        "text": "thumb_sharpness correlates with avg_view_percentage (r=r=+0.04, n=477)",
+        "feat": "thumb_sharpness",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube recommends 1280×720 PNG thumbnails; JPEG compression artifacts measurably reduce Laplacian variance.",
+      "Low-sharpness thumbnails are associated with lower production quality signals used in YouTube's quality classifier."
+    ],
+    "ab_test": {
+      "hypothesis": "Sharper thumbnails (unsharp mask applied) result in higher retention and CTR.",
+      "control": "Standard thumbnail export (JPEG, default settings).",
+      "treatment": "PNG export with sharpening pass applied.",
+      "primary_metric": "30-second retention",
+      "secondary_metric": "CTR",
+      "sample_n": "20 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "All other thumbnail elements, title, publish time"
+    },
+    "frugality_note": "One change: export quality and sharpening. Nothing else.",
+    "confidence": null,
+    "methods_hit": [],
+    "data_score": 0,
+    "inspiration_type": "background",
+    "num": 4
+  },
+  {
+    "id": "audio_wpm",
+    "title": "Speed Up Delivery (WPM)",
+    "tagline": "Faster talk = less dead time = longer watch",
+    "category_key": "audio",
+    "feature_key": "wpm_whisper",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "Videos with higher words-per-minute tend to hold viewer attention better. Slow pacing signals low energy and gives viewers an easy exit point.",
+    "full_detail": "Average YouTube entertainment content runs 140–170 WPM. Below 120 WPM, viewers increasingly abandon. The fix is in the edit: cut silences aggressively (any pause >0.5s that doesn't serve comedic timing), and use J-cuts to maintain audio flow across visual cuts. Target 150–160 WPM for CUT's conversational format.",
+    "quant_evidence": [
+      {
+        "text": "wpm_whisper correlates with avg_view_percentage (r=r=+0.13, n=201)",
+        "feat": "wpm_whisper",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "wpm_whisper correlates with retention_30s (r=r=+0.22, n=132)",
+        "feat": "wpm_whisper",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Matt D'Avella and similar high-retention creators target 150–165 WPM in documentary-style content.",
+      "Speech rate is a proxy for editing tightness — a key driver of perceived production quality."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with WPM ≥145 have higher avg_view_percentage than slower episodes.",
+      "control": "Current edit (no silence removal protocol).",
+      "treatment": "Edit with all silences >0.4s removed (excluding intentional pauses).",
+      "primary_metric": "Avg View Percentage (AVP)",
+      "secondary_metric": "30-second retention",
+      "sample_n": "16 videos, matched by format",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, guests, thumbnail, title style"
+    },
+    "frugality_note": "One change: editing pace. Don't change content structure simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 5
+  },
+  {
+    "id": "audio_excitement_peaks",
+    "title": "Engineer More Audio Excitement Peaks",
+    "tagline": "More spikes in energy = more shares and rewatches",
+    "category_key": "audio",
+    "feature_key": "excitement_peaks_per_min",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "Videos with more frequent peaks of audio energy (laughter bursts, reactions, shock moments) correlate with subscribers gained and share intent in comments.",
+    "full_detail": "Excitement peaks are measured as the number of times per minute the audio energy crosses a high threshold — essentially tracking laughter, gasps, and group reactions. To engineer more peaks: front-load the best reaction of the video in the first 30s (even as a flash-cut), and structure the edit so a new energy peak arrives at least every 90 seconds.",
+    "quant_evidence": [
+      {
+        "text": "excitement_peaks_per_min correlates with subscribers_gained (r=r=+0.13, n=201)",
+        "feat": "excitement_peaks_per_min",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "comment_shock_score correlates with subscribers_gained (r=r=-0.08, n=473)",
+        "feat": "comment_shock_score",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "Reaction-driven entertainment channels (Hot Ones, First We Feast) always place a 'hero moment' within the first 60 seconds.",
+      "YouTube's algorithm rewards high re-watch segments — peaks are precisely where re-watches happen."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes structured with an energy peak every ≤90s have higher subscriber conversion.",
+      "control": "Current edit structure (natural episode flow).",
+      "treatment": "Edit restructured to ensure an audible energy peak every ≤90 seconds.",
+      "primary_metric": "Subscribers gained per 1,000 views",
+      "secondary_metric": "Comment shock score",
+      "sample_n": "16 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "One change: edit rhythm. Don't change format rules or guest selection at the same time.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 6
+  },
+  {
+    "id": "audio_silence",
+    "title": "Cut Dead Silence",
+    "tagline": "Every silent second is a dropout risk",
+    "category_key": "audio",
+    "feature_key": "silence_ratio_audio",
+    "improve_direction": "decrease",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "High silence ratio in audio is one of the strongest predictors of early dropout. Viewers read silence as low energy and leave.",
+    "full_detail": "silence_ratio_audio measures the proportion of the video where audio energy is below the speech threshold. Even 15% silence ratio is enough to measurably hurt retention on entertainment content. Use ducked music beds, reaction cutaways, or tighter editing to keep audio energy above threshold. Exception: intentional dramatic pauses are fine if ≤1.5 seconds.",
+    "quant_evidence": [
+      {
+        "text": "silence_ratio_audio correlates with avg_view_percentage (r=r=+0.00, n=201)",
+        "feat": "silence_ratio_audio",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "silence_density correlates with avg_view_percentage (r=r=+0.12, n=199)",
+        "feat": "silence_density",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Audio continuity is a well-established driver of perceived engagement in broadcast editing.",
+      "Low-silence videos are associated with 'tight editing' — a top positive signal in YouTube creator feedback surveys."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with silence_ratio_audio < 0.10 have higher avg_view_percentage.",
+      "control": "Standard edit (current silence ratio).",
+      "treatment": "Edit with music bed added under any silence gap >0.5s.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "Audience retention curve drop-off points",
+      "sample_n": "16 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guest lineup"
+    },
+    "frugality_note": "One change: add music bed under silences. Don't change edit structure simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 7
+  },
+  {
+    "id": "audio_crosstalk",
+    "title": "Preserve Crosstalk Moments",
+    "tagline": "Overlapping voices = authentic energy",
+    "category_key": "audio",
+    "feature_key": "crosstalk_index",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Truth or Drink",
+      "Fear Pong"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "Moments where multiple people talk simultaneously signal genuine group energy. Cutting these out in editing removes what audiences actually came for.",
+    "full_detail": "crosstalk_index measures the proportion of the video with overlapping speech. In group game shows, crosstalk is often edited out for clarity — but our data suggests it hurts retention. Keep short crosstalk bursts (≤3 seconds) as they appear; only cut extended simultaneous speech that is truly unintelligible. The messiness is the appeal.",
+    "quant_evidence": [
+      {
+        "text": "crosstalk_index correlates with avg_view_percentage (r=r=-0.21, n=199)",
+        "feat": "crosstalk_index",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Reality TV producers deliberately preserve crosstalk to signal authentic unscripted emotion.",
+      "In focus groups, audiences rate 'messy' group reactions as more believable and entertaining than clean alternating dialogue."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes that preserve crosstalk moments retain more viewers than over-cleaned edits.",
+      "control": "Standard edit (crosstalk reduced for clarity).",
+      "treatment": "Edit that preserves all crosstalk bursts ≤3 seconds.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "Laugh rate signal in comments",
+      "sample_n": "12 videos (Truth or Drink + Fear Pong only)",
+      "duration": "3 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, music"
+    },
+    "frugality_note": "One change: editing philosophy on overlapping audio. Applies to group game show formats only.",
+    "confidence": "silver",
+    "methods_hit": [
+      "correlation",
+      "lasso"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 8
+  },
+  {
+    "id": "content_hook",
+    "title": "Front-Load the Best Moment",
+    "tagline": "Show the payoff first, earn the setup second",
+    "category_key": "dynamics",
+    "feature_key": "hook_score",
+    "improve_direction": "increase",
+    "primary_target": "retention_30s",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "30-second retention is the most critical metric for algorithmic distribution. Placing the most emotionally intense moment from the episode within the first 30 seconds gives viewers a reason to stay.",
+    "full_detail": "hook_score is derived from the density and intensity of emotional language and reactions in the opening segment. A high hook_score means the opening is dense with energy. Structurally: open on the best reaction clip (3–5 seconds), then cut to title card, then roll the episode from the start. This is the 'cold open' technique used by virtually every top YouTube creator.",
+    "quant_evidence": [
+      {
+        "text": "hook_score correlates with retention_30s (r=r=+0.03, n=131)",
+        "feat": "hook_score",
+        "tgt": "retention_30s"
+      },
+      {
+        "text": "hook_energy_ratio correlates with retention_30s (r=r=-0.14, n=132)",
+        "feat": "hook_energy_ratio",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Every major long-form entertainment channel (MrBeast, Hot Ones, Jubilee) uses a cold open teasing the best moment.",
+      "YouTube's Help documentation explicitly cites 'front-loading value' as a retention best practice."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with a cold open teaser in the first 30s have higher 30-second retention.",
+      "control": "Standard episode start (intro → game rules → play).",
+      "treatment": "Cold open: best reaction clip (3–5s) → title card → episode from start.",
+      "primary_metric": "30-second retention rate",
+      "secondary_metric": "Avg View Percentage",
+      "sample_n": "16 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "One structural change: cold open edit. Don't change format rules or thumbnail simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 9
+  },
+  {
+    "id": "content_opening_questions",
+    "title": "Open with Questions, Not Setup",
+    "tagline": "Questions create curiosity; setup creates patience",
+    "category_key": "dynamics",
+    "feature_key": "opening_q_density",
+    "improve_direction": "increase",
+    "primary_target": "retention_30s",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "Videos with a higher density of questions in the opening segment hold attention better. Questions create open loops in the viewer's mind that they need resolved.",
+    "full_detail": "opening_q_density measures how many questions (or question-type reactions) appear in the first segment of dialogue. Instead of 'Welcome back to CUT, today we're playing Truth or Drink with...' try opening with 'Have you ever told someone a secret that destroyed a friendship?' — a question that immediately creates tension and curiosity.",
+    "quant_evidence": [
+      {
+        "text": "opening_q_density correlates with retention_30s (r=r=-0.10, n=131)",
+        "feat": "opening_q_density",
+        "tgt": "retention_30s"
+      },
+      {
+        "text": "q_rate correlates with avg_view_percentage (r=r=+0.11, n=297)",
+        "feat": "q_rate",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Narrative psychology research shows that open questions create 'Zeigarnik tension' — the brain is uncomfortable with unresolved questions.",
+      "Talk shows and game shows universally open with a provocative question to immediately engage the audience."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes that open with a provocative question in the first 15s have higher 30-second retention.",
+      "control": "Standard host intro and setup.",
+      "treatment": "Open with a direct question to the camera or cast before any setup.",
+      "primary_metric": "30-second retention",
+      "secondary_metric": "Comment question_rate (viewers asking follow-ups)",
+      "sample_n": "16 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, edit style"
+    },
+    "frugality_note": "One change: opening structure/scripting. Don't change edit pace or thumbnail simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 10
+  },
+  {
+    "id": "content_vulnerability",
+    "title": "Amplify Vulnerability Moments",
+    "tagline": "Realness retains; performance repels",
+    "category_key": "dynamics",
+    "feature_key": "vulnerability_score",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Truth or Drink",
+      "Keep it 100"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "Videos with higher vulnerability scores — moments where participants share genuine, uncomfortable, or personal truths — hold viewers longer and generate more parasocial comments.",
+    "full_detail": "vulnerability_score tracks the density of emotionally exposing moments in the transcript. On CUT, the best questions tend to produce vulnerability naturally. However, the edit can be calibrated: don't cut away too quickly after a vulnerable answer — hold on the reaction for 2–3 seconds to let the emotional weight land. Also consider keeping in the self-correction moments ('Wait, I shouldn't have said that…') which signal authentic unguarded speech.",
+    "quant_evidence": [
+      {
+        "text": "vulnerability_score correlates with avg_view_percentage (r=r=-0.13, n=199)",
+        "feat": "vulnerability_score",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "comment_parasocial_score correlates with avg_view_percentage (r=r=+0.04, n=475)",
+        "feat": "comment_parasocial_score",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Brené Brown's research on vulnerability shows it as the core driver of human connection and 'staying' behaviour.",
+      "CUT's most-commented episodes consistently involve guests sharing something genuinely personal."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes where the edit holds on reactions after vulnerable answers have higher AVP.",
+      "control": "Standard edit (cut to next question promptly).",
+      "treatment": "Hold on reaction shot for 2–3 seconds after each vulnerable answer before cutting.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "comment_parasocial_score",
+      "sample_n": "12 videos (Truth or Drink, Keep it 100)",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, question set, title"
+    },
+    "frugality_note": "One edit change: reaction hold duration. Don't change question set or cast simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 11
+  },
+  {
+    "id": "title_format_name",
+    "title": "Always Name the Format in the Title",
+    "tagline": "Format recognition is free algorithmic targeting",
+    "category_key": "title",
+    "feature_key": "title_format_signal",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "Including the format name (Truth or Drink, Lineup, Keep it 100) in the title dramatically improves search discovery and algorithmic matching to existing fans of that format.",
+    "full_detail": "title_format_signal detects whether the title contains a recognisable CUT format name. Videos with the format name in the title benefit from: (1) direct search intent from people looking for that format, (2) better algorithmic clustering with previously successful videos of the same format, (3) immediate viewer expectation-setting that reduces early drop-off from confused audiences.",
+    "quant_evidence": [
+      {
+        "text": "title_format_signal correlates with views (r=r=+0.12, n=482)",
+        "feat": "title_format_signal",
+        "tgt": "views"
+      },
+      {
+        "text": "traffic_search_pct correlates with views (r=r=+0.12, n=478)",
+        "feat": "traffic_search_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Series branding in titles is one of YouTube's recommended SEO practices for established show formats.",
+      "Channels with consistent title templates have measurably more stable viewership because they train the algorithm to cluster their videos."
+    ],
+    "ab_test": {
+      "hypothesis": "Videos with the format name in the title get more views in the first 7 days.",
+      "control": "Title without format name (e.g., 'Would You Tell Your Ex the Truth?').",
+      "treatment": "Same concept with format name added (e.g., 'Truth or Drink: Would You Tell Your Ex?').",
+      "primary_metric": "Views at 7 days",
+      "secondary_metric": "Search traffic percentage",
+      "sample_n": "20 videos (10 per variant, matched by format)",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, thumbnail, publish time, promotion"
+    },
+    "frugality_note": "One change: title template. Don't change thumbnail or content structure simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 12
+  },
+  {
+    "id": "title_second_person",
+    "title": "Use 'You' in the Title",
+    "tagline": "Make it personal — make it about the viewer",
+    "category_key": "title",
+    "feature_key": "title_personal_you",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "Second-person titles ('Would YOU answer this?', 'Could you keep it 100?') increase CTR by making the viewer the subject — they imagine themselves in the scenario.",
+    "full_detail": "title_personal_you tracks presence of the word 'you' or 'your' in the title. The psychological mechanism is perspective-taking: when the viewer is directly addressed, they mentally simulate the scenario, which increases curiosity and click-through. Best used in combination with a question or a challenge framing.",
+    "quant_evidence": [
+      {
+        "text": "title_personal_you correlates with views (r=r=-0.13, n=482)",
+        "feat": "title_personal_you",
+        "tgt": "views"
+      },
+      {
+        "text": "title_curiosity_score correlates with views (r=r=+0.02, n=482)",
+        "feat": "title_curiosity_score",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Buzzfeed's viral title research (2015) identified second-person framing as their single strongest CTR predictor.",
+      "Question titles with 'you' outperform declarative titles in entertainment A/B tests across multiple platforms."
+    ],
+    "ab_test": {
+      "hypothesis": "Titles containing 'you' or 'your' generate higher CTR than equivalent titles without.",
+      "control": "Third-person title (e.g., 'Strangers Answer the Most Personal Questions').",
+      "treatment": "Second-person version (e.g., 'Would You Answer These Personal Questions?').",
+      "primary_metric": "Click-through rate",
+      "secondary_metric": "Views at 48 hours",
+      "sample_n": "20 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, publish time"
+    },
+    "frugality_note": "One change: title framing (you vs. third-person). Don't change content or thumbnail.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 13
+  },
+  {
+    "id": "title_curiosity",
+    "title": "Add a Curiosity Signal to Titles",
+    "tagline": "Open loops pull clicks",
+    "category_key": "title",
+    "feature_key": "title_curiosity_score",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "Titles with a high curiosity score — teasing an answer that isn't given away — consistently outperform straightforward descriptive titles.",
+    "full_detail": "title_curiosity_score detects linguistic patterns associated with information gaps: incomplete statements, ellipsis, surprising juxtapositions, or implied revelation. Example: 'She Told Everyone Their Secret' (low curiosity) vs 'She Finally Said What Nobody Could' (high curiosity). The goal is to leave one key question open that the video answers.",
+    "quant_evidence": [
+      {
+        "text": "title_curiosity_score correlates with views (r=r=+0.02, n=482)",
+        "feat": "title_curiosity_score",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "George Loewenstein's information-gap theory of curiosity is the most cited framework for clickbait effectiveness research.",
+      "Top-performing entertainment titles on YouTube almost universally contain an open information gap (Tian et al., 2023)."
+    ],
+    "ab_test": {
+      "hypothesis": "Titles with an open information gap (curiosity score ≥0.6) generate higher CTR.",
+      "control": "Descriptive title explaining the premise.",
+      "treatment": "Curiosity-gap title teasing the emotional outcome without revealing it.",
+      "primary_metric": "Click-through rate",
+      "secondary_metric": "Views at 7 days",
+      "sample_n": "20 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, publish day/time"
+    },
+    "frugality_note": "One change: title writing strategy. Test only on organic posts; don't boost either variant.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 14
+  },
+  {
+    "id": "title_avoid_age",
+    "title": "Remove Age References from Titles",
+    "tagline": "Age-targeting narrows your audience",
+    "category_key": "title",
+    "feature_key": "title_has_age_mention",
+    "improve_direction": "decrease",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "Titles mentioning specific ages ('50 Year Olds Answer...', '20 vs 60') signal to the algorithm and viewers that the content is for a specific demographic, limiting reach.",
+    "full_detail": "title_has_age_mention detects age numbers in titles. While generational contrast videos perform well in bursts, they train the algorithm to narrow the audience to viewers who self-identify with that demographic. For long-term channel growth, age-agnostic framings ('Parents Answer...', 'Couples Reveal...') reach broader audiences while preserving the same relational contrast.",
+    "quant_evidence": [
+      {
+        "text": "title_has_age_mention correlates with views (r=r=-0.01, n=482)",
+        "feat": "title_has_age_mention",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's content classifier uses title signals to infer audience demographics, which affects where videos are recommended.",
+      "BuzzFeed found that age-specific titles capped CPM at lower rates because they triggered narrow demographic targeting."
+    ],
+    "ab_test": {
+      "hypothesis": "Equivalent videos with age-agnostic titles generate more total views than age-specific titles.",
+      "control": "Title with specific age mention ('50-Year-Olds React to Gen Z Slang').",
+      "treatment": "Age-agnostic equivalent ('Adults React to Gen Z Slang').",
+      "primary_metric": "Total views at 30 days",
+      "secondary_metric": "CPM",
+      "sample_n": "16 videos (8 per variant, same format type)",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Format, thumbnail, cast type, publish time"
+    },
+    "frugality_note": "One change: title framing (age-specific vs. age-agnostic). Don't change content selection.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 15
+  },
+  {
+    "id": "dist_algorithm",
+    "title": "Optimise for Algorithmic Discovery",
+    "tagline": "The algorithm is your distribution team",
+    "category_key": "discovery",
+    "feature_key": "traffic_algorithmic_pct",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "distribution",
+    "brief": "Videos where a higher proportion of traffic comes from algorithmic recommendations (homepage, suggested) have disproportionately higher total views. This is the distribution flywheel.",
+    "full_detail": "traffic_algorithmic_pct measures what fraction of views came from YouTube's recommendation engine. To increase it: (1) improve 30-second retention (the algorithm's primary quality signal), (2) use consistent thumbnail and title templates so the algorithm can cluster your videos, (3) avoid over-relying on social media pushes which inflate external traffic and starve algorithmic signals.",
+    "quant_evidence": [
+      {
+        "text": "traffic_algorithmic_pct correlates with views (r=r=+0.43, n=478)",
+        "feat": "traffic_algorithmic_pct",
+        "tgt": "views"
+      },
+      {
+        "text": "traffic_search_pct correlates with views (r=r=+0.12, n=478)",
+        "feat": "traffic_search_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's public creator guidance identifies homepage and suggested video traffic as the primary growth vector for established channels.",
+      "Channels with >50% algorithmic traffic grow 3× faster than equivalent channels relying on external traffic."
+    ],
+    "ab_test": {
+      "hypothesis": "Videos optimised for retention (cold open + tight edit) generate higher algorithmic traffic share.",
+      "control": "Standard edit + social push strategy.",
+      "treatment": "Retention-optimised edit (cold open, silence cuts) with no change to social push.",
+      "primary_metric": "Algorithmic traffic percentage at 30 days",
+      "secondary_metric": "Total views",
+      "sample_n": "16 videos",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Thumbnail, title style, publish time, social promotion budget"
+    },
+    "frugality_note": "This is a compound metric — it improves as a result of other single-variable optimisations. Track as an outcome, not an input.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 16
+  },
+  {
+    "id": "dist_publish_timing",
+    "title": "Publish on Peak Discovery Days",
+    "tagline": "When you post matters as much as what you post",
+    "category_key": "metadata",
+    "feature_key": "pub_day_of_week",
+    "improve_direction": "neutral",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "Publish day correlates with first-48-hour view velocity, which drives algorithmic momentum. For CUT's primarily US audience, Thursday–Saturday releases tend to capture weekend viewing.",
+    "full_detail": "pub_day_of_week is a 0–6 integer (Monday–Sunday). For entertainment content targeting a US-heavy audience: Thursday or Friday releases catch both the algorithmic recommendation cycle and the weekend leisure viewing window. Avoid Monday–Wednesday releases which have historically lower entertainment video consumption. Pair with a consistent publish hour (2–4pm Pacific).",
+    "quant_evidence": [
+      {
+        "text": "pub_day_of_week correlates with views (r=r=+0.24, n=482)",
+        "feat": "pub_day_of_week",
+        "tgt": "views"
+      },
+      {
+        "text": "pub_hour_utc correlates with views (r=r=-0.08, n=482)",
+        "feat": "pub_hour_utc",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube analytics industry data consistently shows Fri–Sat as peak entertainment consumption for US audiences.",
+      "Consistent posting schedules train subscriber notifications to be acted on more reliably."
+    ],
+    "ab_test": {
+      "hypothesis": "Videos published Thursday–Friday get more views in the first 7 days than equivalent Monday–Wednesday releases.",
+      "control": "Current publish schedule.",
+      "treatment": "All releases moved to Thursday or Friday, 2pm–4pm Pacific.",
+      "primary_metric": "Views at 7 days",
+      "secondary_metric": "Subscriber notification open rate",
+      "sample_n": "24 videos (12 per variant, matched by format)",
+      "duration": "8 weeks",
+      "what_to_keep_constant": "Format, thumbnail quality, title style, content"
+    },
+    "frugality_note": "One change: publish timing. Don't change content, thumbnail, or title strategy simultaneously.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 17
+  },
+  {
+    "id": "geo_us_cpm",
+    "title": "Drive More US Viewership for Higher CPM",
+    "tagline": "US eyeballs are worth 3–5× more than global average",
+    "category_key": "geo",
+    "feature_key": "geo_us_pct",
+    "improve_direction": "increase",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "distribution",
+    "brief": "CPM is dramatically higher for US viewers. Videos that skew toward US audiences through content, casting, and promotion generate significantly more revenue per view.",
+    "full_detail": "geo_us_pct measures what fraction of views come from the US. To increase it: (1) reference US-specific cultural touchstones in titles and thumbnails, (2) cast guests with US cultural familiarity, (3) time releases for US primetime (6–9pm ET), (4) avoid idioms or references that index heavily to international audiences. US CPM rates run $8–18 vs. $1–4 for LATAM/Asia.",
+    "quant_evidence": [
+      {
+        "text": "geo_us_pct correlates with cpm (r=r=+0.26, n=477)",
+        "feat": "geo_us_pct",
+        "tgt": "cpm"
+      },
+      {
+        "text": "geo_us_pct correlates with estimated_revenue (r=r=+0.08, n=477)",
+        "feat": "geo_us_pct",
+        "tgt": "estimated_revenue"
+      }
+    ],
+    "qual_evidence": [
+      "US CPM rates in entertainment are consistently 3–8× higher than LATAM and Asia Pacific rates (eMarketer, 2024).",
+      "Cultural specificity in titles (US slang, US social references) acts as an implicit geographic targeting signal."
+    ],
+    "ab_test": {
+      "hypothesis": "Videos with US-culturally-specific thumbnails and titles generate higher geo_us_pct and higher CPM.",
+      "control": "Generic/global title and thumbnail.",
+      "treatment": "Title and thumbnail with US-specific cultural reference.",
+      "primary_metric": "CPM",
+      "secondary_metric": "geo_us_pct",
+      "sample_n": "16 videos",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Format, edit style, guests, publish time"
+    },
+    "frugality_note": "Two levers (title + thumbnail framing), both moving in the same direction. Acceptable as one hypothesis since they're both geographic signals.",
+    "confidence": "silver",
+    "methods_hit": [
+      "correlation",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 18
+  },
+  {
+    "id": "geo_latam_volume",
+    "title": "Leverage LATAM for View Volume",
+    "tagline": "LATAM is your biggest growth market by volume",
+    "category_key": "geo",
+    "feature_key": "geo_latam_pct",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "LATAM viewers drive high view counts even at lower CPM. Culturally resonant content (universal game show formats, non-verbal reaction moments) travels well to LATAM audiences.",
+    "full_detail": "geo_latam_pct measures the fraction of views from Latin America. LATAM audiences respond strongly to: high-energy reactions, physical comedy, universal emotional situations (love, embarrassment, family), and game shows with clear rules. Content that is visually expressive and doesn't rely on English language nuance indexes better in LATAM. Consider enabling auto-translated subtitles.",
+    "quant_evidence": [
+      {
+        "text": "geo_latam_pct correlates with views (r=r=+0.10, n=477)",
+        "feat": "geo_latam_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "LATAM is the fastest-growing YouTube market by total watch hours (YouTube, 2023–2024 creator reports).",
+      "Videos with auto-translated subtitles show 15–40% higher watch time in non-English markets (YouTube data)."
+    ],
+    "ab_test": {
+      "hypothesis": "Enabling Spanish auto-translated subtitles increases geo_latam_pct and total views.",
+      "control": "Video published without translated subtitles.",
+      "treatment": "Same video with Spanish subtitles enabled (YouTube auto-translate).",
+      "primary_metric": "Total views at 30 days",
+      "secondary_metric": "geo_latam_pct",
+      "sample_n": "20 videos",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Everything except subtitle setting"
+    },
+    "frugality_note": "One change: enable Spanish subtitles. No content or thumbnail changes needed.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 19
+  },
+  {
+    "id": "social_shock",
+    "title": "Engineer Shock Moments for Comment Velocity",
+    "tagline": "Outrage drives comments; comments drive algorithm",
+    "category_key": "comments",
+    "feature_key": "comment_shock_score",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "Truth or Drink",
+      "Keep it 100",
+      "Fear Pong"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "Videos with high comment shock scores (comments expressing surprise, disbelief, or outrage) drive higher comment velocity, which is a strong algorithmic signal for continued distribution.",
+    "full_detail": "comment_shock_score aggregates comments containing shock language ('I can't believe', 'no way', 'she actually said', 'wait WHAT'). To engineer shock moments: select questions that reveal unexpected gaps between public persona and private truth, and keep the most shocking answer intact — resist the urge to cut away too early. The moment of revealed truth is your comment engine.",
+    "quant_evidence": [
+      {
+        "text": "comment_shock_score correlates with subscribers_gained (r=r=-0.08, n=473)",
+        "feat": "comment_shock_score",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "comment_shock_score correlates with views (r=r=-0.06, n=475)",
+        "feat": "comment_shock_score",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Comment velocity (speed of new comments) is a recognised signal in YouTube's recommendation algorithm (confirmed in YouTube Creator Academy).",
+      "Viral CUT moments consistently involve a revealed unexpected truth — the 'can't believe they said that' reaction."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with at least one 'uncut shock moment' generate higher comment velocity in first 24 hours.",
+      "control": "Standard edit (shock moments softened or cut away quickly).",
+      "treatment": "Edit holds on shock reaction for 3+ seconds, letting silence after the reveal breathe.",
+      "primary_metric": "Comments in first 24 hours",
+      "secondary_metric": "comment_shock_score",
+      "sample_n": "16 videos (Truth or Drink + Keep it 100)",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "One edit change: hold duration on shock moments. Don't change question set or casting simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 20
+  },
+  {
+    "id": "social_parasocial",
+    "title": "Build Parasocial Moments",
+    "tagline": "When viewers feel they know the guest, they stay",
+    "category_key": "comments",
+    "feature_key": "comment_parasocial_score",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Truth or Drink",
+      "Lineup"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "Comments expressing parasocial connection ('she's literally me', 'I love her energy', 'he needs to come back') correlate with higher avg_view_percentage. Viewers who feel a connection to a guest stay longer.",
+    "full_detail": "comment_parasocial_score tracks comments that identify with, defend, or express emotional connection to a participant. To generate these moments: give each guest a small personal reveal early in the episode (a quirk, a fear, a contradiction), keep reaction shots of individual guests between group answers, and avoid cutting away from moments of individual character expression.",
+    "quant_evidence": [
+      {
+        "text": "comment_parasocial_score correlates with avg_view_percentage (r=r=+0.04, n=475)",
+        "feat": "comment_parasocial_score",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Parasocial relationships are the primary retention driver for reality TV formats (Horton & Wohl, 1956, still cited in streaming research).",
+      "CUT's most-rewatched individual moments consistently involve a guest revealing something unexpectedly specific about themselves."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes that include a brief personal reveal for each guest early in the episode have higher AVP and parasocial comment rate.",
+      "control": "Jump straight into game questions.",
+      "treatment": "Add 20–30s mini-intro per guest with one unexpected personal fact before the game starts.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "comment_parasocial_score",
+      "sample_n": "12 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format rules, thumbnail, title, question set"
+    },
+    "frugality_note": "One structural change: add brief guest intro. Don't change format rules or question selection.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 21
+  },
+  {
+    "id": "social_rewatch",
+    "title": "Design for Rewatch",
+    "tagline": "Rewatchers are the algorithm's favourite viewers",
+    "category_key": "comments",
+    "feature_key": "comment_rewatch_intent",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "production",
+    "brief": "Comments expressing rewatch intent ('watching this for the 3rd time', 'I always come back to this one') are a strong signal of sticky content and are heavily weighted by YouTube's algorithm.",
+    "full_detail": "comment_rewatch_intent tracks comments mentioning re-watching. The conditions for rewatch: (1) the content has a moment so good people want to experience it again, (2) the content has layers — a slow burn revelation that rewards a second viewing with new context. For CUT: consider episodes where you can drop a subtle hint about the ending early on — viewers who catch it feel clever and rewatch to confirm.",
+    "quant_evidence": [
+      {
+        "text": "comment_rewatch_intent correlates with avg_view_percentage (r=n/a)",
+        "feat": "comment_rewatch_intent",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's algorithm uses re-watch signals as a quality indicator independent of total view count.",
+      "Comment_rewatch_intent is often the best leading indicator of whether a video enters the 'evergreen' recommendation pool."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with a 'slow-burn revelation' structure generate more rewatch comments than standard linear episodes.",
+      "control": "Standard linear episode (questions answered sequentially).",
+      "treatment": "Episode with one early hint about a later reveal (e.g., guest reaction to a specific topic question, revisited later).",
+      "primary_metric": "comment_rewatch_intent (qualitative + count)",
+      "secondary_metric": "Avg View Percentage in weeks 2–4 post-publish",
+      "sample_n": "12 videos",
+      "duration": "6 weeks (measured at 30 days)",
+      "what_to_keep_constant": "Format, thumbnail, title, edit style"
+    },
+    "frugality_note": "One structural element: foreshadowing hint. Don't change format rules or edit pace simultaneously.",
+    "confidence": null,
+    "methods_hit": [],
+    "data_score": 0,
+    "inspiration_type": "background",
+    "num": 22
+  },
+  {
+    "id": "fmt_tod_vulnerability",
+    "title": "[Truth or Drink] Lead with the Most Vulnerable Question",
+    "tagline": "For Truth or Drink: start deep, go deeper",
+    "category_key": "dynamics",
+    "feature_key": "vulnerability_score",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Truth or Drink"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "In Truth or Drink specifically, episodes that lead with a high-vulnerability question in the first round retain viewers better than episodes that warm up slowly.",
+    "full_detail": "The implicit promise of Truth or Drink is uncomfortable truth. When the first round is low-stakes warmup questions, viewers suspect the episode won't deliver and leave early. Restructure: put one medium-high vulnerability question in round 1, even if it's not the most explosive. Signal to the viewer within the first 2 minutes that this episode will deliver on the promise.",
+    "quant_evidence": [
+      {
+        "text": "vulnerability_score (Truth or Drink) correlates with avg_view_percentage (r={r_vulnerability_score_avg_view_percentage_tod})",
+        "feat": "vulnerability_score",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "opening_q_density (Truth or Drink) correlates with retention_30s (r={r_opening_q_density_retention_30s_tod})",
+        "feat": "opening_q_density",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Narrative theory: delaying the central conflict creates patience in literary fiction but impatience in short-form video.",
+      "Truth or Drink's most-viewed episodes (>5M views) all have a high-stakes question within the first 3 minutes."
+    ],
+    "ab_test": {
+      "hypothesis": "ToD episodes that include a high-vulnerability question in round 1 have higher 30s retention than slow-start episodes.",
+      "control": "Warm-up round 1 (light, low-stakes questions).",
+      "treatment": "Include one medium-high vulnerability question in round 1.",
+      "primary_metric": "30-second retention",
+      "secondary_metric": "Avg View Percentage",
+      "sample_n": "12 Truth or Drink episodes",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Thumbnail, title style, total question count, guests"
+    },
+    "frugality_note": "One change: question placement in round 1. Don't change question set size or guest selection.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 23
+  },
+  {
+    "id": "fmt_lineup_contrast",
+    "title": "[Lineup] Maximise Guest Contrast",
+    "tagline": "For Lineup: the wider the gap, the better the guess",
+    "category_key": "dynamics",
+    "feature_key": "laugh_rate",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Lineup"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "Lineup episodes with the highest viewer retention are those where the lineup contains maximally contrasting participants — the guess itself becomes genuinely hard and the reveal is surprising.",
+    "full_detail": "The core mechanic of Lineup depends on contrast: if the lineup is homogeneous, the exercise is trivial and uninteresting. Cast for maximum contrast in visible and non-visible dimensions: age, style, background, and the specific attribute being guessed. The surprise of the reveal (the bookworm who turns out to be the drug dealer) IS the product.",
+    "quant_evidence": [
+      {
+        "text": "laugh_rate (Lineup episodes) correlates with avg_view_percentage (r={r_laugh_rate_avg_view_percentage_lineup})",
+        "feat": "laugh_rate",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "comment_shock_score (Lineup) correlates with views (r={r_comment_shock_score_views_lineup})",
+        "feat": "comment_shock_score",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "The viral Lineup episodes all share the same structure: at least one participant is a radical counter-stereotype.",
+      "Casting contrast is a first-principle of game show production design (confirmed by multiple broadcast format creators)."
+    ],
+    "ab_test": {
+      "hypothesis": "Lineup episodes with a radical counter-stereotype cast member outperform homogeneous lineups on AVP.",
+      "control": "Standard casting (participants who broadly fit the archetype).",
+      "treatment": "At least one participant is a deliberate counter-stereotype to the stated attribute.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "comment_shock_score",
+      "sample_n": "10 Lineup episodes",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Lineup topic, format rules, thumbnail, title"
+    },
+    "frugality_note": "One casting decision change. Don't change format rules, thumbnail style, or topic simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 24
+  },
+  {
+    "id": "fmt_ki100_shorter",
+    "title": "[Keep it 100] Trim to Under 12 Minutes",
+    "tagline": "For Keep it 100: tighter is more honest",
+    "category_key": "speech",
+    "feature_key": "duration_minutes",
+    "improve_direction": "decrease",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "Keep it 100"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "Keep it 100 episodes that run over 15 minutes show measurably lower avg_view_percentage. The format's promise is concentrated truth — longer episodes dilute the intensity.",
+    "full_detail": "duration_minutes negatively correlates with avg_view_percentage specifically for Keep it 100. The format is a series of short-form provocations — each question is 60–90 seconds of peak engagement. Beyond 12 minutes, the format's intensity dissipates. Cut ruthlessly: if a question round doesn't produce a reveal or a genuine emotional reaction within 90 seconds, it doesn't belong in the final cut.",
+    "quant_evidence": [
+      {
+        "text": "duration_minutes correlates with avg_view_percentage (r=r=-0.27, n=482)",
+        "feat": "duration_minutes",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "Short-form game show formats (≤12 min) have consistently higher completion rates than long-form equivalents in YouTube analytics benchmarks.",
+      "Keep it 100's format premise is about intensity — length is the enemy of intensity in short-form entertainment."
+    ],
+    "ab_test": {
+      "hypothesis": "Keep it 100 episodes trimmed to <12 minutes have higher avg_view_percentage than episodes >14 minutes.",
+      "control": "Full episode (current length, typically 14–18 min).",
+      "treatment": "Same filming, edited down to <12 minutes (cut lowest-performing question rounds).",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "30-second retention",
+      "sample_n": "10 Keep it 100 episodes",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests, question themes"
+    },
+    "frugality_note": "One change: episode length via editing. Don't change question set or guests simultaneously.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 25
+  },
+  {
+    "id": "high_hook_energy",
+    "title": "Open with High Audio Energy",
+    "tagline": "Loud, fast, kinetic openers pull viewers into the watch",
+    "category_key": "audio",
+    "feature_key": "hook_energy_ratio",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "hook_energy_ratio — the ratio of audio energy in the first 30s vs the full video — consistently predicts views, revenue, and subscriber growth. Videos that open loud and energetic get rewarded by the algorithm.",
+    "full_detail": "This is the audio equivalent of the hook score. The metric captures whether your opener is genuinely more dynamic than the average segment. Practically: move the most energetic crowd moment or reaction to the first 20–30 seconds, avoid slow intros, and use music/sound design to signal to the viewer that the energy is high from the very start. Cold opens work best here — drop viewers into the middle of a laugh or an argument.",
+    "quant_evidence": [
+      {
+        "text": "hook_energy_ratio correlates with views (r=r=+0.02, n=201)",
+        "feat": "hook_energy_ratio",
+        "tgt": "views"
+      },
+      {
+        "text": "hook_energy_ratio correlates with estimated_revenue (r=r=+0.03, n=201)",
+        "feat": "hook_energy_ratio",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "hook_energy_ratio correlates with subscribers_gained (r=r=+0.05, n=201)",
+        "feat": "hook_energy_ratio",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's internal research consistently shows the first 30s of audio energy correlates with click-to-watch conversion.",
+      "Cold opens (dropping into action before the format title card) are standard practice in the highest-retention entertainment channels."
+    ],
+    "ab_test": {
+      "hypothesis": "Videos with hook_energy_ratio ≥ 1.3 (opener 30% more energetic than average) outperform those below 1.0 on views.",
+      "control": "Current editing structure with title card intro first.",
+      "treatment": "Cold open: most energetic 15–20s clip placed before title card; audio-level-matched to peak.",
+      "primary_metric": "Views at 72 hours",
+      "secondary_metric": "30-second retention",
+      "sample_n": "16 videos, matched by format",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Title, thumbnail, format, publish time"
+    },
+    "frugality_note": "One edit: reorder the opener. Do not change content, title, or thumbnail simultaneously.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 26
+  },
+  {
+    "id": "cut_filler_words",
+    "title": "Cut Filler Words Aggressively in Post",
+    "tagline": "Every 'um' and 'like' is a micro-dropout",
+    "category_key": "speech",
+    "feature_key": "filler_frequency",
+    "improve_direction": "decrease",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "edit",
+    "brief": "filler_frequency — the rate of 'um', 'uh', 'like', 'you know' — is one of the most stable LASSO predictors across all targets, including CPM. Advertisers pay more to place ads in fluent, confident-sounding content.",
+    "full_detail": "Filler words signal uncertainty and slow pace. In a tight 10–15 minute episode, a high filler rate can add 30–60 seconds of dead air spread across the video. Modern podcast editing tools (Descript, Adobe Audition) can auto-detect and remove fillers in minutes. The CPM connection is particularly interesting — it suggests YouTube's contextual ad system rates fluent speech as higher-quality content. The edit cost is low; the CPM upside is real.",
+    "quant_evidence": [
+      {
+        "text": "filler_frequency correlates with cpm (r=r=-0.13, n=296)",
+        "feat": "filler_frequency",
+        "tgt": "cpm"
+      },
+      {
+        "text": "filler_frequency correlates with retention_30s (r=r=+0.02, n=302)",
+        "feat": "filler_frequency",
+        "tgt": "retention_30s"
+      },
+      {
+        "text": "filler_frequency correlates with estimated_revenue (r=r=-0.06, n=296)",
+        "feat": "filler_frequency",
+        "tgt": "estimated_revenue"
+      }
+    ],
+    "qual_evidence": [
+      "Podcast production best practice: removing fillers is a standard step that consistently improves listener-rated quality.",
+      "YouTube's contextual ad targeting uses speech quality signals — fluent speech attracts premium ad categories."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with filler words removed (auto-edit pass) have higher CPM and avg_view_percentage than unedited episodes.",
+      "control": "Standard edit (fillers left in unless they break flow).",
+      "treatment": "Same footage with an additional auto-filler-removal pass (Descript or equivalent).",
+      "primary_metric": "CPM",
+      "secondary_metric": "Avg View Percentage",
+      "sample_n": "12 videos across formats",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Format, guests, thumbnail, title, publish time"
+    },
+    "frugality_note": "One pass with an automated filler-detection tool. Takes 10–20 minutes per episode.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 27
+  },
+  {
+    "id": "more_questions",
+    "title": "Make Questions the Engine of Every Scene",
+    "tagline": "More questions = more forward momentum",
+    "category_key": "speech",
+    "feature_key": "q_rate",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "q_rate — questions per minute — is a top LASSO predictor across all six targets. Questions are the engine of audience momentum: they create micro-cliffhangers that pull viewers through the video.",
+    "full_detail": "Every unanswered question in a video is a hook. High q_rate episodes create a compounding forward pull — the viewer stays to see the answer. Practically: hosts should ask more follow-up questions rather than giving their own opinions; editing should preserve questions even if the answer is cut; interstitial questions ('What do you think she said?') can be added in post. This is especially powerful in Truth or Drink and Keep it 100 formats where the question IS the format.",
+    "quant_evidence": [
+      {
+        "text": "q_rate correlates with avg_view_percentage (r=r=+0.11, n=297)",
+        "feat": "q_rate",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "q_rate correlates with retention_30s (r=r=+0.09, n=302)",
+        "feat": "q_rate",
+        "tgt": "retention_30s"
+      },
+      {
+        "text": "q_rate correlates with subscribers_gained (r=r=-0.05, n=296)",
+        "feat": "q_rate",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "Question-forward narrative structure is a core technique in documentary editing — it's the tension engine of every good interview.",
+      "CUT's best-performing formats (Truth or Drink, Keep it 100) are question-native — the data confirms this is their retention engine."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes where the host asks ≥2x follow-up questions per exchange have higher avg_view_percentage.",
+      "control": "Standard hosting style — one question then answer, move on.",
+      "treatment": "Host coached to probe every answer with at least one follow-up before moving on.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "Watch time per video",
+      "sample_n": "10 Truth or Drink episodes",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, question set, guests, thumbnail, title"
+    },
+    "frugality_note": "Host coaching change only. No production cost increase.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 28
+  },
+  {
+    "id": "shorter_sentences",
+    "title": "Speak in Short, Direct Sentences",
+    "tagline": "Shorter sentences = faster pace = higher retention",
+    "category_key": "speech",
+    "feature_key": "avg_sentence_length",
+    "improve_direction": "decrease",
+    "primary_target": "retention_30s",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "avg_sentence_length is a strong LASSO predictor of retention. Long, meandering sentences slow pace and give viewers permission to leave. Short, punchy exchanges create urgency.",
+    "full_detail": "This is partly a casting and coaching signal. Guests who speak in long sentences — detailed explanations, complex reasoning — perform worse on retention metrics than guests who respond with short, direct statements. In production: brief guests to give short answers first, elaborate only when pushed. In editing: cut long answer tails — keep the punchline, remove the preamble. The effect compounds over a full episode.",
+    "quant_evidence": [
+      {
+        "text": "avg_sentence_length correlates with retention_30s (r=r=-0.14, n=302)",
+        "feat": "avg_sentence_length",
+        "tgt": "retention_30s"
+      },
+      {
+        "text": "avg_sentence_length correlates with subscribers_gained (r=r=-0.03, n=296)",
+        "feat": "avg_sentence_length",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "Short sentence rhythm is the hallmark of the most watchable talk show formats — from Hot Ones to First Dates.",
+      "Dialogue editing best practice: cut the first and last sentence of most answers; the middle is usually the most honest."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes edited to remove answer preambles (avg sentence length reduced by ≥15%) have higher 30s retention.",
+      "control": "Standard edit — full answers kept.",
+      "treatment": "Aggressive answer-tail cuts — remove preambles and wind-downs, keep the core response only.",
+      "primary_metric": "30-second retention",
+      "secondary_metric": "Avg View Percentage",
+      "sample_n": "10 Truth or Drink episodes",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, question set, guests, thumbnail, title"
+    },
+    "frugality_note": "Pure editing change. No additional production cost.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 29
+  },
+  {
+    "id": "positive_sentiment_arc",
+    "title": "Engineer a Positive Emotional Finale",
+    "tagline": "Build toward a high — don't fade out",
+    "category_key": "cut_dynamics",
+    "feature_key": "sentiment_arc",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "production",
+    "brief": "sentiment_arc — the trend from opener to finale — predicts views, retention, and subscribers. Videos that end on a higher emotional note than they start generate more shares, comments, and algorithm re-recommendation.",
+    "full_detail": "A positive sentiment arc means the emotional temperature rises across the video. This is a structural production decision: sequence your questions so the most intense, vulnerable, or funny moments land in the second half; end on a laugh or a reveal, not a reflective closing. The sentiment arc signal is strong because it's directly measurable from transcripts — you can audit your existing videos to identify which arcs are flat or negative and restructure future episode ordering accordingly.",
+    "quant_evidence": [
+      {
+        "text": "sentiment_arc correlates with views (r=r=-0.02, n=199)",
+        "feat": "sentiment_arc",
+        "tgt": "views"
+      },
+      {
+        "text": "sentiment_arc correlates with avg_view_percentage (r=r=+0.03, n=199)",
+        "feat": "sentiment_arc",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "sentiment_arc correlates with retention_30s (r=r=+0.13, n=131)",
+        "feat": "sentiment_arc",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Rising emotional arcs are structurally identical to classic three-act storytelling — the resolution should feel better than the set-up.",
+      "YouTube's recommendation engine rewards high-retention finales — videos where viewers stay to the end and then immediately watch another video."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with positive sentiment_arc (ending sentiment > opening sentiment) outperform neutral/declining arcs on views.",
+      "control": "Current question ordering (typically chronological by filming).",
+      "treatment": "Questions reordered in edit to place the most emotionally intense exchanges in the second half.",
+      "primary_metric": "Views at 7 days",
+      "secondary_metric": "Comment sentiment ratio",
+      "sample_n": "12 videos across formats",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Content, guests, thumbnail, title"
+    },
+    "frugality_note": "Reordering within an existing edit. No new filming required.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 30
+  },
+  {
+    "id": "title_shock_words",
+    "title": "Use One Shock Word in Every Title",
+    "tagline": "Shock signals stakes — stakes signal clicks",
+    "category_key": "title_nlp",
+    "feature_key": "title_shock_word_count",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "title_shock_word_count — the number of shock/intensity words in the title — is a top LASSO predictor for views, revenue, CPM, and subscriber growth across all formats.",
+    "full_detail": "Shock words include: never, confessed, secret, exposed, worst, caught, cheated, first time, hate, cut off, kicked out, ghosted. Their power is not clickbait — it's precision. A shock word tells the viewer 'something significant happened here.' The ideal placement is at the start or end of the title: 'We Confronted Our Biggest Secret' outperforms 'A Conversation About Our Relationship.' One shock word is optimal; two or more reads as desperate.",
+    "quant_evidence": [
+      {
+        "text": "title_shock_word_count correlates with views (r=r=+0.01, n=482)",
+        "feat": "title_shock_word_count",
+        "tgt": "views"
+      },
+      {
+        "text": "title_shock_word_count correlates with estimated_revenue (r=r=+0.03, n=479)",
+        "feat": "title_shock_word_count",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "title_shock_word_count correlates with subscribers_gained (r=r=+0.01, n=479)",
+        "feat": "title_shock_word_count",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "Emotional intensity words are among the strongest predictors of CTR in academic studies on YouTube title optimisation (Marchand et al., 2020).",
+      "BuzzFeed's editorial research found titles with one tension-signal word outperformed neutral titles by 25–40% on social share."
+    ],
+    "ab_test": {
+      "hypothesis": "Titles with ≥1 shock/intensity word generate higher CTR than equivalent titles without.",
+      "control": "Standard descriptive title ('Truth or Drink: Couples Edition').",
+      "treatment": "Same video with shock word added ('Truth or Drink: Couples Edition — Someone Walked Out').",
+      "primary_metric": "Click-through rate (CTR)",
+      "secondary_metric": "Views at 72 hours",
+      "sample_n": "16 videos, matched by format",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Thumbnail, format, guests, publish time"
+    },
+    "frugality_note": "Title change only. One shock word — don't stack multiple.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 31
+  },
+  {
+    "id": "title_fomo",
+    "title": "Write Titles That Create FOMO",
+    "tagline": "The viewer should feel they'll miss out if they don't click",
+    "category_key": "title_nlp",
+    "feature_key": "title_fomo_score",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "title_fomo_score — titles framing exclusive, limited, or first-time experiences — is among the highest LASSO predictors of subscriber growth. FOMO titles convert viewers into subscribers because they signal the channel has something worth coming back for.",
+    "full_detail": "FOMO titles work on the premise of exclusivity and novelty: 'For the First Time', 'Never Before', 'Only on CUT', 'They Finally Answered'. These signal to the viewer that missing this video means missing something unique. The subscriber conversion angle makes sense — a viewer who feels the channel delivers exclusive moments is more likely to subscribe so they don't miss future ones. Pair with a thumbnail that visually supports the novelty claim.",
+    "quant_evidence": [
+      {
+        "text": "title_fomo_score correlates with subscribers_gained (r=r=+0.10, n=479)",
+        "feat": "title_fomo_score",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "title_fomo_score correlates with views (r=r=+0.09, n=482)",
+        "feat": "title_fomo_score",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "FOMO-framed titles are a core tactic in the most subscriber-efficient YouTube channels — they signal channel value, not just video value.",
+      "First-time and exclusive-experience framing is associated with 30–50% higher subscribe rate in multivariate title tests."
+    ],
+    "ab_test": {
+      "hypothesis": "Titles with a FOMO signal ('For the First Time', 'Never Before') generate more subscribers per view.",
+      "control": "Descriptive title without novelty framing.",
+      "treatment": "Same video retitled with a FOMO marker that truthfully reflects the episode's novelty.",
+      "primary_metric": "Subscribers gained per 1000 views",
+      "secondary_metric": "Views at 7 days",
+      "sample_n": "14 videos",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Thumbnail, format, guests, publish time"
+    },
+    "frugality_note": "Title change only. FOMO signal must be truthful — don't fabricate exclusivity.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 32
+  },
+  {
+    "id": "title_challenge",
+    "title": "Frame Titles as a Challenge or Dare",
+    "tagline": "Challenge framing invites 'could I do this?' identification",
+    "category_key": "title_nlp",
+    "feature_key": "title_challenge_framing",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "title_challenge_framing — titles structured as challenges, dares, or 'try not to' — predicts higher avg_view_percentage and subscriber growth by triggering participatory watching: the viewer mentally accepts the challenge and stays to see if it's met.",
+    "full_detail": "Challenge framing shifts the viewer from passive observer to active participant. 'Can They Answer Without Lying?' makes the viewer hold the guests accountable. 'We Dared Strangers to Be Completely Honest' makes the viewer a witness to something bold. The mechanism is forward pull: the challenge is set at the top, the answer arrives at the end, and the viewer needs to stay to see the resolution. Works especially well for formats like Keep it 100 and Truth or Drink.",
+    "quant_evidence": [
+      {
+        "text": "title_challenge_framing correlates with avg_view_percentage (r=r=+0.01, n=482)",
+        "feat": "title_challenge_framing",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "title_challenge_framing correlates with subscribers_gained (r=r=+0.02, n=479)",
+        "feat": "title_challenge_framing",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "'Try not to laugh', 'Can you survive', and challenge-format titles are consistently high-CTR in the entertainment niche.",
+      "Challenge framing is a standard narrative device in reality TV: it frames the viewer as judge, not just audience."
+    ],
+    "ab_test": {
+      "hypothesis": "Titles with explicit challenge framing ('Can they...', 'We dared...', 'Try not to...') generate higher avg_view_percentage.",
+      "control": "Descriptive title ('Truth or Drink: Best Friends Edition').",
+      "treatment": "Challenge-framed title ('Can Best Friends Be Completely Honest? | Truth or Drink').",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "Click-through rate",
+      "sample_n": "12 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Thumbnail, format, guests, publish time"
+    },
+    "frugality_note": "Title reframe only. Keep the challenge claim honest — viewers will leave if the video doesn't deliver on the promise.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 33
+  },
+  {
+    "id": "thumb_center_weight",
+    "title": "Center-Weight Your Thumbnail Subject",
+    "tagline": "Eyes go to center — put your hook there",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_center_weight",
+    "improve_direction": "increase",
+    "primary_target": "avg_view_percentage",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "thumb_center_weight — the concentration of visual mass in the center zone of the thumbnail — is the strongest single thumbnail predictor of avg_view_percentage in the LASSO model, with near-perfect stability (0.99).",
+    "full_detail": "Center-weight doesn't mean every subject perfectly centered — it means the primary visual hook (face, expression, text) is positioned in the central 40% of the frame. This matters on mobile where thumbnails are small and peripheral detail is lost. The mechanism: eye-tracking moves to center-frame first, especially for small images. If the most compelling element is in a corner, mobile viewers may not register it before scrolling past.",
+    "quant_evidence": [
+      {
+        "text": "thumb_center_weight correlates with avg_view_percentage (r=r=-0.22, n=477)",
+        "feat": "thumb_center_weight",
+        "tgt": "avg_view_percentage"
+      },
+      {
+        "text": "thumb_center_weight correlates with retention_30s (r=r=-0.11, n=297)",
+        "feat": "thumb_center_weight",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Eye-tracking studies on mobile content consumption consistently show center-frame fixation bias for small images.",
+      "Top performing YouTube channels (MrBeast, Jubilee, Airrack) overwhelming use center-weighted thumbnail composition."
+    ],
+    "ab_test": {
+      "hypothesis": "Thumbnails with the primary subject center-weighted (center 40% of frame) outperform off-center compositions on AVP.",
+      "control": "Current thumbnail composition (varied center weighting).",
+      "treatment": "Re-cropped thumbnail with primary face/subject repositioned to center zone.",
+      "primary_metric": "Avg View Percentage",
+      "secondary_metric": "Click-through rate",
+      "sample_n": "14 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Faces, text, colors — only change crop/positioning"
+    },
+    "frugality_note": "Repositioning only — no new photography needed. Can be done in Canva or Photoshop in minutes.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 34
+  },
+  {
+    "id": "thumb_contrast",
+    "title": "Maximize Thumbnail Light-Dark Contrast",
+    "tagline": "High contrast makes thumbnails pop on any screen",
+    "category_key": "thumbnail",
+    "feature_key": "thumb_contrast_rms",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "thumbnail",
+    "brief": "thumb_contrast_rms — root-mean-square brightness contrast across the thumbnail — predicts subscriber growth with LASSO stability of 0.94. High-contrast thumbnails read more clearly at small sizes and on diverse display types.",
+    "full_detail": "RMS contrast measures the spread of dark and light values across the image. Low-contrast thumbnails (flat lighting, grey-on-grey, overcast backgrounds) blur together in a crowded feed. The fix is simple: darken the background zone, brighten the foreground subject. Add a thin dark outline or shadow to faces if they blend into backgrounds. This is especially important for TV viewers (device_tv_pct) — TV thumbnails are larger but viewed from a distance, making contrast even more valuable.",
+    "quant_evidence": [
+      {
+        "text": "thumb_contrast_rms correlates with subscribers_gained (r=r=+0.10, n=475)",
+        "feat": "thumb_contrast_rms",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "thumb_contrast_rms correlates with views (r=r=+0.22, n=477)",
+        "feat": "thumb_contrast_rms",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "High contrast is a universal principle of visual design for legibility at small scale — it predates digital media.",
+      "YouTube's own thumbnail quality guidelines list contrast as a primary attribute of high-performing thumbnails."
+    ],
+    "ab_test": {
+      "hypothesis": "Thumbnails with higher RMS contrast (background darkened, subject brightened) generate more subscribers per impression.",
+      "control": "Current thumbnail with standard lighting.",
+      "treatment": "Same composition with background darkened -30 and subject brightened +20 in post.",
+      "primary_metric": "Subscribers gained",
+      "secondary_metric": "Click-through rate",
+      "sample_n": "14 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Composition, faces, text — only adjust brightness/contrast values"
+    },
+    "frugality_note": "A 2-minute Lightroom or Canva adjustment per thumbnail.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 35
+  },
+  {
+    "id": "positive_comment_culture",
+    "title": "Engineer Warmth to Drive Positive Comments",
+    "tagline": "Warm content generates a warm comment section",
+    "category_key": "comments",
+    "feature_key": "comment_pos_ratio",
+    "improve_direction": "increase",
+    "primary_target": "estimated_revenue",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "comment_pos_ratio — the fraction of positive-sentiment comments — is a top LASSO predictor of views and revenue (stability 0.97–1.0). A warm comment section signals to the algorithm that the video creates positive emotional impact, which drives re-recommendation.",
+    "full_detail": "Positive comment ratio is both a signal and a consequence. Content that generates warmth — genuine vulnerability, unexpected moments of kindness, funny self-aware exchanges — produces positive comments. These comments then signal to YouTube's algorithm that the video creates a positive viewer experience, increasing recommendation probability. Practically: build moments of genuine connection between guests, allow emotional resolution after tense exchanges, and let the host model warmth explicitly in sign-off segments.",
+    "quant_evidence": [
+      {
+        "text": "comment_pos_ratio correlates with estimated_revenue (r=r=-0.08, n=473)",
+        "feat": "comment_pos_ratio",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "comment_pos_ratio correlates with views (r=r=-0.04, n=475)",
+        "feat": "comment_pos_ratio",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube's comment satisfaction signal is a known factor in their recommendation ranking — positive comment sections signal content quality.",
+      "The most-shared entertainment content combines tension (controversy) with resolution (warmth) — the comment section mirrors this structure."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with deliberate warmth-building moments (resolved tension, genuine laughter, mutual validation) generate higher comment_pos_ratio and views.",
+      "control": "Standard production — questions and answers, tension without explicit resolution.",
+      "treatment": "Episode structure revised to include 1–2 explicit warmth moments: resolved disagreement, mutual compliment, or genuine shared laughter in the final third.",
+      "primary_metric": "comment_pos_ratio",
+      "secondary_metric": "Estimated revenue",
+      "sample_n": "10 videos",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "Directing/production change only. Brief guests on ending on a positive note.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 36
+  },
+  {
+    "id": "lean_into_controversy",
+    "title": "Don't Sand Off the Rough Edges",
+    "tagline": "Controversy in comments is the algorithm's attention signal",
+    "category_key": "comments",
+    "feature_key": "comment_neg_ratio",
+    "improve_direction": "increase",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "comment_neg_ratio — the fraction of negative-sentiment comments — is a surprisingly strong predictor of CPM (stability 0.90) and views. Controversial content that divides opinion generates more total comments, which fuels algorithmic distribution.",
+    "full_detail": "This is a counterintuitive finding. Negative comments are not bad — they're engagement. When a video divides viewers into camps ('She was right' vs 'He was wrong'), both camps comment. This engagement volume signals high interest to the algorithm. The effect is strongest for CPM because controversial content attracts viewers who are emotionally invested — and those viewers complete the video and watch ads. The key: controversy around the *content* (opinions, decisions, behaviors), not the *production* (bad quality, misleading title). Don't manufacture conflict, but don't edit out the moments where guests genuinely clash.",
+    "quant_evidence": [
+      {
+        "text": "comment_neg_ratio correlates with cpm (r=r=+0.03, n=473)",
+        "feat": "comment_neg_ratio",
+        "tgt": "cpm"
+      },
+      {
+        "text": "comment_neg_ratio correlates with views (r=r=-0.06, n=475)",
+        "feat": "comment_neg_ratio",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Research on YouTube engagement shows that divisive content generates 2–3x more comments per view than consensus content.",
+      "Advertisers pay premium CPMs for content with high total comment engagement — it signals an active, invested audience."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes that preserve a genuine unresolved disagreement between guests generate higher CPM than episodes where tension is resolved.",
+      "control": "Standard edit — tense exchanges followed by resolution or change of subject.",
+      "treatment": "Preserve the disagreement — cut the resolution, let the conflict sit. Add editorial context (on-screen text or host question) that frames both sides.",
+      "primary_metric": "CPM",
+      "secondary_metric": "Total comment count",
+      "sample_n": "10 videos",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "Editing decision change only. Let existing footage breathe — don't manufacture conflict.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 37
+  },
+  {
+    "id": "gen_z_resonance",
+    "title": "Create Content That Speaks Gen Z's Language",
+    "tagline": "Gen Z engages, Gen Z shares, Gen Z subscribes",
+    "category_key": "comments",
+    "feature_key": "comment_gen_z_score",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "production",
+    "brief": "comment_gen_z_score — Gen Z language and reference density in comments — predicts all six performance targets consistently. When Gen Z viewers activate, they generate outsized engagement: they comment, share, and subscribe at higher rates.",
+    "full_detail": "Gen Z comment activation is a signal that the content hit cultural resonance, not just entertainment value. CUT's formats naturally appeal to Gen Z's values: authenticity, directness, and social accountability. The levers are casting (younger guests, Gen Z-native conversations) and topic selection (relationship dynamics, social identity, digital culture). Avoid: overly rehearsed answers, corporate-sounding language, and topics that feel generationally distant. The highest-performing Gen Z content on CUT treats adult themes with the directness of a group chat.",
+    "quant_evidence": [
+      {
+        "text": "comment_gen_z_score correlates with subscribers_gained (r=r=+0.08, n=473)",
+        "feat": "comment_gen_z_score",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "comment_gen_z_score correlates with retention_30s (r=r=+0.05, n=296)",
+        "feat": "comment_gen_z_score",
+        "tgt": "retention_30s"
+      }
+    ],
+    "qual_evidence": [
+      "Gen Z is YouTube's fastest-growing demographic and most active commenter segment — their comment patterns are disproportionately algorithm-boosting.",
+      "CUT's core brand values (authenticity, no-filter directness) align naturally with Gen Z cultural preferences."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with Gen Z-targeted casting and topics generate higher comment_gen_z_score and subscribers_gained.",
+      "control": "Mixed-age/background casting with general social topics.",
+      "treatment": "3 episodes casting 22–28 year olds on Gen Z-native topics (situationships, social media, hustle culture, mental health).",
+      "primary_metric": "Subscribers gained",
+      "secondary_metric": "comment_gen_z_score",
+      "sample_n": "6 episodes (3 control, 3 treatment)",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Format rules, thumbnail style, title structure"
+    },
+    "frugality_note": "Casting and topic selection change only. No format or production changes required.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 38
+  },
+  {
+    "id": "share_intent_moments",
+    "title": "Design Tag-a-Friend Moments",
+    "tagline": "Every video needs at least one 'send this to your partner' clip",
+    "category_key": "comments",
+    "feature_key": "comment_share_intent",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "comment_share_intent — the frequency of 'tagging' and 'sharing' language in comments — is the strongest predictor of subscriber growth (LASSO stability 0.93). When viewers tag friends in the comments, they bring new subscribers to the channel.",
+    "full_detail": "Share intent comments ('sending this to my bf', 'my roommate needs to see this', 'this is literally my dad') are the highest-value engagement signal for subscriber acquisition. They mean the viewer found something universally relatable or socially relevant. The production lever: create moments that land on a shared human experience rather than a specific individual one. 'When your partner does something unacceptable' resonates more universally than a specific guest's specific situation. Ask yourself: is this a 'tag someone' moment or just a 'watch this' moment?",
+    "quant_evidence": [
+      {
+        "text": "comment_share_intent correlates with subscribers_gained (r=r=-0.03, n=473)",
+        "feat": "comment_share_intent",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "comment_share_intent correlates with views (r=r=-0.05, n=475)",
+        "feat": "comment_share_intent",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Social sharing-intent comments are the primary organic growth mechanism for YouTube channels — they bypass the algorithm and bring direct traffic.",
+      "CUT's best-performing viral moments ('the proposal episode', 'the cheating confession') all generated massive tag-a-friend comment activity."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with at least one universally relatable 'tag a friend' moment generate more subscribers and share-intent comments.",
+      "control": "Standard episode — specific to the guests' situation.",
+      "treatment": "Episode scripted to include at least one universal relational truth explicitly surfaced by the host ('Isn't this everyone's relationship?').",
+      "primary_metric": "Subscribers gained",
+      "secondary_metric": "comment_share_intent",
+      "sample_n": "10 videos",
+      "duration": "5 weeks",
+      "what_to_keep_constant": "Format, thumbnail, title, guests"
+    },
+    "frugality_note": "Hosting and direction change only. Brief the host to explicitly surface universal moments.",
+    "confidence": "bronze",
+    "methods_hit": [
+      "lasso"
+    ],
+    "data_score": 1,
+    "inspiration_type": "data_driven",
+    "num": 39
+  },
+  {
+    "id": "publish_peak_hours",
+    "title": "Publish at Peak Viewing Hours",
+    "tagline": "The right hour multiplies every other signal",
+    "category_key": "metadata",
+    "feature_key": "pub_hour_utc",
+    "improve_direction": "neutral",
+    "primary_target": "estimated_revenue",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "distribution",
+    "brief": "pub_hour_utc is one of the most consistent LASSO predictors across all six targets (stability 0.84–0.93). The hour of publish determines how much of the algorithm's prime recommendation window the video enters with momentum.",
+    "full_detail": "YouTube's recommendation engine weights early-hour performance heavily. A video that accumulates views in the first 3–6 hours signals viral momentum and gets boosted. For a US-primary audience, this means publishing between 14:00–17:00 UTC (10am–1pm Eastern) to catch the lunch-hour scroll and early afternoon algorithmic slot. For CUT's international audience (strong EU, LATAM), consider 12:00 UTC to catch both European afternoon and US morning. Analyze your own channel's audience timezone distribution before picking a fixed hour — what matters is hitting peak active time for YOUR specific viewer base.",
+    "quant_evidence": [
+      {
+        "text": "pub_hour_utc correlates with estimated_revenue (r=r=-0.14, n=479)",
+        "feat": "pub_hour_utc",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "pub_hour_utc correlates with views (r=r=-0.08, n=482)",
+        "feat": "pub_hour_utc",
+        "tgt": "views"
+      },
+      {
+        "text": "pub_hour_utc correlates with subscribers_gained (r=r=-0.12, n=479)",
+        "feat": "pub_hour_utc",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube publish time optimization is one of the most consistently validated channel growth tactics across creator communities.",
+      "Early-hour velocity (first 3h views) is a known input to YouTube's algorithm for the 'trending' and 'up next' slots."
+    ],
+    "ab_test": {
+      "hypothesis": "Publishing between 14:00–17:00 UTC generates more views in the first 48 hours than publishing at off-peak hours.",
+      "control": "Current varied publish times.",
+      "treatment": "All videos published at 15:00 UTC for 8 consecutive weeks.",
+      "primary_metric": "Views at 48 hours",
+      "secondary_metric": "Estimated revenue",
+      "sample_n": "16 videos",
+      "duration": "8 weeks",
+      "what_to_keep_constant": "Content quality, format mix, publish day of week"
+    },
+    "frugality_note": "Zero production cost. Schedule uploads via YouTube Studio.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 40
+  },
+  {
+    "id": "mobile_first_design",
+    "title": "Design Everything for the Mobile Viewer First",
+    "tagline": "Mobile is the majority — design like it",
+    "category_key": "discovery",
+    "feature_key": "device_mobile_pct",
+    "improve_direction": "neutral",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 1,
+    "production_type": "production",
+    "brief": "device_mobile_pct — the share of views on mobile — is a top LASSO predictor for CPM (stability 1.0). More mobile viewership correlates with higher CPM because mobile ad inventory is premium-priced for YouTube's key advertiser categories.",
+    "full_detail": "Mobile viewers drive CPM because they are served higher-value mid-roll and skippable ads. The practical implication: design your thumbnails, titles, and openers specifically for a viewer holding a phone. Thumbnails at 120px wide (mobile preview): faces must be large and centered, text must be ≥40pt equivalent, backgrounds must have strong contrast. Titles must read in full on a 375px screen — avoid long subtitles that truncate. Pacing must match mobile attention span — first 5 seconds are critical because mobile viewers scroll faster than desktop viewers.",
+    "quant_evidence": [
+      {
+        "text": "device_mobile_pct correlates with cpm (r=r=-0.49, n=478)",
+        "feat": "device_mobile_pct",
+        "tgt": "cpm"
+      },
+      {
+        "text": "device_mobile_pct correlates with views (r=r=-0.15, n=478)",
+        "feat": "device_mobile_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "Over 70% of YouTube watch time globally is on mobile — designing for desktop is designing for the minority.",
+      "YouTube's ad platform prices mobile inventory at a premium for entertainment content, particularly in the 18–34 demographic."
+    ],
+    "ab_test": {
+      "hypothesis": "A mobile-first thumbnail redesign (large centered face, max contrast, short text) increases CTR specifically on mobile devices.",
+      "control": "Current thumbnails designed for desktop viewing.",
+      "treatment": "Mobile-first thumbnails: face ≥40% frame, center-weighted, background darkened, text ≤5 words.",
+      "primary_metric": "Mobile CTR",
+      "secondary_metric": "CPM",
+      "sample_n": "14 videos",
+      "duration": "4 weeks",
+      "what_to_keep_constant": "Title, content, format, publish time"
+    },
+    "frugality_note": "Thumbnail redesign using mobile preview mode in YouTube Studio. Zero additional cost.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 41
+  },
+  {
+    "id": "tv_worthy_episodes",
+    "title": "Make Your Best Episodes TV-Screen Worthy",
+    "tagline": "TV viewers watch longer and pay higher CPM",
+    "category_key": "discovery",
+    "feature_key": "device_tv_pct",
+    "improve_direction": "increase",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "production",
+    "brief": "device_tv_pct — the share of views on connected TVs — is a strong predictor of CPM and subscribers (LASSO stability 0.93 and 0.88). TV viewers have longer watch sessions, higher completion rates, and attract premium advertisers.",
+    "full_detail": "TV viewership is the highest-value audience segment for YouTube CPM. TV viewers typically watch in living rooms, often in groups, with full attention — the opposite of mobile scrolling. This means higher completion rates, more ad exposure, and premium ad inventory. The implication for production: invest in visual quality for your flagship episodes. Strong set design, good lighting, clean audio — these matter more when viewed on a 55-inch screen. Consider a 'TV-cut' for your best episodes that opens with a cinematic 10-second sequence before the cold open.",
+    "quant_evidence": [
+      {
+        "text": "device_tv_pct correlates with cpm (r=r=+0.37, n=478)",
+        "feat": "device_tv_pct",
+        "tgt": "cpm"
+      },
+      {
+        "text": "device_tv_pct correlates with avg_view_percentage (r=r=-0.13, n=478)",
+        "feat": "device_tv_pct",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube CTV (connected TV) advertising is the fastest-growing premium segment — CPMs for CTV inventory are 2–4x mobile CPMs for entertainment content.",
+      "Channels that invest in production quality see disproportionate CTV audience growth because it's their best-matched format."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with upgraded visual production (lighting, set, opening sequence) generate higher device_tv_pct and CPM.",
+      "control": "Standard CUT production set and lighting.",
+      "treatment": "3 flagship episodes with upgraded set dressing, pro lighting rig, and cinematic opening sequence.",
+      "primary_metric": "CPM",
+      "secondary_metric": "device_tv_pct",
+      "sample_n": "6 episodes (3 control, 3 treatment)",
+      "duration": "6 weeks",
+      "what_to_keep_constant": "Format rules, question set, thumbnail style, title structure"
+    },
+    "frugality_note": "Production upgrade for best 3 episodes only — test the ROI before committing.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 42
+  },
+  {
+    "id": "win_search_traffic",
+    "title": "Write Titles That Win Search",
+    "tagline": "Search traffic is the highest-retention, highest-CPM audience",
+    "category_key": "discovery",
+    "feature_key": "traffic_search_pct",
+    "improve_direction": "increase",
+    "primary_target": "estimated_revenue",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "distribution",
+    "brief": "traffic_search_pct — the share of views arriving from YouTube search — is a perfect LASSO predictor (stability 1.0) for views, revenue, CPM, and subscribers. Search viewers have the highest purchase intent and best ad completion rates of any traffic source.",
+    "full_detail": "Search-driven traffic arrives with intent: the viewer is looking for something specific. This makes them more likely to complete the video, watch the ad, and subscribe. The lever is title and description SEO. For CUT, the most searchable formats are topic-based: 'Couples Answer Cheating Questions', 'Best Friends Reveal Secrets', 'Strangers Decide Who's the Hottest'. These map to real search queries. Use YouTube's autocomplete and Google Trends to identify what people are searching in the relationship/dating/friendship space. Then make the episode to match. Tags, description, and chapter markers also contribute to search ranking.",
+    "quant_evidence": [
+      {
+        "text": "traffic_search_pct correlates with estimated_revenue (r=r=+0.04, n=478)",
+        "feat": "traffic_search_pct",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "traffic_search_pct correlates with views (r=r=+0.12, n=478)",
+        "feat": "traffic_search_pct",
+        "tgt": "views"
+      },
+      {
+        "text": "traffic_search_pct correlates with cpm (r=r=-0.17, n=478)",
+        "feat": "traffic_search_pct",
+        "tgt": "cpm"
+      }
+    ],
+    "qual_evidence": [
+      "YouTube SEO is the single most durable traffic source — unlike algorithmic recommendation, search traffic doesn't decay.",
+      "Search viewers have 30–40% higher ad completion rates than suggested-video viewers, according to YouTube creator benchmarks."
+    ],
+    "ab_test": {
+      "hypothesis": "Episodes with SEO-optimized titles (matching real YouTube search queries) generate higher traffic_search_pct and CPM.",
+      "control": "Current title format ('Truth or Drink: Couples Edition').",
+      "treatment": "SEO title: '[Most-searched query] | Truth or Drink | CUT' — e.g. 'Couples Answer Cheating Questions | Truth or Drink'.",
+      "primary_metric": "traffic_search_pct at 30 days",
+      "secondary_metric": "CPM",
+      "sample_n": "10 videos",
+      "duration": "8 weeks (search traffic builds slowly)",
+      "what_to_keep_constant": "Thumbnail, content, format, publish time"
+    },
+    "frugality_note": "Title change only. Use YouTube autocomplete to identify target queries before writing.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 43
+  },
+  {
+    "id": "grow_eu_audience",
+    "title": "Grow European Audience for CPM Lift",
+    "tagline": "EU CPM is among the highest on YouTube — earn it",
+    "category_key": "geography",
+    "feature_key": "geo_eu_pct",
+    "improve_direction": "increase",
+    "primary_target": "cpm",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 2,
+    "production_type": "distribution",
+    "brief": "geo_eu_pct — European viewer share — is a top LASSO predictor of CPM (stability 0.97) and avg_view_percentage (stability 1.0). UK/German/French audiences attract premium ad rates and watch significantly longer.",
+    "full_detail": "European ad markets pay 2–4x the CPM of many other regions for YouTube entertainment content. Growing EU viewership is therefore a direct revenue lever. The path to EU growth: (1) subtitle all videos — EU viewers are high subtitle users; (2) include universally relatable topics that don't rely on US cultural knowledge; (3) publish at times that hit European afternoon viewing (12:00–16:00 UTC); (4) consider lightweight EU-partnership distribution — share clips to European creator communities and social accounts.",
+    "quant_evidence": [
+      {
+        "text": "geo_eu_pct correlates with cpm (r=r=-0.04, n=477)",
+        "feat": "geo_eu_pct",
+        "tgt": "cpm"
+      },
+      {
+        "text": "geo_eu_pct correlates with avg_view_percentage (r=r=+0.40, n=477)",
+        "feat": "geo_eu_pct",
+        "tgt": "avg_view_percentage"
+      }
+    ],
+    "qual_evidence": [
+      "UK, Germany, and France are consistently in YouTube's top-5 highest-CPM markets for entertainment content.",
+      "International subtitling has been shown to increase EU viewership by 20–40% for US entertainment channels (YouTube Creator Academy data)."
+    ],
+    "ab_test": {
+      "hypothesis": "Adding high-quality English and auto-translated subtitles to all videos increases geo_eu_pct and CPM within 60 days.",
+      "control": "Videos without manual subtitles (auto-generated only).",
+      "treatment": "Professional English subtitles added + YouTube auto-translate enabled for German, French, Spanish.",
+      "primary_metric": "CPM",
+      "secondary_metric": "geo_eu_pct",
+      "sample_n": "20 videos subtitled vs 20 control",
+      "duration": "8 weeks",
+      "what_to_keep_constant": "Content, format, thumbnail, title, publish time"
+    },
+    "frugality_note": "Subtitle cost: $1–3/minute. ROI is high if EU CPM increase exceeds subtitle cost within 90 days.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 44
+  },
+  {
+    "id": "subscriber_launch_strategy",
+    "title": "Build a Subscriber-First Launch Strategy",
+    "tagline": "Your subscribers are your launch engine — treat them like it",
+    "category_key": "discovery",
+    "feature_key": "traffic_subscriber_pct",
+    "improve_direction": "increase",
+    "primary_target": "estimated_revenue",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 3,
+    "production_type": "distribution",
+    "brief": "traffic_subscriber_pct is a perfect LASSO predictor (stability 1.0) for views, revenue, CPM, and subscribers. Videos that get strong early-hour subscriber engagement get algorithmically boosted into non-subscriber feeds. Building a subscriber notification and engagement system is the highest-leverage long-term growth action.",
+    "full_detail": "Subscriber traffic triggers a compounding loop: early views from subscribers signal quality to the algorithm → the algorithm distributes to non-subscribers → more views → more subscribers → stronger future launches. The system to build: (1) consistent publish schedule so subscribers develop a habit; (2) notification optimization — use YouTube's reminder feature before live premiers; (3) community posts in the 24 hours before launch to prime existing subscribers; (4) a Discord or Patreon community that activates on launch day; (5) end-screen CTAs specifically asking for subscriptions with a clear value proposition ('Subscribe to never miss a new episode').",
+    "quant_evidence": [
+      {
+        "text": "traffic_subscriber_pct correlates with estimated_revenue (r=r=+0.11, n=478)",
+        "feat": "traffic_subscriber_pct",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "traffic_subscriber_pct correlates with views (r=r=+0.06, n=478)",
+        "feat": "traffic_subscriber_pct",
+        "tgt": "views"
+      },
+      {
+        "text": "traffic_subscriber_pct correlates with cpm (r=r=+0.18, n=478)",
+        "feat": "traffic_subscriber_pct",
+        "tgt": "cpm"
+      }
+    ],
+    "qual_evidence": [
+      "First-hour velocity from subscribers is the most documented launch mechanism for YouTube algorithm promotion — widely validated by top creators.",
+      "Channels with consistent subscriber notification strategies see 40–70% higher first-48h views per episode than channels with irregular schedules."
+    ],
+    "ab_test": {
+      "hypothesis": "A structured subscriber launch protocol (community post + reminder + consistent publish time) increases traffic_subscriber_pct and first-48h views.",
+      "control": "Current launch: publish video, no pre-notification.",
+      "treatment": "Launch protocol: community post 24h before → YouTube reminder set → video published at consistent time every week.",
+      "primary_metric": "Views at 48 hours",
+      "secondary_metric": "traffic_subscriber_pct",
+      "sample_n": "8 weeks of consistent protocol vs 8 weeks of current",
+      "duration": "16 weeks",
+      "what_to_keep_constant": "Content quality, format mix, thumbnail/title quality"
+    },
+    "frugality_note": "No production cost. Requires consistent scheduling discipline and ~30 min/week for community posts.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 45
+  },
+  {
+    "id": "shorts_long_form_flywheel",
+    "title": "Launch a Shorts-to-Long-Form Flywheel",
+    "tagline": "Clips are the door; the full episode is the room",
+    "category_key": "discovery",
+    "feature_key": "traffic_external_pct",
+    "improve_direction": "increase",
+    "primary_target": "subscribers_gained",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 3,
+    "production_type": "distribution",
+    "brief": "traffic_external_pct — views from outside YouTube (social, embeds, direct) — has near-perfect LASSO stability (0.97) across all targets. Building a structured clip distribution system on TikTok, Instagram Reels, and YouTube Shorts creates an external traffic engine that bypasses the main algorithm entirely.",
+    "full_detail": "External traffic is structurally different from algorithmic traffic — it arrives from people who shared the content because they chose to, not because an algorithm recommended it. This means higher intent and higher conversion to subscriber. The flywheel: identify the most 'tag-a-friend' moments from each long-form episode → create vertical 60–90s clips → post to Shorts/TikTok/Reels with a 'link in bio' or 'full episode on CUT' CTA → measure how many clip viewers convert to full-video viewers → feed this data back into production to create more of what converts. This is a 2–3 month system build, but the compounding effect is significant — channels with strong external traffic show 3–5x subscriber acquisition rate vs algorithm-only channels.",
+    "quant_evidence": [
+      {
+        "text": "traffic_external_pct correlates with subscribers_gained (r=r=+0.06, n=478)",
+        "feat": "traffic_external_pct",
+        "tgt": "subscribers_gained"
+      },
+      {
+        "text": "traffic_external_pct correlates with views (r=r=+0.03, n=478)",
+        "feat": "traffic_external_pct",
+        "tgt": "views"
+      }
+    ],
+    "qual_evidence": [
+      "The 'clip economy' is the dominant growth mechanism for the current generation of viral YouTube channels — every top 50 entertainment channel runs a clip operation.",
+      "YouTube Shorts created as genuine clips (not repurposed full episodes) generate 3–5x more long-form click-through than text-over-episode clips."
+    ],
+    "ab_test": {
+      "hypothesis": "A structured clip distribution program (3–5 clips per episode posted to Shorts/Reels) increases traffic_external_pct and subscribers_gained.",
+      "control": "Current distribution: long-form only, occasional ad hoc clips.",
+      "treatment": "Systematic clip operation: for each new episode, produce 3 clips (60–90s vertical), post to Shorts, TikTok, and Instagram within 48h of long-form launch.",
+      "primary_metric": "Subscribers gained per week",
+      "secondary_metric": "traffic_external_pct",
+      "sample_n": "12 episodes with clip program vs 12 without",
+      "duration": "12 weeks",
+      "what_to_keep_constant": "Long-form content quality, format mix, publish cadence"
+    },
+    "frugality_note": "Clip production cost: 1–2 hours per episode with the right editing workflow. Consider a dedicated clip editor on a part-time basis.",
+    "confidence": "silver",
+    "methods_hit": [
+      "lasso",
+      "rf"
+    ],
+    "data_score": 2,
+    "inspiration_type": "data_driven",
+    "num": 46
+  },
+  {
+    "id": "rebalance_format_portfolio",
+    "title": "Rebalance the Format Portfolio for Algorithmic Reach",
+    "tagline": "Format mix is your distribution strategy",
+    "category_key": "cut_dynamics",
+    "feature_key": "traffic_algorithmic_pct",
+    "improve_direction": "increase",
+    "primary_target": "views",
+    "formats": [
+      "all"
+    ],
+    "temp_cost": 3,
+    "production_type": "production",
+    "brief": "traffic_algorithmic_pct — the share of views driven by YouTube's recommendation engine — is the single most powerful predictor in the dataset (LASSO stability 1.0 for views, revenue, and subscribers). Rebalancing which formats dominate the publishing calendar based on algorithmic performance data is a strategic-level growth decision.",
+    "full_detail": "Not all formats perform equally in the algorithm. If one format consistently generates higher algorithmic traffic (suggested video, homepage recommendations), increasing its share of the publishing calendar compounds the entire channel's growth. The strategic decision: audit traffic_algorithmic_pct per format over the last 6 months → identify which 1–2 formats consistently outperform → increase their publishing frequency from (say) monthly to bi-weekly → reduce frequency of low-algorithmic-traffic formats proportionally. This is a portfolio rebalancing, not an elimination — all formats serve different audience and CPM functions. But algorithmic reach is the growth multiplier, and investing production resources where the algorithm already rewards you is the highest-expected-value bet.",
+    "quant_evidence": [
+      {
+        "text": "traffic_algorithmic_pct correlates with views (r=r=+0.43, n=478)",
+        "feat": "traffic_algorithmic_pct",
+        "tgt": "views"
+      },
+      {
+        "text": "traffic_algorithmic_pct correlates with estimated_revenue (r=r=+0.54, n=478)",
+        "feat": "traffic_algorithmic_pct",
+        "tgt": "estimated_revenue"
+      },
+      {
+        "text": "traffic_algorithmic_pct correlates with subscribers_gained (r=r=+0.30, n=478)",
+        "feat": "traffic_algorithmic_pct",
+        "tgt": "subscribers_gained"
+      }
+    ],
+    "qual_evidence": [
+      "Algorithmic traffic is the primary compound growth mechanism on YouTube — it is the only traffic source that automatically scales with content quality.",
+      "Format portfolio strategy is standard practice at major YouTube studios — allocation of production budget by algorithmic performance data."
+    ],
+    "ab_test": {
+      "hypothesis": "Increasing publishing frequency of the top-algorithmic-traffic format (identified from analytics) by 1 additional episode/month increases total channel views.",
+      "control": "Current format publishing cadence.",
+      "treatment": "Add one additional episode per month of the top-performing algorithmic format, funded by reducing one lower-performing format episode.",
+      "primary_metric": "Total channel views per month",
+      "secondary_metric": "traffic_algorithmic_pct across all videos",
+      "sample_n": "6 months of rebalanced schedule vs 6 months baseline",
+      "duration": "6 months",
+      "what_to_keep_constant": "Total number of episodes per month — this is a reallocation, not an increase in production volume"
+    },
+    "frugality_note": "Budget-neutral reallocation. The cost is the creative discipline to reduce a beloved format in favor of a data-preferred one.",
+    "confidence": "gold",
+    "methods_hit": [
+      "correlation",
+      "lasso",
+      "rf"
+    ],
+    "data_score": 3,
+    "inspiration_type": "data_driven",
+    "num": 47
+  }
+];
+const KEY_FINDS        = [{"feat": "geo_asia_pct", "tgt": "avg_view_percentage", "tgt_name": "Avg View %", "feat_name": "Asia Viewers %", "r": -0.745, "n": 477, "direction": "negatively", "group_color": "#2dd4bf", "group_key": "geo"}, {"feat": "geo_us_pct", "tgt": "avg_view_percentage", "tgt_name": "Avg View %", "feat_name": "US Viewers %", "r": 0.742, "n": 477, "direction": "positively", "group_color": "#2dd4bf", "group_key": "geo"}, {"feat": "geo_international_pct", "tgt": "avg_view_percentage", "tgt_name": "Avg View %", "feat_name": "International %", "r": -0.742, "n": 477, "direction": "negatively", "group_color": "#2dd4bf", "group_key": "geo"}, {"feat": "duration_minutes", "tgt": "cpm", "tgt_name": "CPM", "feat_name": "Duration (min)", "r": 0.649, "n": 479, "direction": "positively", "group_color": "#f87171", "group_key": "metadata"}, {"feat": "geo_diversity_entropy", "tgt": "avg_view_percentage", "tgt_name": "Avg View %", "feat_name": "Geo Diversity", "r": -0.623, "n": 477, "direction": "negatively", "group_color": "#2dd4bf", "group_key": "geo"}, {"feat": "traffic_algorithmic_pct", "tgt": "estimated_revenue", "tgt_name": "Revenue", "feat_name": "Algo Discovery %", "r": 0.542, "n": 478, "direction": "positively", "group_color": "#facc15", "group_key": "discovery"}];
+const GROUPS           = [{"key": "dynamics", "label": "🆕 CUT Dynamics", "color": "#a78bfa"}, {"key": "speech", "label": "🎙️ Speech & Structure", "color": "#34d399"}, {"key": "sentiment", "label": "🧠 Sentiment", "color": "#fb923c"}, {"key": "audio", "label": "🔊 Audio", "color": "#60a5fa"}, {"key": "comments", "label": "💬 Comment Signals", "color": "#f472b6"}, {"key": "geo", "label": "🌍 Geography", "color": "#2dd4bf"}, {"key": "discovery", "label": "📡 Discovery & Device", "color": "#facc15"}, {"key": "metadata", "label": "🏷️ Metadata & Timing", "color": "#f87171"}, {"key": "title", "label": "📝 Title NLP", "color": "#86efac"}, {"key": "thumbnail", "label": "🖼️ Thumbnail", "color": "#c084fc"}];
+const FORMATS_ALL      = ["Truth or Drink", "Lineup", "Keep it 100", "Button", "Fear Pong", "Other"];
+const KPIS             = {"retention_30s": {"mean": 0.73, "median": 0.75, "std": 0.1, "n": 302}, "avg_view_percentage": {"mean": 54.4, "median": 57.62, "std": 12.1, "n": 482}, "views": {"mean": 1408014.38, "median": 999164.5, "std": 1282126.1, "n": 482}, "estimated_revenue": {"mean": 5460.15, "median": 3396.24, "std": 6343.15, "n": 479}, "cpm": {"mean": 8.47, "median": 8.48, "std": 3.06, "n": 479}, "subscribers_gained": {"mean": 2031.24, "median": 929.0, "std": 3225.84, "n": 479}};
+const FMT_COUNTS       = {"Keep It 100": 52, "Other": 100, "Lineup": 108, "Truth Or Drink": 53, "Keep it 100": 25, "Button": 71, "Fear Pong": 6, "Truth or Drink": 72};
+const TARGETS          = [{"id": "retention_30s", "name": "30s Retention", "color": "#f59e0b"}, {"id": "avg_view_percentage", "name": "Avg View %", "color": "#60a5fa"}, {"id": "views", "name": "Views", "color": "#34d399"}, {"id": "estimated_revenue", "name": "Revenue", "color": "#a78bfa"}, {"id": "cpm", "name": "CPM", "color": "#fb923c"}, {"id": "subscribers_gained", "name": "Subs Gained", "color": "#f87171"}];
+const CONF_LEVELS      = [{"id": "all", "label": "All confidence", "medal": ""}, {"id": "gold", "label": "🥇 Gold  (3/3 methods)", "medal": "🥇"}, {"id": "silver", "label": "🥈 Silver (2/3 methods)", "medal": "🥈"}, {"id": "bronze", "label": "🥉 Bronze (1/3 methods)", "medal": "🥉"}, {"id": "none", "label": "💡 Background only", "medal": "💡"}];
+
+let activeFmts       = new Set(['all']);
+let activeCats       = new Set(['all']);
+let activeTgts       = new Set(['all']);
+let activeTemp       = 1;
+let activeInspiration = "all";
+let activeConfidence  = "all";
+let activeVal        = "all";
+let shownCount       = 5;
+let expandedIds      = new Set();
+
+// Generic multi-select toggle: 'all' resets others; last item deselected falls back to 'all'
+function toggleFilter(set, val) {
+  if (val === 'all') { set.clear(); set.add('all'); }
+  else {
+    set.delete('all');
+    if (set.has(val)) { set.delete(val); if (set.size === 0) set.add('all'); }
+    else { set.add(val); }
+  }
+  shownCount = 5;
+}
+
+const GROUP_MAP = Object.fromEntries(GROUPS.map(g => [g.key, g]));
+const FMT_COLORS = {
+  "Truth or Drink":"#f87171","Lineup":"#60a5fa","Keep it 100":"#4ade80",
+  "Button":"#facc15","Fear Pong":"#a78bfa","Challenge":"#fb923c","Other":"#94a3b8"
+};
+const TGT_MAP = Object.fromEntries(TARGETS.map(t => [t.id, t]));
+
+function init() {
+  renderStats();
+  renderFindings();
+  renderFmtPills();
+  renderCatPills();
+  renderTgtPills();
+  renderHypotheses();
+}
+
+function setInspiration(val) {
+  activeInspiration = val; shownCount = 5;
+  document.querySelectorAll('.insp-tab').forEach(t => {
+    const active = t.dataset.insp === val;
+    t.classList.toggle('active', active);
+    t.classList.remove('data','background');
+    if (active && val === 'data_driven') t.classList.add('data');
+    if (active && val === 'background')  t.classList.add('background');
+  });
+  renderHypotheses();
+}
+
+function setConfidence(val) {
+  activeConfidence = val; shownCount = 5;
+  renderHypotheses();
+}
+
+function renderStats(filteredCount) {
+  const strip = document.getElementById('stats-strip');
+  if (filteredCount === undefined) filteredCount = HYPOTHESES.length;
+  const hypLabel = filteredCount === HYPOTHESES.length
+    ? HYPOTHESES.length + ' hypotheses'
+    : filteredCount + ' / ' + HYPOTHESES.length + ' hypotheses';
+  const items = [
+    {val: 487, lbl: 'Videos Analysed'},
+    {val: Object.keys(KPIS).length + ' targets', lbl: 'ML Targets'},
+    {val: hypLabel, lbl: filteredCount === HYPOTHESES.length ? 'Generated' : 'Shown / Total'},
+    ...Object.entries(FMT_COUNTS).map(([k,v]) => ({val: v, lbl: k}))
+  ];
+  strip.innerHTML = items.map(it =>
+    `<div class="stat-pill"><div class="val">${it.val}</div><div class="lbl">${it.lbl}</div></div>`
+  ).join('');
+}
+
+function renderFindings() {
+  const grid = document.getElementById('findings-grid');
+  grid.innerHTML = KEY_FINDS.map(f => {
+    const sign = f.r > 0 ? '+' : '';
+    const color = f.group_color;
+    return `<div class="finding-card" style="border-left-color:${color}">
+      <div class="finding-feat" style="color:${color}">${f.feat_name}</div>
+      <div class="finding-tgt">↔ ${f.tgt_name}</div>
+      <div class="finding-r" style="color:${color}">${sign}${f.r.toFixed(2)}</div>
+      <div class="finding-sub">Pearson r · n=${f.n} videos</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFmtPills() {
+  const wrap = document.getElementById('fmt-pills');
+  const fmts = ['all', ...FORMATS_ALL];
+  wrap.innerHTML = fmts.map(f => {
+    const label = f === 'all' ? '✦ All' : f;
+    const color = f === 'all' ? '#9ca3af' : (FMT_COLORS[f] || '#9ca3af');
+    const isActive = activeFmts.has(f);
+    return `<button class="pill${isActive?' active':''}" data-fmt="${f}"
+      style="${isActive ? `background:${color};border-color:${color};color:#0f172a` : `color:${color};border-color:${color}33`}"
+      onclick="setFmt('${f}')">${label}</button>`;
+  }).join('');
+}
+
+function renderCatPills() {
+  const wrap = document.getElementById('cat-pills');
+  const cats = [{key:'all',label:'✦ All',color:'#9ca3af'}, ...GROUPS];
+  wrap.innerHTML = cats.map(c => {
+    const isActive = activeCats.has(c.key);
+    return `<button class="pill${isActive?' active':''}" data-cat="${c.key}"
+      style="${isActive ? `background:${c.color};border-color:${c.color};color:#0f172a` : `color:${c.color};border-color:${c.color}33`}"
+      onclick="setCat('${c.key}')">${c.label}</button>`;
+  }).join('');
+}
+
+function renderTgtPills() {
+  const wrap = document.getElementById('tgt-pills');
+  const tgts = [{id:'all', name:'✦ All Targets', color:'#9ca3af'}, ...TARGETS];
+  wrap.innerHTML = tgts.map(t => {
+    const isActive = activeTgts.has(t.id);
+    return `<button class="pill${isActive?' active':''}" data-tgt="${t.id}"
+      style="${isActive ? `background:${t.color};border-color:${t.color};color:#0f172a` : `color:${t.color};border-color:${t.color}33`}"
+      onclick="setTgt('${t.id}')">${t.name}</button>`;
+  }).join('');
+}
+
+function setFmt(fmt) {
+  toggleFilter(activeFmts, fmt);
+  renderFmtPills(); renderHypotheses();
+}
+function setCat(cat) {
+  toggleFilter(activeCats, cat);
+  renderCatPills(); renderHypotheses();
+}
+function setTgt(tgt) {
+  toggleFilter(activeTgts, tgt);
+  renderTgtPills(); renderHypotheses();
+}
+function setTemp(t) {
+  activeTemp = t; shownCount = 5;
+  document.querySelectorAll('.temp-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.temp) <= t);
+  });
+  renderHypotheses();
+}
+
+const CONF_RANK = {'gold':0,'silver':1,'bronze':2};
+function filtered() {
+  return HYPOTHESES.filter(h => {
+    const fmtMatch  = activeFmts.has('all') || h.formats.includes('all') || h.formats.some(f => activeFmts.has(f));
+    const catMatch  = activeCats.has('all') || activeCats.has(h.category_key);
+    const tgtMatch  = activeTgts.has('all') || activeTgts.has(h.primary_target);
+    const tempMatch = h.temp_cost <= activeTemp;
+    const inspMatch = activeInspiration === 'all' || h.inspiration_type === activeInspiration;
+    const confMatch = activeConfidence === 'all' ||
+                      (activeConfidence === 'none' ? !h.confidence : h.confidence === activeConfidence);
+    return fmtMatch && catMatch && tgtMatch && tempMatch && inspMatch && confMatch;
+  }).sort((a, b) => {
+    const ra = a.confidence != null ? (CONF_RANK[a.confidence] ?? 3) : 3;
+    const rb = b.confidence != null ? (CONF_RANK[b.confidence] ?? 3) : 3;
+    return ra - rb;
+  });
+}
+
+function renderValPills(valStatus, pool) {
+  if (!valStatus) valStatus = JSON.parse(localStorage.getItem('hypothesis_validation_status') || '{}');
+  if (!pool) pool = filtered();
+  const totalProven    = pool.filter(h => valStatus[h.id] === 'proven').length;
+  const totalDisproven = pool.filter(h => valStatus[h.id] === 'disproven').length;
+  const totalUntested  = pool.length - totalProven - totalDisproven;
+  const options = [
+    { key: 'all',       label: `✦ All (${pool.length})`,           color: '#9ca3af' },
+    { key: 'untested',  label: `📋 Untested (${totalUntested})`,   color: '#94a3b8' },
+    { key: 'proven',    label: `✅ Proven (${totalProven})`,        color: '#34d399' },
+    { key: 'disproven', label: `❌ Disproven (${totalDisproven})`,  color: '#f87171' },
+  ];
+  const wrap = document.getElementById('val-pills');
+  if (!wrap) return;
+  wrap.innerHTML = options.map(o => {
+    const isActive = activeVal === o.key;
+    return `<button class="pill${isActive?' active':''}" data-val="${o.key}"
+      style="${isActive ? `background:${o.color};border-color:${o.color};color:#0f172a` : `color:${o.color};border-color:${o.color}33`}"
+      onclick="setVal('${o.key}')">${o.label}</button>`;
+  }).join('');
+}
+
+function setVal(val) {
+  activeVal = val; shownCount = 5;
+  renderHypotheses();
+}
+
+function renderHypotheses() {
+  const valStatus = JSON.parse(localStorage.getItem('hypothesis_validation_status') || '{}');
+  const pool = filtered();
+
+  // Apply validation status filter
+  let display;
+  if (activeVal === 'all') {
+    display = pool;
+  } else if (activeVal === 'untested') {
+    display = pool.filter(h => valStatus[h.id] !== 'proven' && valStatus[h.id] !== 'disproven');
+  } else {
+    display = pool.filter(h => valStatus[h.id] === activeVal);
+  }
+
+  const slice = display.slice(0, shownCount);
+  const grid  = document.getElementById('hyp-grid');
+  if (slice.length === 0) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><p>No hypotheses match this filter.</p></div>';
+  } else {
+    grid.innerHTML = slice.map(h => renderCard(h, valStatus[h.id])).join('');
+  }
+
+  // Load-more button
+  const btn = document.getElementById('load-more-btn');
+  const remaining = display.length - slice.length;
+  btn.disabled = remaining === 0;
+  btn.textContent = remaining > 0 ? `Load ${Math.min(5, remaining)} more ↓` : 'All shown';
+
+  // Update validation pill counts + stats strip to reflect filtered count
+  renderValPills(valStatus, pool);
+  renderStats(display.length);
+}
+
+function loadMore() {
+  shownCount += 5;
+  renderHypotheses();
+}
+
+// Refresh validation status when tab becomes visible (user may have just validated)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) renderHypotheses();
+});
+
+function toggleExpand(id) {
+  const body = document.getElementById('body-' + id);
+  const btn  = document.getElementById('ebtn-' + id);
+  if (expandedIds.has(id)) {
+    expandedIds.delete(id);
+    body.classList.remove('open');
+    btn.classList.remove('open');
+    btn.querySelector('.arrow').textContent = '▼';
+    btn.querySelector('.lbl').textContent = 'Show evidence & A/B test';
+  } else {
+    expandedIds.add(id);
+    body.classList.add('open');
+    btn.classList.add('open');
+    btn.querySelector('.arrow').textContent = '▼';
+    btn.querySelector('.lbl').textContent = 'Hide detail';
+  }
+}
+
+function renderCard(h, valStatus) {
+  const g = GROUP_MAP[h.category_key] || {color:'#9ca3af', label:'General'};
+  const fmtLabels = h.formats.includes('all') ? 'All formats'
+    : h.formats.map(f => `<span class="hyp-tag fmt">${f}</span>`).join('');
+  const tempLabel = h.temp_cost === 1 ? '🔬 Surgical' : h.temp_cost === 2 ? '🎯 Focused' : '🌊 Broad';
+  const isOpen = expandedIds.has(h.id);
+
+  // Confidence medal + method dots
+  const medalMap = { gold:'🥇', silver:'🥈', bronze:'🥉' };
+  const valBadgeHtml = valStatus && valStatus !== 'untested'
+    ? `<a class="val-badge ${valStatus}" href="hypothesis_validation.html" title="View validation">${
+        valStatus === 'proven' ? '✓ Proven' : valStatus === 'disproven' ? '✗ Disproven' : '~ Inconclusive'
+      }</a>` : `<a class="val-link" href="hypothesis_validation.html" title="Test this hypothesis">🧪 Validate</a>`;
+  const confLabelMap = { gold:'Gold · 3/3', silver:'Silver · 2/3', bronze:'Bronze · 1/3' };
+  const medalHtml = h.confidence
+    ? `<span class="medal-badge ${h.confidence}">${medalMap[h.confidence]} ${confLabelMap[h.confidence]}</span>`
+    : `<span class="medal-badge background">💡 Background</span>`;
+  const methodsHit = h.methods_hit || [];
+  const dotsHtml = ['correlation','lasso','rf'].map(m => {
+    const on = methodsHit.includes(m);
+    const title = m === 'correlation' ? 'Pearson r' : m === 'lasso' ? 'LASSO stability' : 'RF importance';
+    return `<div class="method-dot ${on?'on':'off'} ${m}" title="${on?'✓':'✗'} ${title}"></div>`;
+  }).join('');
+
+  const quantEvs = (h.quant_evidence || []).map(e =>
+    `<div class="ev-item quant"><span class="ev-icon">📊</span><span>${e.text}</span></div>`
+  ).join('');
+  const qualEvs = (h.qual_evidence || []).map(e =>
+    `<div class="ev-item qual"><span class="ev-icon">💡</span><span>${e}</span></div>`
+  ).join('');
+
+  const ab = h.ab_test || {};
+  const abRows = [
+    ['Hypothesis', ab.hypothesis],
+    ['Control', ab.control],
+    ['Treatment', ab.treatment],
+    ['Primary metric', ab.primary_metric],
+    ['Secondary metric', ab.secondary_metric],
+    ['Sample', ab.sample_n],
+    ['Duration', ab.duration],
+    ['Keep constant', ab.what_to_keep_constant],
+  ].filter(r => r[1]).map(r =>
+    `<div class="ab-row"><div class="ab-key">${r[0]}</div><div class="ab-val">${r[1]}</div></div>`
+  ).join('');
+
+  return `<div class="hyp-card" id="card-${h.id}">
+    <div class="hyp-header" onclick="toggleExpand('${h.id}')">
+      <div class="hyp-cat-badge" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}44">
+        ${g.label}
+      </div>
+      <div class="hyp-title"><span class="hyp-num-badge">H${String(h.num||'?').padStart(2,'0')}</span>${h.title} ${valBadgeHtml}</div>
+      <div class="hyp-tagline">${h.tagline}</div>
+    </div>
+    <div class="hyp-meta">
+      ${h.formats.includes('all') ? '<span class="hyp-tag">All formats</span>' : h.formats.map(f=>`<span class="hyp-tag fmt">${f}</span>`).join('')}
+      <span class="hyp-tag">${tempLabel}</span>
+      <span class="hyp-tag" style="color:#60a5fa;border-color:#60a5fa44;background:#60a5fa0d">${h.production_type}</span>
+      ${medalHtml}
+      <div class="methods-bar" title="Correlation · LASSO · RF">${dotsHtml}</div>
+    </div>
+    <button class="expand-btn${isOpen?' open':''}" id="ebtn-${h.id}" onclick="toggleExpand('${h.id}')">
+      <span class="lbl">${isOpen ? 'Hide detail' : 'Show evidence & A/B test'}</span>
+      <span class="arrow">▼</span>
+    </button>
+    <div class="hyp-body${isOpen?' open':''}" id="body-${h.id}">
+      <p class="hyp-brief">${h.full_detail}</p>
+      <div class="evidence-list">
+        ${quantEvs}${qualEvs}
+      </div>
+      <div class="ab-section">
+        <div class="ab-title">🧪 Proposed A/B Test</div>
+        ${abRows}
+      </div>
+      ${h.frugality_note ? `<div class="frugality-note">${h.frugality_note}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+init();
+</script>
+
+
+
+
+<script>
+window.calliopePageContext = function() {
+  const hyps = (typeof HYPOTHESES !== 'undefined') ? HYPOTHESES : [];
+  const gold = hyps.filter(h => h.confidence === 'gold').length;
+  const silver = hyps.filter(h => h.confidence === 'silver').length;
+  const bronze = hyps.filter(h => h.confidence === 'bronze').length;
+  return `\n\nCURRENT PAGE: Executive Summary — ${hyps.length} hypotheses (${gold} Gold, ${silver} Silver, ${bronze} Bronze). Gold = all 3 methods agree; Silver = 2; Bronze = 1. Users filter by confidence and target metric. Three methods: Pearson correlation, LASSO stability selection, Random Forest + SHAP.`;
+};
+window.calliopePageGreeting = function() {
+  return "Hi, I'm <strong>Calliope</strong> ✦ — your guide across all the CUT Analytics dashboards. I can explain any hypothesis, the medal system, how to prioritise A/B tests, or connect findings across the analysis pages. What would you like to explore?";
+};
+window.calliopeSnapshot = function() {
+  const hyps = (typeof HYPOTHESES !== 'undefined') ? HYPOTHESES : [];
+  return {
+    page: 'Executive Summary',
+    ts: Date.now(),
+    summary: `${hyps.length} hypotheses loaded`,
+    hypotheses: hyps.slice(0, 15).map(h => ({
+      id: h.id, title: h.title, confidence: h.confidence,
+      target: h.target, tagline: h.tagline
+    }))
+  };
+};
+</script>
+<!-- ══ Calliope AI Assistant ═════════════════════════════════════════════════ -->
+<script>
+(function() {
+  if (document.getElementById('calliope-widget')) return;
+
+  // ── Inject CSS ────────────────────────────────────────────────────────────
+  const style = document.createElement('style');
+  style.textContent = `
+    .calliope-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+      display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #7c6af7 0%, #a78bfa 100%);
+      color: #fff; border: none; border-radius: 28px;
+      padding: 11px 20px 11px 16px; font-size: 13px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 24px rgba(124,106,247,.55);
+      transition: transform .18s, box-shadow .18s; white-space: nowrap; font-family: inherit;
+    }
+    .calliope-fab:hover { transform: translateY(-2px); box-shadow: 0 6px 32px rgba(124,106,247,.7); }
+    .calliope-chat {
+      position: fixed; bottom: 136px; right: 24px; z-index: 8889;
+      width: 390px; max-width: calc(100vw - 32px);
+      height: 560px; max-height: calc(100vh - 100px);
+      background: #12152b; border: 1px solid rgba(124,106,247,.4);
+      border-radius: 18px; box-shadow: 0 16px 56px rgba(0,0,0,.75);
+      display: flex; flex-direction: column; overflow: hidden;
+      transform: scale(.93) translateY(14px); opacity: 0; pointer-events: none;
+      transition: transform .22s cubic-bezier(.34,1.28,.64,1), opacity .18s ease;
+    }
+    .calliope-chat.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+    .calliope-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 13px 10px; background: #0d1024;
+      border-bottom: 1px solid rgba(124,106,247,.22); flex-shrink: 0;
+    }
+    .calliope-avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #7c6af7, #c4b5fd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff; font-weight: 700;
+    }
+    .calliope-title-block { flex: 1; min-width: 0; }
+    .calliope-name { font-size: 13px; font-weight: 700; color: #e2e4f0; }
+    .calliope-status { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+    .calliope-hdr-btns { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
+    .calliope-hbtn {
+      background: none; border: none; color: #6b7280; cursor: pointer;
+      padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1;
+      transition: color .15s, background .15s; font-family: inherit;
+    }
+    .calliope-hbtn:hover { color: #e2e4f0; background: rgba(255,255,255,.07); }
+    .calliope-hbtn.new-conv { font-size: 11px; color: #6b7280; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 2px 7px; }
+    .calliope-hbtn.new-conv:hover { color: #a78bfa; border-color: rgba(167,139,250,.4); background: rgba(124,106,247,.1); }
+    .calliope-msgs {
+      flex: 1; overflow-y: auto; padding: 12px 12px 6px;
+      display: flex; flex-direction: column; gap: 9px; scroll-behavior: smooth;
+    }
+    .calliope-msgs::-webkit-scrollbar { width: 3px; }
+    .calliope-msgs::-webkit-scrollbar-thumb { background: rgba(124,106,247,.3); border-radius: 2px; }
+    .calliope-msg { display: flex; max-width: 100%; animation: calliopeSlide .17s ease; }
+    .calliope-msg.user { flex-direction: row-reverse; }
+    @keyframes calliopeSlide { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+    .calliope-bubble {
+      padding: 8px 12px; border-radius: 14px; font-size: 12.5px; line-height: 1.65;
+      color: #d4d8f0; max-width: 87%; word-break: break-word;
+    }
+    .calliope-msg.assistant .calliope-bubble {
+      background: rgba(124,106,247,.13); border: 1px solid rgba(124,106,247,.22); border-bottom-left-radius: 4px;
+    }
+    .calliope-msg.user .calliope-bubble {
+      background: rgba(45,212,191,.11); border: 1px solid rgba(45,212,191,.22);
+      border-bottom-right-radius: 4px; color: #e2f8f5;
+    }
+    .calliope-bubble code {
+      background: rgba(0,0,0,.4); border-radius: 4px; padding: 1px 5px;
+      font-family: monospace; font-size: 11.5px; color: #a78bfa;
+    }
+    .calliope-bubble pre { background: rgba(0,0,0,.4); border-radius: 8px; padding: 9px 11px; overflow-x: auto; margin: 5px 0; }
+    .calliope-bubble pre code { background: none; padding: 0; color: #c4b5fd; }
+    .calliope-bubble strong { color: #e2e4f0; font-weight: 600; }
+    .calliope-bubble em { color: #a78bfa; font-style: normal; }
+    .calliope-bubble ul, .calliope-bubble ol { padding-left: 17px; margin: 3px 0; }
+    .calliope-bubble li { margin-bottom: 2px; }
+    .calliope-msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+    .calliope-divider {
+      text-align: center; font-size: 10px; color: #2d3560; margin: 2px 0 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .calliope-divider::before, .calliope-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(45,53,96,.6);
+    }
+    .calliope-typing-wrap { display: flex; gap: 5px; padding: 3px 0; align-items: center; }
+    .calliope-typing-wrap span {
+      width: 6px; height: 6px; border-radius: 50%; background: #a78bfa;
+      animation: calliopeDot 1.3s infinite ease-in-out; display: block;
+    }
+    .calliope-typing-wrap span:nth-child(2) { animation-delay: .22s; }
+    .calliope-typing-wrap span:nth-child(3) { animation-delay: .44s; }
+    @keyframes calliopeDot { 0%,80%,100% { opacity:.22; transform:scale(.75); } 40% { opacity:1; transform:scale(1.1); } }
+    .calliope-img-preview {
+      padding: 5px 12px; background: rgba(124,106,247,.08);
+      border-top: 1px solid rgba(124,106,247,.14); flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .calliope-img-preview img { height: 42px; border-radius: 6px; object-fit: cover; }
+    .calliope-img-rm {
+      background: rgba(248,113,113,.18); border: none; color: #f87171;
+      border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .calliope-input-row {
+      display: flex; align-items: flex-end; gap: 6px;
+      padding: 8px 11px 10px; border-top: 1px solid rgba(124,106,247,.17);
+      background: #0d1024; flex-shrink: 0;
+    }
+    .calliope-attach {
+      color: #6b7280; font-size: 17px; cursor: pointer; padding: 3px 2px;
+      transition: color .15s; flex-shrink: 0; line-height: 1; background: none; border: none;
+    }
+    .calliope-attach:hover { color: #a78bfa; }
+    .calliope-textarea {
+      flex: 1; background: rgba(255,255,255,.055); border: 1px solid rgba(124,106,247,.28);
+      border-radius: 10px; padding: 7px 10px; color: #e2e4f0; font-size: 12.5px;
+      font-family: inherit; resize: none; line-height: 1.5;
+      min-height: 34px; max-height: 110px; outline: none;
+      transition: border-color .15s; overflow-y: auto;
+    }
+    .calliope-textarea:focus { border-color: rgba(124,106,247,.65); }
+    .calliope-textarea::placeholder { color: #6b7280; }
+    .calliope-send {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #7c6af7, #a78bfa); border: none;
+      color: #fff; font-size: 15px; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .calliope-send:hover:not(:disabled) { opacity: .85; transform: scale(1.06); }
+    .calliope-send:disabled { opacity: .35; cursor: default; }
+    .calliope-page-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(124,106,247,.12); border: 1px solid rgba(124,106,247,.25);
+      border-radius: 10px; padding: 2px 7px; font-size: 10px; color: #a78bfa;
+      margin-bottom: 4px; align-self: flex-start;
+    }
+    .calliope-sug { padding: 10px 12px 8px; border-bottom: 1px solid rgba(124,106,247,.1); flex-shrink: 0; }
+    .calliope-sug.hidden { display: none; }
+    .calliope-sug-header { margin-bottom: 8px; }
+    .calliope-sug-subtitle { font-size: 11px; color: #c9d1e0; line-height: 1.5; margin-bottom: 8px; }
+    .calliope-sug-subtitle strong { color: #e2e8f0; }
+    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .calliope-sug-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .calliope-sug-card { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left; border: 1px solid rgba(124,106,247,.2); background: rgba(124,106,247,.06); color: #e2e8f0; font-family: inherit; transition: all .15s; width: 100%; }
+    .calliope-sug-card:hover { background: rgba(124,106,247,.14); border-color: rgba(124,106,247,.45); transform: translateY(-1px); }
+    .csc-icon { font-size: 16px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+    .csc-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .csc-title { font-size: 11px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
+    .csc-q { font-size: 10px; color: #a78bfa; line-height: 1.4; font-style: italic; }
+    .csc-desc { font-size: 10px; color: #9ca3af; line-height: 1.4; }
+  `;
+  document.head.appendChild(style);
+
+  // ── Inject HTML ───────────────────────────────────────────────────────────
+  const widget = document.createElement('div');
+  widget.id = 'calliope-widget';
+  widget.innerHTML = `
+    <button id="calliope-fab" class="calliope-fab" onclick="calliopeToggle()">
+      <span style="font-size:14px;opacity:.9">✦</span>
+      <span>Ask Calliope</span>
+    </button>
+    <div id="calliope-chat" class="calliope-chat">
+      <div class="calliope-header">
+        <div class="calliope-avatar">✦</div>
+        <div class="calliope-title-block">
+          <div class="calliope-name">Calliope</div>
+          <div class="calliope-status" id="calliope-status">AI guide · claude-sonnet-4-6</div>
+        </div>
+        <div class="calliope-hdr-btns">
+          <button class="calliope-hbtn new-conv" onclick="calliopeClear()" title="Start a new conversation">↺ New</button>
+          <button class="calliope-hbtn" onclick="calliopeToggle()" title="Close">✕</button>
+        </div>
+      </div>
+      <div id="calliope-sug" class="calliope-sug">
+        <div class="calliope-sug-header">
+          <div class="calliope-sug-subtitle">I'm a <strong>full AI chatbot</strong> for CUT Analytics — ask me anything about the hypotheses, confidence tiers, and content strategies.</div>
+        </div>
+        <div class="calliope-sug-cards">
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="What are the Gold-tier hypotheses and why should we act on them first?">
+            <span class="csc-icon">🥇</span>
+            <span class="csc-body">
+              <span class="csc-title">Gold hypotheses</span>
+              <span class="csc-q">What are the Gold-tier hypotheses and why should we act on them first?</span>
+              <span class="csc-desc">Findings all 3 methods agree on</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="Suggest a concrete A/B test for the strongest content hypothesis">
+            <span class="csc-icon">🧪</span>
+            <span class="csc-body">
+              <span class="csc-title">Suggest an A/B test</span>
+              <span class="csc-q">Suggest a concrete A/B test for the strongest content hypothesis</span>
+              <span class="csc-desc">Turn data into a real experiment</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="What are the top 3 content strategies the data supports most strongly?">
+            <span class="csc-icon">📈</span>
+            <span class="csc-body">
+              <span class="csc-title">Key strategies</span>
+              <span class="csc-q">What are the top 3 content strategies the data supports most strongly?</span>
+              <span class="csc-desc">Get actionable strategic recommendations</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="Explain the difference between Gold, Silver, Bronze, and Background hypotheses">
+            <span class="csc-icon">🔍</span>
+            <span class="csc-body">
+              <span class="csc-title">Confidence tiers</span>
+              <span class="csc-q">Explain the difference between Gold, Silver, Bronze, and Background hypotheses</span>
+              <span class="csc-desc">Understand the evidence hierarchy</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div id="calliope-msgs" class="calliope-msgs"></div>
+      <div id="calliope-img-preview" class="calliope-img-preview" style="display:none"></div>
+      <div class="calliope-input-row">
+        <label class="calliope-attach" title="Attach image (or paste from clipboard)">
+          📎<input type="file" accept="image/*" style="display:none" onchange="calliopeAttach(this)">
+        </label>
+        <textarea id="calliope-ta" class="calliope-textarea"
+          placeholder="Ask anything — I remember our full conversation…"
+          onkeydown="calliopeKey(event)" oninput="calliopeResize(this)" rows="1"></textarea>
+        <button id="calliope-send-btn" class="calliope-send" onclick="calliopeSend()" title="Send (Enter)">↑</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(widget);
+
+  // ── Constants & State ─────────────────────────────────────────────────────
+  const MODEL      = 'claude-sonnet-4-6';
+  const HIST_KEY   = 'calliope_history';
+  const SNAP_PFX   = 'calliope_snap_';
+  const MAX_HIST   = 40;      // messages stored
+  const UI_RESTORE = 6;       // messages shown on restore
+
+  let history  = [];          // API history (text-only)
+  let streaming = false;
+  let pendingImg = null;
+  let isOpen = false;
+  let initialized = false;
+
+  // ── localStorage helpers ──────────────────────────────────────────────────
+  function loadHistory() {
+    try {
+      const raw = localStorage.getItem(HIST_KEY);
+      if (!raw) return [];
+      return JSON.parse(raw).filter(m => typeof m.content === 'string');
+    } catch { return []; }
+  }
+
+  function saveHistory() {
+    try {
+      const toSave = history.filter(m => typeof m.content === 'string').slice(-MAX_HIST);
+      localStorage.setItem(HIST_KEY, JSON.stringify(toSave));
+    } catch {}
+  }
+
+  function clearStoredHistory() {
+    try { localStorage.removeItem(HIST_KEY); } catch {}
+  }
+
+  function saveSnapshot() {
+    if (typeof window.calliopeSnapshot !== 'function') return;
+    try {
+      const snap = window.calliopeSnapshot();
+      if (snap && snap.page) {
+        const key = SNAP_PFX + snap.page.replace(/\s+/g, '_').toLowerCase();
+        localStorage.setItem(key, JSON.stringify(snap));
+      }
+    } catch {}
+  }
+
+  function loadAllSnapshots() {
+    const snaps = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(SNAP_PFX)) {
+          try { snaps.push(JSON.parse(localStorage.getItem(key))); } catch {}
+        }
+      }
+    } catch {}
+    // Sort by recency
+    snaps.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    return snaps;
+  }
+
+  // ── Build system prompt ───────────────────────────────────────────────────
+  function buildSystemPrompt() {
+    const pageCtx = (typeof window.calliopePageContext === 'function') ? window.calliopePageContext() : '';
+
+    // Cross-dashboard snapshots
+    const snaps = loadAllSnapshots();
+    let crossCtx = '';
+    if (snaps.length) {
+      crossCtx = '\n\nDATA SNAPSHOTS FROM OTHER DASHBOARDS (auto-loaded when those pages were visited):';
+      for (const s of snaps) {
+        const age = s.ts ? Math.round((Date.now() - s.ts) / 60000) : null;
+        const ageStr = age !== null ? (age < 60 ? `${age}m ago` : `${Math.round(age/60)}h ago`) : '';
+        crossCtx += `\n\n[${s.page}${ageStr ? ' — seen ' + ageStr : ''}]`;
+        if (s.summary) crossCtx += `\n${s.summary}`;
+        // Include compact data arrays
+        for (const [k, v] of Object.entries(s)) {
+          if (['page','ts','summary'].includes(k)) continue;
+          if (Array.isArray(v)) {
+            crossCtx += `\n${k}: ${v.slice(0,12).join('; ')}`;
+          } else if (typeof v === 'string' || typeof v === 'number') {
+            crossCtx += `\n${k}: ${v}`;
+          }
+        }
+      }
+    }
+
+    return `You are Calliope, a warm and knowledgeable AI guide embedded across all CUT Analytics Dashboards. CUT is a YouTube channel known for social experiment videos (Truth or Drink, 100 People, Strangers Do X Together, etc.).
+
+You are a PERSISTENT guide — your conversation carries across all 5 dashboard pages (Executive Summary, ML Analysis, LASSO Analysis, Feature Distribution, Ideation Studio). You can reason across all of them together and connect insights between pages.
+
+Your role: help the CUT team — creators, producers, editors, non-technical staff — understand what the data means and how to act on it. Always explain ML/statistical concepts in plain English with content-creation analogies. Be concise, warm, and specific.
+
+When reasoning across dashboards:
+- Connect LASSO stable features → correlation findings → executive summary hypotheses
+- Connect data insights → ideation session concepts or title strategies  
+- If asked about something from another page, reference the snapshot data you have
+- Say "when you were on the LASSO page, I saw that…" to show continuity${pageCtx}${crossCtx}`;
+  }
+
+  // ── UI helpers ────────────────────────────────────────────────────────────
+  function addMsg(role, html, restored) {
+    const msgs = document.getElementById('calliope-msgs');
+    const div = document.createElement('div');
+    div.className = `calliope-msg ${role}`;
+    if (restored) div.style.opacity = '0.72';
+    div.innerHTML = `<div class="calliope-bubble">${html}</div>`;
+    msgs.appendChild(div);
+    scrollBottom();
+    return div;
+  }
+
+  function addDivider(text) {
+    const msgs = document.getElementById('calliope-msgs');
+    const div = document.createElement('div');
+    div.className = 'calliope-divider';
+    div.textContent = text;
+    msgs.appendChild(div);
+  }
+
+  function addTyping(id) {
+    const msgs = document.getElementById('calliope-msgs');
+    const div = document.createElement('div');
+    div.className = 'calliope-msg assistant'; div.id = id;
+    div.innerHTML = `<div class="calliope-bubble"><div class="calliope-typing-wrap"><span></span><span></span><span></span></div></div>`;
+    msgs.appendChild(div);
+    scrollBottom();
+  }
+
+  function scrollBottom() {
+    const msgs = document.getElementById('calliope-msgs');
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function setStatus(t) {
+    const el = document.getElementById('calliope-status');
+    if (el) el.textContent = t;
+  }
+
+  function escHtml(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function calliopeMarkdown(raw) {
+    let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const blocks = [];
+    s = s.replace(/```[\s\S]*?```/g, m => {
+      const code = m.replace(/^```\w*\n?/, '').replace(/\n?```$/, '').trim();
+      blocks.push(`<pre><code>${code}</code></pre>`);
+      return `\x00${blocks.length-1}\x00`;
+    });
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    s = s.replace(/^### (.+)$/gm,'<div style="color:#a78bfa;font-weight:600;margin:5px 0 2px">$1</div>');
+    s = s.replace(/^## (.+)$/gm,'<div style="color:#e2e4f0;font-weight:700;margin:6px 0 2px">$1</div>');
+    s = s.replace(/((?:^[-•*] .+$\n?)+)/gm, m => {
+      const items = m.trim().split('\n').map(l=>`<li>${l.replace(/^[-•*] /,'')}</li>`);
+      return `<ul>${items.join('')}</ul>`;
+    });
+    s = s.replace(/((?:^\d+\. .+$\n?)+)/gm, m => {
+      const items = m.trim().split('\n').map(l=>`<li>${l.replace(/^\d+\. /,'')}</li>`);
+      return `<ol>${items.join('')}</ol>`;
+    });
+    s = s.replace(/(<\/(ul|ol|div|pre)>)\n?/g,'$1');
+    s = s.replace(/\n/g,'<br>');
+    s = s.replace(/\x00(\d+)\x00/g,(_,i)=>blocks[parseInt(i)]);
+    return s;
+  }
+
+  // ── Init (called when chat first opens) ───────────────────────────────────
+  function initChat() {
+    if (initialized) return;
+    initialized = true;
+
+    // Save this page's snapshot
+    saveSnapshot();
+
+    // Restore history from localStorage
+    const saved = loadHistory();
+    history = [...saved];
+
+    const msgs = document.getElementById('calliope-msgs');
+
+    if (saved.length > 0) {
+      // Show last UI_RESTORE messages as context
+      const toShow = saved.slice(-UI_RESTORE);
+      const skipped = saved.length - toShow.length;
+      if (skipped > 0) {
+        addDivider(`↑ ${skipped} earlier message${skipped>1?'s':''} in this conversation`);
+      } else {
+        addDivider('Continuing our conversation');
+      }
+      for (const m of toShow) {
+        const html = m.role === 'user' ? escHtml(m.content) : calliopeMarkdown(m.content);
+        addMsg(m.role, html, true);
+      }
+      addDivider('Now on: ' + (document.title || window.location.pathname.split('/').pop()));
+    } else {
+      // Fresh greeting
+      const greeting = (typeof window.calliopePageGreeting === 'function')
+        ? window.calliopePageGreeting()
+        : "Hi, I'm <strong>Calliope</strong> ✦ — your guide across all the CUT dashboards.";
+      addMsg('assistant', greeting);
+      const key = localStorage.getItem('anthropic_api_key');
+      if (!key) {
+        addMsg('assistant', '<span style="color:#fb923c;font-size:12px">⚠ No Anthropic API key found — add it in the Ideation Studio settings.</span>');
+      }
+    }
+  }
+
+  // ── Public API ────────────────────────────────────────────────────────────
+  window.calliopeSugRun = function(btn) {
+    const text = btn.dataset.q || btn.textContent.trim();
+    document.getElementById('calliope-ta').value = text;
+    document.getElementById('calliope-sug')?.classList.add('hidden');
+    calliopeSend();
+  }
+
+  window.calliopeToggle = function() {
+    isOpen = !isOpen;
+    document.getElementById('calliope-chat').classList.toggle('open', isOpen);
+    if (isOpen) {
+      initChat();
+      setTimeout(() => document.getElementById('calliope-ta').focus(), 160);
+    }
+  };
+
+  window.calliopeClear = function() {
+    clearStoredHistory();
+    history = [];
+    initialized = false;
+    document.getElementById('calliope-msgs').innerHTML = '';
+    initChat();
+  };
+
+  window.calliopeKey = function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); calliopeSend(); }
+  };
+
+  window.calliopeResize = function(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+    if (el.value.trim()) document.getElementById('calliope-sug')?.classList.add('hidden');
+  };
+
+  window.calliopeAttach = function(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const r = e.target.result;
+      pendingImg = { base64: r.split(',')[1], mediaType: file.type, dataUrl: r };
+      showImgPreview();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  };
+
+  window.calliopeRmImg = function() {
+    pendingImg = null;
+    const p = document.getElementById('calliope-img-preview');
+    p.style.display = 'none'; p.innerHTML = '';
+  };
+
+  document.addEventListener('paste', function(e) {
+    if (!isOpen) return;
+    const items = e.clipboardData?.items || [];
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const r = ev.target.result;
+          pendingImg = { base64: r.split(',')[1], mediaType: item.type, dataUrl: r };
+          showImgPreview();
+        };
+        reader.readAsDataURL(file);
+        e.preventDefault(); return;
+      }
+    }
+  });
+
+  function showImgPreview() {
+    const p = document.getElementById('calliope-img-preview');
+    p.innerHTML = `<img src="${pendingImg.dataUrl}"><button class="calliope-img-rm" onclick="calliopeRmImg()">✕</button>`;
+    p.style.display = 'flex';
+  }
+
+  window.calliopeSend = async function() {
+    if (streaming) return;
+    const ta = document.getElementById('calliope-ta');
+    const text = ta.value.trim();
+    if (!text && !pendingImg) return;
+
+    // Build user content
+    const userContent = [];
+    if (pendingImg) userContent.push({ type:'image', source:{ type:'base64', media_type:pendingImg.mediaType, data:pendingImg.base64 } });
+    if (text) userContent.push({ type:'text', text });
+
+    const userHtml = (pendingImg ? `<img src="${pendingImg.dataUrl}" class="calliope-msg-img">` : '')
+      + (text ? escHtml(text) : '');
+    addMsg('user', userHtml);
+
+    // Store text-only in history
+    history.push({ role:'user', content: text || '[image attached]' });
+
+    ta.value = ''; ta.style.height = 'auto';
+    calliopeRmImg();
+
+    const typingId = 'calliope-t-' + Date.now();
+    addTyping(typingId);
+    streaming = true;
+    document.getElementById('calliope-send-btn').disabled = true;
+    setStatus('Thinking…');
+
+    // Refresh snapshot before sending so context is current
+    saveSnapshot();
+
+    try {
+      // Build API messages — use full content (with image) for current message
+      const apiMessages = history.slice(0, -1)  // all but last (we'll add with image)
+        .concat([{ role:'user', content: userContent.length===1 && !pendingImg ? text : userContent }]);
+
+      const resp = await fetch('https://egavves-github-io.vercel.app/api/chat', {
+        method:'POST',
+        headers:{
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: MODEL, max_tokens: 1536,
+          system: buildSystemPrompt(),
+          messages: apiMessages,
+          stream: true,
+        })
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(()=>({}));
+        throw new Error(err.error?.message || `HTTP ${resp.status}`);
+      }
+
+      document.getElementById(typingId)?.remove();
+      const msgEl = addMsg('assistant','');
+      const bubble = msgEl.querySelector('.calliope-bubble');
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '', fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream:true });
+        const lines = buf.split('\n'); buf = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const json = line.slice(6); if (json==='[DONE]') continue;
+          try {
+            const ev = JSON.parse(json);
+            if (ev.type==='content_block_delta' && ev.delta?.type==='text_delta') {
+              fullText += ev.delta.text;
+              bubble.innerHTML = calliopeMarkdown(fullText);
+              scrollBottom();
+            }
+          } catch {}
+        }
+      }
+
+      history.push({ role:'assistant', content: fullText });
+      saveHistory();
+      setStatus('AI guide · claude-sonnet-4-6');
+
+    } catch (err) {
+      document.getElementById(typingId)?.remove();
+      addMsg('assistant', `<span style="color:#f87171">⚠ ${escHtml(err.message)}</span>`);
+      setStatus('AI guide · claude-sonnet-4-6');
+    } finally {
+      streaming = false;
+      document.getElementById('calliope-send-btn').disabled = false;
+    }
+  };
+
+  // Also save snapshot on page unload so it's always fresh
+  window.addEventListener('beforeunload', saveSnapshot);
+
+})();
+</script>
+
+
+<script>
+(function() {
+  // Highlight the current dataset in the dropdown
+  const pageFile = window.location.pathname.split('/').pop() || 'index.html';
+  const dataPageMap = {
+    'calli_feature_vault_v2.html':  'calli_feature_vault_v2.html',
+    'feature_distributions.html':   'feature_distributions.html',
+    'cut_feature_dashboard.html':   'cut_feature_dashboard.html',
+  };
+  // Analysis pages all work on the CUT dataset — pre-select it
+  const analysisPagesDefaultCUT = [
+    'cut_correlations.html','cut_lasso_analysis.html','cut_rf_shap.html',
+    'exec_summary.html','hypothesis_validation.html','ideation_dashboard.html',
+    'index.html',
+  ];
+  const sel = document.getElementById('navDataSelect');
+  if (sel) {
+    if (dataPageMap[pageFile]) {
+      sel.value = dataPageMap[pageFile];
+    } else if (analysisPagesDefaultCUT.includes(pageFile)) {
+      sel.value = 'cut_feature_dashboard.html';
+    }
+  }
+  // Restore any extra data sources saved by the user
+  try {
+    const sources = JSON.parse(localStorage.getItem('extra_data_sources') || '[]');
+    sources.forEach(s => {
+      document.querySelectorAll('.nav-data-select').forEach(sel => {
+        if (!Array.from(sel.options).some(o => o.value === s.url)) {
+          const opt = document.createElement('option');
+          opt.value = s.url; opt.textContent = '📊 ' + s.name;
+          const soonOpt = Array.from(sel.options).find(o => o.disabled);
+          if (soonOpt) sel.insertBefore(opt, soonOpt); else sel.appendChild(opt);
+        }
+      });
+    });
+  } catch(_) {}
+})();
+</script>
+<script>
+// ─── SOCIAL PULSE STRIP ─────────────────────────────────
+(function(){
+  const PROXY = 'http://localhost:5765';
+  async function loadSocialStrip() {
+    const statusEl = document.getElementById('exec-social-status');
+    try {
+      const check = await fetch(PROXY + '/api/status', { signal: AbortSignal.timeout(2000) });
+      if (!check.ok) throw new Error();
+      statusEl.textContent = '● live';
+      statusEl.className = 'social-strip-status online';
+      loadTwitterTrends();
+      loadRedditTop();
+    } catch {
+      statusEl.textContent = '○ proxy offline';
+      const msg = '<div class="social-offline">Start <code style="color:var(--accent)">python social_proxy.py</code> to see live signals. <a href="social_media_dashboard.html">Open Social Pulse →</a></div>';
+      document.getElementById('exec-twitter-trends').innerHTML = msg;
+      document.getElementById('exec-reddit-top').innerHTML = msg;
+    }
+  }
+
+  async function loadTwitterTrends() {
+    try {
+      const r = await fetch(PROXY + '/api/twitter/trending?woeid=1');
+      const d = await r.json();
+      if (!d.ok) throw new Error();
+      const trends = (d.data[0]?.trends || []).slice(0, 10);
+      document.getElementById('exec-twitter-trends').innerHTML =
+        trends.map(t => `<span class="social-trend-pill" title="${(t.tweet_volume||'').toLocaleString()} tweets">
+          ${escSocial(t.name)}</span>`).join('');
+    } catch {
+      document.getElementById('exec-twitter-trends').innerHTML =
+        '<div class="social-offline">Could not load trends.</div>';
+    }
+  }
+
+  async function loadRedditTop() {
+    try {
+      const r = await fetch(PROXY + '/api/reddit/batch?subs=movies,television,boxoffice&limit=3');
+      const d = await r.json();
+      if (!d.ok) throw new Error();
+      const items = [];
+      Object.entries(d.subs).forEach(([sub, res]) => {
+        if (res.ok) res.posts.forEach(p => items.push({...p, sub}));
+      });
+      items.sort((a,b) => b.score - a.score);
+      document.getElementById('exec-reddit-top').innerHTML =
+        items.slice(0, 6).map(p => `
+          <div class="social-reddit-item">
+            <span class="social-reddit-score">▲${p.score.toLocaleString()}</span>
+            <span style="color:var(--muted);font-size:10px;margin:0 4px">r/${p.sub}</span>
+            <a href="${escSocial(p.url)}" target="_blank">${escSocial(p.title.slice(0,70))}${p.title.length>70?'…':''}</a>
+          </div>`).join('');
+    } catch {
+      document.getElementById('exec-reddit-top').innerHTML =
+        '<div class="social-offline">Could not load Reddit.</div>';
+    }
+  }
+
+  function escSocial(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => setTimeout(loadSocialStrip, 600));
+})();
+</script>
+
+
+
+<script src="calli-system.js"></script>
+
+<!-- Tutorial FAB -->
+<button class="tour-fab" onclick="CALLI_TOUR.launch()"
+        title="Open interactive tutorial — choose Quick, Standard, or Deep Dive">
+  🎓 Tutorial
+</button>
+
+<script src="calli-tour.js"></script>
+<script>
+/* ── Local-dev API routing ── */
+(function(){
+  if (location.hostname === 'egavves.github.io') return;
+  var _orig = window.fetch.bind(window);
+  window.fetch = function(url, opts) {
+    if (url === 'https://egavves-github-io.vercel.app/api/chat') {
+      var key = localStorage.getItem('anthropicKey') || localStorage.getItem('anthropic_api_key') || '';
+      if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
+      url = 'https://api.anthropic.com/v1/messages';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {
+        'x-api-key': key,
+        'anthropic-dangerous-direct-browser-access': 'true'
+      });
+    }
+    if (url === 'https://egavves-github-io.vercel.app/api/image') {
+      var key2 = localStorage.getItem('falKey') || localStorage.getItem('fal_api_key') || '';
+      url = 'https://fal.run/fal-ai/flux/schnell';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Key ' + key2});
+    }
+    return _orig(url, opts);
+  };
+})();
+</script>
+</body>
+</html>

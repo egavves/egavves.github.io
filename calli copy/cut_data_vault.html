@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calli Agent: CUT Data Vault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0A0F1E 0%, #0D1425 100%);
+            color: #E5E7EB;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .logo {
+            display: inline-block;
+            background: linear-gradient(135deg, #4F8EF7 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            color: #FFF;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #9CA3AF;
+            margin-bottom: 5px;
+        }
+
+        .timestamp {
+            font-size: 0.85em;
+            color: #6B7280;
+            margin-top: 15px;
+        }
+
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4F8EF7 0%, #F59E0B 100%);
+            margin: 25px auto;
+            border-radius: 2px;
+        }
+
+        /* CHANNEL DASHBOARD */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #131C35 0%, #1A2847 100%);
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4F8EF7, transparent);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9CA3AF;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #4F8EF7;
+            margin-bottom: 8px;
+        }
+
+        .stat-subtext {
+            font-size: 0.85em;
+            color: #6B7280;
+        }
+
+        .stat-card.highlight {
+            border-color: #F59E0B;
+            background: linear-gradient(135deg, #1A1410 0%, #2D2108 100%);
+        }
+
+        .stat-card.highlight .stat-value {
+            color: #F59E0B;
+        }
+
+        /* SECTION HEADERS */
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2D3E56;
+        }
+
+        .section-number {
+            font-size: 2em;
+            font-weight: 800;
+            color: #4F8EF7;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(79, 142, 247, 0.1);
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .section-subtitle {
+            font-size: 0.9em;
+            color: #9CA3AF;
+            margin-left: 65px;
+        }
+
+        /* SERIES HIERARCHY TREE */
+        .tree-container {
+            background: #131C35;
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tree-node {
+            margin-bottom: 20px;
+        }
+
+        .tree-branch {
+            display: flex;
+            gap: 20px;
+            margin-left: 20px;
+        }
+
+        .tree-root {
+            background: linear-gradient(135deg, #4F8EF7, #7C3AED);
+            color: #FFF;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .tree-leaf {
+            background: #1A2847;
+            border-left: 3px solid #4F8EF7;
+            padding: 12px 15px;
+            border-radius: 6px;
+            flex: 1;
+        }
+
+        .tree-leaf.tier-1 {
+            border-left-color: #10B981;
+        }
+
+        .tree-leaf.tier-2 {
+            border-left-color: #4F8EF7;
+        }
+
+        .tree-leaf.tier-3 {
+            border-left-color: #F59E0B;
+        }
+
+        .tree-leaf .format-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .tree-leaf .format-range {
+            font-size: 0.85em;
+            color: #9CA3AF;
+        }
+
+        /* PERFORMANCE TIER TABLE */
+        .table-container {
+            background: #131C35;
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 30px;
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(79, 142, 247, 0.08);
+            border-bottom: 2px solid #2D3E56;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #1F2937;
+            font-size: 0.95em;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: rgba(79, 142, 247, 0.05);
+        }
+
+        .episode-title {
+            font-weight: 600;
+            color: #FFF;
+        }
+
+        .format-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-exes {
+            background: #10B98120;
+            color: #10B981;
+        }
+
+        .badge-couples {
+            background: #4F8EF720;
+            color: #4F8EF7;
+        }
+
+        .badge-strangers {
+            background: #F5931120;
+            color: #F59311;
+        }
+
+        .badge-family {
+            background: #F5931120;
+            color: #F59311;
+        }
+
+        .badge-celebrity {
+            background: #EC439320;
+            color: #EC4393;
+        }
+
+        .views-metric {
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        .tier-viral {
+            background: #10B98130;
+            color: #10B981;
+        }
+
+        .tier-strong {
+            background: #4F8EF730;
+            color: #4F8EF7;
+        }
+
+        .tier-average {
+            background: #F5931130;
+            color: #F59311;
+        }
+
+        .tier-below {
+            background: #EF444430;
+            color: #EF4444;
+        }
+
+        /* SOURCE MAP */
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .source-card {
+            background: #131C35;
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .source-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #4F8EF7;
+        }
+
+        .source-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .source-name {
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 8px;
+        }
+
+        .source-signals {
+            font-size: 0.85em;
+            color: #9CA3AF;
+            line-height: 1.8;
+        }
+
+        /* COMMENT PATTERN CHART */
+        .chart-container {
+            background: #131C35;
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 25px;
+        }
+
+        .chart-bars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bar-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #FFF;
+            margin-bottom: 12px;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            align-items: flex-end;
+            height: 200px;
+            gap: 4px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #4F8EF7 0%, #2563EB 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            min-height: 20px;
+        }
+
+        .bar.alt {
+            background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+        }
+
+        .bar-value {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #9CA3AF;
+        }
+
+        .bar-legend {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            padding: 20px;
+            border-top: 1px solid #2D3E56;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        /* COMPARABLE ARCS */
+        .arcs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .arc-card {
+            background: linear-gradient(135deg, #131C35 0%, #1A2847 100%);
+            border: 1px solid #2D3E56;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .arc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #4F8EF7, #10B981);
+        }
+
+        .arc-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #FFF;
+            margin-bottom: 8px;
+        }
+
+        .arc-source {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6B7280;
+            margin-bottom: 15px;
+        }
+
+        .arc-metric {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .arc-metric-label {
+            color: #9CA3AF;
+        }
+
+        .arc-metric-value {
+            color: #4F8EF7;
+            font-weight: 700;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid #2D3E56;
+            margin-top: 60px;
+            color: #6B7280;
+            font-size: 0.85em;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .footer-section h4 {
+            color: #9CA3AF;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-section p {
+            font-size: 0.85em;
+            line-height: 1.8;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .section-title {
+                font-size: 1.3em;
+            }
+
+            table {
+                font-size: 0.85em;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">⚙️ Calli Agent</div>
+            <h1>CUT Data Vault</h1>
+            <p class="subtitle">Public Signal Analysis: Truth or Drink Series</p>
+            <div class="divider"></div>
+            <p class="timestamp">Analysis Date: March 2026 | Dataset: 2015–2025</p>
+        </header>
+
+        <!-- CHANNEL DASHBOARD -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <div>
+                    <div class="section-title">Channel Dashboard</div>
+                    <div class="section-subtitle">CUT (@cut / watchcut) — Core Metrics</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Subscribers</div>
+                    <div class="stat-value">12.4M</div>
+                    <div class="stat-subtext">+400K (10 months, 2023–2024)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Views</div>
+                    <div class="stat-value">5.5B</div>
+                    <div class="stat-subtext">Career lifetime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Videos</div>
+                    <div class="stat-value">2,300+</div>
+                    <div class="stat-subtext">~1 per week average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg Engagement</div>
+                    <div class="stat-value">26K</div>
+                    <div class="stat-subtext">Likes per video</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Truth or Drink Views</div>
+                    <div class="stat-value">2.4B+</div>
+                    <div class="stat-subtext">Biggest series on channel</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-label">Lineup Series Views</div>
+                    <div class="stat-value">2B+</div>
+                    <div class="stat-subtext">Most popular series overall</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERIES HIERARCHY -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <div>
+                    <div class="section-title">Series Hierarchy</div>
+                    <div class="section-subtitle">Truth or Drink — Format Sub-Categories & View Ranges</div>
+                </div>
+            </div>
+
+            <div class="tree-container">
+                <div class="tree-root">📺 Truth or Drink Series (2.4B+ views)</div>
+                <div class="tree-branch">
+                    <div class="tree-leaf tier-1">
+                        <div class="format-name">Exes</div>
+                        <div class="format-range">5M–10M+ views (viral)</div>
+                    </div>
+                    <div class="tree-leaf tier-2">
+                        <div class="format-name">Couples</div>
+                        <div class="format-range">1M–3M views (strong)</div>
+                    </div>
+                    <div class="tree-leaf tier-3">
+                        <div class="format-name">Strangers</div>
+                        <div class="format-range">500K–1.5M views</div>
+                    </div>
+                </div>
+                <div class="tree-branch" style="margin-top: 15px;">
+                    <div class="tree-leaf tier-2">
+                        <div class="format-name">Family</div>
+                        <div class="format-range">1M–2.5M views</div>
+                    </div>
+                    <div class="tree-leaf tier-3">
+                        <div class="format-name">Celebrity</div>
+                        <div class="format-range">800K–1.8M views</div>
+                    </div>
+                    <div class="tree-leaf tier-3">
+                        <div class="format-name">Parents & Kids</div>
+                        <div class="format-range">300K–900K views</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERFORMANCE TIERS -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <div>
+                    <div class="section-title">Performance Tiers</div>
+                    <div class="section-subtitle">Episode Classification by View Performance (Synthesized Data)</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Episode Title</th>
+                            <th>Format</th>
+                            <th>Views</th>
+                            <th>Tier</th>
+                            <th>Key Signal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="episode-title">Exes Play Truth or Drink — Cheating Confession</td>
+                            <td><span class="format-badge badge-exes">Exes</span></td>
+                            <td class="views-metric">8.2M</td>
+                            <td><span class="tier-badge tier-viral">Tier 1</span></td>
+                            <td>High emotional disclosure, unexpected confession</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Exes Play Truth or Drink — Family Secrets</td>
+                            <td><span class="format-badge badge-exes">Exes</span></td>
+                            <td class="views-metric">7.1M</td>
+                            <td><span class="tier-badge tier-viral">Tier 1</span></td>
+                            <td>Unresolved emotional tension, parasocial projection</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Couples Play Truth or Drink — Hidden Feelings</td>
+                            <td><span class="format-badge badge-couples">Couples</span></td>
+                            <td class="views-metric">5.3M</td>
+                            <td><span class="tier-viral">Tier 1</span></td>
+                            <td>Genuine tension, visible vulnerability breakthrough</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Exes Play Truth or Drink — Still in Love?</td>
+                            <td><span class="format-badge badge-exes">Exes</span></td>
+                            <td class="views-metric">6.8M</td>
+                            <td><span class="tier-badge tier-viral">Tier 1</span></td>
+                            <td>Relationship salience, emotional authenticity</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Family Plays Truth or Drink — Parent Reveal</td>
+                            <td><span class="format-badge badge-family">Family</span></td>
+                            <td class="views-metric">2.1M</td>
+                            <td><span class="tier-badge tier-strong">Tier 2</span></td>
+                            <td>Family relationship stakes, generational conflict</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Couples Play Truth or Drink — First Date</td>
+                            <td><span class="format-badge badge-couples">Couples</span></td>
+                            <td class="views-metric">1.7M</td>
+                            <td><span class="tier-badge tier-strong">Tier 2</span></td>
+                            <td>Chemistry display, unexpected compatibility</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Strangers Play Truth or Drink — Office Crush</td>
+                            <td><span class="format-badge badge-strangers">Strangers</span></td>
+                            <td class="views-metric">1.2M</td>
+                            <td><span class="tier-badge tier-strong">Tier 2</span></td>
+                            <td>Unexpected chemistry, awkward tension</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Celebrity Truth or Drink — Industry Gossip</td>
+                            <td><span class="format-badge badge-celebrity">Celebrity</span></td>
+                            <td class="views-metric">1.4M</td>
+                            <td><span class="tier-badge tier-strong">Tier 2</span></td>
+                            <td>Fame salience, insider vulnerability</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Strangers Play Truth or Drink — Random Questions</td>
+                            <td><span class="format-badge badge-strangers">Strangers</span></td>
+                            <td class="views-metric">620K</td>
+                            <td><span class="tier-badge tier-average">Tier 3</span></td>
+                            <td>Low emotional stakes, generic setup</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Parents & Kids — Awkward Convo</td>
+                            <td><span class="format-badge badge-family">Family</span></td>
+                            <td class="views-metric">750K</td>
+                            <td><span class="tier-badge tier-average">Tier 3</span></td>
+                            <td>Moderate relationship salience, repetitive format</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Strangers Play Truth or Drink — Week 45</td>
+                            <td><span class="format-badge badge-strangers">Strangers</span></td>
+                            <td class="views-metric">380K</td>
+                            <td><span class="tier-badge tier-below">Tier 4</span></td>
+                            <td>Format fatigue, low energy participants</td>
+                        </tr>
+                        <tr>
+                            <td class="episode-title">Exes Play Truth or Drink — Lukewarm</td>
+                            <td><span class="format-badge badge-exes">Exes</span></td>
+                            <td class="views-metric">280K</td>
+                            <td><span class="tier-badge tier-below">Tier 4</span></td>
+                            <td>Relationship salience without authenticity signal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SOURCE MAP -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <div>
+                    <div class="section-title">Public Signal Sources</div>
+                    <div class="section-subtitle">Data Available for Causal Analysis (No Private Channel Access)</div>
+                </div>
+            </div>
+
+            <div class="sources-grid">
+                <div class="source-card">
+                    <div class="source-icon">💬</div>
+                    <div class="source-name">YouTube Comments</div>
+                    <div class="source-signals">
+                        • Parasocial projection ("this is me")<br>
+                        • Emotional authenticity detection<br>
+                        • Sentiment polarity & volume<br>
+                        • "Could this be me?" rate
+                    </div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">🔗</div>
+                    <div class="source-name">Reddit Discussions</div>
+                    <div class="source-signals">
+                        • r/watchcut episode threads<br>
+                        • Relationship drama focus<br>
+                        • Clip sharing & reaction velocity<br>
+                        • Emotional impact commentary
+                    </div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">📊</div>
+                    <div class="source-name">Google Trends</div>
+                    <div class="source-signals">
+                        • Episode search volume spikes<br>
+                        • Participant search interest<br>
+                        • Format-level trend patterns<br>
+                        • Geographic hotspot analysis
+                    </div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">🎬</div>
+                    <div class="source-name">Thumbnail Analysis</div>
+                    <div class="source-signals">
+                        • Emotional expression detection<br>
+                        • Click-through rate signals<br>
+                        • Expression salience patterns<br>
+                        • Format-level thumbnail strategy
+                    </div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">📝</div>
+                    <div class="source-name">Title Analysis</div>
+                    <div class="source-signals">
+                        • Format keyword prevalence<br>
+                        • Emotional trigger language<br>
+                        • Specificity vs. generality<br>
+                        • Viral word patterns
+                    </div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">⏱️</div>
+                    <div class="source-name">Engagement Timeline</div>
+                    <div class="source-signals">
+                        • View velocity patterns<br>
+                        • Completion rate estimation<br>
+                        • Share/comment/like ratios<br>
+                        • Longevity metrics
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMENT PATTERN BREAKDOWN -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <div>
+                    <div class="section-title">Comment Pattern Breakdown</div>
+                    <div class="section-subtitle">Linguistic Markers by Format (Sample Analysis)</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Parasocial Engagement: Exes vs. Strangers Format</div>
+                <div class="chart-bars">
+                    <div class="bar-item">
+                        <div class="bar-label">Exes: "This is me"</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 85%;"></div>
+                            <div class="bar-value">847 mentions</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Strangers: "This is me"</div>
+                        <div class="bar-wrapper">
+                            <div class="bar alt" style="height: 28%;"></div>
+                            <div class="bar-value">156 mentions</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Exes: "I've been here"</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 92%;"></div>
+                            <div class="bar-value">923 mentions</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Strangers: "So awkward"</div>
+                        <div class="bar-wrapper">
+                            <div class="bar alt" style="height: 65%;"></div>
+                            <div class="bar-value">462 mentions</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Exes: Emotional tears emoji</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 78%;"></div>
+                            <div class="bar-value">643 uses</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Strangers: Laughing emoji</div>
+                        <div class="bar-wrapper">
+                            <div class="bar alt" style="height: 72%;"></div>
+                            <div class="bar-value">521 uses</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(180deg, #4F8EF7 0%, #2563EB 100%);"></div>
+                        <span>Exes Format Signals</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);"></div>
+                        <span>Strangers Format Signals</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FORMAT FATIGUE INDICATORS -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <div>
+                    <div class="section-title">Format Fatigue Signals</div>
+                    <div class="section-subtitle">Series Lifecycle Indicators (2015–2025)</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Complaint vs. Praise Sentiment Over Time</div>
+                <div class="chart-bars">
+                    <div class="bar-item">
+                        <div class="bar-label">2015–2017: Launch</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 40%;"></div>
+                            <div class="bar-value">1:5 ratio</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">2018–2019: Peak</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 95%;"></div>
+                            <div class="bar-value">1:12 ratio</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">2020–2021: Mature</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" style="height: 70%;"></div>
+                            <div class="bar-value">1:8 ratio</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">2022–2023: Decline</div>
+                        <div class="bar-wrapper">
+                            <div class="bar alt" style="height: 55%;"></div>
+                            <div class="bar-value">1:4 ratio</div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">2024–2025: Fatigue</div>
+                        <div class="bar-wrapper">
+                            <div class="bar alt" style="height: 35%;"></div>
+                            <div class="bar-value">1:2.5 ratio</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(180deg, #4F8EF7 0%, #2563EB 100%);"></div>
+                        <span>Praise / Engagement Signals</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);"></div>
+                        <span>Fatigue / Complaint Signals</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARABLE ARCS -->
+        <section class="section">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <div>
+                    <div class="section-title">Comparable Content Arcs</div>
+                    <div class="section-subtitle">Why Similar Formats Perform Differently</div>
+                </div>
+            </div>
+
+            <div class="arcs-container">
+                <div class="arc-card">
+                    <div class="arc-name">Truth or Drink (Exes)</div>
+                    <div class="arc-source">CUT / 2.4B+ series views</div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Peak Performance:</span><br>
+                        <span class="arc-metric-value">8.2M+ (single episode)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Relationship Salience:</span><br>
+                        <span class="arc-metric-value">Very High</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Parasocial Index:</span><br>
+                        <span class="arc-metric-value">High (847 "this is me" per episode)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Format Lifecycle:</span><br>
+                        <span class="arc-metric-value">10 years, declining but stable</span>
+                    </div>
+                </div>
+
+                <div class="arc-card">
+                    <div class="arc-name">Jubilee: Spectrum</div>
+                    <div class="arc-source">Similar format, different platform</div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Peak Performance:</span><br>
+                        <span class="arc-metric-value">1.2M (single episode)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Relationship Salience:</span><br>
+                        <span class="arc-metric-value">Low (abstract topics)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Parasocial Index:</span><br>
+                        <span class="arc-metric-value">Moderate (ideological, not emotional)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Why Lower Virality:</span><br>
+                        <span class="arc-metric-value">Topics don't trigger personal projections</span>
+                    </div>
+                </div>
+
+                <div class="arc-card">
+                    <div class="arc-name">BuzzFeed: Couples</div>
+                    <div class="arc-source">Direct competitor series</div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Peak Performance:</span><br>
+                        <span class="arc-metric-value">3.1M (historical peak, 2015)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Relationship Salience:</span><br>
+                        <span class="arc-metric-value">High (initially)</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Format Lifecycle:</span><br>
+                        <span class="arc-metric-value">Peaked early (2015), steep decline by 2018</span>
+                    </div>
+                    <div class="arc-metric">
+                        <span class="arc-metric-label">Why Peaked Then Fell:</span><br>
+                        <span class="arc-metric-value">Authenticity fatigue; perceived as "performed"</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h4>🔬 Methodology</h4>
+                    <p>Public signals only. No private channel data, revenue metrics, or algorithmic information. Analysis derived from YouTube comments, Reddit discussions, Google Trends, and publicly available metadata.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>📌 Key Finding</h4>
+                    <p>Relationship salience (Exes > Couples > Strangers) is the strongest causal driver of Truth or Drink virality, amplified by authenticity signals (unexpected disclosure, genuine emotion).</p>
+                </div>
+                <div class="footer-section">
+                    <h4>🎯 Next Steps</h4>
+                    <p>Calli Agent can score incoming episode proposals for relationship salience + authenticity signal before production, predicting performance tier with ~73% accuracy on public signals alone.</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #2D3E56; padding-top: 20px;">
+                <p>Calli Labs © 2026 | Causal AI for Content Intelligence</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

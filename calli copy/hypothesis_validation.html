@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en" class="calli-dash">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hypothesis Validation — Calli Labs</title>
+  <link rel="stylesheet" href="calli-system.css">
+  <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0F1729; --surface:#161f35; --surface2:#1e2a45;
+  --surface3:#253050; --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.13);
+  --accent:#7c6af7; --accent2:#a78bfa;
+  --text:#E5E7EB; --muted:#6B7280; --positive:#34d399; --negative:#f87171;
+  --warm:#fb923c; --teal:#2dd4bf;
+}
+body{background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  overflow:hidden;height:100vh}
+
+/* nav.unified-nav — see calli-system.css */
+
+.page-header{padding:22px 28px 16px;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(124,106,247,0.07) 0%,transparent 70%);border-bottom:1px solid var(--border)}
+.page-title{font-size:1.4rem;font-weight:800;margin-bottom:3px}
+.page-sub{color:var(--muted);font-size:0.84rem;max-width:700px;line-height:1.6}
+
+.main-container{display:flex;height:calc(100vh - 42px - 62px);background:var(--bg)}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column}
+.sidebar-header{padding:14px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.new-session-btn{width:100%;padding:8px 12px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;transition:opacity .2s}
+.new-session-btn:hover{opacity:0.9}
+.sessions-list{flex:1;overflow-y:auto;padding:8px 0}
+.session-item{padding:8px 8px;margin:4px 8px;border-radius:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;border:1px solid transparent;transition:all .15s}
+.session-item:hover{background:rgba(255,255,255,0.06);border-color:var(--border)}
+.session-item.active{background:rgba(124,106,247,0.15);border-color:var(--accent);color:var(--accent2)}
+.session-item-title{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.session-item-delete{width:20px;height:20px;display:flex;align-items:center;justify-content:center;background:rgba(248,113,113,0.2);border:none;border-radius:4px;color:#f87171;cursor:pointer;font-size:10px;transition:all .15s;opacity:0}
+.session-item:hover .session-item-delete{opacity:1}
+.session-item-delete:hover{background:rgba(248,113,113,0.4)}
+.sidebar-footer{padding:12px;border-top:1px solid var(--border);flex-shrink:0;display:none}
+.sidebar-footer.show{display:block}
+.summarize-all-btn{width:100%;padding:8px 12px;background:rgba(124,106,247,0.2);color:var(--accent2);border:1px solid var(--accent);border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;transition:all .2s}
+.summarize-all-btn:hover{background:rgba(124,106,247,0.3)}
+
+.workspace{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:20px}
+.workspace.empty{align-items:center;justify-content:center}
+.empty-state{text-align:center;color:var(--muted)}
+.empty-state-icon{font-size:3rem;margin-bottom:12px}
+.empty-state-title{font-size:1.1rem;font-weight:600;margin-bottom:6px;color:var(--text)}
+
+.session-title-bar{display:flex;align-items:center;gap:8px;padding:0}
+.session-title{font-size:1.2rem;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:4px;transition:background .2s}
+.session-title:hover{background:rgba(255,255,255,0.08)}
+.session-title.editing{background:rgba(124,106,247,0.15);border:1px solid var(--accent)}
+.session-title-input{background:var(--surface2);border:1px solid var(--accent);color:var(--text);padding:4px 8px;border-radius:4px;font-size:1.1rem;font-weight:700;font-family:inherit}
+
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px}
+.panel-title{font-weight:700;font-size:0.95rem;margin-bottom:12px;display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.panel-collapse-icon{display:inline-block;transition:transform .2s}
+.panel-collapse-icon.collapsed{transform:rotate(-90deg)}
+.panel-collapsed .panel-content{display:none}
+
+.hypothesis-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.hypothesis-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border-radius:6px;border:1px solid var(--border2);font-size:0.9rem}
+.hypothesis-medal{font-size:1.1rem;flex-shrink:0}
+.hypothesis-title{flex:1}
+.hypothesis-badge{background:rgba(124,106,247,0.2);color:var(--accent2);padding:2px 8px;border-radius:4px;font-size:0.8rem;white-space:nowrap;flex-shrink:0}
+.hypothesis-remove{background:rgba(248,113,113,0.2);color:#f87171;border:none;border-radius:4px;width:20px;height:20px;cursor:pointer;font-size:10px;transition:all .15s}
+.hypothesis-remove:hover{background:rgba(248,113,113,0.4)}
+
+.add-hypothesis-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+.add-hypothesis-row select{flex:1;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 10px;border-radius:6px;font-size:0.9rem}
+.add-hypothesis-row select optgroup{color:var(--accent2)}
+.add-btn{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;padding:8px 14px;border-radius:6px;font-weight:600;font-size:0.9rem;cursor:pointer;white-space:nowrap}
+.add-btn:hover{opacity:0.9}
+
+.evidence-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:0.85rem;font-weight:600;color:var(--text)}
+.form-input{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:8px 10px;border-radius:6px;font-size:0.9rem;font-family:inherit}
+.form-input:focus{outline:none;border-color:var(--accent);background:var(--surface3)}
+.form-input.textarea{resize:vertical;min-height:80px}
+.pdf-upload-row{display:flex;gap:8px;align-items:flex-end}
+.pdf-file-input{display:none}
+.pdf-upload-btn{background:rgba(124,106,247,0.2);color:var(--accent2);border:1px solid var(--accent);padding:8px 14px;border-radius:6px;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all .15s}
+.pdf-upload-btn:hover{background:rgba(124,106,247,0.3)}
+.pdf-filename{font-size:0.85rem;color:var(--muted)}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:1400px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.metrics-grid{grid-template-columns:1fr}}
+
+.validate-btn{width:100%;padding:12px 16px;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;transition:opacity .2s;margin-top:8px}
+.validate-btn:hover{opacity:0.9}
+.validate-btn:disabled{opacity:0.5;cursor:not-allowed}
+
+.results-section{margin-top:20px}
+.results-empty{text-align:center;color:var(--muted);padding:20px;font-size:0.9rem}
+.result-card{border-left:4px solid;background:var(--surface2);border-radius:6px;padding:12px;margin-bottom:8px;transition:all .2s}
+.result-card.proven{border-left-color:var(--positive)}
+.result-card.disproven{border-left-color:var(--negative)}
+.result-card.inconclusive{border-left-color:var(--warm)}
+.result-card.pending{border-left-color:#6B7280}
+.result-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.result-badge{padding:4px 10px;border-radius:4px;font-size:0.8rem;font-weight:600;white-space:nowrap}
+.result-badge.proven{background:rgba(52,211,153,0.2);color:var(--positive)}
+.result-badge.disproven{background:rgba(248,113,113,0.2);color:var(--negative)}
+.result-badge.inconclusive{background:rgba(251,146,60,0.2);color:var(--warm)}
+.result-badge.pending{background:rgba(107,114,128,0.2);color:var(--muted)}
+.result-title{font-weight:600;flex:1}
+.result-text{font-size:0.9rem;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.result-expandable{max-height:none;overflow:visible}
+.result-see-more{color:var(--accent2);cursor:pointer;font-weight:600;font-size:0.85rem;transition:color .2s}
+.result-see-more:hover{color:var(--accent)}
+.result-actions{display:flex;gap:6px;margin-top:8px}
+.result-action-btn{padding:4px 10px;border-radius:4px;border:1px solid;background:transparent;color:var(--text);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+.result-action-btn.proven{border-color:var(--positive);color:var(--positive)}
+.result-action-btn.proven:hover{background:rgba(52,211,153,0.15)}
+.result-action-btn.disproven{border-color:var(--negative);color:var(--negative)}
+.result-action-btn.disproven:hover{background:rgba(248,113,113,0.15)}
+.result-action-btn.inconclusive{border-color:var(--warm);color:var(--warm)}
+.result-action-btn.inconclusive:hover{background:rgba(251,146,60,0.15)}
+
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center}
+.modal.show{display:flex}
+.modal-content{background:var(--surface);border:1px solid var(--border);border-radius:12px;max-width:600px;max-height:80vh;overflow-y:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-header{font-size:1.2rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.modal-close{margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:var(--text);width:24px;height:24px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:rgba(255,255,255,0.2)}
+.modal-report{font-size:0.9rem;color:var(--muted);line-height:1.7;margin:16px 0;white-space:pre-wrap}
+.modal-copy-btn{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.modal-copy-btn:hover{opacity:0.9}
+
+.streaming-indicator{display:flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--accent2);margin-bottom:12px}
+.spinner{width:12px;height:12px;border:2px solid rgba(124,106,247,0.3);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+  
+/* H-number badge */
+.hyp-num-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(124,106,247,.2); border: 1px solid rgba(124,106,247,.45);
+  color: #a78bfa; border-radius: 4px; padding: 1px 6px;
+  font-size: 10px; font-weight: 800; letter-spacing: .03em;
+  margin-right: 6px; flex-shrink: 0; font-family: monospace;
+}
+
+</style>
+</head>
+<body>
+  <nav class="unified-nav">
+  <a class="nav-home-chip" href="cut_home.html">🏠 Home</a>
+  <div class="nav-proj-dropdown" id="nav-proj-dd">
+    <button class="nav-proj-btn" onclick="navProjToggle()" title="Switch project">📂 Open project ▾</button>
+    <div class="nav-proj-menu" id="nav-proj-menu">
+      <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
+      <a class="nav-proj-item nav-proj-active" href="cut_feature_dashboard.html">✂️ CUT</a>
+      <a class="nav-proj-item" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
+      <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
+    </div>
+  </div>
+  <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-vsep"></div>
+  <a class="nav-chip" href="calli_feature_vault_v2.html">📚 Vault</a>
+  <a class="nav-chip nav-social-chip" href="social_media_dashboard.html">🌐 Social Pulse</a>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label nav-ai-label">AI</span>
+  <a class="nav-chip" href="cut_correlations.html">🔬 Correlations</a>
+  <a class="nav-chip" href="cut_lasso_analysis.html">📐 LASSO</a>
+  <a class="nav-chip" href="cut_rf_shap.html">🌲 Random Forest</a>
+  <a class="nav-chip" href="exec_summary.html">✦ Executive Summary</a>
+  <a class="nav-chip nav-active" href="hypothesis_validation.html">🧪 Validation</a>
+  <a class="nav-chip" href="ideation_dashboard.html">💡 Ideation</a>
+</nav>
+
+  <div class="page-header">
+    <div class="page-title">🧪 Hypothesis Validation</div>
+    <div class="page-sub">Test CUT content hypotheses against real video performance data. Upload YouTube Analytics exports, enter metrics, and let Claude compare against the 487-video baseline — with statistical context and full ML evidence.</div>
+  </div>
+
+  <div class="main-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <button class="new-session-btn" onclick="createNewSession()">+ New Validation</button>
+      </div>
+      <div class="sessions-list" id="sessionsList"></div>
+      <div class="sidebar-footer" id="sidebarFooter">
+        <button class="summarize-all-btn" onclick="openSummarizeModal()">📊 Summarize All</button>
+      </div>
+    </div>
+
+    <!-- Social Signals Sidebar -->
+    <div class="social-sidebar-section">
+      <button class="social-sidebar-toggle" onclick="toggleSocialSidebar()">
+        🌐 Social Signals
+        <span id="social-sidebar-arrow" style="margin-left:auto;transition:transform .2s">▾</span>
+      </button>
+      <div class="social-sidebar-body" id="social-sidebar-body" style="display:none">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:6px">
+          Live signals from Twitter &amp; Reddit.
+          <a href="social_media_dashboard.html" style="color:var(--accent)">Full view →</a>
+        </div>
+        <div class="social-sidebar-label">🐦 Trending</div>
+        <div id="val-twitter-trends"><div class="social-offline-msg">Loading…</div></div>
+        <div class="social-sidebar-label" style="margin-top:8px">🟠 Reddit · r/movies &amp; r/television</div>
+        <div id="val-reddit-posts"><div class="social-offline-msg">Loading…</div></div>
+        <div id="val-social-status" style="font-size:10px;color:var(--muted);margin-top:6px"></div>
+      </div>
+    </div>
+
+
+    <div class="workspace" id="workspace">
+      <div class="empty-state">
+        <div class="empty-state-icon">🧪</div>
+        <div class="empty-state-title">No sessions yet</div>
+        <div class="empty-state-text">Create a new validation session to get started</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="summarizeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        📊 Validation Summary
+        <button class="modal-close" onclick="closeSummarizeModal()">✕</button>
+      </div>
+      <div id="summarizeContent">
+        <div class="streaming-indicator">
+          <div class="spinner"></div>
+          Generating summary...
+        </div>
+      </div>
+      <button class="modal-copy-btn" onclick="copySummaryToClipboard()" style="margin-top:16px">Copy to clipboard</button>
+    </div>
+  </div>
+
+  <script>
+(function() {
+  const pageFile = window.location.pathname.split('/').pop() || 'index.html';
+  const dataPageMap = {
+    'calli_feature_vault_v2.html':  'calli_feature_vault_v2.html',
+    'feature_distributions.html':   'feature_distributions.html',
+    'cut_feature_dashboard.html':   'cut_feature_dashboard.html',
+  };
+  const analysisPagesDefaultCUT = [
+    'cut_correlations.html','cut_lasso_analysis.html','cut_rf_shap.html',
+    'exec_summary.html','hypothesis_validation.html','ideation_dashboard.html',
+    'index.html',
+  ];
+  const sel = document.getElementById('navDataSelect');
+  if (sel) {
+    if (dataPageMap[pageFile]) {
+      sel.value = dataPageMap[pageFile];
+    } else if (analysisPagesDefaultCUT.includes(pageFile)) {
+      sel.value = 'cut_feature_dashboard.html';
+    }
+  }
+  try {
+    const sources = JSON.parse(localStorage.getItem('extra_data_sources') || '[]');
+    sources.forEach(s => {
+      document.querySelectorAll('.nav-data-select').forEach(sel => {
+        if (!Array.from(sel.options).some(o => o.value === s.url)) {
+          const opt = document.createElement('option');
+          opt.value = s.url; opt.textContent = '📊 ' + s.name;
+          const soonOpt = Array.from(sel.options).find(o => o.disabled);
+          if (soonOpt) sel.insertBefore(opt, soonOpt); else sel.appendChild(opt);
+        }
+      });
+    });
+  } catch(_) {}
+})();
+</script>
+<script>
+const HYPOTHESES_COMPACT = [{"id":"thumb_text_overlay","title":"Add Bold Text Overlay to Thumbnails","tagline":"Words on screen = more clicks","confidence":"silver","primary_target":"views","category_key":"thumbnail","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Adding a 3–5 word text overlay to thumbnails increases click-through rate by ≥10%.","control":"Thumbnail with no text (pure photo/graphic).","treatment":"Same thumbnail + bold text overlay teasing the episode stakes.","primary_metric":"Click-through rate (CTR)","secondary_metric":"Views in first 48 hours","sample_n":"20 videos (10 control, 10 treatment), matched by format","duration":"4 weeks","what_to_keep_constant":"Format, publish time, title structure, promotion budget"},"quant_evidence":[{"text":"thumb_text_likelihood correlates with views (r=r=+0.10, n=477)","feat":"thumb_text_likelihood","tgt":"views"},{"text":"thumb_text_likelihood correlates with avg_view_percentage (r=r=+0.15, n=477)","feat":"thumb_text_likelihood","tgt":"avg_view_percentage"}],"temp_cost":1,"num":1},{"id":"thumb_face_size","title":"Make Faces Larger in Thumbnails","tagline":"Bigger faces = stronger emotional hook","confidence":null,"primary_target":"avg_view_percentage","category_key":"thumbnail","formats":["all"],"methods_hit":[],"inspiration_type":"background","ab_test":{"hypothesis":"Thumbnails with the largest face occupying ≥30% of frame have higher CTR than thumbnails with smaller faces.","control":"Current thumbnail crop (typical face size).","treatment":"Re-cropped or re-designed thumbnail with lead face occupying ≥30% of frame.","primary_metric":"Click-through rate (CTR)","secondary_metric":"Impressions-to-views conversion","sample_n":"16 videos, matched by format","duration":"3 weeks","what_to_keep_constant":"Title, publish time, format, number of faces shown"},"quant_evidence":[{"text":"thumb_face_largest_pct correlates with avg_view_percentage (r=r=+0.09, n=477)","feat":"thumb_face_largest_pct","tgt":"avg_view_percentage"},{"text":"thumb_face_largest_pct correlates with views (r=r=-0.16, n=477)","feat":"thumb_face_largest_pct","tgt":"views"}],"temp_cost":1,"num":2},{"id":"thumb_colorfulness","title":"Boost Thumbnail Colorfulness","tagline":"Saturated thumbnails pop in a crowded feed","confidence":"silver","primary_target":"views","category_key":"thumbnail","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Higher colorfulness thumbnails (+30% saturation boost in post) generate higher CTR.","control":"Standard color grading on thumbnail.","treatment":"Same image with saturation boosted 30% in the background/environment area.","primary_metric":"Click-through rate (CTR)","secondary_metric":"Views at 72 hours","sample_n":"20 videos","duration":"4 weeks","what_to_keep_constant":"Composition, faces, text overlay, title"},"quant_evidence":[{"text":"thumb_colorfulness correlates with views (r=r=+0.01, n=477)","feat":"thumb_colorfulness","tgt":"views"}],"temp_cost":1,"num":3},{"id":"thumb_sharpness","title":"Increase Thumbnail Sharpness","tagline":"Crisp beats blurry — always","confidence":null,"primary_target":"avg_view_percentage","category_key":"thumbnail","formats":["all"],"methods_hit":[],"inspiration_type":"background","ab_test":{"hypothesis":"Sharper thumbnails (unsharp mask applied) result in higher retention and CTR.","control":"Standard thumbnail export (JPEG, default settings).","treatment":"PNG export with sharpening pass applied.","primary_metric":"30-second retention","secondary_metric":"CTR","sample_n":"20 videos","duration":"4 weeks","what_to_keep_constant":"All other thumbnail elements, title, publish time"},"quant_evidence":[{"text":"thumb_sharpness correlates with avg_view_percentage (r=r=+0.04, n=477)","feat":"thumb_sharpness","tgt":"avg_view_percentage"}],"temp_cost":1,"num":4},{"id":"audio_wpm","title":"Speed Up Delivery (WPM)","tagline":"Faster talk = less dead time = longer watch","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"audio","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with WPM ≥145 have higher avg_view_percentage than slower episodes.","control":"Current edit (no silence removal protocol).","treatment":"Edit with all silences >0.4s removed (excluding intentional pauses).","primary_metric":"Avg View Percentage (AVP)","secondary_metric":"30-second retention","sample_n":"16 videos, matched by format","duration":"4 weeks","what_to_keep_constant":"Format, guests, thumbnail, title style"},"quant_evidence":[{"text":"wpm_whisper correlates with avg_view_percentage (r=r=+0.13, n=201)","feat":"wpm_whisper","tgt":"avg_view_percentage"},{"text":"wpm_whisper correlates with retention_30s (r=r=+0.22, n=132)","feat":"wpm_whisper","tgt":"retention_30s"}],"temp_cost":1,"num":5},{"id":"audio_excitement_peaks","title":"Engineer More Audio Excitement Peaks","tagline":"More spikes in energy = more shares and rewatches","confidence":"bronze","primary_target":"subscribers_gained","category_key":"audio","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes structured with an energy peak every ≤90s have higher subscriber conversion.","control":"Current edit structure (natural episode flow).","treatment":"Edit restructured to ensure an audible energy peak every ≤90 seconds.","primary_metric":"Subscribers gained per 1,000 views","secondary_metric":"Comment shock score","sample_n":"16 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"excitement_peaks_per_min correlates with subscribers_gained (r=r=+0.13, n=201)","feat":"excitement_peaks_per_min","tgt":"subscribers_gained"},{"text":"comment_shock_score correlates with subscribers_gained (r=r=-0.08, n=473)","feat":"comment_shock_score","tgt":"subscribers_gained"}],"temp_cost":1,"num":6},{"id":"audio_silence","title":"Cut Dead Silence","tagline":"Every silent second is a dropout risk","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"audio","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with silence_ratio_audio < 0.10 have higher avg_view_percentage.","control":"Standard edit (current silence ratio).","treatment":"Edit with music bed added under any silence gap >0.5s.","primary_metric":"Avg View Percentage","secondary_metric":"Audience retention curve drop-off points","sample_n":"16 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, title, guest lineup"},"quant_evidence":[{"text":"silence_ratio_audio correlates with avg_view_percentage (r=r=+0.00, n=201)","feat":"silence_ratio_audio","tgt":"avg_view_percentage"},{"text":"silence_density correlates with avg_view_percentage (r=r=+0.12, n=199)","feat":"silence_density","tgt":"avg_view_percentage"}],"temp_cost":1,"num":7},{"id":"audio_crosstalk","title":"Preserve Crosstalk Moments","tagline":"Overlapping voices = authentic energy","confidence":"silver","primary_target":"avg_view_percentage","category_key":"audio","formats":["Truth or Drink","Fear Pong"],"methods_hit":["correlation","lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes that preserve crosstalk moments retain more viewers than over-cleaned edits.","control":"Standard edit (crosstalk reduced for clarity).","treatment":"Edit that preserves all crosstalk bursts ≤3 seconds.","primary_metric":"Avg View Percentage","secondary_metric":"Laugh rate signal in comments","sample_n":"12 videos (Truth or Drink + Fear Pong only)","duration":"3 weeks","what_to_keep_constant":"Format, thumbnail, title, music"},"quant_evidence":[{"text":"crosstalk_index correlates with avg_view_percentage (r=r=-0.21, n=199)","feat":"crosstalk_index","tgt":"avg_view_percentage"}],"temp_cost":1,"num":8},{"id":"content_hook","title":"Front-Load the Best Moment","tagline":"Show the payoff first, earn the setup second","confidence":"bronze","primary_target":"retention_30s","category_key":"dynamics","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with a cold open teaser in the first 30s have higher 30-second retention.","control":"Standard episode start (intro → game rules → play).","treatment":"Cold open: best reaction clip (3–5s) → title card → episode from start.","primary_metric":"30-second retention rate","secondary_metric":"Avg View Percentage","sample_n":"16 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"hook_score correlates with retention_30s (r=r=+0.03, n=131)","feat":"hook_score","tgt":"retention_30s"},{"text":"hook_energy_ratio correlates with retention_30s (r=r=-0.14, n=132)","feat":"hook_energy_ratio","tgt":"retention_30s"}],"temp_cost":1,"num":9},{"id":"content_opening_questions","title":"Open with Questions, Not Setup","tagline":"Questions create curiosity; setup creates patience","confidence":"bronze","primary_target":"retention_30s","category_key":"dynamics","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes that open with a provocative question in the first 15s have higher 30-second retention.","control":"Standard host intro and setup.","treatment":"Open with a direct question to the camera or cast before any setup.","primary_metric":"30-second retention","secondary_metric":"Comment question_rate (viewers asking follow-ups)","sample_n":"16 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, title, edit style"},"quant_evidence":[{"text":"opening_q_density correlates with retention_30s (r=r=-0.10, n=131)","feat":"opening_q_density","tgt":"retention_30s"},{"text":"q_rate correlates with avg_view_percentage (r=r=+0.11, n=297)","feat":"q_rate","tgt":"avg_view_percentage"}],"temp_cost":1,"num":10},{"id":"content_vulnerability","title":"Amplify Vulnerability Moments","tagline":"Realness retains; performance repels","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"dynamics","formats":["Truth or Drink","Keep it 100"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes where the edit holds on reactions after vulnerable answers have higher AVP.","control":"Standard edit (cut to next question promptly).","treatment":"Hold on reaction shot for 2–3 seconds after each vulnerable answer before cutting.","primary_metric":"Avg View Percentage","secondary_metric":"comment_parasocial_score","sample_n":"12 videos (Truth or Drink, Keep it 100)","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, question set, title"},"quant_evidence":[{"text":"vulnerability_score correlates with avg_view_percentage (r=r=-0.13, n=199)","feat":"vulnerability_score","tgt":"avg_view_percentage"},{"text":"comment_parasocial_score correlates with avg_view_percentage (r=r=+0.04, n=475)","feat":"comment_parasocial_score","tgt":"avg_view_percentage"}],"temp_cost":1,"num":11},{"id":"title_format_name","title":"Always Name the Format in the Title","tagline":"Format recognition is free algorithmic targeting","confidence":"bronze","primary_target":"views","category_key":"title","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Videos with the format name in the title get more views in the first 7 days.","control":"Title without format name (e.g., 'Would You Tell Your Ex the Truth?').","treatment":"Same concept with format name added (e.g., 'Truth or Drink: Would You Tell Your Ex?').","primary_metric":"Views at 7 days","secondary_metric":"Search traffic percentage","sample_n":"20 videos (10 per variant, matched by format)","duration":"5 weeks","what_to_keep_constant":"Format, thumbnail, publish time, promotion"},"quant_evidence":[{"text":"title_format_signal correlates with views (r=r=+0.12, n=482)","feat":"title_format_signal","tgt":"views"},{"text":"traffic_search_pct correlates with views (r=r=+0.12, n=478)","feat":"traffic_search_pct","tgt":"views"}],"temp_cost":1,"num":12},{"id":"title_second_person","title":"Use 'You' in the Title","tagline":"Make it personal — make it about the viewer","confidence":"bronze","primary_target":"views","category_key":"title","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Titles containing 'you' or 'your' generate higher CTR than equivalent titles without.","control":"Third-person title (e.g., 'Strangers Answer the Most Personal Questions').","treatment":"Second-person version (e.g., 'Would You Answer These Personal Questions?').","primary_metric":"Click-through rate","secondary_metric":"Views at 48 hours","sample_n":"20 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, publish time"},"quant_evidence":[{"text":"title_personal_you correlates with views (r=r=-0.13, n=482)","feat":"title_personal_you","tgt":"views"},{"text":"title_curiosity_score correlates with views (r=r=+0.02, n=482)","feat":"title_curiosity_score","tgt":"views"}],"temp_cost":1,"num":13},{"id":"title_curiosity","title":"Add a Curiosity Signal to Titles","tagline":"Open loops pull clicks","confidence":"bronze","primary_target":"views","category_key":"title","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Titles with an open information gap (curiosity score ≥0.6) generate higher CTR.","control":"Descriptive title explaining the premise.","treatment":"Curiosity-gap title teasing the emotional outcome without revealing it.","primary_metric":"Click-through rate","secondary_metric":"Views at 7 days","sample_n":"20 videos","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, publish day/time"},"quant_evidence":[{"text":"title_curiosity_score correlates with views (r=r=+0.02, n=482)","feat":"title_curiosity_score","tgt":"views"}],"temp_cost":1,"num":14},{"id":"title_avoid_age","title":"Remove Age References from Titles","tagline":"Age-targeting narrows your audience","confidence":"bronze","primary_target":"views","category_key":"title","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Equivalent videos with age-agnostic titles generate more total views than age-specific titles.","control":"Title with specific age mention ('50-Year-Olds React to Gen Z Slang').","treatment":"Age-agnostic equivalent ('Adults React to Gen Z Slang').","primary_metric":"Total views at 30 days","secondary_metric":"CPM","sample_n":"16 videos (8 per variant, same format type)","duration":"6 weeks","what_to_keep_constant":"Format, thumbnail, cast type, publish time"},"quant_evidence":[{"text":"title_has_age_mention correlates with views (r=r=-0.01, n=482)","feat":"title_has_age_mention","tgt":"views"}],"temp_cost":1,"num":15},{"id":"dist_algorithm","title":"Optimise for Algorithmic Discovery","tagline":"The algorithm is your distribution team","confidence":"gold","primary_target":"views","category_key":"discovery","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Videos optimised for retention (cold open + tight edit) generate higher algorithmic traffic share.","control":"Standard edit + social push strategy.","treatment":"Retention-optimised edit (cold open, silence cuts) with no change to social push.","primary_metric":"Algorithmic traffic percentage at 30 days","secondary_metric":"Total views","sample_n":"16 videos","duration":"6 weeks","what_to_keep_constant":"Thumbnail, title style, publish time, social promotion budget"},"quant_evidence":[{"text":"traffic_algorithmic_pct correlates with views (r=r=+0.43, n=478)","feat":"traffic_algorithmic_pct","tgt":"views"},{"text":"traffic_search_pct correlates with views (r=r=+0.12, n=478)","feat":"traffic_search_pct","tgt":"views"}],"temp_cost":2,"num":16},{"id":"dist_publish_timing","title":"Publish on Peak Discovery Days","tagline":"When you post matters as much as what you post","confidence":"gold","primary_target":"views","category_key":"metadata","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Videos published Thursday–Friday get more views in the first 7 days than equivalent Monday–Wednesday releases.","control":"Current publish schedule.","treatment":"All releases moved to Thursday or Friday, 2pm–4pm Pacific.","primary_metric":"Views at 7 days","secondary_metric":"Subscriber notification open rate","sample_n":"24 videos (12 per variant, matched by format)","duration":"8 weeks","what_to_keep_constant":"Format, thumbnail quality, title style, content"},"quant_evidence":[{"text":"pub_day_of_week correlates with views (r=r=+0.24, n=482)","feat":"pub_day_of_week","tgt":"views"},{"text":"pub_hour_utc correlates with views (r=r=-0.08, n=482)","feat":"pub_hour_utc","tgt":"views"}],"temp_cost":1,"num":17},{"id":"geo_us_cpm","title":"Drive More US Viewership for Higher CPM","tagline":"US eyeballs are worth 3–5× more than global average","confidence":"silver","primary_target":"cpm","category_key":"geo","formats":["all"],"methods_hit":["correlation","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Videos with US-culturally-specific thumbnails and titles generate higher geo_us_pct and higher CPM.","control":"Generic/global title and thumbnail.","treatment":"Title and thumbnail with US-specific cultural reference.","primary_metric":"CPM","secondary_metric":"geo_us_pct","sample_n":"16 videos","duration":"6 weeks","what_to_keep_constant":"Format, edit style, guests, publish time"},"quant_evidence":[{"text":"geo_us_pct correlates with cpm (r=r=+0.26, n=477)","feat":"geo_us_pct","tgt":"cpm"},{"text":"geo_us_pct correlates with estimated_revenue (r=r=+0.08, n=477)","feat":"geo_us_pct","tgt":"estimated_revenue"}],"temp_cost":2,"num":18},{"id":"geo_latam_volume","title":"Leverage LATAM for View Volume","tagline":"LATAM is your biggest growth market by volume","confidence":"silver","primary_target":"views","category_key":"geo","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Enabling Spanish auto-translated subtitles increases geo_latam_pct and total views.","control":"Video published without translated subtitles.","treatment":"Same video with Spanish subtitles enabled (YouTube auto-translate).","primary_metric":"Total views at 30 days","secondary_metric":"geo_latam_pct","sample_n":"20 videos","duration":"6 weeks","what_to_keep_constant":"Everything except subtitle setting"},"quant_evidence":[{"text":"geo_latam_pct correlates with views (r=r=+0.10, n=477)","feat":"geo_latam_pct","tgt":"views"}],"temp_cost":1,"num":19},{"id":"social_shock","title":"Engineer Shock Moments for Comment Velocity","tagline":"Outrage drives comments; comments drive algorithm","confidence":"bronze","primary_target":"subscribers_gained","category_key":"comments","formats":["Truth or Drink","Keep it 100","Fear Pong"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with at least one 'uncut shock moment' generate higher comment velocity in first 24 hours.","control":"Standard edit (shock moments softened or cut away quickly).","treatment":"Edit holds on shock reaction for 3+ seconds, letting silence after the reveal breathe.","primary_metric":"Comments in first 24 hours","secondary_metric":"comment_shock_score","sample_n":"16 videos (Truth or Drink + Keep it 100)","duration":"4 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"comment_shock_score correlates with subscribers_gained (r=r=-0.08, n=473)","feat":"comment_shock_score","tgt":"subscribers_gained"},{"text":"comment_shock_score correlates with views (r=r=-0.06, n=475)","feat":"comment_shock_score","tgt":"views"}],"temp_cost":1,"num":20},{"id":"social_parasocial","title":"Build Parasocial Moments","tagline":"When viewers feel they know the guest, they stay","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"comments","formats":["Truth or Drink","Lineup"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes that include a brief personal reveal for each guest early in the episode have higher AVP and parasocial comment rate.","control":"Jump straight into game questions.","treatment":"Add 20–30s mini-intro per guest with one unexpected personal fact before the game starts.","primary_metric":"Avg View Percentage","secondary_metric":"comment_parasocial_score","sample_n":"12 videos","duration":"4 weeks","what_to_keep_constant":"Format rules, thumbnail, title, question set"},"quant_evidence":[{"text":"comment_parasocial_score correlates with avg_view_percentage (r=r=+0.04, n=475)","feat":"comment_parasocial_score","tgt":"avg_view_percentage"}],"temp_cost":1,"num":21},{"id":"social_rewatch","title":"Design for Rewatch","tagline":"Rewatchers are the algorithm's favourite viewers","confidence":null,"primary_target":"avg_view_percentage","category_key":"comments","formats":["all"],"methods_hit":[],"inspiration_type":"background","ab_test":{"hypothesis":"Episodes with a 'slow-burn revelation' structure generate more rewatch comments than standard linear episodes.","control":"Standard linear episode (questions answered sequentially).","treatment":"Episode with one early hint about a later reveal (e.g., guest reaction to a specific topic question, revisited later).","primary_metric":"comment_rewatch_intent (qualitative + count)","secondary_metric":"Avg View Percentage in weeks 2–4 post-publish","sample_n":"12 videos","duration":"6 weeks (measured at 30 days)","what_to_keep_constant":"Format, thumbnail, title, edit style"},"quant_evidence":[{"text":"comment_rewatch_intent correlates with avg_view_percentage (r=n/a)","feat":"comment_rewatch_intent","tgt":"avg_view_percentage"}],"temp_cost":2,"num":22},{"id":"fmt_tod_vulnerability","title":"[Truth or Drink] Lead with the Most Vulnerable Question","tagline":"For Truth or Drink: start deep, go deeper","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"dynamics","formats":["Truth or Drink"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"ToD episodes that include a high-vulnerability question in round 1 have higher 30s retention than slow-start episodes.","control":"Warm-up round 1 (light, low-stakes questions).","treatment":"Include one medium-high vulnerability question in round 1.","primary_metric":"30-second retention","secondary_metric":"Avg View Percentage","sample_n":"12 Truth or Drink episodes","duration":"4 weeks","what_to_keep_constant":"Thumbnail, title style, total question count, guests"},"quant_evidence":[{"text":"vulnerability_score (Truth or Drink) correlates with avg_view_percentage (r={r_vulnerability_score_avg_view_percentage_tod})","feat":"vulnerability_score","tgt":"avg_view_percentage"},{"text":"opening_q_density (Truth or Drink) correlates with retention_30s (r={r_opening_q_density_retention_30s_tod})","feat":"opening_q_density","tgt":"retention_30s"}],"temp_cost":1,"num":23},{"id":"fmt_lineup_contrast","title":"[Lineup] Maximise Guest Contrast","tagline":"For Lineup: the wider the gap, the better the guess","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"dynamics","formats":["Lineup"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Lineup episodes with a radical counter-stereotype cast member outperform homogeneous lineups on AVP.","control":"Standard casting (participants who broadly fit the archetype).","treatment":"At least one participant is a deliberate counter-stereotype to the stated attribute.","primary_metric":"Avg View Percentage","secondary_metric":"comment_shock_score","sample_n":"10 Lineup episodes","duration":"5 weeks","what_to_keep_constant":"Lineup topic, format rules, thumbnail, title"},"quant_evidence":[{"text":"laugh_rate (Lineup episodes) correlates with avg_view_percentage (r={r_laugh_rate_avg_view_percentage_lineup})","feat":"laugh_rate","tgt":"avg_view_percentage"},{"text":"comment_shock_score (Lineup) correlates with views (r={r_comment_shock_score_views_lineup})","feat":"comment_shock_score","tgt":"views"}],"temp_cost":1,"num":24},{"id":"fmt_ki100_shorter","title":"[Keep it 100] Trim to Under 12 Minutes","tagline":"For Keep it 100: tighter is more honest","confidence":"gold","primary_target":"avg_view_percentage","category_key":"speech","formats":["Keep it 100"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Keep it 100 episodes trimmed to <12 minutes have higher avg_view_percentage than episodes >14 minutes.","control":"Full episode (current length, typically 14–18 min).","treatment":"Same filming, edited down to <12 minutes (cut lowest-performing question rounds).","primary_metric":"Avg View Percentage","secondary_metric":"30-second retention","sample_n":"10 Keep it 100 episodes","duration":"5 weeks","what_to_keep_constant":"Format, thumbnail, title, guests, question themes"},"quant_evidence":[{"text":"duration_minutes correlates with avg_view_percentage (r=r=-0.27, n=482)","feat":"duration_minutes","tgt":"avg_view_percentage"}],"temp_cost":1,"num":25},{"id":"high_hook_energy","title":"Open with High Audio Energy","tagline":"Loud, fast, kinetic openers pull viewers into the watch","confidence":"bronze","primary_target":"views","category_key":"audio","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Videos with hook_energy_ratio ≥ 1.3 (opener 30% more energetic than average) outperform those below 1.0 on views.","control":"Current editing structure with title card intro first.","treatment":"Cold open: most energetic 15–20s clip placed before title card; audio-level-matched to peak.","primary_metric":"Views at 72 hours","secondary_metric":"30-second retention","sample_n":"16 videos, matched by format","duration":"4 weeks","what_to_keep_constant":"Title, thumbnail, format, publish time"},"quant_evidence":[{"text":"hook_energy_ratio correlates with views (r=r=+0.02, n=201)","feat":"hook_energy_ratio","tgt":"views"},{"text":"hook_energy_ratio correlates with estimated_revenue (r=r=+0.03, n=201)","feat":"hook_energy_ratio","tgt":"estimated_revenue"},{"text":"hook_energy_ratio correlates with subscribers_gained (r=r=+0.05, n=201)","feat":"hook_energy_ratio","tgt":"subscribers_gained"}],"temp_cost":1,"num":26},{"id":"cut_filler_words","title":"Cut Filler Words Aggressively in Post","tagline":"Every 'um' and 'like' is a micro-dropout","confidence":"bronze","primary_target":"cpm","category_key":"speech","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with filler words removed (auto-edit pass) have higher CPM and avg_view_percentage than unedited episodes.","control":"Standard edit (fillers left in unless they break flow).","treatment":"Same footage with an additional auto-filler-removal pass (Descript or equivalent).","primary_metric":"CPM","secondary_metric":"Avg View Percentage","sample_n":"12 videos across formats","duration":"4 weeks","what_to_keep_constant":"Format, guests, thumbnail, title, publish time"},"quant_evidence":[{"text":"filler_frequency correlates with cpm (r=r=-0.13, n=296)","feat":"filler_frequency","tgt":"cpm"},{"text":"filler_frequency correlates with retention_30s (r=r=+0.02, n=302)","feat":"filler_frequency","tgt":"retention_30s"},{"text":"filler_frequency correlates with estimated_revenue (r=r=-0.06, n=296)","feat":"filler_frequency","tgt":"estimated_revenue"}],"temp_cost":1,"num":27},{"id":"more_questions","title":"Make Questions the Engine of Every Scene","tagline":"More questions = more forward momentum","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"speech","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes where the host asks ≥2x follow-up questions per exchange have higher avg_view_percentage.","control":"Standard hosting style — one question then answer, move on.","treatment":"Host coached to probe every answer with at least one follow-up before moving on.","primary_metric":"Avg View Percentage","secondary_metric":"Watch time per video","sample_n":"10 Truth or Drink episodes","duration":"5 weeks","what_to_keep_constant":"Format, question set, guests, thumbnail, title"},"quant_evidence":[{"text":"q_rate correlates with avg_view_percentage (r=r=+0.11, n=297)","feat":"q_rate","tgt":"avg_view_percentage"},{"text":"q_rate correlates with retention_30s (r=r=+0.09, n=302)","feat":"q_rate","tgt":"retention_30s"},{"text":"q_rate correlates with subscribers_gained (r=r=-0.05, n=296)","feat":"q_rate","tgt":"subscribers_gained"}],"temp_cost":1,"num":28},{"id":"shorter_sentences","title":"Speak in Short, Direct Sentences","tagline":"Shorter sentences = faster pace = higher retention","confidence":"silver","primary_target":"retention_30s","category_key":"speech","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes edited to remove answer preambles (avg sentence length reduced by ≥15%) have higher 30s retention.","control":"Standard edit — full answers kept.","treatment":"Aggressive answer-tail cuts — remove preambles and wind-downs, keep the core response only.","primary_metric":"30-second retention","secondary_metric":"Avg View Percentage","sample_n":"10 Truth or Drink episodes","duration":"5 weeks","what_to_keep_constant":"Format, question set, guests, thumbnail, title"},"quant_evidence":[{"text":"avg_sentence_length correlates with retention_30s (r=r=-0.14, n=302)","feat":"avg_sentence_length","tgt":"retention_30s"},{"text":"avg_sentence_length correlates with subscribers_gained (r=r=-0.03, n=296)","feat":"avg_sentence_length","tgt":"subscribers_gained"}],"temp_cost":1,"num":29},{"id":"positive_sentiment_arc","title":"Engineer a Positive Emotional Finale","tagline":"Build toward a high — don't fade out","confidence":"bronze","primary_target":"views","category_key":"cut_dynamics","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with positive sentiment_arc (ending sentiment > opening sentiment) outperform neutral/declining arcs on views.","control":"Current question ordering (typically chronological by filming).","treatment":"Questions reordered in edit to place the most emotionally intense exchanges in the second half.","primary_metric":"Views at 7 days","secondary_metric":"Comment sentiment ratio","sample_n":"12 videos across formats","duration":"6 weeks","what_to_keep_constant":"Content, guests, thumbnail, title"},"quant_evidence":[{"text":"sentiment_arc correlates with views (r=r=-0.02, n=199)","feat":"sentiment_arc","tgt":"views"},{"text":"sentiment_arc correlates with avg_view_percentage (r=r=+0.03, n=199)","feat":"sentiment_arc","tgt":"avg_view_percentage"},{"text":"sentiment_arc correlates with retention_30s (r=r=+0.13, n=131)","feat":"sentiment_arc","tgt":"retention_30s"}],"temp_cost":2,"num":30},{"id":"title_shock_words","title":"Use One Shock Word in Every Title","tagline":"Shock signals stakes — stakes signal clicks","confidence":"bronze","primary_target":"views","category_key":"title_nlp","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Titles with ≥1 shock/intensity word generate higher CTR than equivalent titles without.","control":"Standard descriptive title ('Truth or Drink: Couples Edition').","treatment":"Same video with shock word added ('Truth or Drink: Couples Edition — Someone Walked Out').","primary_metric":"Click-through rate (CTR)","secondary_metric":"Views at 72 hours","sample_n":"16 videos, matched by format","duration":"4 weeks","what_to_keep_constant":"Thumbnail, format, guests, publish time"},"quant_evidence":[{"text":"title_shock_word_count correlates with views (r=r=+0.01, n=482)","feat":"title_shock_word_count","tgt":"views"},{"text":"title_shock_word_count correlates with estimated_revenue (r=r=+0.03, n=479)","feat":"title_shock_word_count","tgt":"estimated_revenue"},{"text":"title_shock_word_count correlates with subscribers_gained (r=r=+0.01, n=479)","feat":"title_shock_word_count","tgt":"subscribers_gained"}],"temp_cost":1,"num":31},{"id":"title_fomo","title":"Write Titles That Create FOMO","tagline":"The viewer should feel they'll miss out if they don't click","confidence":"bronze","primary_target":"subscribers_gained","category_key":"title_nlp","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Titles with a FOMO signal ('For the First Time', 'Never Before') generate more subscribers per view.","control":"Descriptive title without novelty framing.","treatment":"Same video retitled with a FOMO marker that truthfully reflects the episode's novelty.","primary_metric":"Subscribers gained per 1000 views","secondary_metric":"Views at 7 days","sample_n":"14 videos","duration":"5 weeks","what_to_keep_constant":"Thumbnail, format, guests, publish time"},"quant_evidence":[{"text":"title_fomo_score correlates with subscribers_gained (r=r=+0.10, n=479)","feat":"title_fomo_score","tgt":"subscribers_gained"},{"text":"title_fomo_score correlates with views (r=r=+0.09, n=482)","feat":"title_fomo_score","tgt":"views"}],"temp_cost":1,"num":32},{"id":"title_challenge","title":"Frame Titles as a Challenge or Dare","tagline":"Challenge framing invites 'could I do this?' identification","confidence":"bronze","primary_target":"avg_view_percentage","category_key":"title_nlp","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Titles with explicit challenge framing ('Can they...', 'We dared...', 'Try not to...') generate higher avg_view_percentage.","control":"Descriptive title ('Truth or Drink: Best Friends Edition').","treatment":"Challenge-framed title ('Can Best Friends Be Completely Honest? | Truth or Drink').","primary_metric":"Avg View Percentage","secondary_metric":"Click-through rate","sample_n":"12 videos","duration":"4 weeks","what_to_keep_constant":"Thumbnail, format, guests, publish time"},"quant_evidence":[{"text":"title_challenge_framing correlates with avg_view_percentage (r=r=+0.01, n=482)","feat":"title_challenge_framing","tgt":"avg_view_percentage"},{"text":"title_challenge_framing correlates with subscribers_gained (r=r=+0.02, n=479)","feat":"title_challenge_framing","tgt":"subscribers_gained"}],"temp_cost":1,"num":33},{"id":"thumb_center_weight","title":"Center-Weight Your Thumbnail Subject","tagline":"Eyes go to center — put your hook there","confidence":"gold","primary_target":"avg_view_percentage","category_key":"thumbnail","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Thumbnails with the primary subject center-weighted (center 40% of frame) outperform off-center compositions on AVP.","control":"Current thumbnail composition (varied center weighting).","treatment":"Re-cropped thumbnail with primary face/subject repositioned to center zone.","primary_metric":"Avg View Percentage","secondary_metric":"Click-through rate","sample_n":"14 videos","duration":"4 weeks","what_to_keep_constant":"Faces, text, colors — only change crop/positioning"},"quant_evidence":[{"text":"thumb_center_weight correlates with avg_view_percentage (r=r=-0.22, n=477)","feat":"thumb_center_weight","tgt":"avg_view_percentage"},{"text":"thumb_center_weight correlates with retention_30s (r=r=-0.11, n=297)","feat":"thumb_center_weight","tgt":"retention_30s"}],"temp_cost":1,"num":34},{"id":"thumb_contrast","title":"Maximize Thumbnail Light-Dark Contrast","tagline":"High contrast makes thumbnails pop on any screen","confidence":"silver","primary_target":"subscribers_gained","category_key":"thumbnail","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Thumbnails with higher RMS contrast (background darkened, subject brightened) generate more subscribers per impression.","control":"Current thumbnail with standard lighting.","treatment":"Same composition with background darkened -30 and subject brightened +20 in post.","primary_metric":"Subscribers gained","secondary_metric":"Click-through rate","sample_n":"14 videos","duration":"4 weeks","what_to_keep_constant":"Composition, faces, text — only adjust brightness/contrast values"},"quant_evidence":[{"text":"thumb_contrast_rms correlates with subscribers_gained (r=r=+0.10, n=475)","feat":"thumb_contrast_rms","tgt":"subscribers_gained"},{"text":"thumb_contrast_rms correlates with views (r=r=+0.22, n=477)","feat":"thumb_contrast_rms","tgt":"views"}],"temp_cost":1,"num":35},{"id":"positive_comment_culture","title":"Engineer Warmth to Drive Positive Comments","tagline":"Warm content generates a warm comment section","confidence":"bronze","primary_target":"estimated_revenue","category_key":"comments","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with deliberate warmth-building moments (resolved tension, genuine laughter, mutual validation) generate higher comment_pos_ratio and views.","control":"Standard production — questions and answers, tension without explicit resolution.","treatment":"Episode structure revised to include 1–2 explicit warmth moments: resolved disagreement, mutual compliment, or genuine shared laughter in the final third.","primary_metric":"comment_pos_ratio","secondary_metric":"Estimated revenue","sample_n":"10 videos","duration":"5 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"comment_pos_ratio correlates with estimated_revenue (r=r=-0.08, n=473)","feat":"comment_pos_ratio","tgt":"estimated_revenue"},{"text":"comment_pos_ratio correlates with views (r=r=-0.04, n=475)","feat":"comment_pos_ratio","tgt":"views"}],"temp_cost":1,"num":36},{"id":"lean_into_controversy","title":"Don't Sand Off the Rough Edges","tagline":"Controversy in comments is the algorithm's attention signal","confidence":"bronze","primary_target":"cpm","category_key":"comments","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes that preserve a genuine unresolved disagreement between guests generate higher CPM than episodes where tension is resolved.","control":"Standard edit — tense exchanges followed by resolution or change of subject.","treatment":"Preserve the disagreement — cut the resolution, let the conflict sit. Add editorial context (on-screen text or host question) that frames both sides.","primary_metric":"CPM","secondary_metric":"Total comment count","sample_n":"10 videos","duration":"5 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"comment_neg_ratio correlates with cpm (r=r=+0.03, n=473)","feat":"comment_neg_ratio","tgt":"cpm"},{"text":"comment_neg_ratio correlates with views (r=r=-0.06, n=475)","feat":"comment_neg_ratio","tgt":"views"}],"temp_cost":1,"num":37},{"id":"gen_z_resonance","title":"Create Content That Speaks Gen Z's Language","tagline":"Gen Z engages, Gen Z shares, Gen Z subscribes","confidence":"bronze","primary_target":"subscribers_gained","category_key":"comments","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with Gen Z-targeted casting and topics generate higher comment_gen_z_score and subscribers_gained.","control":"Mixed-age/background casting with general social topics.","treatment":"3 episodes casting 22–28 year olds on Gen Z-native topics (situationships, social media, hustle culture, mental health).","primary_metric":"Subscribers gained","secondary_metric":"comment_gen_z_score","sample_n":"6 episodes (3 control, 3 treatment)","duration":"6 weeks","what_to_keep_constant":"Format rules, thumbnail style, title structure"},"quant_evidence":[{"text":"comment_gen_z_score correlates with subscribers_gained (r=r=+0.08, n=473)","feat":"comment_gen_z_score","tgt":"subscribers_gained"},{"text":"comment_gen_z_score correlates with retention_30s (r=r=+0.05, n=296)","feat":"comment_gen_z_score","tgt":"retention_30s"}],"temp_cost":2,"num":38},{"id":"share_intent_moments","title":"Design Tag-a-Friend Moments","tagline":"Every video needs at least one 'send this to your partner' clip","confidence":"bronze","primary_target":"subscribers_gained","category_key":"comments","formats":["all"],"methods_hit":["lasso"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with at least one universally relatable 'tag a friend' moment generate more subscribers and share-intent comments.","control":"Standard episode — specific to the guests' situation.","treatment":"Episode scripted to include at least one universal relational truth explicitly surfaced by the host ('Isn't this everyone's relationship?').","primary_metric":"Subscribers gained","secondary_metric":"comment_share_intent","sample_n":"10 videos","duration":"5 weeks","what_to_keep_constant":"Format, thumbnail, title, guests"},"quant_evidence":[{"text":"comment_share_intent correlates with subscribers_gained (r=r=-0.03, n=473)","feat":"comment_share_intent","tgt":"subscribers_gained"},{"text":"comment_share_intent correlates with views (r=r=-0.05, n=475)","feat":"comment_share_intent","tgt":"views"}],"temp_cost":1,"num":39},{"id":"publish_peak_hours","title":"Publish at Peak Viewing Hours","tagline":"The right hour multiplies every other signal","confidence":"silver","primary_target":"estimated_revenue","category_key":"metadata","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Publishing between 14:00–17:00 UTC generates more views in the first 48 hours than publishing at off-peak hours.","control":"Current varied publish times.","treatment":"All videos published at 15:00 UTC for 8 consecutive weeks.","primary_metric":"Views at 48 hours","secondary_metric":"Estimated revenue","sample_n":"16 videos","duration":"8 weeks","what_to_keep_constant":"Content quality, format mix, publish day of week"},"quant_evidence":[{"text":"pub_hour_utc correlates with estimated_revenue (r=r=-0.14, n=479)","feat":"pub_hour_utc","tgt":"estimated_revenue"},{"text":"pub_hour_utc correlates with views (r=r=-0.08, n=482)","feat":"pub_hour_utc","tgt":"views"},{"text":"pub_hour_utc correlates with subscribers_gained (r=r=-0.12, n=479)","feat":"pub_hour_utc","tgt":"subscribers_gained"}],"temp_cost":1,"num":40},{"id":"mobile_first_design","title":"Design Everything for the Mobile Viewer First","tagline":"Mobile is the majority — design like it","confidence":"gold","primary_target":"cpm","category_key":"discovery","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"A mobile-first thumbnail redesign (large centered face, max contrast, short text) increases CTR specifically on mobile devices.","control":"Current thumbnails designed for desktop viewing.","treatment":"Mobile-first thumbnails: face ≥40% frame, center-weighted, background darkened, text ≤5 words.","primary_metric":"Mobile CTR","secondary_metric":"CPM","sample_n":"14 videos","duration":"4 weeks","what_to_keep_constant":"Title, content, format, publish time"},"quant_evidence":[{"text":"device_mobile_pct correlates with cpm (r=r=-0.49, n=478)","feat":"device_mobile_pct","tgt":"cpm"},{"text":"device_mobile_pct correlates with views (r=r=-0.15, n=478)","feat":"device_mobile_pct","tgt":"views"}],"temp_cost":1,"num":41},{"id":"tv_worthy_episodes","title":"Make Your Best Episodes TV-Screen Worthy","tagline":"TV viewers watch longer and pay higher CPM","confidence":"gold","primary_target":"cpm","category_key":"discovery","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with upgraded visual production (lighting, set, opening sequence) generate higher device_tv_pct and CPM.","control":"Standard CUT production set and lighting.","treatment":"3 flagship episodes with upgraded set dressing, pro lighting rig, and cinematic opening sequence.","primary_metric":"CPM","secondary_metric":"device_tv_pct","sample_n":"6 episodes (3 control, 3 treatment)","duration":"6 weeks","what_to_keep_constant":"Format rules, question set, thumbnail style, title structure"},"quant_evidence":[{"text":"device_tv_pct correlates with cpm (r=r=+0.37, n=478)","feat":"device_tv_pct","tgt":"cpm"},{"text":"device_tv_pct correlates with avg_view_percentage (r=r=-0.13, n=478)","feat":"device_tv_pct","tgt":"avg_view_percentage"}],"temp_cost":2,"num":42},{"id":"win_search_traffic","title":"Write Titles That Win Search","tagline":"Search traffic is the highest-retention, highest-CPM audience","confidence":"silver","primary_target":"estimated_revenue","category_key":"discovery","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Episodes with SEO-optimized titles (matching real YouTube search queries) generate higher traffic_search_pct and CPM.","control":"Current title format ('Truth or Drink: Couples Edition').","treatment":"SEO title: '[Most-searched query] | Truth or Drink | CUT' — e.g. 'Couples Answer Cheating Questions | Truth or Drink'.","primary_metric":"traffic_search_pct at 30 days","secondary_metric":"CPM","sample_n":"10 videos","duration":"8 weeks (search traffic builds slowly)","what_to_keep_constant":"Thumbnail, content, format, publish time"},"quant_evidence":[{"text":"traffic_search_pct correlates with estimated_revenue (r=r=+0.04, n=478)","feat":"traffic_search_pct","tgt":"estimated_revenue"},{"text":"traffic_search_pct correlates with views (r=r=+0.12, n=478)","feat":"traffic_search_pct","tgt":"views"},{"text":"traffic_search_pct correlates with cpm (r=r=-0.17, n=478)","feat":"traffic_search_pct","tgt":"cpm"}],"temp_cost":2,"num":43},{"id":"grow_eu_audience","title":"Grow European Audience for CPM Lift","tagline":"EU CPM is among the highest on YouTube — earn it","confidence":"silver","primary_target":"cpm","category_key":"geography","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Adding high-quality English and auto-translated subtitles to all videos increases geo_eu_pct and CPM within 60 days.","control":"Videos without manual subtitles (auto-generated only).","treatment":"Professional English subtitles added + YouTube auto-translate enabled for German, French, Spanish.","primary_metric":"CPM","secondary_metric":"geo_eu_pct","sample_n":"20 videos subtitled vs 20 control","duration":"8 weeks","what_to_keep_constant":"Content, format, thumbnail, title, publish time"},"quant_evidence":[{"text":"geo_eu_pct correlates with cpm (r=r=-0.04, n=477)","feat":"geo_eu_pct","tgt":"cpm"},{"text":"geo_eu_pct correlates with avg_view_percentage (r=r=+0.40, n=477)","feat":"geo_eu_pct","tgt":"avg_view_percentage"}],"temp_cost":2,"num":44},{"id":"subscriber_launch_strategy","title":"Build a Subscriber-First Launch Strategy","tagline":"Your subscribers are your launch engine — treat them like it","confidence":"silver","primary_target":"estimated_revenue","category_key":"discovery","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"A structured subscriber launch protocol (community post + reminder + consistent publish time) increases traffic_subscriber_pct and first-48h views.","control":"Current launch: publish video, no pre-notification.","treatment":"Launch protocol: community post 24h before → YouTube reminder set → video published at consistent time every week.","primary_metric":"Views at 48 hours","secondary_metric":"traffic_subscriber_pct","sample_n":"8 weeks of consistent protocol vs 8 weeks of current","duration":"16 weeks","what_to_keep_constant":"Content quality, format mix, thumbnail/title quality"},"quant_evidence":[{"text":"traffic_subscriber_pct correlates with estimated_revenue (r=r=+0.11, n=478)","feat":"traffic_subscriber_pct","tgt":"estimated_revenue"},{"text":"traffic_subscriber_pct correlates with views (r=r=+0.06, n=478)","feat":"traffic_subscriber_pct","tgt":"views"},{"text":"traffic_subscriber_pct correlates with cpm (r=r=+0.18, n=478)","feat":"traffic_subscriber_pct","tgt":"cpm"}],"temp_cost":3,"num":45},{"id":"shorts_long_form_flywheel","title":"Launch a Shorts-to-Long-Form Flywheel","tagline":"Clips are the door; the full episode is the room","confidence":"silver","primary_target":"subscribers_gained","category_key":"discovery","formats":["all"],"methods_hit":["lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"A structured clip distribution program (3–5 clips per episode posted to Shorts/Reels) increases traffic_external_pct and subscribers_gained.","control":"Current distribution: long-form only, occasional ad hoc clips.","treatment":"Systematic clip operation: for each new episode, produce 3 clips (60–90s vertical), post to Shorts, TikTok, and Instagram within 48h of long-form launch.","primary_metric":"Subscribers gained per week","secondary_metric":"traffic_external_pct","sample_n":"12 episodes with clip program vs 12 without","duration":"12 weeks","what_to_keep_constant":"Long-form content quality, format mix, publish cadence"},"quant_evidence":[{"text":"traffic_external_pct correlates with subscribers_gained (r=r=+0.06, n=478)","feat":"traffic_external_pct","tgt":"subscribers_gained"},{"text":"traffic_external_pct correlates with views (r=r=+0.03, n=478)","feat":"traffic_external_pct","tgt":"views"}],"temp_cost":3,"num":46},{"id":"rebalance_format_portfolio","title":"Rebalance the Format Portfolio for Algorithmic Reach","tagline":"Format mix is your distribution strategy","confidence":"gold","primary_target":"views","category_key":"cut_dynamics","formats":["all"],"methods_hit":["correlation","lasso","rf"],"inspiration_type":"data_driven","ab_test":{"hypothesis":"Increasing publishing frequency of the top-algorithmic-traffic format (identified from analytics) by 1 additional episode/month increases total channel views.","control":"Current format publishing cadence.","treatment":"Add one additional episode per month of the top-performing algorithmic format, funded by reducing one lower-performing format episode.","primary_metric":"Total channel views per month","secondary_metric":"traffic_algorithmic_pct across all videos","sample_n":"6 months of rebalanced schedule vs 6 months baseline","duration":"6 months","what_to_keep_constant":"Total number of episodes per month — this is a reallocation, not an increase in production volume"},"quant_evidence":[{"text":"traffic_algorithmic_pct correlates with views (r=r=+0.43, n=478)","feat":"traffic_algorithmic_pct","tgt":"views"},{"text":"traffic_algorithmic_pct correlates with estimated_revenue (r=r=+0.54, n=478)","feat":"traffic_algorithmic_pct","tgt":"estimated_revenue"},{"text":"traffic_algorithmic_pct correlates with subscribers_gained (r=r=+0.30, n=478)","feat":"traffic_algorithmic_pct","tgt":"subscribers_gained"}],"temp_cost":3,"num":47}];
+
+const CUT_STATS = {
+  views: {mean:285000, p50:82000, p75:245000, p90:780000},
+  ctr: {mean:6.2, p50:5.8, p75:8.0, p90:11.0},
+  retention_30s: {mean:61, p50:62, p75:69, p90:74},
+  avg_view_pct: {mean:38, p50:37, p75:46, p90:55},
+  subscribers_gained: {mean:420, p50:180, p75:520, p90:1100},
+  likes: {mean:5800, p50:1800, p75:5500, p90:15000},
+};
+
+let currentSessionId = null;
+
+function getSessions() {
+  return JSON.parse(localStorage.getItem('validation_sessions') || '[]');
+}
+
+function saveSessions(sessions) {
+  localStorage.setItem('validation_sessions', JSON.stringify(sessions));
+  renderSidebar();
+  updateSidebarFooter();
+}
+
+function createNewSession() {
+  const sessions = getSessions();
+  const now = new Date();
+  const date = now.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  const session = {
+    id: 'sess_' + Date.now(),
+    title: 'Validation — ' + date,
+    date,
+    hypothesisIds: [],
+    evidence: {
+      videoUrl: '',
+      pdfName: '',
+      pdfBase64: '',
+      metrics: {
+        views_48h: '', views_7d: '', views_28d: '',
+        ctr: '', retention_30s: '', avg_view_pct: '',
+        likes: '', comments: '', subscribers_gained: '', revenue: ''
+      },
+      notes: ''
+    },
+    results: []
+  };
+  sessions.push(session);
+  saveSessions(sessions);
+  currentSessionId = session.id;
+  renderWorkspace();
+}
+
+function deleteSession(id) {
+  if(!confirm('Delete this session?')) return;
+  const sessions = getSessions().filter(s => s.id !== id);
+  saveSessions(sessions);
+  if(currentSessionId === id) {
+    currentSessionId = sessions.length > 0 ? sessions[0].id : null;
+    renderWorkspace();
+  }
+}
+
+function setActiveSession(id) {
+  currentSessionId = id;
+  renderWorkspace();
+}
+
+function renderSidebar() {
+  const sessions = getSessions();
+  const list = document.getElementById('sessionsList');
+  list.innerHTML = sessions.map(s => `
+    <div class="session-item ${currentSessionId === s.id ? 'active' : ''}" onclick="setActiveSession('${s.id}')">
+      <div class="session-item-title">${s.title}</div>
+      <button class="session-item-delete" onclick="event.stopPropagation(); deleteSession('${s.id}')">×</button>
+    </div>
+  `).join('');
+}
+
+function updateSidebarFooter() {
+  const sessions = getSessions();
+  const hasResults = sessions.some(s => s.results && s.results.length > 0);
+  const footer = document.getElementById('sidebarFooter');
+  footer.classList.toggle('show', hasResults);
+}
+
+function renderWorkspace() {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  const workspace = document.getElementById('workspace');
+
+  if(!session) {
+    workspace.className = 'workspace empty';
+    workspace.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">🧪</div>
+        <div class="empty-state-title">No sessions yet</div>
+        <div class="empty-state-text">Create a new validation session to get started</div>
+      </div>
+    `;
+    return;
+  }
+
+  workspace.className = 'workspace';
+
+  const titleHtml = `
+    <div class="session-title-bar">
+      <div class="session-title" id="sessionTitle" onclick="editSessionTitle()">${session.title}</div>
+    </div>
+  `;
+
+  const hypothesesHtml = renderHypothesesPanel(session);
+  const evidenceHtml = renderEvidencePanel(session);
+  const resultsHtml = renderResultsPanel(session);
+
+  workspace.innerHTML = titleHtml + hypothesesHtml + evidenceHtml + '<button class="validate-btn" onclick="validateAll()">🧪 Validate All</button>' + resultsHtml;
+}
+
+function editSessionTitle() {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  const title = prompt('Edit session title:', session.title);
+  if(title && title.trim()) {
+    session.title = title.trim();
+    saveSessions(sessions);
+    renderWorkspace();
+  }
+}
+
+function renderHypothesesPanel(session) {
+  const hyps = session.hypothesisIds.map(id => HYPOTHESES_COMPACT.find(h => h.id === id)).filter(Boolean);
+  const options = HYPOTHESES_COMPACT.map(h => ({
+    ...h,
+    selected: session.hypothesisIds.includes(h.id)
+  }));
+  const goldOpts = options.filter(h => h.confidence === 'gold');
+  const silverOpts = options.filter(h => h.confidence === 'silver');
+  const bronzeOpts = options.filter(h => h.confidence === 'bronze');
+  const bgOpts = options.filter(h => !h.confidence);
+
+  return `
+    <div class="panel">
+      <div class="panel-title">🎯 Hypotheses to Test</div>
+      <div class="hypothesis-list" id="hypList">
+        ${hyps.map(h => {
+          const medal = h.confidence === 'gold' ? '🥇' : h.confidence === 'silver' ? '🥈' : '🥉';
+          return `
+            <div class="hypothesis-row">
+              <span class="hyp-num-badge" style="margin-right:4px">H${String(h.num||'').padStart(2,'0')}</span><span class="hypothesis-medal">${medal}</span>
+              <span class="hypothesis-title">${h.title}</span>
+              <span class="hypothesis-badge">${h.primary_target}</span>
+              <button class="hypothesis-remove" onclick="removeHypothesis('${h.id}')">×</button>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div class="add-hypothesis-row">
+        <select id="hypSelect" onchange="addHypothesis()">
+          <option value="">+ Add hypothesis...</option>
+          ${goldOpts.length > 0 ? '<optgroup label="🥇 Gold">' + goldOpts.map(h => '<option value="' + h.id + '">' + h.title + '</option>').join('') + '</optgroup>' : ''}
+          ${silverOpts.length > 0 ? '<optgroup label="🥈 Silver">' + silverOpts.map(h => '<option value="' + h.id + '">' + h.title + '</option>').join('') + '</optgroup>' : ''}
+          ${bronzeOpts.length > 0 ? '<optgroup label="🥉 Bronze">' + bronzeOpts.map(h => '<option value="' + h.id + '">' + h.title + '</option>').join('') + '</optgroup>' : ''}
+          ${bgOpts.length > 0 ? '<optgroup label="💡 Background">' + bgOpts.map(h => '<option value="' + h.id + '">' + h.title + '</option>').join('') + '</optgroup>' : ''}
+        </select>
+      </div>
+    </div>
+  `;
+}
+
+function removeHypothesis(id) {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  session.hypothesisIds = session.hypothesisIds.filter(hid => hid !== id);
+  saveSessions(sessions);
+  renderWorkspace();
+}
+
+function addHypothesis() {
+  const select = document.getElementById('hypSelect');
+  const id = select.value;
+  if(!id) return;
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  if(!session.hypothesisIds.includes(id)) {
+    session.hypothesisIds.push(id);
+    saveSessions(sessions);
+    renderWorkspace();
+  }
+}
+
+function renderEvidencePanel(session) {
+  const pdfLabel = session.evidence.pdfName ? '📄 ' + session.evidence.pdfName : 'Upload PDF or screenshot';
+  return `
+    <div class="panel">
+      <div class="panel-title">📊 Evidence</div>
+      <div class="form-group">
+        <label class="form-label">Video URL</label>
+        <input type="text" class="form-input" id="videoUrl" value="${session.evidence.videoUrl}" onchange="updateEvidence()">
+      </div>
+      <div class="pdf-upload-row">
+        <button class="pdf-upload-btn" onclick="document.getElementById('pdfInput').click()">${pdfLabel}</button>
+        ${session.evidence.pdfName ? '<button class="pdf-upload-btn" style="background:rgba(248,113,113,0.2);color:#f87171" onclick="clearPDF()">Clear</button>' : ''}
+      </div>
+      <input type="file" id="pdfInput" class="pdf-file-input" accept=".pdf,image/*" onchange="uploadPDF(event)">
+      <div class="metrics-grid">
+        <div class="form-group"><label class="form-label">Views (48h)</label><input type="number" class="form-input" id="views_48h" value="${session.evidence.metrics.views_48h}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Views (7d)</label><input type="number" class="form-input" id="views_7d" value="${session.evidence.metrics.views_7d}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Views (28d)</label><input type="number" class="form-input" id="views_28d" value="${session.evidence.metrics.views_28d}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">CTR (%)</label><input type="number" step="0.1" class="form-input" id="ctr" value="${session.evidence.metrics.ctr}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">30s Retention (%)</label><input type="number" step="0.1" class="form-input" id="retention_30s" value="${session.evidence.metrics.retention_30s}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Avg View %</label><input type="number" step="0.1" class="form-input" id="avg_view_pct" value="${session.evidence.metrics.avg_view_pct}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Likes</label><input type="number" class="form-input" id="likes" value="${session.evidence.metrics.likes}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Comments</label><input type="number" class="form-input" id="comments" value="${session.evidence.metrics.comments}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Subscribers Gained</label><input type="number" class="form-input" id="subscribers_gained" value="${session.evidence.metrics.subscribers_gained}" onchange="updateEvidence()"></div>
+        <div class="form-group"><label class="form-label">Est. Revenue ($)</label><input type="number" step="0.01" class="form-input" id="revenue" value="${session.evidence.metrics.revenue}" onchange="updateEvidence()"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-input textarea" id="notes" onchange="updateEvidence()">${session.evidence.notes}</textarea>
+      </div>
+    </div>
+  `;
+}
+
+function updateEvidence() {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  session.evidence.videoUrl = document.getElementById('videoUrl')?.value || '';
+  session.evidence.metrics.views_48h = document.getElementById('views_48h')?.value || '';
+  session.evidence.metrics.views_7d = document.getElementById('views_7d')?.value || '';
+  session.evidence.metrics.views_28d = document.getElementById('views_28d')?.value || '';
+  session.evidence.metrics.ctr = document.getElementById('ctr')?.value || '';
+  session.evidence.metrics.retention_30s = document.getElementById('retention_30s')?.value || '';
+  session.evidence.metrics.avg_view_pct = document.getElementById('avg_view_pct')?.value || '';
+  session.evidence.metrics.likes = document.getElementById('likes')?.value || '';
+  session.evidence.metrics.comments = document.getElementById('comments')?.value || '';
+  session.evidence.metrics.subscribers_gained = document.getElementById('subscribers_gained')?.value || '';
+  session.evidence.metrics.revenue = document.getElementById('revenue')?.value || '';
+  session.evidence.notes = document.getElementById('notes')?.value || '';
+  saveSessions(sessions);
+}
+
+function uploadPDF(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const sessions = getSessions();
+    const session = sessions.find(s => s.id === currentSessionId);
+    session.evidence.pdfName = file.name;
+    session.evidence.pdfBase64 = e.target.result;
+    saveSessions(sessions);
+    renderWorkspace();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPDF() {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  session.evidence.pdfName = '';
+  session.evidence.pdfBase64 = '';
+  saveSessions(sessions);
+  renderWorkspace();
+}
+
+function renderResultsPanel(session) {
+  if(!session.results || session.results.length === 0) {
+    return '<div class="results-section"><div class="results-empty">Run validation to see results</div></div>';
+  }
+  return `
+    <div class="results-section">
+      <div class="panel-title">📈 Results</div>
+      ${session.results.map((r, idx) => {
+        const hyp = HYPOTHESES_COMPACT.find(h => h.id === r.hypothesisId);
+        const truncated = r.report.length > 120 ? r.report.substring(0, 120) + '…' : r.report;
+        return `
+          <div class="result-card ${r.status}">
+            <div class="result-header">
+              <span class="result-badge ${r.status}">${r.status}</span>
+              <span class="result-title">${hyp?.title || 'Unknown'}</span>
+            </div>
+            <div class="result-text" id="result-text-${idx}">${truncated}</div>
+            ${r.report.length > 120 ? '<div class="result-see-more" onclick="toggleResultExpand(' + idx + ')">▸ See more</div>' : ''}
+            <div class="result-actions">
+              <button class="result-action-btn proven" onclick="overrideResult('${r.hypothesisId}', 'proven')">✓ Proven</button>
+              <button class="result-action-btn disproven" onclick="overrideResult('${r.hypothesisId}', 'disproven')">✗ Disproven</button>
+              <button class="result-action-btn inconclusive" onclick="overrideResult('${r.hypothesisId}', 'inconclusive')">~ Inconclusive</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function toggleResultExpand(idx) {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  const result = session.results[idx];
+  const textEl = document.getElementById('result-text-' + idx);
+  if(textEl.classList.contains('result-expandable')) {
+    textEl.textContent = result.report.substring(0, 120) + '…';
+    textEl.classList.remove('result-expandable');
+  } else {
+    textEl.textContent = result.report;
+    textEl.classList.add('result-expandable');
+  }
+}
+
+function overrideResult(hypothesisId, status) {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  const result = session.results.find(r => r.hypothesisId === hypothesisId);
+  if(result) {
+    result.status = status;
+    saveSessions(sessions);
+    updateValidationStatus();
+    renderWorkspace();
+  }
+}
+
+function updateValidationStatus() {
+  const sessions = getSessions();
+  const status = {};
+  HYPOTHESES_COMPACT.forEach(h => {
+    status[h.id] = 'untested';
+  });
+  sessions.forEach(s => {
+    (s.results || []).forEach(r => {
+      if(status[r.hypothesisId] !== 'proven' && status[r.hypothesisId] !== 'disproven') {
+        status[r.hypothesisId] = r.status;
+      }
+    });
+  });
+  localStorage.setItem('hypothesis_validation_status', JSON.stringify(status));
+}
+
+async function validateAll() {
+  const sessions = getSessions();
+  const session = sessions.find(s => s.id === currentSessionId);
+  if(session.hypothesisIds.length === 0) {
+    alert('Add hypotheses first');
+    return;
+  }
+
+  const btn = document.querySelector('.validate-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Validating...';
+
+  const selectedHyps = HYPOTHESES_COMPACT.filter(h => session.hypothesisIds.includes(h.id));
+  const evidenceText = buildEvidenceText(session);
+
+  const systemPrompt = `You are a statistical analyst validating YouTube content hypotheses for the CUT channel (487-video dataset).
+For each hypothesis provided, analyze whether the given video metrics support or contradict it.
+
+For each hypothesis:
+1. State what it predicts
+2. Compare provided metrics against the CUT baseline
+3. Reference quantitative evidence
+4. State: Supported / Not Supported / Inconclusive
+5. Give 3-4 sentences of statistical reasoning
+
+CUT dataset baseline stats:
+- Views: mean=285k, p50=82k, p75=245k, p90=780k
+- CTR: mean=6.2%, p50=5.8%, p75=8.0%, p90=11%
+- 30s Retention: mean=61%, p50=62%, p75=69%, p90=74%
+- Avg View %: mean=38%, p50=37%, p75=46%, p90=55%
+- Subscribers/video: mean=420, p50=180, p75=520, p90=1100
+
+Format your response as:
+## [Hypothesis Title]
+**Verdict**: Supported / Not Supported / Inconclusive
+[3-4 sentence analysis]
+---`;
+
+  const userPrompt = 'Selected hypotheses:\n' +
+    selectedHyps.map(h => '- ' + h.title + ': "' + h.ab_test.hypothesis + '"').join('\n') +
+    '\n\nVideo evidence:\n' +
+    evidenceText +
+    '\n\nPlease validate each hypothesis against this evidence.';
+
+  try {
+    const response = await fetch('https://egavves-github-io.vercel.app/api/chat', {
+      method: 'POST',
+      headers: {
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+        stream: true
+      })
+    });
+
+    if(!response.ok) {
+      throw new Error('API error: ' + response.status);
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+
+    while(true) {
+      const {done, value} = await reader.read();
+      if(done) break;
+      buffer += decoder.decode(value, {stream: true});
+      const lines = buffer.split('\n');
+      buffer = lines[lines.length - 1];
+
+      for(let i = 0; i < lines.length - 1; i++) {
+        const line = lines[i];
+        if(line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if(data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            if(parsed.type === 'content_block_delta' && parsed.delta.type === 'text_delta') {
+              fullText += parsed.delta.text;
+
+              for(let j = 0; j < selectedHyps.length; j++) {
+                const hyp = selectedHyps[j];
+                const existingResult = session.results.find(r => r.hypothesisId === hyp.id);
+                if(!existingResult && fullText.includes('## ' + hyp.title)) {
+                  const result = {
+                    hypothesisId: hyp.id,
+                    status: 'pending',
+                    report: '',
+                    timestamp: Date.now()
+                  };
+                  session.results.push(result);
+                }
+
+                const result = session.results.find(r => r.hypothesisId === hyp.id);
+                if(result) {
+                  const titleIdx = fullText.indexOf('## ' + hyp.title);
+                  if(titleIdx >= 0) {
+                    const verdictMatch = fullText.substring(titleIdx).match(/\*\*Verdict\*\*:\s*(\w+)/);
+                    if(verdictMatch) {
+                      const verdict = verdictMatch[1].toLowerCase();
+                      if(verdict.includes('support')) result.status = 'proven';
+                      else if(verdict.includes('not') || verdict.includes('contradict')) result.status = 'disproven';
+                      else if(verdict.includes('inconclus')) result.status = 'inconclusive';
+                    }
+
+                    const endIdx = fullText.indexOf('---', titleIdx + 10);
+                    if(endIdx > -1) {
+                      result.report = fullText.substring(titleIdx, endIdx).replace(/^## /, '').trim();
+                    } else {
+                      result.report = fullText.substring(titleIdx).replace(/^## /, '').trim();
+                    }
+                  }
+                }
+              }
+
+              saveSessions(sessions);
+              renderWorkspace();
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    updateValidationStatus();
+  } catch(err) {
+    alert('Validation error: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🧪 Validate All';
+  }
+}
+
+function buildEvidenceText(session) {
+  let text = '';
+  if(session.evidence.videoUrl) text += 'Video URL: ' + session.evidence.videoUrl + '\n';
+  if(session.evidence.pdfName) text += 'PDF: ' + session.evidence.pdfName + '\n';
+  const metrics = session.evidence.metrics;
+  const metricLabels = {
+    views_48h: 'Views (48h)', views_7d: 'Views (7d)', views_28d: 'Views (28d)',
+    ctr: 'CTR (%)', retention_30s: '30s Retention (%)', avg_view_pct: 'Avg View %',
+    likes: 'Likes', comments: 'Comments', subscribers_gained: 'Subscribers Gained', revenue: 'Est. Revenue ($)'
+  };
+  Object.keys(metrics).forEach(k => {
+    if(metrics[k]) text += metricLabels[k] + ': ' + metrics[k] + '\n';
+  });
+  if(session.evidence.notes) text += 'Notes: ' + session.evidence.notes + '\n';
+  return text || '(no evidence provided)';
+}
+
+function openSummarizeModal() {
+  const modal = document.getElementById('summarizeModal');
+  modal.classList.add('show');
+
+  const sessions = getSessions();
+  const allResults = [];
+  sessions.forEach(s => {
+    (s.results || []).forEach(r => {
+      allResults.push({...r, sessionTitle: s.title});
+    });
+  });
+
+  const summaryPrompt = 'Summarize these validation results for the CUT channel:\n\n' +
+    allResults.map(r => {
+      const hyp = HYPOTHESES_COMPACT.find(h => h.id === r.hypothesisId);
+      return '- ' + (hyp?.title || 'Unknown') + ': ' + r.status.toUpperCase() + '\n  Session: ' + r.sessionTitle;
+    }).join('\n') +
+    '\n\nProvide a 2-3 paragraph executive summary with key takeaways.';
+
+  generateStreamingSummary(summaryPrompt);
+}
+
+async function generateStreamingSummary(prompt) {
+  try {
+    const apiKey = localStorage.getItem('anthropic_api_key');
+    if(!apiKey) {
+      document.getElementById('summarizeContent').innerHTML = 'API key not found.';
+      return;
+    }
+
+    const response = await fetch('https://egavves-github-io.vercel.app/api/chat', {
+      method: 'POST',
+      headers: {
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+        stream: true
+      })
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let fullText = '';
+    const contentDiv = document.getElementById('summarizeContent');
+    contentDiv.innerHTML = '<div class="modal-report" id="summaryText"></div>';
+
+    while(true) {
+      const {done, value} = await reader.read();
+      if(done) break;
+      buffer += decoder.decode(value, {stream: true});
+      const lines = buffer.split('\n');
+      buffer = lines[lines.length - 1];
+
+      for(let i = 0; i < lines.length - 1; i++) {
+        const line = lines[i];
+        if(line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if(data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            if(parsed.type === 'content_block_delta' && parsed.delta.type === 'text_delta') {
+              fullText += parsed.delta.text;
+              document.getElementById('summaryText').textContent = fullText;
+            }
+          } catch(e) {}
+        }
+      }
+    }
+  } catch(err) {
+    document.getElementById('summarizeContent').innerHTML = '<div class="modal-report">Error: ' + err.message + '</div>';
+  }
+}
+
+function closeSummarizeModal() {
+  document.getElementById('summarizeModal').classList.remove('show');
+}
+
+function copySummaryToClipboard() {
+  const text = document.getElementById('summaryText')?.textContent || '';
+  navigator.clipboard.writeText(text);
+  alert('Copied to clipboard');
+}
+
+renderSidebar();
+updateSidebarFooter();
+if(getSessions().length === 0) {
+  document.getElementById('workspace').className = 'workspace empty';
+  document.getElementById('workspace').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧪</div><div class="empty-state-title">No sessions yet</div><div class="empty-state-text">Create a new validation session to get started</div></div>';
+} else {
+  currentSessionId = getSessions()[0].id;
+  renderWorkspace();
+  renderSidebar();
+}
+
+window.calliopePageContext = function() {
+  const sessions = JSON.parse(localStorage.getItem('validation_sessions') || '[]');
+  const proven = sessions.reduce((n,s)=>n+(s.results||[]).filter(r=>r.status==='proven').length,0);
+  const disproven = sessions.reduce((n,s)=>n+(s.results||[]).filter(r=>r.status==='disproven').length,0);
+  return '\n\nCURRENT PAGE: Hypothesis Validation. ' + sessions.length + ' session(s). ' + proven + ' proven, ' + disproven + ' disproven. 47 CUT hypotheses from ML analysis.';
+};
+window.calliopePageGreeting = function() {
+  return "Hi, I'm <strong>Calliope</strong> ✦ — I carry our conversation across all dashboards. I can help interpret validation results, explain the statistical context, or connect findings to the executive summary. What would you like to explore?";
+};
+
+window.calliopeSnapshot = function() {
+  const sessions = JSON.parse(localStorage.getItem('validation_sessions') || '[]');
+  const allResults = sessions.flatMap(s => s.results || []);
+  const proven = allResults.filter(r => r.status === 'proven').map(r => r.hypTitle || r.hypId);
+  const disproven = allResults.filter(r => r.status === 'disproven').map(r => r.hypTitle || r.hypId);
+  return {
+    page: 'Hypothesis Validation',
+    ts: Date.now(),
+    summary: sessions.length + ' validation session(s). ' + proven.length + ' proven, ' + disproven.length + ' disproven.',
+    proven_hypotheses: proven.slice(0, 8),
+    disproven_hypotheses: disproven.slice(0, 8),
+  };
+};
+  </script>
+<!-- ══ Calliope AI Assistant ═════════════════════════════════════════════════ -->
+<script>
+(function() {
+  if (document.getElementById('calliope-widget')) return;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .calliope-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 8888;
+      display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #7c6af7 0%, #a78bfa 100%);
+      color: #fff; border: none; border-radius: 28px;
+      padding: 11px 20px 11px 16px; font-size: 13px; font-weight: 700;
+      cursor: pointer; box-shadow: 0 4px 24px rgba(124,106,247,.55);
+      transition: transform .18s, box-shadow .18s; white-space: nowrap; font-family: inherit;
+    }
+    .calliope-fab:hover { transform: translateY(-2px); box-shadow: 0 6px 32px rgba(124,106,247,.7); }
+    .calliope-chat {
+      position: fixed; bottom: 136px; right: 24px; z-index: 8889;
+      width: 390px; max-width: calc(100vw - 32px);
+      height: 560px; max-height: calc(100vh - 100px);
+      background: #12152b; border: 1px solid rgba(124,106,247,.4);
+      border-radius: 18px; box-shadow: 0 16px 56px rgba(0,0,0,.75);
+      display: flex; flex-direction: column; overflow: hidden;
+      transform: scale(.93) translateY(14px); opacity: 0; pointer-events: none;
+      transition: transform .22s cubic-bezier(.34,1.28,.64,1), opacity .18s ease;
+    }
+    .calliope-chat.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+    .calliope-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 13px 10px; background: #0d1024;
+      border-bottom: 1px solid rgba(124,106,247,.22); flex-shrink: 0;
+    }
+    .calliope-avatar {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #7c6af7, #c4b5fd);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff; font-weight: 700;
+    }
+    .calliope-title-block { flex: 1; min-width: 0; }
+    .calliope-name { font-size: 13px; font-weight: 700; color: #e2e4f0; }
+    .calliope-status { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+    .calliope-hdr-btns { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
+    .calliope-hbtn {
+      background: none; border: none; color: #6b7280; cursor: pointer;
+      padding: 3px 5px; border-radius: 6px; font-size: 13px; line-height: 1;
+      transition: color .15s, background .15s; font-family: inherit;
+    }
+    .calliope-hbtn:hover { color: #e2e4f0; background: rgba(255,255,255,.07); }
+    .calliope-hbtn.new-conv { font-size: 11px; color: #6b7280; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; padding: 2px 7px; }
+    .calliope-hbtn.new-conv:hover { color: #a78bfa; border-color: rgba(167,139,250,.4); background: rgba(124,106,247,.1); }
+    .calliope-msgs {
+      flex: 1; overflow-y: auto; padding: 12px 12px 6px;
+      display: flex; flex-direction: column; gap: 9px; scroll-behavior: smooth;
+    }
+    .calliope-msgs::-webkit-scrollbar { width: 3px; }
+    .calliope-msgs::-webkit-scrollbar-thumb { background: rgba(124,106,247,.3); border-radius: 2px; }
+    .calliope-msg { display: flex; max-width: 100%; animation: calliopeSlide .17s ease; }
+    .calliope-msg.user { flex-direction: row-reverse; }
+    @keyframes calliopeSlide { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:none; } }
+    .calliope-bubble {
+      padding: 8px 12px; border-radius: 14px; font-size: 12.5px; line-height: 1.65;
+      color: #d4d8f0; max-width: 87%; word-break: break-word;
+    }
+    .calliope-msg.assistant .calliope-bubble {
+      background: rgba(124,106,247,.13); border: 1px solid rgba(124,106,247,.22); border-bottom-left-radius: 4px;
+    }
+    .calliope-msg.user .calliope-bubble {
+      background: rgba(45,212,191,.11); border: 1px solid rgba(45,212,191,.22);
+      border-bottom-right-radius: 4px; color: #e2f8f5;
+    }
+    .calliope-bubble code {
+      background: rgba(0,0,0,.4); border-radius: 4px; padding: 1px 5px;
+      font-family: monospace; font-size: 11.5px; color: #a78bfa;
+    }
+    .calliope-bubble pre { background: rgba(0,0,0,.4); border-radius: 8px; padding: 9px 11px; overflow-x: auto; margin: 5px 0; }
+    .calliope-bubble pre code { background: none; padding: 0; color: #c4b5fd; }
+    .calliope-bubble strong { color: #e2e4f0; font-weight: 600; }
+    .calliope-bubble em { color: #a78bfa; font-style: normal; }
+    .calliope-bubble ul, .calliope-bubble ol { padding-left: 17px; margin: 3px 0; }
+    .calliope-bubble li { margin-bottom: 2px; }
+    .calliope-msg-img { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
+    .calliope-divider {
+      text-align: center; font-size: 10px; color: #2d3560; margin: 2px 0 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .calliope-divider::before, .calliope-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(45,53,96,.6);
+    }
+    .calliope-typing-wrap { display: flex; gap: 5px; padding: 3px 0; align-items: center; }
+    .calliope-typing-wrap span {
+      width: 6px; height: 6px; border-radius: 50%; background: #a78bfa;
+      animation: calliopeDot 1.3s infinite ease-in-out; display: block;
+    }
+    .calliope-typing-wrap span:nth-child(2) { animation-delay: .22s; }
+    .calliope-typing-wrap span:nth-child(3) { animation-delay: .44s; }
+    @keyframes calliopeDot { 0%,80%,100% { opacity:.22; transform:scale(.75); } 40% { opacity:1; transform:scale(1.1); } }
+    .calliope-img-preview {
+      padding: 5px 12px; background: rgba(124,106,247,.08);
+      border-top: 1px solid rgba(124,106,247,.14); flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .calliope-img-preview img { height: 42px; border-radius: 6px; object-fit: cover; }
+    .calliope-img-rm {
+      background: rgba(248,113,113,.18); border: none; color: #f87171;
+      border-radius: 50%; width: 18px; height: 18px; font-size: 10px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .calliope-input-row {
+      display: flex; align-items: flex-end; gap: 6px;
+      padding: 8px 11px 10px; border-top: 1px solid rgba(124,106,247,.17);
+      background: #0d1024; flex-shrink: 0;
+    }
+    .calliope-attach {
+      color: #6b7280; font-size: 17px; cursor: pointer; padding: 3px 2px;
+      transition: color .15s; flex-shrink: 0; line-height: 1; background: none; border: none;
+    }
+    .calliope-attach:hover { color: #a78bfa; }
+    .calliope-textarea {
+      flex: 1; background: rgba(255,255,255,.055); border: 1px solid rgba(124,106,247,.28);
+      border-radius: 10px; padding: 7px 10px; color: #e2e4f0; font-size: 12.5px;
+      font-family: inherit; resize: none; line-height: 1.5;
+      min-height: 34px; max-height: 110px; outline: none;
+      transition: border-color .15s; overflow-y: auto;
+    }
+    .calliope-textarea:focus { border-color: rgba(124,106,247,.65); }
+    .calliope-textarea::placeholder { color: #6b7280; }
+    .calliope-send {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, #7c6af7, #a78bfa); border: none;
+      color: #fff; font-size: 15px; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .calliope-send:hover:not(:disabled) { opacity: .85; transform: scale(1.06); }
+    .calliope-send:disabled { opacity: .35; cursor: default; }
+    .calliope-sug { padding: 10px 12px 8px; border-bottom: 1px solid rgba(124,106,247,.1); flex-shrink: 0; }
+    .calliope-sug.hidden { display: none; }
+    .calliope-sug-header { margin-bottom: 8px; }
+    .calliope-sug-subtitle { font-size: 11px; color: #c9d1e0; line-height: 1.5; margin-bottom: 8px; }
+    .calliope-sug-subtitle strong { color: #e2e8f0; }
+    .calliope-sug-label { font-size: 9px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .calliope-sug-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .calliope-sug-card { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: 10px; cursor: pointer; text-align: left; border: 1px solid rgba(124,106,247,.2); background: rgba(124,106,247,.06); color: #e2e8f0; font-family: inherit; transition: all .15s; width: 100%; }
+    .calliope-sug-card:hover { background: rgba(124,106,247,.14); border-color: rgba(124,106,247,.45); transform: translateY(-1px); }
+    .csc-icon { font-size: 16px; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+    .csc-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .csc-title { font-size: 11px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
+    .csc-q { font-size: 10px; color: #a78bfa; line-height: 1.4; font-style: italic; }
+    .csc-desc { font-size: 10px; color: #9ca3af; line-height: 1.4; }
+  `;
+  document.head.appendChild(style);
+
+  const widget = document.createElement('div');
+  widget.id = 'calliope-widget';
+  widget.innerHTML = `
+    <button id="calliope-fab" class="calliope-fab" onclick="calliopeToggle()">
+      <span style="font-size:14px;opacity:.9">✦</span>
+      <span>Ask Calliope</span>
+    </button>
+    <div id="calliope-chat" class="calliope-chat">
+      <div class="calliope-header">
+        <div class="calliope-avatar">✦</div>
+        <div class="calliope-title-block">
+          <div class="calliope-name">Calliope</div>
+          <div class="calliope-status" id="calliope-status">AI guide · claude-sonnet-4-6</div>
+        </div>
+        <div class="calliope-hdr-btns">
+          <button class="calliope-hbtn new-conv" onclick="calliopeClear()" title="Start a new conversation">↺ New</button>
+          <button class="calliope-hbtn" onclick="calliopeToggle()" title="Close">✕</button>
+        </div>
+      </div>
+      <div id="calliope-sug" class="calliope-sug">
+        <div class="calliope-sug-header">
+          <div class="calliope-sug-subtitle">I'm a <strong>full AI chatbot</strong> for CUT Analytics — ask me anything about hypothesis validation, p-values, and statistical evidence.</div>
+        </div>
+        <div class="calliope-sug-cards">
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="How should I interpret the validation scores and p-values on this dashboard?">
+            <span class="csc-icon">✅</span>
+            <span class="csc-body">
+              <span class="csc-title">Interpret validation</span>
+              <span class="csc-q">How should I interpret the validation scores and p-values on this dashboard?</span>
+              <span class="csc-desc">Understand what statistical validation means</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="Which hypothesis has the strongest statistical validation evidence?">
+            <span class="csc-icon">🥇</span>
+            <span class="csc-body">
+              <span class="csc-title">Strongest evidence</span>
+              <span class="csc-q">Which hypothesis has the strongest statistical validation evidence?</span>
+              <span class="csc-desc">Find the most confidently confirmed finding</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="How do the validated hypotheses compare to the random baseline?">
+            <span class="csc-icon">📊</span>
+            <span class="csc-body">
+              <span class="csc-title">Baseline comparison</span>
+              <span class="csc-q">How do the validated hypotheses compare to the random baseline?</span>
+              <span class="csc-desc">See which signals exceed chance performance</span>
+            </span>
+          </button>
+          <button class="calliope-sug-card" onclick="calliopeSugRun(this)" data-q="Which validated findings are most actionable for content production right now?">
+            <span class="csc-icon">🎯</span>
+            <span class="csc-body">
+              <span class="csc-title">Act on findings</span>
+              <span class="csc-q">Which validated findings are most actionable for content production right now?</span>
+              <span class="csc-desc">Connect validation to production decisions</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div id="calliope-msgs" class="calliope-msgs"></div>
+      <div id="calliope-img-preview" class="calliope-img-preview" style="display:none"></div>
+      <div class="calliope-input-row">
+        <label class="calliope-attach" title="Attach image">
+          📎<input type="file" accept="image/*" style="display:none" onchange="calliopeAttach(this)">
+        </label>
+        <textarea id="calliope-ta" class="calliope-textarea"
+          placeholder="Ask anything — I remember our full conversation…"
+          onkeydown="calliopeKey(event)" oninput="calliopeResize(this)" rows="1"></textarea>
+        <button id="calliope-send-btn" class="calliope-send" onclick="calliopeSend()" title="Send (Enter)">↑</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(widget);
+
+  const MODEL = 'claude-sonnet-4-6';
+  const HIST_KEY = 'calliope_history';
+  const SNAP_PFX = 'calliope_snap_';
+  const MAX_HIST = 40;
+  const UI_RESTORE = 6;
+  let history = [], streaming = false, pendingImg = null, isOpen = false, initialized = false;
+
+  function loadHistory() { try { const r=localStorage.getItem(HIST_KEY); return r?JSON.parse(r).filter(m=>typeof m.content==='string'):[];} catch{return[];} }
+  function saveHistory() { try { localStorage.setItem(HIST_KEY,JSON.stringify(history.filter(m=>typeof m.content==='string').slice(-MAX_HIST)));} catch{} }
+  function clearStoredHistory() { try{localStorage.removeItem(HIST_KEY);}catch{} }
+  function saveSnapshot() { if(typeof window.calliopeSnapshot!=='function')return; try{const s=window.calliopeSnapshot();if(s&&s.page){localStorage.setItem(SNAP_PFX+s.page.replace(/\s+/g,'_').toLowerCase(),JSON.stringify(s));}}catch{} }
+  function loadAllSnapshots() { const a=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(SNAP_PFX)){try{a.push(JSON.parse(localStorage.getItem(k)));}catch{}}}}catch{}return a.sort((a,b)=>(b.ts||0)-(a.ts||0)); }
+
+  function buildSystemPrompt() {
+    const pageCtx=(typeof window.calliopePageContext==='function')?window.calliopePageContext():'';
+    const snaps=loadAllSnapshots();
+    let crossCtx='';
+    if(snaps.length){crossCtx='
+
+DATA SNAPSHOTS FROM OTHER DASHBOARDS:';for(const s of snaps){const age=s.ts?Math.round((Date.now()-s.ts)/60000):null;const ageStr=age!==null?(age<60?age+'m ago':Math.round(age/60)+'h ago'):'';crossCtx+=`
+
+[${s.page}${ageStr?' — seen '+ageStr:''}]`;if(s.summary)crossCtx+='
+'+s.summary;for(const[k,v]of Object.entries(s)){if(['page','ts','summary'].includes(k))continue;if(Array.isArray(v))crossCtx+='
+'+k+': '+v.slice(0,12).join('; ');else if(typeof v==='string'||typeof v==='number')crossCtx+='
+'+k+': '+v;}}}
+    return `You are Calliope, a warm and knowledgeable AI guide embedded across all CUT Analytics Dashboards. CUT is a YouTube channel known for social experiment videos.
+
+You are a PERSISTENT guide — your conversation carries across all 5 dashboard pages. You can reason across all of them and connect insights between pages.
+
+Your role: help the CUT team understand what the data means and how to act on it. Always explain ML/statistical concepts in plain English. Be concise, warm, and specific.${pageCtx}${crossCtx}`;
+  }
+
+  function addMsg(role,html,restored){const msgs=document.getElementById('calliope-msgs');const div=document.createElement('div');div.className='calliope-msg '+role;if(restored)div.style.opacity='0.72';div.innerHTML='<div class="calliope-bubble">'+html+'</div>';msgs.appendChild(div);scrollBottom();return div;}
+  function addDivider(t){const msgs=document.getElementById('calliope-msgs');const div=document.createElement('div');div.className='calliope-divider';div.textContent=t;msgs.appendChild(div);}
+  function addTyping(id){const msgs=document.getElementById('calliope-msgs');const div=document.createElement('div');div.className='calliope-msg assistant';div.id=id;div.innerHTML='<div class="calliope-bubble"><div class="calliope-typing-wrap"><span></span><span></span><span></span></div></div>';msgs.appendChild(div);scrollBottom();}
+  function scrollBottom(){const m=document.getElementById('calliope-msgs');m.scrollTop=m.scrollHeight;}
+  function setStatus(t){const el=document.getElementById('calliope-status');if(el)el.textContent=t;}
+  function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function calliopeMarkdown(raw){let s=raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const blocks=[];s=s.replace(/```[\s\S]*?```/g,m=>{const code=m.replace(/^```\w*\n?/,'').replace(/\n?```$/,'').trim();blocks.push('<pre><code>'+code+'</code></pre>');return'\x00'+(blocks.length-1)+'\x00';});s=s.replace(/`([^`\n]+)`/g,'<code>$1</code>');s=s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');s=s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');s=s.replace(/^### (.+)$/gm,'<div style="color:#a78bfa;font-weight:600;margin:5px 0 2px">$1</div>');s=s.replace(/^## (.+)$/gm,'<div style="color:#e2e4f0;font-weight:700;margin:6px 0 2px">$1</div>');s=s.replace(/((?:^[-•*] .+$\n?)+)/gm,m=>{const items=m.trim().split('\n').map(l=>'<li>'+l.replace(/^[-•*] /,'')+'</li>');return'<ul>'+items.join('')+'</ul>';});s=s.replace(/((?:^\d+\. .+$\n?)+)/gm,m=>{const items=m.trim().split('\n').map(l=>'<li>'+l.replace(/^\d+\. /,'')+'</li>');return'<ol>'+items.join('')+'</ol>';});s=s.replace(/(<\/(ul|ol|div|pre)>)\n?/g,'$1');s=s.replace(/\n/g,'<br>');s=s.replace(/\x00(\d+)\x00/g,(_,i)=>blocks[parseInt(i)]);return s;}
+
+  function initChat(){if(initialized)return;initialized=true;saveSnapshot();const saved=loadHistory();history=[...saved];if(saved.length>0){const toShow=saved.slice(-UI_RESTORE);const skipped=saved.length-toShow.length;if(skipped>0)addDivider('↑ '+skipped+' earlier message'+(skipped>1?'s':'')+' in this conversation');else addDivider('Continuing our conversation');for(const m of toShow){const html=m.role==='user'?escHtml(m.content):calliopeMarkdown(m.content);addMsg(m.role,html,true);}addDivider('Now on: '+(document.title||window.location.pathname.split('/').pop()));}else{const greeting=(typeof window.calliopePageGreeting==='function')?window.calliopePageGreeting():"Hi, I'm <strong>Calliope</strong> ✦ — your guide across all the CUT dashboards.";addMsg('assistant',greeting);if(!localStorage.getItem('anthropic_api_key'))addMsg('assistant','<span style="color:#fb923c;font-size:12px">⚠ No Anthropic API key found — add it in the Ideation Studio settings.</span>');}}
+
+  window.calliopeSugRun = function(btn) {
+    const text = btn.dataset.q || btn.textContent.trim();
+    document.getElementById('calliope-ta').value = text;
+    document.getElementById('calliope-sug')?.classList.add('hidden');
+    calliopeSend();
+  }
+
+  window.calliopeToggle=function(){isOpen=!isOpen;document.getElementById('calliope-chat').classList.toggle('open',isOpen);if(isOpen){initChat();setTimeout(()=>document.getElementById('calliope-ta').focus(),160);}};
+  window.calliopeClear=function(){clearStoredHistory();history=[];initialized=false;document.getElementById('calliope-msgs').innerHTML='';initChat();};
+  window.calliopeKey=function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();calliopeSend();}};
+  window.calliopeResize=function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';if(el.value.trim())document.getElementById('calliope-sug')?.classList.add('hidden');};
+  window.calliopeAttach=function(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{const r=e.target.result;pendingImg={base64:r.split(',')[1],mediaType:file.type,dataUrl:r};showImgPreview();};reader.readAsDataURL(file);input.value='';};
+  window.calliopeRmImg=function(){pendingImg=null;const p=document.getElementById('calliope-img-preview');p.style.display='none';p.innerHTML='';};
+  document.addEventListener('paste',function(e){if(!isOpen)return;const items=e.clipboardData?.items||[];for(const item of items){if(item.type.startsWith('image/')){const file=item.getAsFile();const reader=new FileReader();reader.onload=ev=>{const r=ev.target.result;pendingImg={base64:r.split(',')[1],mediaType:item.type,dataUrl:r};showImgPreview();};reader.readAsDataURL(file);e.preventDefault();return;}}});
+  function showImgPreview(){const p=document.getElementById('calliope-img-preview');p.innerHTML='<img src="'+pendingImg.dataUrl+'"><button class="calliope-img-rm" onclick="calliopeRmImg()">✕</button>';p.style.display='flex';}
+
+  window.calliopeSend=async function(){if(streaming)return;const ta=document.getElementById('calliope-ta');const text=ta.value.trim();if(!text&&!pendingImg)return;const userContent=[];if(pendingImg)userContent.push({type:'image',source:{type:'base64',media_type:pendingImg.mediaType,data:pendingImg.base64}});if(text)userContent.push({type:'text',text});const userHtml=(pendingImg?'<img src="'+pendingImg.dataUrl+'" class="calliope-msg-img">':'')+(text?escHtml(text):'');addMsg('user',userHtml);history.push({role:'user',content:text||'[image attached]'});ta.value='';ta.style.height='auto';calliopeRmImg();const typingId='calliope-t-'+Date.now();addTyping(typingId);streaming=true;document.getElementById('calliope-send-btn').disabled=true;setStatus('Thinking…');saveSnapshot();try{const apiMessages=history.slice(0,-1).concat([{role:'user',content:userContent.length===1&&!pendingImg?text:userContent}]);const resp=await fetch('https://egavves-github-io.vercel.app/api/chat',{method:'POST',headers:{'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:MODEL,max_tokens:1536,system:buildSystemPrompt(),messages:apiMessages,stream:true})});if(!resp.ok){const err=await resp.json().catch(()=>({}));throw new Error(err.error?.message||'HTTP '+resp.status);}document.getElementById(typingId)?.remove();const msgEl=addMsg('assistant','');const bubble=msgEl.querySelector('.calliope-bubble');const reader=resp.body.getReader();const decoder=new TextDecoder();let buf='',fullText='';while(true){const{done,value}=await reader.read();if(done)break;buf+=decoder.decode(value,{stream:true});const lines=buf.split('\n');buf=lines.pop();for(const line of lines){if(!line.startsWith('data: '))continue;const json=line.slice(6);if(json==='[DONE]')continue;try{const ev=JSON.parse(json);if(ev.type==='content_block_delta'&&ev.delta?.type==='text_delta'){fullText+=ev.delta.text;bubble.innerHTML=calliopeMarkdown(fullText);scrollBottom();}}catch{}}}history.push({role:'assistant',content:fullText});saveHistory();setStatus('AI guide · claude-sonnet-4-6');}catch(err){document.getElementById(typingId)?.remove();addMsg('assistant','<span style="color:#f87171">⚠ '+escHtml(err.message)+'</span>');setStatus('AI guide · claude-sonnet-4-6');}finally{streaming=false;document.getElementById('calliope-send-btn').disabled=false;}};
+
+  window.addEventListener('beforeunload',saveSnapshot);
+})();
+</script>
+
+
+<script>
+
+(function(){
+  const PROXY = 'http://localhost:5765';
+  let loaded = false;
+  window.toggleSocialSidebar = function() {
+    const body  = document.getElementById('social-sidebar-body');
+    const arrow = document.getElementById('social-sidebar-arrow');
+    const open  = body.style.display !== 'none';
+    body.style.display  = open ? 'none' : 'block';
+    if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+    if (!open && !loaded) { loaded = true; loadValSocial(); }
+  };
+  async function loadValSocial() {
+    const statusEl = document.getElementById('val-social-status');
+    try {
+      const check = await fetch(PROXY + '/api/status', { signal: AbortSignal.timeout(2000) });
+      if (!check.ok) throw new Error('bad');
+      if(statusEl){statusEl.textContent='proxy online';statusEl.style.color='var(--positive)';}
+      loadValTrends(); loadValReddit();
+    } catch {
+      if(statusEl) statusEl.textContent='Proxy offline';
+      ['val-twitter-trends','val-reddit-posts'].forEach(function(id){
+        const el = document.getElementById(id);
+        if(el) el.innerHTML='<div class="social-offline-msg">Run python social_proxy.py to load.</div>';
+      });
+    }
+  }
+  async function loadValTrends() {
+    const el = document.getElementById('val-twitter-trends');
+    try {
+      const r = await fetch(PROXY + '/api/twitter/trending?woeid=1');
+      const d = await r.json();
+      const trends = d.ok && d.data && d.data[0] ? d.data[0].trends.slice(0,8) : [];
+      if(el) el.innerHTML = trends.map(function(t){return '<span class="social-trend-tag">'+escV(t.name)+'</span>';}).join('');
+    } catch { if(el) el.innerHTML='<div class="social-offline-msg">Could not load.</div>'; }
+  }
+  async function loadValReddit() {
+    const el = document.getElementById('val-reddit-posts');
+    try {
+      const r = await fetch(PROXY + '/api/reddit/batch?subs=movies,television&limit=4');
+      const d = await r.json();
+      if(!d.ok) throw new Error();
+      const posts = [];
+      Object.keys(d.subs).forEach(function(sub){
+        if(d.subs[sub].ok) d.subs[sub].posts.forEach(function(p){posts.push({title:p.title,url:p.url,score:p.score,sub:sub});});
+      });
+      posts.sort(function(a,b){return b.score-a.score;});
+      if(el) el.innerHTML = posts.slice(0,5).map(function(p){
+        var t = p.title.length>55 ? p.title.slice(0,55)+'...' : p.title;
+        return '<div class="val-reddit-item"><span class="val-reddit-score">'+p.score.toLocaleString()+'</span> <span style="font-size:10px;color:var(--muted)">r/'+p.sub+'</span> <a href="'+escV(p.url)+'" target="_blank">'+escV(t)+'</a></div>';
+      }).join('');
+    } catch { if(el) el.innerHTML='<div class="social-offline-msg">Could not load.</div>'; }
+  }
+  function escV(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+})();
+
+</script>
+
+
+
+<script src="calli-system.js"></script>
+
+<!-- Tutorial FAB -->
+<button class="tour-fab" onclick="CALLI_TOUR.launch()"
+        title="Open interactive tutorial — choose Quick, Standard, or Deep Dive">
+  🎓 Tutorial
+</button>
+
+<script src="calli-tour.js"></script>
+<script>
+/* ── Local-dev API routing ── */
+(function(){
+  if (location.hostname === 'egavves.github.io') return;
+  var _orig = window.fetch.bind(window);
+  window.fetch = function(url, opts) {
+    if (url === 'https://egavves-github-io.vercel.app/api/chat') {
+      var key = localStorage.getItem('anthropicKey') || localStorage.getItem('anthropic_api_key') || '';
+      if (!key) return Promise.reject(new Error('Add your Anthropic API key in \u2699\ufe0f Settings to use locally.'));
+      url = 'https://api.anthropic.com/v1/messages';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {
+        'x-api-key': key,
+        'anthropic-dangerous-direct-browser-access': 'true'
+      });
+    }
+    if (url === 'https://egavves-github-io.vercel.app/api/image') {
+      var key2 = localStorage.getItem('falKey') || localStorage.getItem('fal_api_key') || '';
+      url = 'https://fal.run/fal-ai/flux/schnell';
+      opts = Object.assign({}, opts);
+      opts.headers = Object.assign({}, opts.headers, {'Authorization': 'Key ' + key2});
+    }
+    return _orig(url, opts);
+  };
+})();
+</script>
+</body>
+</html>

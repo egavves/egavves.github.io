@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tribute BOTB — Social Pulse</title>
+<link rel="stylesheet" href="calli-system.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; }
+#app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+.page-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── HEADER ── */
+.page-hdr {
+  flex-shrink: 0; padding: 10px 20px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); background: var(--bg-alt);
+}
+.page-hdr-title { font-size: 14px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.page-hdr-spacer { flex: 1; }
+.live-badge {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3);
+  border-radius: 10px; padding: 2px 9px; font-size: 10px; font-weight: 600; color: #34d399;
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── TABS ── */
+.tab-bar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 2px;
+  padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--surface);
+}
+.tab-btn {
+  padding: 8px 14px; font-size: 11.5px; font-weight: 600; cursor: pointer;
+  border: none; background: none; color: var(--muted); font-family: inherit;
+  border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+}
+.tab-btn:hover { color: var(--text-dim); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── SCROLL PANES ── */
+.pane { display: none; flex: 1; overflow-y: auto; padding: 16px 20px 80px; }
+.pane.active { display: block; }
+
+/* ── GRID LAYOUTS ── */
+.dash-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+.dash-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+@media (max-width: 800px) { .dash-grid-3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .dash-grid-3, .dash-grid-2 { grid-template-columns: 1fr; } }
+
+/* ── SECTION HEADER ── */
+.sec-hdr { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; }
+.sec-hdr:first-child { margin-top: 0; }
+.sec-hdr-title { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: .07em; }
+.sec-hdr-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── PLATFORM CARD ── */
+.platform-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.plat-header { display: flex; align-items: center; gap: 10px; }
+.plat-icon { font-size: 22px; }
+.plat-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.plat-handle { font-size: 10px; color: var(--muted3); }
+.plat-stat-row { display: flex; gap: 16px; }
+.plat-stat { display: flex; flex-direction: column; gap: 2px; }
+.plat-stat-val { font-size: 16px; font-weight: 800; color: var(--accent); }
+.plat-stat-lbl { font-size: 9px; color: var(--muted3); text-transform: uppercase; letter-spacing: .05em; }
+.plat-activity {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 5px;
+}
+.act-low    { background: rgba(248,113,113,.1); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
+.act-medium { background: rgba(245,158,11,.1); color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
+.act-high   { background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.25); }
+.plat-desc { font-size: 10.5px; color: var(--muted3); line-height: 1.55; }
+.plat-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; color: var(--accent); text-decoration: none;
+  font-weight: 600;
+}
+.plat-link:hover { text-decoration: underline; }
+.plat-opportunity {
+  background: rgba(124,106,247,.08); border: 1px solid rgba(124,106,247,.2);
+  border-radius: 6px; padding: 6px 9px;
+  font-size: 10px; color: #a78bfa; line-height: 1.5;
+}
+
+/* ── KPI STRIP ── */
+.kpi-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 15px; flex: 1; min-width: 90px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.kpi-val { font-size: 19px; font-weight: 800; color: var(--accent); }
+.kpi-lbl { font-size: 9px; color: var(--muted3); text-transform: uppercase; letter-spacing: .06em; }
+
+/* ── SENTIMENT PANEL ── */
+.sentiment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sent-col { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.sent-col-title { font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+.sent-col-title.pos { color: #34d399; }
+.sent-col-title.neg { color: #f87171; }
+.sent-list { display: flex; flex-direction: column; gap: 5px; }
+.sent-item {
+  display: flex; align-items: flex-start; gap: 7px;
+  font-size: 11px; color: var(--text-dim); line-height: 1.45;
+}
+.sent-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.dot-pos { background: #34d399; }
+.dot-neg { background: #f87171; }
+
+/* ── LINK TABLE ── */
+.link-table { display: flex; flex-direction: column; gap: 6px; }
+.link-row {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 9px 12px;
+  text-decoration: none; color: inherit;
+  transition: border-color .15s, background .15s;
+}
+.link-row:hover { border-color: rgba(124,106,247,.4); background: var(--surface2); }
+.link-icon { font-size: 16px; flex-shrink: 0; width: 24px; text-align: center; }
+.link-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.link-title { font-size: 11.5px; font-weight: 600; color: var(--text); }
+.link-meta { font-size: 10px; color: var(--muted3); }
+.link-badge {
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 5px;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.badge-official { background: rgba(59,130,246,.15); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+.badge-press    { background: rgba(245,158,11,.1);  color: #fbbf24; border: 1px solid rgba(245,158,11,.25); }
+.badge-fan      { background: rgba(124,106,247,.12);color: #a78bfa; border: 1px solid rgba(124,106,247,.3); }
+.badge-ratings  { background: rgba(52,211,153,.1);  color: #34d399; border: 1px solid rgba(52,211,153,.25); }
+.badge-trade    { background: rgba(236,72,153,.1);  color: #f472b6; border: 1px solid rgba(236,72,153,.25); }
+
+/* ── FAN REQUESTS ── */
+.fan-requests { display: flex; flex-direction: column; gap: 5px; }
+.fan-req {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 11px;
+}
+.fan-req-num { font-size: 9px; font-weight: 800; color: var(--accent); min-width: 16px; margin-top: 1px; }
+.fan-req-text { font-size: 11px; color: var(--text-dim); line-height: 1.45; }
+
+/* ── HASHTAG CHIPS ── */
+.hashtag-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.hashtag-chip {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 3px 11px;
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  text-decoration: none; transition: background .15s, border-color .15s;
+  cursor: pointer;
+}
+.hashtag-chip:hover { background: rgba(124,106,247,.15); border-color: rgba(124,106,247,.4); }
+
+/* ── OPPORTUNITY PANEL ── */
+.opp-panel {
+  background: linear-gradient(135deg, rgba(124,106,247,.06), rgba(124,106,247,.02));
+  border: 1px solid rgba(124,106,247,.25); border-radius: 11px;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+}
+.opp-title { font-size: 12px; font-weight: 700; color: #a78bfa; }
+.opp-list { display: flex; flex-direction: column; gap: 7px; }
+.opp-item { display: flex; gap: 8px; align-items: flex-start; }
+.opp-num { font-size: 10px; font-weight: 800; color: var(--accent); min-width: 18px; margin-top: 1px; }
+.opp-text { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<nav class="unified-nav">
+  <a class="nav-home-chip" href="cut_home.html">🏠 Home</a>
+  <div class="nav-proj-dropdown" id="nav-proj-dd">
+    <button class="nav-proj-btn" onclick="navProjToggle()" title="Switch project">📂 Open project ▾</button>
+    <div class="nav-proj-menu" id="nav-proj-menu">
+      <a class="nav-proj-item" href="feature_distributions.html">🎬 Cinematheque</a>
+      <a class="nav-proj-item" href="cut_home.html">✂️ CUT</a>
+      <a class="nav-proj-item nav-proj-active" href="tribute_home.html">🎸 Tribute: Battle of the Bands</a>
+      <span class="nav-proj-item nav-proj-disabled">🏆 Emmys (soon)</span>
+    </div>
+  </div>
+  <button class="nav-add-data-btn" onclick="addDataSource()" title="Add new project">＋ New project</button>
+  <button class="nav-gear-btn" id="gear-btn" onclick="CALLI.toggleSettings()" title="Settings">⚙&#xFE0E;</button>
+  <a class="nav-brand-by" href="https://callilabs.ai/" target="_blank">by Calli Labs</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-vsep"></div>
+  <a class="nav-chip" href="tribute_home.html">🎸 Home</a>
+  <a class="nav-chip nav-social-chip nav-active" href="tribute_social.html">🌐 Social Pulse</a>
+  <div class="nav-vsep"></div>
+  <span class="nav-section-label nav-ai-label">AI</span>
+  <a class="nav-chip" href="tribute_ideation.html">💡 Ideation</a>
+  <span class="nav-chip nav-chip-disabled" title="Coming soon">✦ Executive Summary</span>
+  <span class="nav-chip nav-chip-disabled" title="Coming soon">🧪 Validation</span>
+</nav>
+
+<div class="page-body">
+  <div class="page-hdr">
+    <div class="page-hdr-title">🌐 Social Pulse — Tribute: Battle of the Bands</div>
+    <div class="page-hdr-spacer"></div>
+    <div class="live-badge"><div class="live-dot"></div> Research snapshot · Mar 2026</div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="switchTab('platforms')">Platforms</button>
+    <button class="tab-btn" onclick="switchTab('sentiment')">Sentiment</button>
+    <button class="tab-btn" onclick="switchTab('press')">Press &amp; News</button>
+    <button class="tab-btn" onclick="switchTab('community')">Fan Community</button>
+    <button class="tab-btn" onclick="switchTab('opportunities')">Opportunities</button>
+  </div>
+
+  <!-- ── OVERVIEW ── -->
+  <div class="pane active" id="pane-overview">
+
+    <div class="kpi-strip">
+      <div class="kpi-card"><div class="kpi-val">45K</div><div class="kpi-lbl">Facebook Followers</div></div>
+      <div class="kpi-card"><div class="kpi-val">18K</div><div class="kpi-lbl">Instagram Followers</div></div>
+      <div class="kpi-card"><div class="kpi-val">2M+</div><div class="kpi-lbl">YouTube Views (est.)</div></div>
+      <div class="kpi-card"><div class="kpi-val">12K</div><div class="kpi-lbl">Fan Group Members</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:#f87171">LOW</div><div class="kpi-lbl">TikTok Presence</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:#4ade80">HIGH</div><div class="kpi-lbl">YT Opportunity</div></div>
+    </div>
+
+    <div class="sec-hdr"><div class="sec-hdr-title">Platform Presence at a Glance</div><div class="sec-hdr-line"></div></div>
+    <div class="dash-grid-3">
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">📘</div><div><div class="plat-name">Facebook</div><div class="plat-handle">Primary conversation hub</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">45K</div><div class="plat-stat-lbl">Followers</div></div>
+          <div class="plat-stat"><div class="plat-stat-val">12K</div><div class="plat-stat-lbl">Fan Group</div></div>
+        </div>
+        <span class="plat-activity act-medium">◉ Moderate activity</span>
+        <div class="plat-desc">Strongest platform. Episode reaction threads, contestant discussions, voting reminders. Most NL TV fan conversation lives here.</div>
+      </div>
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">📸</div><div><div class="plat-name">Instagram</div><div class="plat-handle">@tributebattleofthebands</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">18K</div><div class="plat-stat-lbl">Followers</div></div>
+        </div>
+        <span class="plat-activity act-low">◉ Low–moderate</span>
+        <div class="plat-desc">Underperforming relative to format size. Content: performance stills, backstage, jury moments. Lacks video-first strategy.</div>
+      </div>
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">▶️</div><div><div class="plat-name">YouTube</div><div class="plat-handle">RTL4 channel</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">2M+</div><div class="plat-stat-lbl">Total Views</div></div>
+        </div>
+        <span class="plat-activity act-medium">◉ Moderate</span>
+        <div class="plat-desc">Most valuable distribution channel — severely under-optimised. Performance clips rank in organic search. Full episodes not released same day.</div>
+        <div class="plat-opportunity">💡 Releasing full performances same night as broadcast could unlock significant organic reach.</div>
+      </div>
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">🎵</div><div><div class="plat-name">TikTok</div><div class="plat-handle">@tributertl</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">Low</div><div class="plat-stat-lbl">Presence</div></div>
+        </div>
+        <span class="plat-activity act-low">◉ Untapped</span>
+        <div class="plat-desc">Almost no strategic TikTok presence despite format being ideal for the platform. Short performance clips, side-by-side band/original comparisons, jury reactions — all untapped.</div>
+        <div class="plat-opportunity">💡 Highest single untapped opportunity. Even 5 clips per episode could generate significant organic discovery.</div>
+      </div>
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">🐦</div><div><div class="plat-name">Twitter / X</div><div class="plat-handle">#TributeBOTB</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">Low</div><div class="plat-stat-lbl">Activity</div></div>
+        </div>
+        <span class="plat-activity act-low">◉ Minimal</span>
+        <div class="plat-desc">Most NL TV conversation has shifted to Instagram and TikTok. Twitter useful for press/journalist engagement but not fan volume.</div>
+      </div>
+      <div class="platform-card">
+        <div class="plat-header"><div class="plat-icon">🎙️</div><div><div class="plat-name">Fok.nl / Forums</div><div class="plat-handle">Dutch TV forums</div></div></div>
+        <div class="plat-stat-row">
+          <div class="plat-stat"><div class="plat-stat-val">Active</div><div class="plat-stat-lbl">Threads</div></div>
+        </div>
+        <span class="plat-activity act-medium">◉ Moderate</span>
+        <div class="plat-desc">Fok.nl hosts active episode discussion threads with live reactions. Televzier.nl has viewer ratings. Core of Dutch TV fan engagement ecosystem.</div>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="sec-hdr-title">Hashtags to Monitor</div><div class="sec-hdr-line"></div></div>
+    <div class="hashtag-row">
+      <a class="hashtag-chip" href="https://www.tiktok.com/search?q=%23TributeBOTB" target="_blank">#TributeBOTB</a>
+      <a class="hashtag-chip" href="https://www.tiktok.com/search?q=%23TributeBattleoftheBands" target="_blank">#TributeBattleoftheBands</a>
+      <a class="hashtag-chip" href="https://www.tiktok.com/search?q=%23tributeband" target="_blank">#tributeband</a>
+      <a class="hashtag-chip" href="https://twitter.com/search?q=%23RTL4" target="_blank">#RTL4</a>
+      <a class="hashtag-chip" href="https://www.instagram.com/explore/tags/tributebattle/" target="_blank">#tributebattle</a>
+      <a class="hashtag-chip" href="https://www.tiktok.com/search?q=tribute+band+nederland" target="_blank">tribute band nederland</a>
+      <a class="hashtag-chip" href="https://www.youtube.com/results?search_query=tribute+RTL4" target="_blank">tribute RTL4 (YouTube)</a>
+    </div>
+  </div>
+
+  <!-- ── PLATFORMS ── -->
+  <div class="pane" id="pane-platforms">
+    <div class="sec-hdr"><div class="sec-hdr-title">Official Channels</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://www.facebook.com/TributeBattleOfTheBands/" target="_blank">
+        <div class="link-icon">📘</div>
+        <div class="link-body">
+          <div class="link-title">Facebook — Official Page</div>
+          <div class="link-meta">~45,000 followers · Episode clips, contestant profiles, voting reminders</div>
+        </div>
+        <span class="link-badge badge-official">Official</span>
+      </a>
+      <a class="link-row" href="https://www.instagram.com/explore/tags/tributebattleofthebands/" target="_blank">
+        <div class="link-icon">📸</div>
+        <div class="link-body">
+          <div class="link-title">Instagram — @tributebattleofthebands</div>
+          <div class="link-meta">~18,000 followers · Performance stills, backstage, jury moments</div>
+        </div>
+        <span class="link-badge badge-official">Official</span>
+      </a>
+      <a class="link-row" href="https://www.youtube.com/results?search_query=tribute+battle+of+the+bands+RTL4" target="_blank">
+        <div class="link-icon">▶️</div>
+        <div class="link-body">
+          <div class="link-title">YouTube — RTL4 Tribute content</div>
+          <div class="link-meta">2M+ estimated total views · Performance highlights, contestant journeys</div>
+        </div>
+        <span class="link-badge badge-official">Official</span>
+      </a>
+      <a class="link-row" href="https://www.tiktok.com/search?q=tribute+battle+of+the+bands" target="_blank">
+        <div class="link-icon">🎵</div>
+        <div class="link-body">
+          <div class="link-title">TikTok — Search Tribute BOTB</div>
+          <div class="link-meta">Low official presence · Fan clips and reactions scattered across platform</div>
+        </div>
+        <span class="link-badge badge-fan">Fan</span>
+      </a>
+      <a class="link-row" href="https://twitter.com/search?q=tribute+battle+of+the+bands" target="_blank">
+        <div class="link-icon">🐦</div>
+        <div class="link-body">
+          <div class="link-title">Twitter / X — #TributeBOTB</div>
+          <div class="link-meta">Low activity · Mainly press and broadcaster mentions</div>
+        </div>
+        <span class="link-badge badge-official">Official</span>
+      </a>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:20px;"><div class="sec-hdr-title">Notable Performances on YouTube</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://www.youtube.com/results?search_query=queen+tribute+RTL4+2018+bohemian+rhapsody" target="_blank">
+        <div class="link-icon">👑</div>
+        <div class="link-body">
+          <div class="link-title">Queen Tribute — Bohemian Rhapsody (S1 Finale Winner)</div>
+          <div class="link-meta">Season 1 · 2018 · Winning performance · Search YouTube for live clip</div>
+        </div>
+        <span class="link-badge badge-official">S1</span>
+      </a>
+      <a class="link-row" href="https://www.youtube.com/results?search_query=metallica+tribute+RTL4+finale+2019" target="_blank">
+        <div class="link-icon">🤘</div>
+        <div class="link-body">
+          <div class="link-title">Metallica Tribute — Finale Performance (S2 Winner)</div>
+          <div class="link-meta">Season 2 · 2019 · Best season · Peak viewership episode · Rock audience magnet</div>
+        </div>
+        <span class="link-badge badge-official">S2</span>
+      </a>
+      <a class="link-row" href="https://www.youtube.com/results?search_query=tina+turner+tribute+RTL4+2019" target="_blank">
+        <div class="link-icon">🎤</div>
+        <div class="link-body">
+          <div class="link-title">Tina Turner Tribute — Viral Emotional Performance</div>
+          <div class="link-meta">Season 2 · 2019 · Resurfaced virally after Tina Turner's passing May 2023 · High share rate</div>
+        </div>
+        <span class="link-badge badge-fan">Viral</span>
+      </a>
+      <a class="link-row" href="https://www.youtube.com/results?search_query=tribute+battle+of+the+bands+RTL4+2024+seizoen+5" target="_blank">
+        <div class="link-icon">🎸</div>
+        <div class="link-body">
+          <div class="link-title">Season 5 Highlights (2024)</div>
+          <div class="link-meta">Most recent season · Social-first strategy tested · TikTok clips introduced</div>
+        </div>
+        <span class="link-badge badge-official">S5</span>
+      </a>
+      <a class="link-row" href="https://www.youtube.com/results?search_query=beste+tribute+band+nederland+RTL" target="_blank">
+        <div class="link-icon">🏆</div>
+        <div class="link-body">
+          <div class="link-title">All Seasons — Best Performances Search</div>
+          <div class="link-meta">Fan and official uploads across all 5 seasons</div>
+        </div>
+        <span class="link-badge badge-fan">Multi-season</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── SENTIMENT ── -->
+  <div class="pane" id="pane-sentiment">
+    <div class="sec-hdr"><div class="sec-hdr-title">Audience Sentiment Analysis</div><div class="sec-hdr-line"></div></div>
+    <div class="sentiment-grid">
+      <div class="sent-col">
+        <div class="sent-col-title pos">✓ Positive Themes</div>
+        <div class="sent-list">
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>Deep nostalgia and emotional connection to the original artists — core driver of engagement</div>
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>Appreciation for band dedication, technical skill, and authenticity of performance</div>
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>Jury chemistry — Gordon's directness and humour generates most-shared clips</div>
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>High production quality of live shows — staging, lighting, sound praised consistently</div>
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>Emotional moments (deceased legend tributes, personal stories) drive highest engagement</div>
+          <div class="sent-item"><div class="sent-dot dot-pos"></div>Rock and metal performances generate disproportionate social buzz vs. pop acts</div>
+        </div>
+      </div>
+      <div class="sent-col">
+        <div class="sent-col-title neg">✗ Negative Themes</div>
+        <div class="sent-list">
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Format feels repetitive and structurally unchanged year over year — "same show, season 5"</div>
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Too narrow artist selection — fans want more rock, metal, and genre diversity</div>
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Public vote seen as popularity contest — most-liked band, not most-skilled</div>
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Performance windows too short — edited clips feel rushed in broadcast format</div>
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Near-zero off-season engagement — social channels go quiet between series</div>
+          <div class="sent-item"><div class="sent-dot dot-neg"></div>Youth (18–34) underrepresentation — artists and audience both skew older</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:20px;"><div class="sec-hdr-title">Top Fan Requests (collected across Facebook, Reddit, Fok.nl)</div><div class="sec-hdr-line"></div></div>
+    <div class="fan-requests">
+      <div class="fan-req"><div class="fan-req-num">#1</div><div class="fan-req-text">More rock and metal artists represented — fans cite Led Zeppelin, AC/DC, Iron Maiden as "obvious inclusions that never happen"</div></div>
+      <div class="fan-req"><div class="fan-req-num">#2</div><div class="fan-req-text">Harder, more technically challenging song choices — current bands often play the artist's most famous (easiest) songs</div></div>
+      <div class="fan-req"><div class="fan-req-num">#3</div><div class="fan-req-text">Longer performance windows — fans want to see full songs, not 2-minute broadcast edits</div></div>
+      <div class="fan-req"><div class="fan-req-num">#4</div><div class="fan-req-text">International guest appearances — original band members or direct collaborators as guest judges</div></div>
+      <div class="fan-req"><div class="fan-req-num">#5</div><div class="fan-req-text">Behind-the-scenes content during the week — rehearsal footage, band member profiles</div></div>
+      <div class="fan-req"><div class="fan-req-num">#6</div><div class="fan-req-text">A dedicated legend night — episode honouring recently deceased artists (Tina Turner moment in S2 is cited as the show's emotional peak)</div></div>
+    </div>
+  </div>
+
+  <!-- ── PRESS ── -->
+  <div class="pane" id="pane-press">
+    <div class="sec-hdr"><div class="sec-hdr-title">Dutch Press &amp; Broadcast</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://www.rtlnieuws.nl/entertainment" target="_blank">
+        <div class="link-icon">📺</div>
+        <div class="link-body">
+          <div class="link-title">RTL Nieuws — Entertainment</div>
+          <div class="link-meta">Official network · Episode recaps, contestant profiles, official announcements</div>
+        </div>
+        <span class="link-badge badge-official">Official</span>
+      </a>
+      <a class="link-row" href="https://www.telegraaf.nl/entertainment" target="_blank">
+        <div class="link-icon">📰</div>
+        <div class="link-body">
+          <div class="link-title">De Telegraaf — Entertainment</div>
+          <div class="link-meta">National tabloid · Ratings analysis, jury commentary, celebrity angle</div>
+        </div>
+        <span class="link-badge badge-press">Press</span>
+      </a>
+      <a class="link-row" href="https://www.ad.nl/entertainment" target="_blank">
+        <div class="link-icon">📰</div>
+        <div class="link-body">
+          <div class="link-title">AD.nl — Entertainment</div>
+          <div class="link-meta">National daily · Viewer reactions, episode reviews, broad audience reach</div>
+        </div>
+        <span class="link-badge badge-press">Press</span>
+      </a>
+      <a class="link-row" href="https://www.volkskrant.nl/cultuur" target="_blank">
+        <div class="link-icon">📰</div>
+        <div class="link-body">
+          <div class="link-title">de Volkskrant — Cultuur</div>
+          <div class="link-meta">Quality press · Format critique, cultural analysis, long-form pieces</div>
+        </div>
+        <span class="link-badge badge-press">Press</span>
+      </a>
+      <a class="link-row" href="https://www.parool.nl/entertainment" target="_blank">
+        <div class="link-icon">📰</div>
+        <div class="link-body">
+          <div class="link-title">Het Parool — Entertainment</div>
+          <div class="link-meta">Amsterdam-focused cultural commentary and TV coverage</div>
+        </div>
+        <span class="link-badge badge-press">Press</span>
+      </a>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:20px;"><div class="sec-hdr-title">Ratings Data Sources</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://www.kijkonderzoek.nl" target="_blank">
+        <div class="link-icon">📊</div>
+        <div class="link-body">
+          <div class="link-title">SKO — Kijkonderzoek.nl</div>
+          <div class="link-meta">Official Dutch TV ratings body · Episode-by-episode viewer numbers, market share, demographics</div>
+        </div>
+        <span class="link-badge badge-ratings">Ratings</span>
+      </a>
+      <a class="link-row" href="https://www.televizier.nl" target="_blank">
+        <div class="link-icon">📡</div>
+        <div class="link-body">
+          <div class="link-title">Televizier.nl — TV Guide &amp; Ratings</div>
+          <div class="link-meta">Episode guides, viewer star ratings, broadcast schedules</div>
+        </div>
+        <span class="link-badge badge-ratings">Ratings</span>
+      </a>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:20px;"><div class="sec-hdr-title">International Trade Press</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://variety.com/search/?q=tribute+battle+bands" target="_blank">
+        <div class="link-icon">🌍</div>
+        <div class="link-body">
+          <div class="link-title">Variety — Tribute format coverage</div>
+          <div class="link-meta">US trade press · International format sales, US adaptation potential, Talpa coverage</div>
+        </div>
+        <span class="link-badge badge-trade">Trade</span>
+      </a>
+      <a class="link-row" href="https://www.broadcastnow.co.uk/search?q=tribute+battle+bands" target="_blank">
+        <div class="link-icon">🌍</div>
+        <div class="link-body">
+          <div class="link-title">Broadcast Now — Format market</div>
+          <div class="link-meta">UK trade press · Format licensing and international sales intelligence</div>
+        </div>
+        <span class="link-badge badge-trade">Trade</span>
+      </a>
+      <a class="link-row" href="https://www.c21media.net/search?q=talpa+tribute" target="_blank">
+        <div class="link-icon">🌍</div>
+        <div class="link-body">
+          <div class="link-title">C21 Media — Talpa format coverage</div>
+          <div class="link-meta">International format industry · Talpa Studios deals, format sales</div>
+        </div>
+        <span class="link-badge badge-trade">Trade</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── COMMUNITY ── -->
+  <div class="pane" id="pane-community">
+    <div class="sec-hdr"><div class="sec-hdr-title">Fan Community Hubs</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://www.facebook.com/groups/tributebotbfans" target="_blank">
+        <div class="link-icon">👥</div>
+        <div class="link-body">
+          <div class="link-title">Facebook Fan Group — Tribute Battle of the Bands Fans NL</div>
+          <div class="link-meta">~12,000 members · Most active fan hub · Episode reactions, contestant discussions</div>
+        </div>
+        <span class="link-badge badge-fan">Fan</span>
+      </a>
+      <a class="link-row" href="https://forum.fok.nl" target="_blank">
+        <div class="link-icon">💬</div>
+        <div class="link-body">
+          <div class="link-title">Fok.nl Forum</div>
+          <div class="link-meta">Dutch TV forum · Active episode discussion threads, live reaction posts</div>
+        </div>
+        <span class="link-badge badge-fan">Forum</span>
+      </a>
+      <a class="link-row" href="https://www.reddit.com/r/DutchTV/search/?q=tribute+battle+of+bands" target="_blank">
+        <div class="link-icon">🟠</div>
+        <div class="link-body">
+          <div class="link-title">Reddit — r/DutchTV</div>
+          <div class="link-meta">Low but growing · Occasional episode threads, international format discussion</div>
+        </div>
+        <span class="link-badge badge-fan">Reddit</span>
+      </a>
+      <a class="link-row" href="https://www.tributes.nl" target="_blank">
+        <div class="link-icon">🎸</div>
+        <div class="link-body">
+          <div class="link-title">Tributes.nl — Dutch Tribute Band Directory</div>
+          <div class="link-meta">Active Dutch tribute band community · Direct fan overlap with show audience · Talent scouting resource</div>
+        </div>
+        <span class="link-badge badge-fan">Community</span>
+      </a>
+    </div>
+
+    <div class="sec-hdr" style="margin-top:20px;"><div class="sec-hdr-title">US Tribute Band Community (for US transfer research)</div><div class="sec-hdr-line"></div></div>
+    <div class="link-table">
+      <a class="link-row" href="https://tributepalooza.com" target="_blank">
+        <div class="link-icon">🎪</div>
+        <div class="link-body">
+          <div class="link-title">Tributepalooza — Annual Tribute Band Festival</div>
+          <div class="link-meta">US market proof point · Annual festival, professional bands, large audience</div>
+        </div>
+        <span class="link-badge badge-fan">US Market</span>
+      </a>
+      <a class="link-row" href="https://www.vegas.com/shows/tribute-bands/" target="_blank">
+        <div class="link-icon">🎰</div>
+        <div class="link-body">
+          <div class="link-title">Las Vegas Tribute Band Scene</div>
+          <div class="link-meta">Year-round professional circuit · Talent pool for US format, permanent audience demand</div>
+        </div>
+        <span class="link-badge badge-fan">US Market</span>
+      </a>
+      <a class="link-row" href="https://www.thefabfour.com" target="_blank">
+        <div class="link-icon">🎤</div>
+        <div class="link-body">
+          <div class="link-title">The Fab Four — World's Top Beatles Tribute</div>
+          <div class="link-meta">250+ dates/year globally · Example of professional tribute band business scale</div>
+        </div>
+        <span class="link-badge badge-fan">US Band</span>
+      </a>
+      <a class="link-row" href="https://www.thefest.com" target="_blank">
+        <div class="link-icon">🎸</div>
+        <div class="link-body">
+          <div class="link-title">The Fest for Beatles Fans</div>
+          <div class="link-meta">Dedicated tribute fan convention · Shows depth of US tribute community engagement</div>
+        </div>
+        <span class="link-badge badge-fan">US Community</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── OPPORTUNITIES ── -->
+  <div class="pane" id="pane-opportunities">
+    <div class="sec-hdr"><div class="sec-hdr-title">Social Media Growth Opportunities</div><div class="sec-hdr-line"></div></div>
+
+    <div class="opp-panel" style="margin-bottom:14px;">
+      <div class="opp-title">🎵 TikTok — Highest Untapped Platform</div>
+      <div class="opp-list">
+        <div class="opp-item"><div class="opp-num">1.</div><div class="opp-text">Post 15–45 second performance clips per act — TikTok's algorithm heavily rewards music performance content</div></div>
+        <div class="opp-item"><div class="opp-num">2.</div><div class="opp-text">Side-by-side comparison clips: tribute band vs. original artist — extremely high engagement format on TikTok</div></div>
+        <div class="opp-item"><div class="opp-num">3.</div><div class="opp-text">Jury reaction clips — Gordon's direct feedback moments are exactly the format TikTok rewards</div></div>
+        <div class="opp-item"><div class="opp-num">4.</div><div class="opp-text">Behind-the-scenes rehearsal footage — the process of becoming a tribute act has high fascination factor</div></div>
+        <div class="opp-item"><div class="opp-num">5.</div><div class="opp-text">Live TikTok voting window during episode broadcast — real-time engagement spike opportunity</div></div>
+      </div>
+    </div>
+
+    <div class="opp-panel" style="margin-bottom:14px;">
+      <div class="opp-title">▶️ YouTube — Organic Search Gold Mine</div>
+      <div class="opp-list">
+        <div class="opp-item"><div class="opp-num">1.</div><div class="opp-text">Release full-length performances same night as broadcast — people actively search for "[artist name] tribute" content</div></div>
+        <div class="opp-item"><div class="opp-num">2.</div><div class="opp-text">Create season-specific playlists per artist — e.g., "All Metallica tribute performances" captures long-tail search</div></div>
+        <div class="opp-item"><div class="opp-num">3.</div><div class="opp-text">Optimise video titles and descriptions for search: "[Artist] tribute band — Tribute BOTB RTL4 [year]"</div></div>
+        <div class="opp-item"><div class="opp-num">4.</div><div class="opp-text">The Tina Turner clip example: a viral resurgence happened entirely organically — SEO-optimised titles would amplify this pattern</div></div>
+      </div>
+    </div>
+
+    <div class="opp-panel" style="margin-bottom:14px;">
+      <div class="opp-title">👥 Community Building — Off-Season Engagement</div>
+      <div class="opp-list">
+        <div class="opp-item"><div class="opp-num">1.</div><div class="opp-text">Launch an official Discord server — structured channels for each season, artist, and band</div></div>
+        <div class="opp-item"><div class="opp-num">2.</div><div class="opp-text">Weekly "tribute spotlight" posts between seasons — feature past contestants and their current projects</div></div>
+        <div class="opp-item"><div class="opp-num">3.</div><div class="opp-text">Fan poll: "Which artist should we feature in Season 6?" — drives investment and data simultaneously</div></div>
+        <div class="opp-item"><div class="opp-num">4.</div><div class="opp-text">Partner with Tributes.nl — the Dutch tribute band community is an underutilised audience and talent pool</div></div>
+      </div>
+    </div>
+
+    <div class="opp-panel">
+      <div class="opp-title">🇺🇸 US Social Intelligence — Research Sources</div>
+      <div class="opp-list">
+        <div class="opp-item"><div class="opp-num">1.</div><div class="opp-text">Monitor Tributepalooza social channels for US audience behavior and content preferences</div></div>
+        <div class="opp-item"><div class="opp-num">2.</div><div class="opp-text">Track r/tributebands on Reddit — active US tribute band fan community with opinion data</div></div>
+        <div class="opp-item"><div class="opp-num">3.</div><div class="opp-text">The Fab Four's social strategy is a benchmark — they maintain high engagement year-round through content volume</div></div>
+        <div class="opp-item"><div class="opp-num">4.</div><div class="opp-text">US format comps to monitor: AGT tribute act performances consistently trend — analyse what makes them shareable</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- page-body -->
+</div><!-- app -->
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+function navProjToggle() {
+  const dd = document.getElementById('nav-proj-dd');
+  dd.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('nav-proj-dd');
+  if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+});
+function addDataSource() {
+  alert('New project wizard coming soon.\n\nThis will launch a Cowork skill to generate a new set of dashboards for your project.');
+}
+</script>
+</body>
+</html>
