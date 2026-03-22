@@ -729,6 +729,19 @@
                  padding:6px 9px; border-radius:6px;
                  background:rgba(124,106,247,.05); border-left:2px solid rgba(124,106,247,.3); }
     .hyp-ab strong { color:var(--accent); font-weight:600; }
+    .hyp-examples { display:flex; flex-direction:column; gap:3px; margin:2px 0; }
+    .hyp-ex-label { font-size:10px; font-weight:600; color:var(--muted); margin-bottom:2px; }
+    .hyp-ex-row { font-size:10.5px; padding:4px 8px; border-radius:5px; display:flex; align-items:center; gap:6px; line-height:1.35; text-decoration:none; cursor:pointer; transition:background .15s; }
+    .hyp-ex-row:hover { background:rgba(255,255,255,.04); }
+    .hyp-ex-thumb { width:48px; height:27px; border-radius:3px; object-fit:cover; flex-shrink:0; background:var(--surface2); }
+    .hyp-ex-title { font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0; }
+    .hyp-ex-row.good { background:rgba(34,197,94,.04); border-left:2px solid rgba(34,197,94,.25); color:var(--text-dim); }
+    .hyp-ex-row.bad  { background:rgba(248,113,113,.04); border-left:2px solid rgba(248,113,113,.25); color:var(--text-dim); }
+    .hyp-ex-icon { flex-shrink:0; font-size:9px; }
+    .hyp-ex-val  { margin-left:auto; font-size:10px; opacity:.7; white-space:nowrap; }
+    .hyp-qwarn { margin-top:6px; padding:6px 9px; border-radius:6px; background:rgba(234,179,8,.06); border-left:2px solid rgba(234,179,8,.3); }
+    .hyp-qwarn-title { font-size:10px; font-weight:600; color:rgba(234,179,8,.8); margin-bottom:3px; }
+    .hyp-qwarn-item { font-size:9.5px; color:var(--muted); line-height:1.4; padding:1px 0; }
     .hyp-filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; align-items:center; }
     .hyp-cat-toggle { border-style:dashed !important; opacity:.7; }
     .hyp-cat-toggle:hover { opacity:1; }
@@ -1140,7 +1153,7 @@ async function loadProject(id) {
     }
   } catch(_) {}
 
-  try { VIDEOS = await loadCSV(`./projects/${id}/${CONFIG.data.files.videos}`); }
+  try { VIDEOS = await loadCSV(`./projects/${id}/${CONFIG.data.files.videos}?t=${Date.now()}`); }
   catch(_) {}
 
   buildStatCards(CONFIG, VIDEOS);
@@ -4591,7 +4604,7 @@ function _hypCat(feat) {
     return { key:'engagement', emoji:'💬', label:'Engagement', color:'#fb923c' };
   if (f.includes('geo') || f.includes('traffic') || f.includes('subscriber') || f.includes('discovery') || f.includes('search') || f.includes('device') || f.includes('mobile') || f.includes('duration_min'))
     return { key:'discovery', emoji:'🌐', label:'Discovery & Device', color:'#38bdf8' };
-  if (f.includes('segment') || f.includes('pacing') || f.includes('topic') || f.includes('narrative') || f.includes('ending') || f.includes('coherence') || f.includes('reveal'))
+  if (f.includes('segment') || f.includes('pacing') || f.includes('topic') || f.includes('narrative') || f.includes('ending') || f.includes('coherence') || f.includes('reveal') || f.includes('first_major_shift') || f.includes('resolution'))
     return { key:'narrative', emoji:'📖', label:'Narrative', color:'#c084fc' };
   if (f.includes('cast') || f.includes('chemistry') || f.includes('laughter') || f.includes('monologue'))
     return { key:'cast', emoji:'🎭', label:'Cast & Chemistry', color:'#fb7185' };
@@ -4650,123 +4663,310 @@ function _hypDomainKnowledge(feat, dir) {
   if (f.includes('traffic_algorithmic') || f.includes('discovery')) return 'Algorithm-driven discovery is YouTube\'s growth lever — videos surfaced to non-subscribers are what scale a channel.';
   if (f.includes('traffic_subscriber')) return 'Subscriber-driven views signal loyal audience — the algorithm trusts repeat engagement as a quality signal.';
   if (f.includes('traffic_search')) return 'Search traffic captures intent-driven viewers — they\'re actively looking, which boosts ranking feedback loops.';
-  if (f.includes('geo') || f.includes('asia') || f.includes('latam')) return 'Geographic audience mix affects RPM and recommendation patterns — the algorithm localizes suggestions differently per region.';
+  if (f.includes('geo') || f.includes('asia') || f.includes('latam')) return 'Geographic audience mix affects revenue per thousand views and recommendation patterns — the algorithm localizes suggestions differently per region.';
   if (f.includes('mobile')) return 'Mobile viewers have shorter sessions and smaller screens — text size, pacing, and visual clarity matter more.';
   if (f.includes('share_intent') || f.includes('shareab')) return 'Shareability is driven by identity signaling — people share content that makes them look smart, funny, or in-the-know.';
   if (f.includes('parasocial')) return 'Parasocial bonds drive return viewership — the illusion of a personal relationship keeps audiences loyal.';
   return null;
 }
+/* ── FEAT_ACTION: Data-driven feature→action map ──
+   Each key is a substring match on the feature name.
+   {up,down} are concrete production actions grounded in what the feature actually measures.
+   {what} explains what the feature captures (used in description).
+   Order matters: first match wins, so put specific keys before general ones. */
+const FEAT_ACTION = [
+  // ── Thumbnail ──
+  {k:'thumb_brightness',       up:'Shoot or Edit Thumbnails Brighter (Higher Exposure)',                       down:'Use Darker, Moodier Thumbnail Tones',                                   what:'average pixel brightness of the thumbnail'},
+  {k:'thumb_colorful',         up:'Use More Saturated, Vivid Colors in Thumbnails',                           down:'Desaturate Thumbnails — Use a Muted Palette',                            what:'Hasler-Süsstrunk colorfulness metric: red-green and yellow-blue channel variance'},
+  {k:'thumb_saturation',       up:'Boost Thumbnail Color Saturation in Post',                                 down:'Pull Saturation Down — Subtle Tones',                                   what:'mean HSV saturation of the thumbnail (0–1)'},
+  {k:'face_count',             up:'Include Multiple Faces in the Thumbnail',                                  down:'Use a Single Face or No Faces in Thumbnails',                            what:'number of faces detected via Haar cascade in the thumbnail'},
+  {k:'center_weight',          up:'Place the Main Subject Dead Center in the Thumbnail',                      down:'Use Rule-of-Thirds or Off-Center Composition',                           what:'fraction of visual weight concentrated in the center 25% of the image'},
+  {k:'edge_density',           up:'Add More Visual Detail and Texture to Thumbnails',                         down:'Use Cleaner, Simpler Thumbnail Compositions',                            what:'density of Sobel/Canny edges — busy images score higher'},
+  {k:'text_likelihood',        up:'Add a Short Text Overlay on the Thumbnail',                                down:'Remove Text — Let the Image Speak',                                     what:'fraction of pixels with strong horizontal edges (text baseline indicator)'},
+  {k:'text_overlay',           up:'Add a Short Text Overlay on the Thumbnail',                                down:'Remove Text — Let the Image Speak',                                     what:'fraction of pixels with strong horizontal edges (text baseline indicator)'},
+  {k:'thumb_contrast',         up:'Increase Contrast in Thumbnails (Darks Darker, Lights Lighter)',           down:'Reduce Contrast — Use Flatter Tonal Range',                             what:'standard deviation of luminance pixel values'},
+  {k:'thumb_sharpness',        up:'Sharpen Thumbnail Images in Post-Processing',                              down:'Use Softer Focus in Thumbnails',                                        what:'Laplacian variance — sharp images score higher'},
+  {k:'creative_score',         up:'Use More Unusual, Non-Standard Thumbnail Designs',                         down:'Stick to Proven, Conventional Thumbnail Layouts',                        what:'weighted composite: 30% colorfulness + 25% contrast + 20% saturation + 15% sharpness − 10% text clutter'},
+  {k:'thumb_warmth',           up:'Shift Thumbnail Color Temperature Warmer (Orange/Yellow)',                  down:'Use Cooler Thumbnail Tones (Blue/Teal)',                                 what:'warm-cool axis in Lab color space (positive = warm oranges, negative = cool blues)'},
+  // ── Title ──
+  {k:'title_char_length',      up:'Write Longer, More Descriptive Titles (50+ chars)',                        down:'Keep Titles Under 40 Characters',                                        what:'character count of the title'},
+  {k:'title_word_count',       up:'Use More Words in Titles — Add Context',                                   down:'Cut Title to 5 Words or Fewer',                                         what:'word count of the title'},
+  {k:'fomo_score',             up:'Add Urgency Words ("Only", "Last Chance", "Before It\'s Gone")',            down:'Remove Urgency Language — Let Content Sell Itself',                      what:'count of urgency/scarcity words ("only", "last chance", "don\'t miss") in the title'},
+  {k:'curiosity_score',        up:'Add a Curiosity Gap ("What Happens When...", "You Won\'t Believe...")',     down:'State the Topic Directly — No Teasing',                                 what:'count of curiosity-gap words ("secret", "what happens", "you won\'t believe") in the title'},
+  {k:'clickbait_score',        up:'Use Stronger Clickbait Phrasing in Titles',                                down:'Write More Honest, Straightforward Titles',                              what:'density of clickbait patterns (caps, numbers, exclamation marks, power words)'},
+  {k:'shock_word',             up:'Use Bolder Words in Titles ("Insane", "Brutal", "Unhinged")',              down:'Use Calmer, Neutral Title Language',                                     what:'count of high-arousal shock words ("insane", "brutal", "shocking") in the title'},
+  {k:'arousal_score',          up:'Use High-Energy Title Words ("Epic", "Wild", "Intense")',                   down:'Use Low-Arousal Title Language ("Quiet", "Chill")',                      what:'average NRC-VAD arousal score of title words (0 = calm, 1 = exciting)'},
+  {k:'title_sentiment',        up:'Frame Titles Positively ("Best", "Amazing", "Loved")',                      down:'Use Edgier, Contrarian Titles ("Worst", "Overrated")',                   what:'VADER compound sentiment of the title (−1 negative to +1 positive)'},
+  {k:'personal_you',           up:'Address the Viewer Directly with "You" in the Title',                      down:'Use Third-Person Framing — Remove "You"',                                what:'whether the title contains "you" or "your"'},
+  {k:'first_person',           up:'Lead Titles with "I" or "We" for Personal Touch',                          down:'Remove First-Person Pronouns from Titles',                               what:'whether the title contains "I", "my", "we", "our"'},
+  {k:'challenge_framing',      up:'Frame the Episode as a Challenge ("Can They...?", "Try Not To...")',       down:'Drop the Challenge Frame — Use Descriptive Titles',                      what:'whether the title uses challenge/dare patterns ("can they", "try not to")'},
+  // ── Speech & pacing ──
+  {k:'wpm',                    up:'Keep Dialogue Faster — Aim for 160+ Words per Minute',                     down:'Slow Down — Let Pauses and Reactions Breathe',                           what:'words per minute of spoken dialogue (from transcript word count / audio duration)'},
+  {k:'word_density',           up:'Pack More Dialogue per Minute — Less Dead Air',                             down:'Use Fewer Words — Let Visuals and Silence Do More',                     what:'transcript words per minute of total video time'},
+  {k:'silence_ratio',          up:'Add More Strategic Pauses Between Key Lines',                               down:'Fill Silences — Keep Verbal Momentum Going',                            what:'fraction of audio classified as silence by librosa (energy below threshold)'},
+  {k:'filler_freq',            up:'Keep Filler Words ("Um", "Like") — They Sound Natural',                    down:'Edit Out Filler Words in Post — Tighter Delivery',                       what:'count of "um", "uh", "like", "you know" per minute in the transcript'},
+  {k:'q_rate',                 up:'Ask More Direct Questions ("What Would You Do?", "Who\'s Right?")',        down:'Make More Statements — Fewer Questions',                                 what:'question marks per minute in the transcript'},
+  {k:'question_density',       up:'Pepper in More Questions Throughout Each Segment',                          down:'Use Declarative Statements Instead of Questions',                        what:'question marks per segment in the transcript'},
+  {k:'pitch_mean',             up:'Coach Speakers to Use Higher, More Energetic Vocal Pitch',                  down:'Use a Calmer, Lower Register — Less Hype',                              what:'average fundamental frequency (Hz) extracted via librosa'},
+  {k:'pitch_std',              up:'Vary Vocal Pitch More — Monotone Kills Attention',                          down:'Keep Pitch Steady — Consistent Delivery',                               what:'standard deviation of F0 pitch — high = expressive, low = monotone'},
+  {k:'speech_rate_std',        up:'Vary Speaking Speed — Fast for Hype, Slow for Reveals',                    down:'Keep a Consistent Speaking Pace Throughout',                              what:'standard deviation of words-per-minute across segments'},
+  {k:'sentence_length',        up:'Use Longer Sentences — More Complex Storytelling',                          down:'Break Into Short, Punchy Sentences (8 Words Max)',                       what:'average words per sentence in the transcript'},
+  // ── Duration ──
+  {k:'duration_min',           up:'Test Longer Episodes (15–20 min)',                                          down:'Cut Episodes Shorter (Under 10 min)',                                   what:'video duration in minutes'},
+  {k:'duration_sec',           up:'Test Longer Episodes',                                                      down:'Trim Runtime — Shorter May Retain Better',                              what:'video duration in seconds'},
+  // ── Emotion & tone ──
+  {k:'sentiment_scale_var',    up:'Vary Emotional Tone Across Segments — Highs AND Lows',                     down:'Keep a Consistent Emotional Register Throughout',                         what:'variance of VADER sentiment across 6 time scales (10s to 180s windows)'},
+  {k:'sentiment_range',        up:'Widen the Emotional Arc — Include Both Tender and Tense Moments',          down:'Narrow the Emotional Band — Stay in One Tone',                          what:'max VADER sentiment minus min VADER sentiment across all segments'},
+  {k:'sentiment_mean',         up:'Skew the Overall Tone More Positive',                                      down:'Let the Tone Go Darker — Edgier Content',                               what:'mean VADER compound sentiment across all segments (−1 to +1)'},
+  {k:'peak_to_baseline',       up:'Add Quiet Valleys Before Big Moments — Contrast Drives Impact',            down:'Keep Energy Steady — Avoid Jarring Peaks and Drops',                    what:'highest emotional intensity in any segment divided by the episode average'},
+  {k:'escalat',                up:'Raise the Stakes Each Segment — Start Mild, End Intense',                  down:'Front-Load the Best Moment — Don\'t Make Them Wait',                    what:'linear slope of emotional intensity across segments (polyfit) — positive = builds, negative = fades'},
+  {k:'emotional_intensity',    up:'Push Reactions Harder — Bigger Laughs, Louder Gasps, Visible Shock',       down:'Keep Reactions Understated — Less Performative Energy',                  what:'density of strong emotion words (exclamations, superlatives, reaction words) per segment'},
+  {k:'excitement_peak',        up:'Engineer More Excitement Spikes (Reveals, Twists, Confrontations)',         down:'Flatten Excitement — Keep Things Conversational',                        what:'number of audio RMS energy peaks above 1.5× the mean per minute'},
+  {k:'hook_energy',            up:'Open with Maximum Energy — Big Reaction or Shocking Statement in First 5s', down:'Open Slowly — Build Intrigue Before the Reveal',                        what:'mean audio RMS energy in first 30 seconds divided by the full-video average'},
+  {k:'hook_presence',          up:'Script a Clear Hook in the First 10 Seconds',                               down:'Skip the Explicit Hook — Start In Media Res',                           what:'whether first 30 seconds of transcript contain hook keywords ("wait", "secret", "shocking", "dare")'},
+  {k:'ending_sentiment',       up:'End on an Emotional High — Hugs, Laughter, or a Touching Moment',          down:'End on an Ambiguous or Edgy Note',                                      what:'VADER compound sentiment of the final segment'},
+  {k:'ending_vs_mean',         up:'Make the Ending More Emotionally Intense than the Average',                 down:'Let the Ending Be Quieter than the Middle',                             what:'final segment sentiment minus overall episode mean sentiment'},
+  {k:'cliffhanger',            up:'End with an Unresolved Question or Tease for Next Episode',                 down:'Give Full Closure — Wrap Everything Up',                                 what:'count of open-loop language ("but wait", "next time", "stay tuned") in the last 15% of transcript'},
+  // ── Structure & narrative ──
+  {k:'first_major_shift',      up:'Wait Longer Before the First Topic Change (Build Context First)',           down:'Hit the First Topic Change Faster — Under 60 Seconds',                  what:'seconds from video start to first detected topic shift (cosine similarity drop between adjacent windows)'},
+  {k:'topic_shift_count',      up:'Cover More Topics — Add Variety Within the Episode',                        down:'Stay on Fewer Topics — Go Deeper Instead of Wider',                     what:'total number of points where adjacent segment cosine similarity drops below threshold'},
+  {k:'topic_shift_rate',       up:'Change Topics More Frequently — One Shift per 2 Minutes',                  down:'Let Each Topic Run Longer Before Switching',                             what:'topic shifts per minute of video'},
+  {k:'coherence',              up:'Keep a Tighter Narrative Thread — Each Segment Should Connect',             down:'Allow More Spontaneous Tangents and Diversions',                         what:'mean cosine similarity between adjacent segment embeddings — high = stays on topic'},
+  {k:'segment_count',          up:'Edit Into More Distinct Segments (Add Clear Beats/Rounds)',                 down:'Use Fewer, Longer Flowing Segments',                                     what:'number of content segments detected via topic and energy boundaries'},
+  {k:'segment_duration_reg',   up:'Make Segments a Uniform Length (e.g., All ~3 min)',                         down:'Vary Segment Lengths — Short + Long Interleaved',                       what:'1 − coefficient of variation of segment durations (1 = perfectly uniform)'},
+  {k:'avg_segment_duration',   up:'Make Each Segment Longer — More Development per Beat',                     down:'Shorten Segments — Faster Pacing Between Beats',                         what:'mean segment duration in seconds'},
+  {k:'scene_cut_rate',         up:'Cut Faster Between Camera Angles (More Visual Energy)',                     down:'Use Longer Takes — Let Scenes Play Out',                                what:'detected camera cuts per minute'},
+  {k:'pacing_quality',         up:'Smooth Out Pacing — No Dead Spots or Rushed Sections',                     down:'Embrace Uneven Pacing — Surprise the Viewer',                           what:'AI-assessed pacing quality (1–5 scale) based on energy shifts, topic changes, and dead spots'},
+  {k:'resolution_lang',        up:'End Each Segment with Clear Wrap-Up Language',                              down:'Leave Segments Open-Ended — Don\'t Over-Resolve',                       what:'density of resolution phrases ("so basically", "in the end", "that\'s why") in the last 15% of each segment'},
+  {k:'visual_variety',         up:'Use More Camera Angles, Cutaways, and B-Roll',                              down:'Keep Visual Style Minimal and Consistent',                               what:'standard deviation of visual features (color histogram, edge density) across sampled frames'},
+  // ── Cast & chemistry ──
+  {k:'speaker_count',          up:'Add More Speakers per Episode (3+ Voices)',                                 down:'Use Fewer Speakers — Tighter, Focused Cast',                            what:'number of distinct speakers detected via diarization'},
+  {k:'new_speaker',            up:'Introduce New Speakers — Fresh Voices Each Episode',                        down:'Stick to Familiar Cast Members',                                         what:'rate of new speaker introductions per minute'},
+  {k:'turn_count',             up:'Increase Conversational Turns — Faster Back-and-Forth',                     down:'Give Speakers Longer Uninterrupted Stretches',                           what:'number of speaker turns (speaker A → speaker B = 1 turn)'},
+  {k:'turns_per_min',          up:'Speed Up the Conversation — More Rapid-Fire Exchanges',                    down:'Slow the Turn Rate — Deeper Monologues Per Speaker',                    what:'speaker turns per minute of dialogue'},
+  {k:'chemistry',              up:'Pair Speakers Who Riff Off Each Other Naturally',                            down:'Try New or Unfamiliar Cast Pairings',                                   what:'AI-assessed chemistry (1–5 scale): laughter timing, emotional mirroring, banter quality'},
+  {k:'laughter',               up:'Cast for Humor — Pick People Who Make Each Other Laugh',                    down:'Cast for Intensity — Less Laughter, More Tension',                      what:'count of detected laughter events in the audio'},
+  {k:'levity',                 up:'Add Lighthearted Breaks Between Intense Moments',                           down:'Stay in the Intensity — Cut the Comic Relief',                          what:'ratio: (segments with sentiment > 0.1) / (segments with sentiment < −0.1) — higher = more lighthearted'},
+  {k:'crosstalk',              up:'Allow Overlapping Speech and Spontaneous Banter',                            down:'Keep Cleaner Turn-Taking — One Voice at a Time',                        what:'fraction of audio time where multiple speakers overlap'},
+  {k:'monologue',              up:'Try Monologue/Solo Format (One Speaker, Direct to Camera)',                 down:'Add More Voices — Use Multi-Speaker Formats',                            what:'binary: 1 if only one speaker detected, 0 if multiple'},
+  {k:'character_depth',        up:'Let Guests Share Personal Stories — Go Beyond Surface',                     down:'Keep Interactions Light and Surface-Level',                              what:'AI-assessed character depth (1–5 scale): personal disclosure, emotional range, distinctiveness'},
+  // ── Moments ──
+  {k:'surprise_rate',          up:'Add a Surprise Element Every 2–3 Minutes (Twist, Reveal, Interruption)',   down:'Reduce Surprise Frequency — Keep Things Predictable',                    what:'count of surprise-classified transcript moments per minute'},
+  {k:'surprise_density',       up:'Pack More Surprises per Segment',                                           down:'Space Surprises Out More — Build Anticipation',                         what:'surprise-classified moments per content segment'},
+  {k:'surprise_event',         up:'Script More Surprise Beats (Unexpected Guests, Rule Changes)',              down:'Use Fewer Surprises — Consistency Over Shock',                           what:'total count of surprise-classified moments in the transcript'},
+  {k:'reveal_rate',            up:'Add More Reveal Moments (Answers, Reactions, Unmaskings)',                  down:'Hold Back Reveals — Build More Tension Before Payoff',                   what:'count of reveal moments (answers, unmaskings, score reveals) per minute'},
+  {k:'reveal_density',         up:'Increase Reveal Density per Segment',                                       down:'Use Fewer Reveals — Make Each One Count',                               what:'reveal moments per content segment'},
+  {k:'reveal_event',           up:'Script More Reveal Beats (Truth Reveals, Reactions, Scores)',               down:'Reduce Total Reveals — Quality Over Quantity',                           what:'total count of reveal moments in the episode'},
+  {k:'peak_count',             up:'Create More Distinct Peak Moments (Laughs, Gasps, Cheers)',                 down:'Use Fewer, More Powerful Peaks',                                         what:'number of emotional/energy peaks where multimodal signals converge above 1σ'},
+  {k:'peaks_per_min',          up:'Aim for One Peak Moment Every 90 Seconds',                                  down:'Space Peaks Further Apart — Patience Between Highs',                    what:'converged multimodal peaks per minute'},
+  {k:'peak_spacing',           up:'Space Peak Moments Evenly Across the Episode',                              down:'Cluster Peaks Together for Rapid-Fire Intensity',                        what:'coefficient of variation of time gaps between peaks — low = evenly spaced'},
+  {k:'silence_before_peak',    up:'Add a Beat of Silence Right Before Each Key Moment',                       down:'Jump Straight to the Payoff — No Buildup Pause',                        what:'average seconds of silence detected just before each peak moment'},
+  {k:'energy_contrast',        up:'Drop Energy Low Before Peaks — Bigger Contrast = Bigger Impact',           down:'Keep Energy Transitions Smooth — No Sudden Drops',                      what:'mean absolute RMS energy difference between valleys and adjacent peaks'},
+  {k:'dynamic_range',          up:'Keep Quiet Moments Quiet and Loud Moments Loud (Wider Range)',             down:'Compress Audio — Keep Volume More Uniform',                              what:'95th percentile audio RMS minus 5th percentile RMS'},
+  {k:'peak_intensity_max',     up:'Make the Single Biggest Moment Even Bigger — Go All Out',                   down:'Cap Peak Intensity — Don\'t Let Any One Moment Overpower',              what:'highest multimodal convergence score of any single moment in the episode'},
+  {k:'first_peak_position',    up:'Move the First Peak Later — Build Anticipation First',                      down:'Hit the First Peak Within 60 Seconds',                                  what:'timestamp of first peak as fraction of total duration (0 = start, 1 = end)'},
+  {k:'last_peak_position',     up:'Place a Big Moment Near the End — End on a High',                           down:'Let the Ending Be Calm — Peak Earlier',                                 what:'timestamp of last peak as fraction of total duration'},
+  {k:'forced_variety',         up:'Add More Forced Variety (Rule Changes, New Rounds, Twists)',                down:'Keep Format Consistent — No Mid-Episode Changes',                        what:'count of detected format-breaking events (rule changes, new rounds, surprise guests)'},
+  {k:'visual_audio_conv',      up:'Sync Visual Cuts with Audio Peaks for Maximum Impact',                     down:'Decouple Visuals from Audio — Subtler Editing',                          what:'Pearson correlation between scene cut timestamps and audio energy peaks'},
+  // ── Multi-scale structure ──
+  {k:'loop_completeness',      up:'Always Pay Off Every Setup — Close All Loops',                              down:'Leave Some Threads Open — Tease the Next Episode',                      what:'AI-assessed fraction of narrative loops (setup→payoff) that are completed within the episode'},
+  {k:'loop_variety',           up:'Mix Loop Types — Questions, Challenges, Stories, Reveals',                  down:'Stick to One Proven Loop Structure',                                     what:'AI-assessed variety of loop types (1–5): 1 = identical loops, 5 = rich variety with escalation'},
+  {k:'loop_quality',           up:'Craft Tighter Setup→Payoff Cycles Within the Episode',                     down:'Use One Long Arc Instead of Multiple Small Loops',                       what:'AI-assessed loop quality (1–5): setup clarity, tension building, payoff satisfaction per cycle'},
+  {k:'loop_count',             up:'Add More Setup→Payoff Cycles (Aim for 4+ per Episode)',                    down:'Use Fewer Loops — Go Deep on 1–2 Arcs',                                 what:'number of detected narrative loops at the best time scale'},
+  {k:'boundary_quality',       up:'Make Segment Transitions Cleaner (Music Stings, Text Cards, Verbal Cues)', down:'Use Softer Transitions — Let Segments Flow Into Each Other',             what:'AI-assessed transition quality (1–5): music cues, visual breaks, verbal handoffs between segments'},
+  {k:'natural_loop_length',    up:'Extend Your Natural Loop Length (Longer Rounds/Segments)',                  down:'Tighten Loop Length — Shorter Rounds, Faster Payoffs',                   what:'median duration (seconds) of natural content cycles detected across 6 time scales'},
+  {k:'scale_agreement',        up:'Make All Features Peak at the Same Time Scale (Alignment)',                 down:'Let Different Signals Operate at Different Rhythms',                     what:'fraction of features (sentiment, energy, surprise) that agree on the same dominant time scale'},
+  {k:'vocab_richness',         up:'Use More Diverse, Specific Vocabulary',                                     down:'Keep Language Simple and Repetitive — Easier to Follow',                what:'type-token ratio: unique words / total words in the transcript'},
+  // ── Emotion primitives ──
+  {k:'^joy$',                  up:'Cast for Joy — Pick People Who Light Up',                                   down:'Tone Down the Positivity — Add More Edge',                              what:'fraction of transcript sentences classified as joyful by the emotion model',    exact:true},
+  {k:'^sadness$',              up:'Include Vulnerable, Emotional Moments — Let People Open Up',               down:'Keep Tone Upbeat — Cut the Heavy Moments',                               what:'fraction of transcript sentences classified as sad',                            exact:true},
+  {k:'^anger$',                up:'Include Confrontational or Heated Moments',                                 down:'Reduce Hostile Energy — Keep Things Friendly',                           what:'fraction of transcript sentences classified as angry',                          exact:true},
+  {k:'^fear$',                 up:'Build More Tension and Suspense Into Scenarios',                            down:'Make Scenarios Feel Safer — Less Anxiety',                               what:'fraction of transcript sentences classified as fearful',                        exact:true},
+  {k:'^surprise$',             up:'Set Up More Genuine Surprise Reactions',                                    down:'Reduce Surprises — Let People Know What\'s Coming',                     what:'fraction of transcript sentences classified as surprised',                      exact:true},
+  {k:'^disgust$',              up:'Include More "Gross" or Provocative Reactions',                             down:'Keep Content More Palatable — Less Ick Factor',                          what:'fraction of transcript sentences classified as disgusted',                      exact:true},
+  // ── Gen Z ──
+  {k:'genz',                   up:'Use More Gen Z Slang and References in Scripts',                            down:'Use Universal Language — Avoid Generation-Specific Slang',               what:'count of Gen Z slang terms ("no cap", "slay", "lowkey", "sus") per 1000 words'},
+  // ── Discovery & traffic ──
+  {k:'traffic_algorithmic',    up:'Optimize for Browse/Suggested: Strong Hooks, High Click-Through Thumbnails', down:'Reduce Algorithm Dependency — Grow Subscriber & Search',                 what:'% of views from YouTube\'s recommendation algorithm (YouTube Analytics → Traffic sources)'},
+  {k:'traffic_subscriber',     up:'Activate Subscribers: Consistent Schedule, Community Posts, Bell Reminders', down:'Focus on New Audience — Browse/Search Over Subscriber',                 what:'% of views from subscribed viewers (YouTube Analytics → Traffic sources)'},
+  {k:'traffic_search',         up:'Add Search-Friendly Keywords to Title, Description, and Tags',              down:'Focus on Browse/Suggested Over Search',                                 what:'% of views from YouTube search (YouTube Analytics → Traffic sources)'},
+  {k:'traffic_external',       up:'Promote on Social Media, Reddit, Twitter — Drive External Clicks',         down:'Focus on On-Platform Growth Over External Referrals',                    what:'% of views from external websites and apps (YouTube Analytics → Traffic sources)'},
+  {k:'geo_asia',               up:'Add Subtitles in Key Asian Languages (Hindi, Japanese, Korean)',            down:'Focus on English-Speaking Markets',                                      what:'% of viewers from Asia (YouTube Analytics → Geography)'},
+  {k:'geo_us',                 up:'Lean Into US Cultural References and Trends',                                down:'Diversify Content Beyond US-Centric Topics',                            what:'% of viewers from the United States'},
+  {k:'geo_eu',                 up:'Add European Language Subtitles and Reference EU Culture',                  down:'Focus on Non-European Markets',                                          what:'% of viewers from Europe'},
+  {k:'geo_latam',              up:'Add Spanish/Portuguese Subtitles — Huge LATAM Audience Potential',          down:'Focus on English-Speaking Markets',                                      what:'% of viewers from Latin America'},
+  {k:'mobile',                 up:'Design for Mobile First: Bigger Text, Tighter Framing, Bold Thumbnails',   down:'Optimize for Desktop/TV: Wider Shots, More Detail',                      what:'% of views from mobile devices (YouTube Analytics → Devices)'},
+  // ── Engagement signals ──
+  {k:'share_intent',           up:'Add Quotable One-Liners and Reaction-Worthy Moments People Will Clip',     down:'Focus on Watch-Through Over Shareability',                               what:'fraction of comments containing share language ("sending this to", "tagging", "need to see this")'},
+  {k:'shareab',                up:'Add Quotable One-Liners and Reaction-Worthy Moments People Will Clip',     down:'Focus on Depth Over Viral Clips',                                        what:'fraction of comments containing share language ("sending this to", "tagging", "need to see this")'},
+  {k:'parasocial',             up:'Use Direct Address, Eye Contact, and Personal Disclosure',                  down:'Keep a More Professional, Detached Tone',                                what:'fraction of comments expressing personal connection ("love you", "feel like I know you", "never miss a video")'},
+  {k:'rewatch_spike',          up:'Create Moments So Good People Rewatch Them (Reactions, Reveals)',           down:'Optimize for Linear Watch-Through, Not Rewinding',                       what:'number of detected rewatch spikes in the YouTube retention curve'},
+  {k:'rewatch_magnitude',      up:'Make Rewatch-Worthy Moments Even More Extreme',                             down:'Keep Content Even-Keeled — No Must-Rewatch Moments',                    what:'magnitude of the largest rewatch spike in the retention curve'},
+  // ── Misc / computed ──
+  {k:'intensity_at_3min',      up:'Keep Intensity High at the 3-Minute Mark — That\'s the Drop-Off Cliff',   down:'Let Intensity Dip at 3 min — Recover Later',                             what:'emotional intensity at the 3-minute mark divided by intensity at the opening'},
+  {k:'moment_impact',          up:'Make Key Moments Higher Impact (Volume, Reactions, Visual Cues)',           down:'Keep Moments Subtler — Understatement Over Spectacle',                   what:'AI-assessed impact of the top 5 peaks (1–5 scale): jaw-dropping, laugh-out-loud, or deeply moving'},
+  {k:'payoff_satisfaction',     up:'Deliver Stronger Payoffs — Make the Wait Worth It',                        down:'Reduce Payoff Expectations — Keep Things Casual',                        what:'AI-assessed ending satisfaction (1–5 scale): emotional resolution, sense of completion, rewatch desire'},
+];
+
 function _hypTitle(feat, target, dir) {
   const fn = fmtFeatureName(feat); const up = dir === 'up'; const f = feat.toLowerCase();
-  // Thumbnail levers
-  if (f.includes('thumbnail') && f.includes('bright')) return up ? 'Use Brighter Thumbnails' : 'Test Moodier Thumbnails';
-  if (f.includes('colorful') || f.includes('saturation')) return up ? 'Boost Thumbnail Color Saturation' : 'Simplify Thumbnail Color Palette';
-  if (f.includes('face_count')) return up ? 'Show More Faces in Thumbnails' : 'Try Single-Subject Thumbnails';
-  if (f.includes('center_weight')) return up ? 'Center-Weight Your Thumbnail Subject' : 'Try Off-Center Thumbnail Composition';
-  if (f.includes('edge_density')) return up ? 'Add Visual Detail to Thumbnails' : 'Simplify Thumbnail Composition';
-  if (f.includes('text_likelihood') || f.includes('text_overlay')) return up ? 'Add Text Overlay to Thumbnails' : 'Try Clean, Text-Free Thumbnails';
-  if (f.includes('thumb_contrast')) return up ? 'Increase Thumbnail Contrast' : 'Soften Thumbnail Contrast';
-  if (f.includes('thumb_sharpness')) return up ? 'Sharpen Thumbnail Images' : 'Use Softer Thumbnail Style';
-  if (f.includes('creative_score')) return up ? 'Push Thumbnail Creativity' : 'Use More Conventional Thumbnails';
-  // Title levers
-  if (f.includes('title_char_length') || f.includes('title_word_count')) return up ? 'Try Longer Titles' : 'Keep Titles Short and Punchy';
-  if (f.includes('fomo')) return up ? 'Add More Urgency to Titles' : 'Tone Down FOMO in Titles';
-  if (f.includes('curiosity')) return up ? 'Spark More Curiosity in Titles' : 'Be More Direct in Titles';
-  if (f.includes('clickbait')) return up ? 'Lean Into Clickbait Phrasing' : 'Reduce Clickbait in Titles';
-  if (f.includes('shock_word')) return up ? 'Use Bolder Title Language' : 'Soften Title Language';
-  if (f.includes('arousal')) return up ? 'Use Higher-Energy Title Words' : 'Calm Down Title Language';
-  if (f.includes('title_sentiment')) return up ? 'Use More Positive Titles' : 'Try Edgier, Contrarian Titles';
-  if (f.includes('personal_you')) return up ? "Address Viewers Directly with 'You'" : 'Try Third-Person Framing';
-  if (f.includes('first_person')) return up ? "Lead with 'I' or 'We' in Titles" : 'Remove First-Person from Titles';
-  if (f.includes('challenge_framing')) return up ? 'Frame Episodes as Challenges' : 'Move Away from Challenge Framing';
-  // Speech & pacing levers
-  if (f.includes('wpm') || (f.includes('word_density') && !f.includes('scale'))) return up ? 'Increase Dialogue Density' : 'Let Moments Breathe — Less Talk';
-  if (f.includes('silence_ratio')) return up ? 'Use More Strategic Pauses' : 'Reduce Dead Air — Keep Momentum';
-  if (f.includes('filler_freq')) return up ? 'Allow Natural Filler Words' : 'Cut Filler Words in Editing';
-  if (f.includes('q_rate') || f.includes('question_density')) return up ? 'Ask More Questions to Viewers' : 'Reduce Rhetorical Questions';
-  if (f.includes('pitch_mean')) return up ? 'Raise Vocal Energy and Pitch' : 'Use a Calmer, Deeper Tone';
-  if (f.includes('pitch_std')) return up ? 'Vary Your Vocal Pitch More' : 'Keep a Steadier Vocal Tone';
-  if (f.includes('speech_rate_std')) return up ? 'Vary Speaking Pace for Drama' : 'Keep a Consistent Speaking Pace';
-  if (f.includes('sentence_length')) return up ? 'Use Longer, More Complex Sentences' : 'Keep Sentences Short and Punchy';
-  // Duration
-  if (f.includes('duration_min') || f.includes('duration_sec')) return up ? 'Test Longer Episode Formats' : 'Trim Episodes — Shorter May Retain Better';
-  // Emotion & tone levers
-  if (f.includes('sentiment') && f.includes('scale_var')) return up ? 'Vary Emotional Intensity Across Segments' : 'Keep a More Consistent Emotional Tone';
-  if (f.includes('sentiment_mean') || f.includes('sentiment_range')) return up ? 'Amplify Emotional Range' : 'Keep Emotional Tone More Neutral';
-  if (f.includes('peak_to_baseline')) return up ? 'Create Bigger Spikes Relative to Baseline' : 'Smooth Out Extreme Peaks';
-  if (f.includes('escalat')) return up ? 'Build Escalating Emotional Arcs' : 'Flatten the Arc — Start Strong Instead';
-  if (f.includes('emotional_intensity')) return up ? 'Amplify Emotional Peaks' : 'Dial Back Emotional Intensity';
-  if (f.includes('excitement_peak')) return up ? 'Add More Excitement Peaks' : 'Reduce Excitement Spikes';
-  if (f.includes('hook_energy') || f.includes('hook_presence')) return up ? 'Open with a Stronger Hook' : 'Try a Slower, Intriguing Open';
-  if (f.includes('ending') && f.includes('sentiment')) return up ? 'End on a Stronger Emotional Note' : 'Try a More Understated Ending';
-  if (f.includes('cliffhanger')) return up ? 'Add Stronger Cliffhangers' : 'Provide More Closure at the End';
-  // Structure & narrative levers
-  if (f.includes('topic_shift')) return up ? 'Add More Topic Variety' : 'Focus on Fewer Topics per Episode';
-  if (f.includes('coherence')) return up ? 'Tighten Narrative Coherence' : 'Loosen Structure for Spontaneity';
-  if (f.includes('segment_count')) return up ? 'Break Content into More Segments' : 'Use Fewer, Longer Segments';
-  if (f.includes('segment_duration_reg')) return up ? 'Keep Segments a Consistent Length' : 'Vary Segment Lengths for Surprise';
-  if (f.includes('scene_cut_rate')) return up ? 'Cut Faster Between Scenes' : 'Use Longer Takes';
-  if (f.includes('pacing_quality')) return up ? 'Improve Pacing Flow' : 'Experiment with Unconventional Pacing';
-  if (f.includes('resolution_lang')) return up ? 'Use Clearer Resolution Language' : 'Leave More Open-Ended';
-  // Cast & chemistry levers
-  if (f.includes('speaker_count') || f.includes('new_speaker')) return up ? 'Introduce More Speakers' : 'Keep a Tighter Cast';
-  if (f.includes('turn_count') || f.includes('turns_per_min')) return up ? 'Increase Conversational Back-and-Forth' : 'Let Speakers Develop Longer Points';
-  if (f.includes('chemistry')) return up ? 'Pair Hosts with More Chemistry' : 'Try Solo or New Cast Combinations';
-  if (f.includes('laughter')) return up ? 'Encourage More Natural Laughter' : 'Keep a More Serious Tone';
-  if (f.includes('levity')) return up ? 'Add More Light Moments' : 'Keep a More Serious Tone';
-  if (f.includes('crosstalk')) return up ? 'Allow More Crosstalk and Banter' : 'Keep Cleaner Turn-Taking';
-  if (f.includes('monologue') || f.includes('is_monologue')) return up ? 'Try Monologue Format' : 'Add More Voices — Avoid Solo Format';
-  // Moments levers
-  if (f.includes('surprise_rate') || f.includes('surprise_density')) return up ? 'Add More Surprise Moments' : 'Reduce Surprise Frequency';
-  if (f.includes('reveal_rate') || f.includes('reveal_density')) return up ? 'Add More Reveal Moments' : 'Build Up Before Reveals';
-  if (f.includes('peak_count') || f.includes('peaks_per_min')) return up ? 'Pack In More Peak Moments' : 'Focus on Fewer, Bigger Peaks';
-  if (f.includes('peak_spacing')) return up ? 'Space Peaks More Evenly' : 'Cluster Peaks for Intensity Bursts';
-  if (f.includes('silence_before_peak')) return up ? 'Add Pauses Before Key Moments' : 'Cut the Setup — Hit Peaks Faster';
-  if (f.includes('energy_contrast')) return up ? 'Increase Energy Contrast at Peaks' : 'Smooth Energy Transitions';
-  if (f.includes('dynamic_range')) return up ? 'Widen Audio Dynamic Range' : 'Compress Audio Dynamic Range';
-  // Multi-scale structure
-  if (f.includes('loop_completeness')) return up ? 'Complete Your Content Loops' : 'Leave Some Loops Open';
-  if (f.includes('loop_variety')) return up ? 'Vary Your Loop Types' : 'Stick to a Consistent Loop Style';
-  if (f.includes('loop_quality') || f.includes('loop_count')) return up ? 'Strengthen Retention Loops' : 'Simplify Loop Structure';
-  if (f.includes('boundary_quality')) return up ? 'Sharpen Segment Transitions' : 'Use Softer Transitions';
-  if (f.includes('natural_loop_length')) return up ? 'Extend Your Natural Loop Length' : 'Tighten Loops — Shorter Cycles';
-  if (f.includes('vocab_richness')) return up ? 'Use Richer Vocabulary' : 'Keep Language Simple and Accessible';
-  // Emotion primitives
-  if (f === 'joy') return up ? 'Bring More Joy and Positivity' : 'Tone Down the Positivity';
-  if (f === 'sadness') return up ? 'Lean Into Vulnerability and Sadness' : 'Keep Tone More Upbeat';
-  if (f === 'anger') return up ? 'Channel Controlled Anger or Frustration' : 'Soften the Tone — Less Anger';
-  if (f === 'fear') return up ? 'Build More Tension and Suspense' : 'Reduce Fear-Inducing Content';
-  if (f === 'surprise') return up ? 'Add More Surprise Elements' : 'Be More Predictable and Reassuring';
-  if (f === 'disgust') return up ? 'Lean Into Provocative Reactions' : 'Keep Content More Palatable';
-  // Gen Z tone
-  if (f.includes('genz')) return up ? 'Adopt More Gen Z Language' : 'Use a More Universal Tone';
-  // Discovery, traffic & distribution (partially actionable — strategic levers)
-  if (f.includes('traffic_algorithmic')) return up ? 'Optimize for Algorithm Discovery' : 'Reduce Algorithm Dependency — Build Owned Audience';
-  if (f.includes('traffic_subscriber')) return up ? 'Grow Your Subscriber Base for Reliable Views' : 'Focus on New Audience Acquisition';
-  if (f.includes('traffic_search')) return up ? 'Improve SEO and Search Discoverability' : 'Focus on Browse Over Search';
-  if (f.includes('traffic_external')) return up ? 'Drive More External Traffic (Social, Embeds)' : 'Focus on On-Platform Growth';
-  if (f.includes('geo_asia')) return up ? 'Optimize for Asian Audience Discovery' : 'Focus on Western Markets';
-  if (f.includes('geo_us')) return up ? 'Target US Audience Preferences' : 'Diversify Beyond US Market';
-  if (f.includes('geo_eu')) return up ? 'Expand European Audience Reach' : 'Focus on Non-European Markets';
-  if (f.includes('geo_latam')) return up ? 'Leverage LATAM Audience — Subtitle in Spanish/Portuguese' : 'Focus on English-Speaking Markets';
-  if (f.includes('mobile')) return up ? 'Design Everything for the Mobile Viewer First' : 'Optimize for Desktop/TV Viewing';
-  // Engagement outcomes (indirectly actionable via content)
-  if (f.includes('share_intent') || f.includes('shareab')) return up ? 'Craft More Shareable Moments' : 'Prioritize Depth Over Shareability';
-  if (f.includes('parasocial')) return up ? 'Strengthen Parasocial Connection' : 'Maintain Professional Distance';
-  // Fallback: generic actionable phrasing
-  return `${up ? 'Increase' : 'Decrease'} ${fn}`;
+  // Look up in FEAT_ACTION (first match wins)
+  for (const entry of FEAT_ACTION) {
+    if (entry.exact ? new RegExp(entry.k).test(f) : f.includes(entry.k)) {
+      return up ? entry.up : entry.down;
+    }
+  }
+  // Smart fallback: construct actionable title from the feature name
+  // Instead of generic "Increase/Decrease X", make it more natural
+  const name = fn;
+  if (up) return `Aim for Higher ${name}`;
+  return `Aim for Lower ${name}`;
 }
-function _hypABTest(feat, target, dir) {
-  const fn = fmtFeatureName(feat).toLowerCase(); const tn = fmtLabel(target).toLowerCase(); const cat = _hypCat(feat);
-  if (cat.key === 'thumbnail') return `A/B test two thumbnails — one optimized for ${dir==='up'?'higher':'lower'} ${fn}, one control. Measure CTR and ${tn} over 48 hours.`;
-  if (cat.key === 'title') return `Publish two episodes with identical content but different titles — one ${dir==='up'?'maximizing':'minimizing'} ${fn}. Compare ${tn} after 7 days.`;
-  if (cat.key === 'speech') return `Record two versions — one with ${dir==='up'?'higher':'lower'} ${fn}, one standard. Track ${tn} and 30s retention.`;
-  if (cat.key === 'emotion') return `Produce two episodes with different emotional approaches — one ${dir==='up'?'amplifying':'reducing'} ${fn}. Compare ${tn} after 7 days.`;
-  if (cat.key === 'narrative') return `Edit two cuts of the same episode — one ${dir==='up'?'maximizing':'minimizing'} ${fn}. Compare ${tn} and watch-through rate.`;
-  if (cat.key === 'cast') return `Record with different cast configurations — one ${dir==='up'?'emphasizing':'de-emphasizing'} ${fn}. Compare ${tn} and audience feedback.`;
-  if (cat.key === 'moments') return `Edit two versions — one with ${dir==='up'?'more':'fewer'} ${fn} moments. Compare ${tn} and rewatch rate.`;
-  return `Create two content variants — one optimized for ${dir==='up'?'high':'low'} ${fn}, one control. Measure ${tn} after 7 days.`;
+/* Look up what a feature measures (for descriptions) */
+function _hypWhat(feat) {
+  const f = feat.toLowerCase();
+  for (const entry of FEAT_ACTION) {
+    if (entry.exact ? new RegExp(entry.k).test(f) : f.includes(entry.k)) {
+      return entry.what || null;
+    }
+  }
+  return null;
 }
+function _hypABTest(feat, target, dir, examples) {
+  const title = _hypTitle(feat, target, dir);
+  const cat = _hypCat(feat);
+  /* Reference your best/worst video on this feature */
+  let ref = '';
+  if (examples && examples.high?.[0] && examples.low?.[0]) {
+    ref = ` Compare "${examples.high[0].title}" vs "${examples.low[0].title}" to see what changed.`;
+  }
+  /* 2-line test: Version A = current approach, Version B = apply recommendation. Measure. */
+  const tests = {
+    thumbnail: `Version A: your current thumbnail. Version B: apply "${title}". Swap after 24h, compare click-through rate.`,
+    title: `Version A: your current title. Version B: apply "${title}". Swap after 48h, compare impressions.`,
+    speech: `Next 2 same-format episodes: one applies "${title}", one doesn't. Compare 30-second retention after 7 days.`,
+    emotion: `Next 2 same-format episodes: one applies "${title}", one doesn't. Compare average view duration after 7 days.`,
+    narrative: `Two edits of same episode: one applies "${title}", one standard. Compare retention curves after 7 days each.`,
+    cast: `Two same-format episodes: one applies "${title}", one standard. Compare view duration and like ratio.`,
+    moments: `Next 2 episodes: one applies "${title}", one standard edit. Compare retention curve shape — look for spikes where you changed things.`,
+    discovery: `Apply "${title}" to your next 3 videos. After 14 days, compare traffic sources vs your previous 3 videos.`,
+  };
+  return (tests[cat.key] || `Apply "${title}" to your next episode. Compare against your last 3 same-format episodes after 7 days.`) + ref;
+}
+/* ── Video examples for hypothesis cards ── */
+function _hypVideoExamples(feat, target, dir) {
+  if (!VIDEOS.length) { console.debug('[VideoEx] No VIDEOS loaded'); return null; }
+  const titleFld = CONFIG?.data?.schema?.title || 'title';
+  // Filter videos that have both the feature and target values
+  const valid = VIDEOS.filter(v => {
+    const fv = parseFloat(v[feat]), tv = parseFloat(v[target]);
+    return isFinite(fv) && isFinite(tv);
+  }).map(v => ({
+    title: v[titleFld] || '(untitled)',
+    featVal: parseFloat(v[feat]),
+    targetVal: parseFloat(v[target]),
+    thumb: v.thumbnail_url || v.thumb_url || '',
+    vid: v.video_id || v.id || '',
+  }));
+  if (valid.length < 4) { console.debug(`[VideoEx] ${feat}: only ${valid.length} valid rows (need 4)`); return null; }
+  // Sort by feature value descending
+  valid.sort((a, b) => b.featVal - a.featVal);
+  // Top 2 (highest feature value) and bottom 2 (lowest feature value)
+  const high = valid.slice(0, 2);
+  const low  = valid.slice(-2).reverse();
+  const fn = fmtFeatureName(feat), tn = fmtLabel(target);
+  // Format target values nicely
+  const fmtT = v => target.includes('pct') || target.includes('ratio') ? `${(v*100).toFixed(1)}%` : v.toFixed(2);
+  return { high, low, featName: fn, targetName: tn, fmtT };
+}
+
+/* ── Hypothesis Quality Validator ──
+   Runs on EVERY hypothesis card. Returns array of warning strings. Empty = pass.
+   Checklist:
+   1. Title is a concrete action (not generic fallback)
+   2. Description explains what the feature actually is
+   3. No jargon abbreviations in user-visible text
+   4. A/B test references Version A/B or "next 2 episodes"
+   5. At least one evidence line
+   6. No raw feature names (underscores) leak into visible text
+*/
+const BANNED_ABBREVIATIONS = /\b(CTR|SHAP|LASSO|RPM|SEO|FDR|coef|r\s*=|n\s*=|p\s*=|d\s*=|R²)\b/;
+function _validateHypothesis(h) {
+  const w = [];
+  if (/^(Increase|Decrease|Aim for (Higher|Lower)) /.test(h.title)) {
+    w.push(`Title is generic ("${h.title}") — add this feature to FEAT_ACTION with a concrete action.`);
+  }
+  if (!h.whatItMeasures) {
+    w.push(`Missing "what" field for "${h.feat}" in FEAT_ACTION — description won't explain the feature.`);
+  }
+  const allText = `${h.title} ${h.desc} ${h.abTest} ${h.evidence.map(e=>e.text).join(' ')}`;
+  const abbrMatch = allText.match(BANNED_ABBREVIATIONS);
+  if (abbrMatch) {
+    w.push(`Contains abbreviation "${abbrMatch[0]}" — expand to plain English.`);
+  }
+  if (!h.abTest.includes('Version') && !h.abTest.includes('next 2') && !h.abTest.includes('Next 2') && !h.abTest.includes('next 3')) {
+    w.push(`A/B test should reference Version A vs B or "next 2/3 episodes".`);
+  }
+  if (!h.evidence.length) {
+    w.push(`No evidence lines.`);
+  }
+  if (h.title.includes('_') || h.desc.includes('_score') || h.desc.includes('_pct')) {
+    w.push(`Raw feature name leaking into visible text.`);
+  }
+  return w;
+}
+
+/* ── Producer-Critic Agent ──
+   Post-processes each hypothesis card through a producer's chain of thought.
+   Simulates: "I'm a producer looking at this data. What would I actually change
+   in my next shoot/edit, and how would I measure if it worked?"
+
+   This is a rule-based first pass. Can be upgraded to an LLM call later
+   by replacing the body with an API call to Claude with the card data.
+
+   The critic checks:
+   - Would a real producer understand this recommendation without context?
+   - Is the A/B test something they can execute this week?
+   - Does the description help them understand WHY this matters?
+*/
+function _producerCritic(card) {
+  /* Chain of thought (logged to console for transparency): */
+  const cot = [];
+  const fn = fmtFeatureName(card.feat);
+
+  /* Step 1: "What is this feature in my world?" */
+  const what = _hypWhat(card.feat);
+  if (what) {
+    cot.push(`Feature "${fn}" = ${what}`);
+  } else {
+    cot.push(`Feature "${fn}" has no explanation — I don't know what this measures`);
+  }
+
+  /* Step 2: "What would I change in my next video?" */
+  cot.push(`Recommendation: "${card.title}"`);
+
+  /* Step 3: "How would I know if it worked?" */
+  cot.push(`Test: ${card.abTest}`);
+
+  /* Step 4: Sanity checks */
+  // Does the title contradict the direction?
+  if (card.dir === 'down' && card.title.toLowerCase().includes('more')) {
+    cot.push(`⚠️ Direction is DOWN but title says "more" — possible contradiction`);
+    card.qWarnings = card.qWarnings || [];
+    card.qWarnings.push(`Title says "more" but the data suggests lower values → better results.`);
+  }
+  if (card.dir === 'up' && (card.title.toLowerCase().includes('reduce') || card.title.toLowerCase().includes('fewer') || card.title.toLowerCase().includes('less '))) {
+    cot.push(`⚠️ Direction is UP but title says "reduce/fewer/less" — possible contradiction`);
+    card.qWarnings = card.qWarnings || [];
+    card.qWarnings.push(`Title says "reduce" but the data suggests higher values → better results.`);
+  }
+
+  // Log chain of thought (visible in browser console for debugging)
+  console.debug(`[Producer Critic] ${card.id} ${card.feat}:\n  ${cot.join('\n  ')}`);
+
+  return card;
+}
+
 /* Features that are purely audience outcomes — not even indirectly actionable */
 const NON_ACTIONABLE = new Set([
   'engagement_like_ratio', 'engagement_comment_ratio', 'comment_sentiment_mean',
@@ -4793,12 +4993,45 @@ function _synthesizeHypotheses(SRC) {
     const nMethods=methods.length, tier=nMethods>=3?'gold':nMethods>=2?'silver':'bronze';
     let dir='up'; if (ev.shap) dir=ev.shap.signed>=0?'up':'down'; else if (ev.lasso) dir=ev.lasso.coef>=0?'up':'down'; else if (ev.corr) dir=ev.corr.r>=0?'up':'down'; else if (ev.hyp) dir=(ev.hyp.effect_size_d||0)>=0?'up':'down';
     const evidence=[];
-    if (ev.corr) evidence.push({type:'data',icon:'📊',text:`Correlates with ${fmtLabel(primaryTarget)} (r\u2009=\u2009${ev.corr.r>=0?'+':''}${ev.corr.r.toFixed(2)}, n\u2009=\u2009${ev.corr.n})`});
-    if (ev.lasso) evidence.push({type:'data',icon:'🪢',text:`Selected in ${(ev.lasso.stability*100).toFixed(0)}% of LASSO bootstrap runs (coef\u2009${ev.lasso.coef>=0?'+':''}${ev.lasso.coef.toFixed(4)})`});
-    if (ev.shap) { const pf=dir==='up'?ev.shap.posFrac:1-ev.shap.posFrac; evidence.push({type:'data',icon:'🌲',text:`SHAP: pushes ${fmtLabel(primaryTarget)} ${dir} in ${(pf*100).toFixed(0)}% of videos`}); }
-    if (ev.hyp&&!ev.hyp.skipped) evidence.push({type:'data',icon:'🔬',text:`Hypothesis test: ${ev.hyp.significant_fdr?'significant':'not significant'} (p\u2009=\u2009${ev.hyp.p_value?.toFixed(3)}, d\u2009=\u2009${ev.hyp.effect_size_d?.toFixed(2)})`});
+    /* ── Plain-English evidence lines — no abbreviations, no jargon ── */
+    if (ev.corr) {
+      const strength = Math.abs(ev.corr.r) >= 0.3 ? 'strong' : Math.abs(ev.corr.r) >= 0.15 ? 'moderate' : 'weak';
+      const direction = ev.corr.r >= 0 ? 'higher' : 'lower';
+      evidence.push({type:'data',icon:'📊',text:`Videos with higher ${fmtFeatureName(feat)} tend to have ${direction} ${fmtLabel(primaryTarget)} — ${strength} pattern across ${ev.corr.n} videos`});
+    }
+    if (ev.lasso) {
+      const pct = (ev.lasso.stability*100).toFixed(0);
+      evidence.push({type:'data',icon:'🧮',text:`Machine learning selected this feature as a predictor of ${fmtLabel(primaryTarget)} in ${pct}% of randomized tests`});
+    }
+    if (ev.shap) {
+      const pf=dir==='up'?ev.shap.posFrac:1-ev.shap.posFrac;
+      evidence.push({type:'data',icon:'🌲',text:`In a Random Forest model, this feature pushes ${fmtLabel(primaryTarget)} ${dir==='up'?'up':'down'} for ${(pf*100).toFixed(0)}% of videos analyzed`});
+    }
+    if (ev.hyp&&!ev.hyp.skipped) {
+      const sig = ev.hyp.significant_fdr;
+      const effect = Math.abs(ev.hyp.effect_size_d||0);
+      const effectWord = effect >= 0.8 ? 'large' : effect >= 0.5 ? 'medium' : 'small';
+      evidence.push({type:'data',icon:'🔬',text:sig
+        ? `Statistically confirmed: videos that score high vs. low on this feature show a ${effectWord} difference in ${fmtLabel(primaryTarget)}`
+        : `The difference between high and low videos on this feature was not statistically significant (${effectWord} effect size)`});
+    }
     const domain=_hypDomainKnowledge(feat,dir); if (domain) evidence.push({type:'domain',icon:'💡',text:domain});
-    cards.push({id:`H${String(idx).padStart(2,'0')}`,feat,title:_hypTitle(feat,primaryTarget,dir),desc:`Higher ${fmtFeatureName(feat)} is associated with ${dir==='up'?'better':'worse'} ${fmtLabel(primaryTarget)}.`,dir,evidence,abTest:_hypABTest(feat,primaryTarget,dir),cat:_hypCat(feat),tier,nMethods,methods,target:primaryTarget});
+    // Video examples: find best & worst cases from actual data
+    const examples = _hypVideoExamples(feat, primaryTarget, dir);
+    const whatItMeasures = _hypWhat(feat);
+    /* Description: what the feature is + direction. Short. */
+    let desc = whatItMeasures
+      ? `${whatItMeasures[0].toUpperCase()+whatItMeasures.slice(1)}. ${dir==='up'?'Higher':'Lower'} → better ${fmtLabel(primaryTarget)}.`
+      : `Higher ${fmtFeatureName(feat)} → ${dir==='up'?'better':'worse'} ${fmtLabel(primaryTarget)}.`;
+    /* Video examples shown separately in the evidence panel */
+    const title = _hypTitle(feat,primaryTarget,dir);
+    const abTest = _hypABTest(feat,primaryTarget,dir, examples);
+    const cat = _hypCat(feat);
+    /* ── Quality validator: every card must pass minimum requirements ── */
+    const qWarnings = _validateHypothesis({feat, title, desc, abTest, evidence, examples, whatItMeasures, cat});
+    let card = {id:`H${String(idx).padStart(2,'0')}`,feat,title,desc,dir,evidence,examples,abTest,cat,tier,nMethods,methods,target:primaryTarget,qWarnings};
+    card = _producerCritic(card);
+    cards.push(card);
     idx++;
   }
   cards.sort((a,b)=>({gold:0,silver:1,bronze:2}[a.tier]-{gold:0,silver:1,bronze:2}[b.tier])||(b.nMethods-a.nMethods));
@@ -4815,6 +5048,15 @@ function buildHypothesisHTML(card) {
   if (!cards.length) return `<div class="cc-title">🔬 Hypotheses & Recommendations</div><div class="cc-empty"><div>🔬</div><div>No ML data to generate hypotheses</div><div style="font-size:10px;opacity:.55;margin-top:4px">Run <code>AI/pipeline.py</code></div></div>`;
   const catSet=new Map(); cards.forEach(c=>catSet.set(c.cat.key,c.cat));
   const tc={gold:0,silver:0,bronze:0}; cards.forEach(c=>tc[c.tier]++);
+  /* ── YouTube Best-Practice Tips (general creator knowledge, shown alongside data-driven cards) ── */
+  const YT_TIPS = [
+    { title:'Upload on Tuesday–Thursday, 2–4 PM EST', desc:'YouTube\'s algorithm favors early engagement velocity. Posting when your audience is coming online (US afternoon) gives the first hour a boost. Check your Analytics → Audience → "When your viewers are on YouTube" for channel-specific timing.', cat:'📅 Scheduling', source:'YouTube Creator Academy & Think Media research (2024)'},
+    { title:'Publish Shorts 1–2× per Week to Feed the Algorithm', desc:'Shorts drive subscriber discovery at 3–5× the rate of longform. Even repurposing a 60-second highlight from a longform episode as a Short can feed new viewers into the funnel. YouTube\'s recommendation system treats Shorts as a separate surface but cross-promotes to your longform.', cat:'📱 Shorts Strategy', source:'YouTube Creator Insider (2024), vidIQ analysis'},
+    { title:'Write the First 2 Lines of the Description as a Hook', desc:'YouTube truncates descriptions to ~100 characters in search and browse. The first line should contain primary keywords and a curiosity hook — not "In this video we...". Put hashtags, links, and credits below the fold.', cat:'✏️ Search & Metadata', source:'YouTube Search & Discovery team best practices'},
+    { title:'Pin a Top Comment Within 30 Minutes of Publishing', desc:'A pinned comment from the creator boosts early comment velocity and signals engagement to the algorithm. Ask a question related to the video to spark replies (e.g., "What would YOUR answer be?").', cat:'💬 Community', source:'Roberto Blake, Think Media, Creator Insider'},
+    { title:'Use Chapters (Timestamps) for Videos Over 10 Minutes', desc:'Chapters improve watch time by letting viewers jump to relevant sections instead of bouncing. They also generate rich snippets in Google Search, driving more organic traffic. Format: "0:00 Intro" in the description.', cat:'📖 Discoverability', source:'YouTube Help — "Add chapters to your video"'},
+    { title:'Retest Thumbnails After 48 Hours if Click-Through Rate is Below 4%', desc:'YouTube\'s "Test & Compare" feature (or manual swap via re-upload) lets you iterate on thumbnails. The biggest click-through lever is facial expression + contrast + minimal text. If a video underperforms in the first 48 hours, the thumbnail is the first thing to change.', cat:'🎨 Thumbnail Ops', source:'YouTube Test & Compare (2024 rollout), MrBeast methodology'},
+  ];
   const catChips=[...catSet.values()].map(c=>`<button class="hyp-chip" onclick="filterHyp('${sid}','cat:${c.key}',this)">${c.emoji} ${c.label}</button>`).join('');
   const lensToggle = hasContent ? `<div class="ml-lens-toggle" style="margin-left:auto">
     <button class="ml-lens-btn${curLens==='full'?' active':''}"
@@ -4823,10 +5065,11 @@ function buildHypothesisHTML(card) {
             onclick="switchHypLens('${sid}','content',this)">Content</button>
   </div>` : '';
   const fb=`<div class="hyp-filters" id="hyp-filters-${sid}" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
-    <button class="hyp-chip sel" onclick="filterHyp('${sid}','all',this)">All (${cards.length})</button>
+    <button class="hyp-chip sel" onclick="filterHyp('${sid}','all',this)">All (${cards.length + YT_TIPS.length})</button>
     ${tc.gold?`<button class="hyp-chip" onclick="filterHyp('${sid}','gold',this)">🏆 Gold (${tc.gold})</button>`:''}
     ${tc.silver?`<button class="hyp-chip" onclick="filterHyp('${sid}','silver',this)">🥈 Silver (${tc.silver})</button>`:''}
     ${tc.bronze?`<button class="hyp-chip" onclick="filterHyp('${sid}','bronze',this)">🥉 Bronze (${tc.bronze})</button>`:''}
+    <button class="hyp-chip" onclick="filterHyp('${sid}','tip',this)">💡 Best Practices (${YT_TIPS.length})</button>
     <button class="hyp-chip hyp-cat-toggle" onclick="toggleHypCats('${sid}')">Categories ▼</button>
     <div class="hyp-cat-drawer collapsed" id="hyp-cat-drawer-${sid}">${catChips}</div>
     ${lensToggle}
@@ -4842,12 +5085,44 @@ function buildHypothesisHTML(card) {
       <div class="hyp-desc">${c.desc}</div>
       <div class="hyp-tags"><span class="hyp-tier ${c.tier}">${tierLabel} · ${c.nMethods}/3</span><span class="hyp-dots">${dots}</span></div>
       <button class="hyp-toggle" onclick="toggleHypDetail(this)">Show evidence & A/B test ▼</button>
-      <div class="hyp-detail"><div class="hyp-evidence">${evRows}</div><div class="hyp-ab"><strong>🧪 Proposed A/B test:</strong> ${c.abTest}</div></div>
+      <div class="hyp-detail"><div class="hyp-evidence">${evRows}</div>${(()=>{
+        try {
+          if (!c.examples || !c.examples.high || !c.examples.low) return '';
+          const ex = c.examples;
+          const fmtR = v => ex.fmtT(v);
+          const exRow = (v, cls, icon) => {
+            const ytUrl = v.vid ? `https://www.youtube.com/watch?v=${encodeURIComponent(v.vid)}` : '';
+            const thumbImg = v.thumb ? `<img class="hyp-ex-thumb" src="${escHtml(v.thumb)}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+            const tag = ytUrl ? 'a' : 'div';
+            const href = ytUrl ? ` href="${escHtml(ytUrl)}" target="_blank" rel="noopener"` : '';
+            return `<${tag} class="hyp-ex-row ${cls}"${href}><span class="hyp-ex-icon">${icon}</span>${thumbImg}<span class="hyp-ex-title">${escHtml(v.title)}</span><span class="hyp-ex-val">${fmtR(v.targetVal)}</span></${tag}>`;
+          };
+          return `<div class="hyp-examples">
+            <div class="hyp-ex-label">📽️ In your videos:</div>
+            ${exRow(ex.high[0],'good','▲')}
+            ${exRow(ex.high[1],'good','▲')}
+            ${exRow(ex.low[0],'bad','▼')}
+            ${exRow(ex.low[1],'bad','▼')}
+          </div>`;
+        } catch(e) { console.warn('[HypExamples] render error for', c.feat, e); return ''; }
+      })()}<div class="hyp-ab"><strong>🧪 How to test this:</strong> ${c.abTest}</div>${c.qWarnings&&c.qWarnings.length?`<div class="hyp-qwarn"><div class="hyp-qwarn-title">⚠️ Quality check (${c.qWarnings.length} issue${c.qWarnings.length>1?'s':''}):</div>${c.qWarnings.map(w=>`<div class="hyp-qwarn-item">${escHtml(w)}</div>`).join('')}</div>`:''}</div>
     </div>`;
   }).join('');
+  /* Log quality summary to console for Calliope / developer awareness */
+  const failCount = cards.filter(c=>c.qWarnings&&c.qWarnings.length).length;
+  if (failCount) console.warn(`[Hypothesis QA] ${failCount}/${cards.length} cards have quality warnings. Expand card details to see issues.`);
+  const tipsHTML = YT_TIPS.map((t,i)=>`<div class="hyp-card hyp-tip-card" data-tier="tip" data-cat="tip">
+    <span class="hyp-cat" style="background:rgba(56,189,248,.08);color:rgba(56,189,248,.8);border:1px solid rgba(56,189,248,.18)">${t.cat}</span>
+    <div style="display:flex;align-items:baseline;gap:6px"><span class="hyp-id" style="background:rgba(56,189,248,.10);color:rgba(56,189,248,.6)">T${String(i+1).padStart(2,'0')}</span><span class="hyp-title">${t.title}</span></div>
+    <div class="hyp-desc">${t.desc}</div>
+    <div class="hyp-tags"><span class="hyp-tier tip" style="background:rgba(56,189,248,.08);color:rgba(56,189,248,.7);border:1px solid rgba(56,189,248,.15)">💡 Best Practice</span></div>
+    <button class="hyp-toggle" onclick="toggleHypDetail(this)">Show source ▼</button>
+    <div class="hyp-detail"><div class="hyp-ev-row domain"><span class="hyp-ev-icon">📚</span>${t.source}</div></div>
+  </div>`).join('');
+
   return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">🔬 Hypotheses & Recommendations
-    <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">${cards.length} hypotheses</span></div>
-  ${fb}<div class="hyp-grid" id="hyp-rows-${sid}">${grid}</div>`;
+    <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">${cards.length} data-driven + ${YT_TIPS.length} best practices</span></div>
+  ${fb}<div class="hyp-grid" id="hyp-rows-${sid}">${grid}${tipsHTML}</div>`;
 }
 function toggleHypDetail(btn) { const d=btn.nextElementSibling; if (!d) return; const o=d.classList.toggle('open'); btn.textContent=o?'Hide detail ▲':'Show evidence & A/B test ▼'; }
 function toggleHypCats(sid) {
@@ -4927,7 +5202,7 @@ function _hypExperiment(feat, target, vals) {
 
   const experiments = {
     title:     `Publish two episodes with identical content but different titles — one using a high-${fmtFeatureName(feat).toLowerCase()} approach, one neutral. Compare ${tn} after 7 days.`,
-    thumbnail: `A/B test two thumbnails on the same video — one optimized for high ${fmtFeatureName(feat).toLowerCase()}, one control. Measure CTR and ${tn} difference over 48 hours.`,
+    thumbnail: `A/B test two thumbnails on the same video — one optimized for high ${fmtFeatureName(feat).toLowerCase()}, one control. Measure click-through rate and ${tn} difference over 48 hours.`,
     audio:     `Record two versions of an intro segment — one with ${dir} ${ctx.noun} intensity, one standard. Track ${tn} and 30s retention across both.`,
     narrative: `Structure two episodes differently — one emphasizing the ${ctx.noun} pattern (${dir} values), one with standard structure. Compare ${tn} and retention curves.`,
     moments:   `Plan two episodes: one front-loaded with early peaks/surprises, one with standard pacing. Measure ${tn} and audience retention shape.`,
@@ -6278,10 +6553,10 @@ const LABEL_MAP = {
 };
 function fmtLabel(str){return LABEL_MAP[str]||(str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
 const FEAT_NICE_NAMES = {
-  wpm: 'Words per Minute', silence_ratio_audio: 'Silence Ratio', filler_frequency: 'Filler Words/Min',
-  q_rate: 'Question Rate', avg_sentence_length: 'Avg Sentence Length', speech_rate_std: 'Speech Rate Variation',
-  pitch_mean: 'Pitch (Mean)', pitch_std: 'Pitch Variation', excitement_peaks: 'Excitement Peaks/Min',
-  hook_energy_ratio: 'Hook Energy Ratio', hook_presence: 'Hook Presence',
+  wpm: 'Speaking Speed (Words per Minute)', silence_ratio_audio: 'Fraction of Time That Is Silent', filler_frequency: 'Filler Words per Minute ("Um", "Like")',
+  q_rate: 'Questions Asked per Minute', avg_sentence_length: 'Average Sentence Length (Words)', speech_rate_std: 'How Much Speaking Speed Varies',
+  pitch_mean: 'Average Vocal Pitch', pitch_std: 'How Much Vocal Pitch Varies', excitement_peaks: 'Excitement Spikes per Minute',
+  hook_energy_ratio: 'First 30 Seconds Energy vs Rest', hook_presence: 'Does the Opening Have a Clear Hook?',
   geo_us_pct: 'US Viewers %', geo_eu_pct: 'EU Viewers %', geo_asia_pct: 'Asia Viewers %',
   geo_latam_pct: 'LATAM Viewers %', geo_international_pct: 'International %', geo_diversity_entropy: 'Geo Diversity',
   traffic_algorithmic_pct: 'Algo Discovery %', traffic_subscriber_pct: 'Subscriber Traffic %',
@@ -6293,25 +6568,25 @@ const FEAT_NICE_NAMES = {
   thumb_edge_density: 'Edge Density (Thumb)', thumb_saturation: 'Thumbnail Saturation',
   thumb_warmth_lab: 'Color Warmth (Thumb)', thumb_creative_score: 'Creative Score (Thumb)',
   thumb_center_weight: 'Center Weight', thumb_text_likelihood: 'Text Overlay',
-  title_shock_word_count: 'Shock Words in Title', title_fomo_score: 'FOMO Score',
-  title_curiosity_score: 'Curiosity Score', title_clickbait_score: 'Clickbait Score',
-  title_personal_you: "Second-Person 'You'", title_first_person: "First-Person 'I/We'",
-  title_arousal_score: 'Arousal Score', title_sentiment_compound: 'Title Sentiment',
+  title_shock_word_count: 'Shock Words in Title (count)', title_fomo_score: 'Urgency Words in Title ("Only", "Last Chance")',
+  title_curiosity_score: 'Curiosity Gap Words in Title ("You Won\'t Believe")', title_clickbait_score: 'Clickbait Phrasing Level in Title',
+  title_personal_you: "Title Addresses Viewer ('You')", title_first_person: "Title Uses 'I' or 'We'",
+  title_arousal_score: 'Energy Level of Title Words', title_sentiment_compound: 'Title Mood (Positive vs Negative)',
   title_char_length: 'Title Length (chars)', title_word_count: 'Title Word Count',
-  comment_sentiment_mean: 'Comment Sentiment', genz_score: 'Gen Z Tone',
-  share_intent_score: 'Share Intent', parasocial_score: 'Parasocial Score',
-  duration_seconds: 'Duration (sec)', duration_minutes: 'Duration (min)',
-  engagement_like_ratio: 'Like Ratio', engagement_comment_ratio: 'Comment Ratio',
-  scene_cut_rate_per_min: 'Scene Cut Rate', dynamic_range: 'Dynamic Range',
-  escalation_intensity: 'Escalation Intensity', escalation_sentiment: 'Escalation Sentiment',
-  sentiment_arc_type: 'Sentiment Arc Type', cliffhanger_score: 'Cliffhanger Score',
-  pacing_quality_score: 'Pacing Quality', payoff_satisfaction_score: 'Payoff Satisfaction',
-  shareability_score: 'Shareability Score', moment_impact_score: 'Moment Impact',
-  peak_count: 'Peak Count', peaks_per_minute: 'Peaks per Minute',
-  ms_llm_loop_completeness: 'Loop Completeness', ms_llm_loop_variety: 'Loop Variety',
-  ms_llm_boundary_quality: 'Boundary Quality',
-  ms_llm_escalation_across_loops: 'Escalation Across Loops',
-  ms_llm_dominant_loop_type: 'Dominant Loop Type',
+  comment_sentiment_mean: 'Comment Mood (Positive vs Negative)', genz_score: 'Gen Z Slang in Comments (%)',
+  share_intent_score: 'Comments Saying "Sending This to Someone" (%)', parasocial_score: 'Comments Expressing Personal Bond with Creator (%)',
+  duration_seconds: 'Video Length (Seconds)', duration_minutes: 'Video Length (Minutes)',
+  engagement_like_ratio: 'Likes per View', engagement_comment_ratio: 'Comments per View',
+  scene_cut_rate_per_min: 'Camera Cuts per Minute', dynamic_range: 'Loud vs Quiet Volume Difference',
+  escalation_intensity: 'How Much Energy Builds (Start to End)', escalation_sentiment: 'How Much Emotion Builds (Start to End)',
+  sentiment_arc_type: 'Emotional Shape of the Episode', cliffhanger_score: 'Strength of End Cliffhanger',
+  pacing_quality_score: 'Pacing Evenness (No Dead Spots)', payoff_satisfaction_score: 'How Well Setups Get Paid Off',
+  shareability_score: 'How Clippable the Best Moments Are (1-5)', moment_impact_score: 'Strength of the Biggest Moment',
+  peak_count: 'Total Emotional Peaks', peaks_per_minute: 'Emotional Peaks per Minute',
+  ms_llm_loop_completeness: 'Do Setups Get Resolved?', ms_llm_loop_variety: 'How Many Different Loop Types Used',
+  ms_llm_boundary_quality: 'How Clean Are Segment Transitions',
+  ms_llm_escalation_across_loops: 'Does Each Round Get More Intense?',
+  ms_llm_dominant_loop_type: 'Main Loop Structure',
   // Multi-scale sentiment
   ms_sentiment_range_max: 'Sentiment Range (peak)', ms_sentiment_range_argmax_scale: 'Sentiment Range Best Scale',
   ms_sentiment_range_scale_var: 'Sentiment Range Consistency',
@@ -6347,28 +6622,28 @@ const FEAT_NICE_NAMES = {
   ms_n_valid_scales: 'Active Scale Count', ms_finest_active_scale: 'Finest Active Scale',
   ms_coarsest_active_scale: 'Coarsest Active Scale',
   // Narrative features
-  segment_count: 'Segment Count', avg_segment_duration_s: 'Avg Segment Duration',
-  segment_duration_regularity: 'Segment Regularity', topic_shift_count: 'Topic Shifts',
-  topic_shift_rate_per_min: 'Topic Shift Rate', escalation_energy: 'Energy Escalation',
-  intensity_at_3min_ratio: 'Intensity at 3 min', first_major_shift_s: 'First Major Shift (sec)',
-  final_segment_sentiment: 'Final Segment Sentiment', ending_vs_mean_sentiment: 'Ending vs Avg Sentiment',
-  resolution_language_score: 'Resolution Language', visual_variety_std: 'Visual Variety',
-  end_retention_ratio: 'End Retention Ratio',
+  segment_count: 'Number of Distinct Segments', avg_segment_duration_s: 'Average Segment Length (Seconds)',
+  segment_duration_regularity: 'Are Segments a Similar Length?', topic_shift_count: 'Number of Topic Changes',
+  topic_shift_rate_per_min: 'Topic Changes per Minute', escalation_energy: 'How Much Energy Builds Over Time',
+  intensity_at_3min_ratio: 'Energy at 3 Minutes vs Opening', first_major_shift_s: 'Seconds Until First Topic Change',
+  final_segment_sentiment: 'Emotion in the Final Segment', ending_vs_mean_sentiment: 'Is the Ending More Emotional Than Average?',
+  resolution_language_score: 'Does the Ending Use Wrap-Up Language?', visual_variety_std: 'How Much Camera Angles/Shots Vary',
+  end_retention_ratio: 'What Fraction of Viewers Reach the End',
   // Moment features
-  peak_intensity_max: 'Peak Intensity (max)', peak_to_baseline_ratio: 'Peak-to-Baseline Ratio',
-  first_peak_position: 'First Peak Position', last_peak_position: 'Last Peak Position',
-  peak_spacing_cv: 'Peak Spacing Regularity', surprise_event_count: 'Surprise Events',
-  reveal_event_count: 'Reveal Events', surprise_rate_per_min: 'Surprise Rate/Min',
-  forced_variety_count: 'Forced Variety Events', visual_audio_convergence: 'Visual-Audio Sync',
-  silence_before_peak_mean: 'Silence Before Peaks', energy_contrast_at_peaks: 'Energy Contrast at Peaks',
-  rewatch_spike_count: 'Rewatch Spikes', max_rewatch_magnitude: 'Max Rewatch Magnitude',
+  peak_intensity_max: 'Biggest Single Moment (Intensity)', peak_to_baseline_ratio: 'How Much Peaks Stand Out vs Average',
+  first_peak_position: 'When Does the First Big Moment Happen?', last_peak_position: 'When Does the Last Big Moment Happen?',
+  peak_spacing_cv: 'Are Peaks Evenly Spaced?', surprise_event_count: 'Total Surprise Moments',
+  reveal_event_count: 'Total Reveal Moments', surprise_rate_per_min: 'Surprises per Minute',
+  forced_variety_count: 'Format Changes Mid-Episode (New Rounds, Rules)', visual_audio_convergence: 'Do Camera Cuts Sync with Audio Peaks?',
+  silence_before_peak_mean: 'Average Pause Length Before Big Moments', energy_contrast_at_peaks: 'Energy Drop-to-Peak Contrast',
+  rewatch_spike_count: 'Moments Viewers Rewind To', max_rewatch_magnitude: 'How Much Viewers Rewind the Best Moment',
   // Cast & interaction
-  retention_loop_count: 'Retention Loop Count', loop_quality_score: 'Loop Quality',
-  speaker_count: 'Speaker Count', turn_count: 'Turn Count', turns_per_minute: 'Turns per Minute',
-  levity_intensity_ratio: 'Levity/Intensity Ratio', chemistry_score: 'Chemistry Score',
-  laughter_marker_count: 'Laugh Signal', character_depth_score: 'Character Depth',
-  crosstalk_score: 'Crosstalk Score', is_monologue: 'Monologue Format',
-  title_challenge_framing: 'Challenge Framing',
+  retention_loop_count: 'Number of Setup-Payoff Cycles', loop_quality_score: 'Quality of Setup-Payoff Cycles',
+  speaker_count: 'Number of Speakers', turn_count: 'Times Speakers Switch', turns_per_minute: 'Speaker Switches per Minute',
+  levity_intensity_ratio: 'Lighthearted vs Intense Ratio', chemistry_score: 'Speaker Chemistry (Laughter + Energy Match)',
+  laughter_marker_count: 'Laughter Moments Detected', character_depth_score: 'Personal Story Depth',
+  crosstalk_score: 'Overlapping Speech Amount', is_monologue: 'Single Speaker Format',
+  title_challenge_framing: 'Title Uses Challenge Format ("Can They...?")',
   // Emotions & targets
   joy: 'Joy', sadness: 'Sadness', anger: 'Anger', fear: 'Fear', disgust: 'Disgust',
   surprise: 'Surprise', neutral: 'Neutral',

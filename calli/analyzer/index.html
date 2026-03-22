@@ -145,40 +145,47 @@
 
   const SEED_PROJECTS = ['cut', '_template'];
 
+  /* ── Inline registry so the page works with file:// (no fetch/CORS) ── */
+  const INLINE_PROJECTS = [
+    {
+      id: 'cut',
+      cfg: {
+        project: {
+          id: 'cut', name: 'CUT Analytics',
+          tagline: 'YouTube performance intelligence for Cut.com — 482 videos',
+          type: 'analyzer', created: '2026-03-19',
+          accent: '#a78bfa', gradient: ['#a78bfa', '#c4b5fd'], icon: '🎬'
+        },
+        data: { files: { ml_insights: 'data/ml_insights.json' } }
+      },
+      hasData: true
+    }
+  ];
+
   let ALL_PROJECTS = [];
 
   async function loadProjects() {
-    let ids = [...SEED_PROJECTS];
-
-    // Try manifest
-    try {
-      const r = await fetch('./projects/_manifest.json');
-      if (r.ok) {
-        const m = await r.json();
-        ids = [...new Set([...m.projects || [], ...ids])];
-      }
-    } catch (_) {}
-
-    // Probe each ID
-    const results = await Promise.allSettled(
-      ids.filter(id => id !== '_template').map(async id => {
-        const r = await fetch(`./projects/${id}/config.json`);
-        if (!r.ok) return null;
-        const cfg = await r.json();
-        // Check if data exists
-        let hasData = false;
-        try {
-          const dr = await fetch(`./projects/${id}/${cfg.data.files.ml_insights}`, { method: 'HEAD' });
-          hasData = dr.ok;
-        } catch (_) {}
-        return { id, cfg, hasData };
-      })
-    );
-
-    ALL_PROJECTS = results
-      .filter(r => r.status === 'fulfilled' && r.value)
-      .map(r => r.value);
-
+    /* Try fetch-based discovery first (works on http://) */
+    if (location.protocol !== 'file:') {
+      let ids = [...SEED_PROJECTS];
+      try {
+        const r = await fetch('./projects/_manifest.json');
+        if (r.ok) { const m = await r.json(); ids = [...new Set([...m.projects || [], ...ids])]; }
+      } catch (_) {}
+      const results = await Promise.allSettled(
+        ids.filter(id => id !== '_template').map(async id => {
+          const r = await fetch(`./projects/${id}/config.json`);
+          if (!r.ok) return null;
+          const cfg = await r.json();
+          let hasData = false;
+          try { const dr = await fetch(`./projects/${id}/${cfg.data.files.ml_insights}`, { method: 'HEAD' }); hasData = dr.ok; } catch (_) {}
+          return { id, cfg, hasData };
+        })
+      );
+      ALL_PROJECTS = results.filter(r => r.status === 'fulfilled' && r.value).map(r => r.value);
+    }
+    /* Fall back to inline registry for file:// */
+    if (!ALL_PROJECTS.length) ALL_PROJECTS = INLINE_PROJECTS;
     renderGrid(ALL_PROJECTS);
   }
 
