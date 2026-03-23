@@ -102,7 +102,7 @@
     .cc { background:var(--surface); border:1px solid var(--border);
           border-radius:10px; padding:14px 16px;
           animation:cardIn .3s cubic-bezier(.25,.8,.25,1);
-          position:relative; min-width:0; overflow:visible; }
+          position:relative; min-width:0; overflow:hidden; }
     .cc.wide { grid-column:1/-1; }
     .cc-title { font-size:10px; font-weight:700; color:var(--muted);
                 text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
@@ -404,17 +404,28 @@
     .ideo-tab-btn.ideo-locked-tab { opacity:.35; cursor:not-allowed; }
     .ideo-tab-btn.ideo-locked-tab.unlocked { opacity:1; cursor:pointer; }
     .ideo-details-btn { border:1px solid var(--border2) !important; border-radius:6px !important;
-                        padding:4px 10px !important; font-size:11px !important;
-                        margin-left:8px; background:var(--surface3) !important; }
+                        padding:4px 10px !important; font-size:12px !important; font-family:inherit !important;
+                        margin-left:4px; background:var(--surface3) !important; }
     .ideo-details-btn:hover { border-color:var(--accent) !important; }
     .ideo-details-btn.active { color:var(--accent) !important; border-color:var(--accent) !important; }
+    /* Split export button + share */
+    .ideo-split-btn { display:inline-flex; position:relative; align-items:center; }
+    .ideo-split-menu { display:none; position:absolute; top:100%; left:0; margin-top:4px; z-index:999;
+                       background:var(--surface2); border:1px solid var(--border); border-radius:6px;
+                       box-shadow:0 4px 16px rgba(0,0,0,.4); overflow:hidden; min-width:80px; }
+    .ideo-split-menu.open { display:block; }
+    .ideo-split-menu button { display:block; width:100%; text-align:left; padding:7px 12px; font-size:11px;
+                              font-family:inherit; background:none; border:none; color:var(--text-dim); cursor:pointer; }
+    .ideo-split-menu button:hover { background:var(--surface3); color:var(--accent); }
     .ideo-action-row { display:flex; gap:0; overflow-x:auto; flex-wrap:nowrap;
                        scrollbar-width:none; border-bottom:1px solid var(--border);
-                       background:var(--surface3); margin-bottom:14px; }
+                       background:var(--surface3); margin-bottom:14px;
+                       position:sticky; top:38px; z-index:9; }
     .ideo-action-row::-webkit-scrollbar { display:none; }
-    .ideo-bar-gear { margin-left:auto; font-size:13px; opacity:.4; }
+    .ideo-tab-right { margin-left:auto; display:inline-flex; align-items:center; gap:2px; flex-shrink:0; }
+    .ideo-bar-gear { font-size:13px; opacity:.4; margin-left:4px; }
     .ideo-bar-gear.spinning { opacity:1; }
-    .ideo-tab-pane { display:none; flex-direction:column; gap:11px; min-width:0; }
+    .ideo-tab-pane { display:none; flex-direction:column; gap:11px; min-width:0; width:100%; box-sizing:border-box; overflow:visible; }
     .ideo-tab-pane.active { display:flex; }
     .ideo-lbl  { font-size:10.5px; font-weight:600; color:var(--muted);
                  text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
@@ -508,13 +519,63 @@
     .ideo-result { background:var(--surface2); border:1px solid var(--border);
                    border-radius:8px; padding:12px 14px; font-size:12.5px;
                    line-height:1.7; color:var(--text-dim); display:none;
-                   min-height:60px; max-height:60vh; overflow-y:auto;
-                   word-wrap:break-word; overflow-wrap:break-word; }
+                   min-height:60px; overflow-y:auto; overflow-x:hidden;
+                   word-wrap:break-word; overflow-wrap:break-word;
+                   width:100%; box-sizing:border-box; }
     .ideo-result.vis { display:block; }
     .ideo-result p  { margin:0 0 6px; }
     .ideo-result p:last-child { margin-bottom:0; }
     .ideo-result strong { color:var(--accent); }
     .ideo-result img { max-width:100%; height:auto; border-radius:6px; margin:6px 0; }
+    .ideo-result ul, .ideo-result ol { padding-left:24px; margin:4px 0 8px; }
+    .ideo-result li { margin-bottom:3px; }
+    .ideo-result pre { white-space:pre-wrap; word-break:break-word; overflow-x:auto; max-width:100%; }
+    .ideo-result table { table-layout:fixed; width:100%; word-wrap:break-word; }
+    .ideo-result h1, .ideo-result h2, .ideo-result h3, .ideo-result h4 { word-wrap:break-word; overflow-wrap:break-word; }
+    .ideo-result * { max-width:100%; }
+    /* Hypothesis hyperlinks */
+    .hyp-link { color:#60a5fa; cursor:pointer; text-decoration:underline; text-decoration-style:dotted;
+                text-underline-offset:2px; transition:color .15s; position:relative; }
+    .hyp-link:hover { color:#93c5fd; }
+    .hyp-popup { position:fixed; z-index:9999; background:var(--surface2); border:1px solid var(--accent);
+                 border-radius:12px; padding:0; max-width:420px; min-width:300px; overflow:hidden;
+                 box-shadow:0 12px 48px rgba(0,0,0,.6); font-size:12px; line-height:1.6; color:var(--text-dim);
+                 pointer-events:auto; max-height:70vh; overflow-y:auto; }
+    .hyp-popup::-webkit-scrollbar { width:4px; }
+    .hyp-popup::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+    .hyp-popup-header { padding:12px 16px; background:rgba(124,106,247,.08); border-bottom:1px solid var(--border);
+                        display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:1;
+                        background:var(--surface2); }
+    .hyp-popup-id { font-size:10px; font-weight:800; color:var(--accent); background:rgba(124,106,247,.12);
+                    padding:2px 8px; border-radius:10px; }
+    .hyp-popup-cat { font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.06em;
+                     padding:2px 7px; border-radius:10px; }
+    .hyp-popup-close { background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer;
+                       margin-left:auto; padding:2px 4px; }
+    .hyp-popup-close:hover { color:var(--text); }
+    .hyp-popup-body { padding:12px 16px; }
+    .hyp-popup-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:6px; line-height:1.4; }
+    .hyp-popup-desc { font-size:11.5px; color:var(--text-dim); line-height:1.6; margin-bottom:10px; }
+    .hyp-popup-section { margin-bottom:10px; }
+    .hyp-popup-section-title { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+                               color:var(--muted); margin-bottom:4px; }
+    .hyp-popup-ev { display:flex; align-items:flex-start; gap:6px; padding:3px 0; font-size:11px; }
+    .hyp-popup-ev-icon { flex-shrink:0; }
+    .hyp-popup-ab { background:rgba(124,106,247,.06); border:1px solid rgba(124,106,247,.15);
+                    border-radius:8px; padding:8px 12px; font-size:11.5px; line-height:1.5; }
+    .hyp-popup-ab strong { color:var(--accent); }
+    .hyp-popup-context { background:rgba(52,211,153,.06); border:1px solid rgba(52,211,153,.15);
+                         border-radius:8px; padding:8px 12px; font-size:11px; line-height:1.5; color:var(--text-dim); }
+    .hyp-popup-context strong { color:#34d399; }
+    .hyp-popup-tier { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px;
+                      border-radius:10px; margin-right:6px; }
+    .hyp-popup-tier.gold { background:rgba(251,191,36,.12); color:#fbbf24; border:1px solid rgba(251,191,36,.2); }
+    .hyp-popup-tier.silver { background:rgba(148,163,184,.12); color:#94a3b8; border:1px solid rgba(148,163,184,.2); }
+    .hyp-popup-tier.bronze { background:rgba(251,146,60,.12); color:#fb923c; border:1px solid rgba(251,146,60,.2); }
+    /* Speaker colors in script dialogue */
+    .script-speaker { font-weight:700; margin-right:4px; }
+    .script-direction { font-style:italic; color:var(--muted); font-size:11px; }
+    .script-line { margin-bottom:6px; padding:4px 0; border-bottom:1px solid rgba(255,255,255,.04); }
 
     /* Validation checklist */
     .ideo-check-section { margin-bottom:16px; }
@@ -561,9 +622,13 @@
                        font-size:12px; color:var(--text-dim); }
 
     /* ── Pipeline Graph Visualization ─────────────────────────── */
-    .pipe-graph-wrap { display:flex; gap:12px; margin-bottom:12px; }
-    .pipe-graph { flex:1; min-width:0; position:relative; }
-    .pipe-graph svg { width:100%; height:auto; display:block; }
+    .pipe-graph-wrap { display:flex; gap:10px; margin-bottom:6px; align-items:stretch; width:100%; height:170px; }
+    .pipe-graph { flex:1 1 25%; min-width:0; position:relative; opacity:.8;
+      background:var(--surface2); border-radius:8px; padding:8px; display:flex; flex-direction:column; }
+    .pipe-convergence-panel { flex:1 1 35%; min-width:0; background:var(--surface2); border-radius:8px; padding:8px;
+      display:flex; flex-direction:column; }
+    .pipe-graph svg { width:100%; height:100%; flex:1; display:block; }
+    .pipe-convergence-panel svg { width:100%; height:100%; flex:1; display:block; }
     .pipe-graph svg text { font-family:system-ui,-apple-system,sans-serif; }
 
     /* Agent nodes */
@@ -642,37 +707,32 @@
       animation: edge-flash 1s ease-in-out infinite;
     }
 
-    /* Audience panel sidebar — compact bar chart, purple theme */
-    .pipe-aud-panel { display:flex; flex-direction:column; gap:3px;
-      padding:5px 6px; background:rgba(147,51,234,.08); border-radius:8px;
-      border:1px solid rgba(147,51,234,.25); min-width:88px; }
+    /* Audience panel — compact 3-column grid, purple theme */
+    .pipe-aud-panel { flex:1 1 35%; display:flex; flex-direction:column; gap:2px;
+      padding:5px 8px; background:rgba(147,51,234,.08); border-radius:8px;
+      border:1px solid rgba(147,51,234,.25); min-width:0; }
     .pipe-aud-title { font-size:9px; font-weight:700; color:rgba(192,132,252,.9);
       padding:1px 0; text-align:center; letter-spacing:.3px; }
-    .pipe-aud-node { display:flex; align-items:center; gap:4px;
-      font-size:9px; padding:2px 4px; border-radius:4px;
-      background:rgba(147,51,234,.06); transition:all .3s; position:relative; }
-    .pipe-aud-node .aud-emoji { font-size:11px; flex-shrink:0; width:14px; text-align:center; }
-    .pipe-aud-node .aud-name { flex-shrink:0; width:38px; color:var(--muted); font-size:8px; }
-    .pipe-aud-node .aud-bar-track { flex:1; height:6px; background:rgba(147,51,234,.1);
-      border-radius:3px; overflow:hidden; min-width:24px; }
-    .pipe-aud-node .aud-bar-fill { height:100%; border-radius:3px;
-      background:linear-gradient(90deg, rgba(147,51,234,.5), rgba(192,132,252,.8));
-      transition:width .6s ease; width:0%; }
+    .pipe-aud-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:2px; }
+    .pipe-aud-node { display:flex; align-items:center; gap:2px;
+      font-size:8px; padding:2px 3px; border-radius:3px;
+      background:rgba(147,51,234,.06); transition:all .3s; position:relative;
+      overflow:hidden; }
+    .pipe-aud-node .aud-emoji { font-size:9px; flex-shrink:0; width:12px; text-align:center; }
+    .pipe-aud-node .aud-name { flex:1; color:var(--muted); font-size:7px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+    .pipe-aud-node .aud-bar-track { display:none; }
     .pipe-aud-rating { font-weight:700; font-size:8px; color:rgba(192,132,252,.9);
-      min-width:14px; text-align:right; }
+      min-width:12px; text-align:right; }
     @keyframes aud-pulse {
       0%   { box-shadow:0 0 3px rgba(147,51,234,.15); }
-      50%  { box-shadow:0 0 10px rgba(147,51,234,.4); }
+      50%  { box-shadow:0 0 8px rgba(147,51,234,.4); }
       100% { box-shadow:0 0 3px rgba(147,51,234,.15); }
     }
-    .pipe-aud-node.active { background:rgba(147,51,234,.15);
+    .pipe-aud-node.active { background:rgba(147,51,234,.18);
       animation: aud-pulse 1.4s ease-in-out infinite; }
-    .pipe-aud-node.active .aud-bar-fill { background:linear-gradient(90deg, rgba(147,51,234,.6), rgba(192,132,252,1));
-      animation: aud-bar-shimmer 1.5s ease-in-out infinite; }
-    @keyframes aud-bar-shimmer {
-      0%,100% { opacity:.7; } 50% { opacity:1; }
-    }
-    .pipe-aud-node.done .aud-bar-fill { background:linear-gradient(90deg, rgba(147,51,234,.6), rgba(192,132,252,.9)); }
+    .pipe-aud-node.done { background:rgba(147,51,234,.1); }
+    .pipe-aud-node.done .pipe-aud-rating { color:rgba(192,132,252,1); }
     .pipe-aud-avg { display:flex; align-items:center; justify-content:space-between;
       padding:2px 4px; margin-top:1px; border-top:1px solid rgba(147,51,234,.15); }
     .pipe-aud-avg-label { font-size:8px; color:rgba(192,132,252,.7); font-weight:600; }
@@ -1122,6 +1182,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   initResizer();
   PROJECT_ID = new URLSearchParams(location.search).get('project') || '';
   if (!PROJECT_ID) { showFatal('No project specified. Use ?project=cut'); return; }
+
+  // Auto-sync API key from proxy → localStorage (direct calls bypass proxy, much more stable)
+  if (!IS_PROD && !localStorage.getItem('anthropic_api_key')) {
+    try {
+      const kr = await fetch('http://localhost:5765/api/key-hint');
+      if (kr.ok) {
+        const kd = await kr.json();
+        if (kd.ok && kd.key) {
+          localStorage.setItem('anthropic_api_key', kd.key);
+          console.log('[Init] API key synced from proxy → localStorage (direct API calls enabled)');
+        }
+      }
+    } catch(_) { /* proxy not running, no worries */ }
+  }
+
   await loadProject(PROJECT_ID);
 });
 
@@ -1214,6 +1289,11 @@ async function loadProject(id) {
   buildRadialMenu(CONFIG);
   checkAPIStatus();
   setStatus('ok', ML_INSIGHTS ? 'ML loaded' : 'No data');
+
+  // ── Pre-generate audience personas in background ─────────────
+  // Fire-and-forget: starts immediately so personas are ready by
+  // the time the user clicks Ideate. No `await` — doesn't block UI.
+  _preloadAudiencePersonas();
 }
 
 
@@ -1300,8 +1380,8 @@ function buildRadialMenu(cfg) {
     { keys:['hypotheses','hyp-panel'],        id:'hypothesis',       icon:'🔬', label:'Recommendations'      },
     { keys:['trends','trend-panel'],          id:'trend-chart',      icon:'📈', label:'Social Media Trends'  },
     { keys:['analysis','analysis-panel'],     id:'corr-chart',       icon:'🧠', label:'AI Analysis'          },
-    { keys:['performance','perf-panel'],      id:'performance',      icon:'📊', label:'YouTube Performance'  },
-    { keys:['videos','video-panel','data','data-panel','summary','report-panel'], id:'videos-combined', icon:'🎬', label:'Videos' },
+    { keys:['performance','perf-panel'],      id:'performance',      icon:'📊', label:'Channel Performance'  },
+    { keys:['videos','video-panel','data','data-panel','summary','report-panel'], id:'videos-combined', icon:'🎬', label:'Channel' },
   ];
 
   // Always use SPOKE_MAP order (config radial_menu is ignored for ordering)
@@ -1434,8 +1514,9 @@ function afterCardInsert(card) {
   }
   // Populate sessions dropdown for ideation card
   if (card.type === 'ideation') {
-    _refreshSessionDropdown(card.id);
+    _refreshSessionDropdown(card.id, true);  // autoLoad most recent session
     _initPipeGraph(card.id);
+    _buildAudPanelNodes(card.id);  // Show personas or generating spinner
   }
   // Wire up feature search
   if (card.type === 'features-explorer') {
@@ -1926,15 +2007,65 @@ function buildPerformanceHTML(card) {
     section('traffic',  '🔀', 'Traffic',      '—', '', trafficBody) +
     section('audience', '👥', 'Audience',      '—', '', audienceBody);
 
-  return `<div class="cc-title">Performance</div>
+  /* ── 12. Video Grid (compact browse inside perf panel) ── */
+  const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
+  const titleFld = CONFIG?.data?.fields?.title    || 'title';
+  const thumbFld = CONFIG?.data?.fields?.thumbnail|| 'thumbnail';
+  const sortedVids = (d ? d.recent : VIDEOS).slice().sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
+  const VID_PAGE = 12;
+  const vidCards = sortedVids.slice(0, VID_PAGE).map(v => videoCardHTML(v, idFld, titleFld, thumbFld)).join('');
+  const vidMore  = sortedVids.length > VID_PAGE
+    ? `<button class="vbr-load-more" onclick="perfLoadMoreVids('${sid}')" id="perf-vidmore-${sid}">Load 12 more · ${sortedVids.length - VID_PAGE} remaining</button>`
+    : '';
+  const videoGridBody = vidCards
+    ? `<div class="vbr-grid" id="perf-vidgrid-${sid}">${vidCards}</div>${vidMore}`
+    : `<div class="perf-empty">No videos loaded.</div>`;
+
+  const allSections = sections +
+    section('vidgrid', '🎬', 'Videos', `${sortedVids.length}`, '', videoGridBody, true);
+
+  return `<div class="cc-title">Channel Performance</div>
     <div class="ml-filter-bar">${periodDd}</div>
-    ${sections}`;
+    ${allSections}`;
 }
 
 /* Toggle accordion section */
 function togglePerfSection(sid, secId) {
   const el = document.getElementById(`perf-sec-${sid}-${secId}`);
   if (el) el.classList.toggle('open');
+}
+
+/* Load more videos inside the performance panel video grid */
+const _perfVidPage = {};
+function perfLoadMoreVids(sid) {
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (!card) return;
+  const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
+  const titleFld = CONFIG?.data?.fields?.title    || 'title';
+  const thumbFld = CONFIG?.data?.fields?.thumbnail|| 'thumbnail';
+  const days = parseInt(card.opts.period || '90');
+  const now  = Date.now();
+  const dateFld = CONFIG?.data?.fields?.date || 'published_at';
+  const recent = days >= 9999 ? VIDEOS : VIDEOS.filter(v => {
+    const d = new Date(v[dateFld]);
+    return !isNaN(d) && (now - d.getTime()) < days * 86400000;
+  });
+  const sorted = recent.slice().sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
+  if (!_perfVidPage[sid]) _perfVidPage[sid] = 12;
+  _perfVidPage[sid] += 12;
+  const gridEl = document.getElementById(`perf-vidgrid-${sid}`);
+  const moreEl = document.getElementById(`perf-vidmore-${sid}`);
+  if (!gridEl) return;
+  const html = sorted.slice(0, _perfVidPage[sid]).map(v => videoCardHTML(v, idFld, titleFld, thumbFld)).join('');
+  gridEl.innerHTML = html;
+  const remaining = sorted.length - _perfVidPage[sid];
+  if (moreEl) {
+    if (remaining > 0) {
+      moreEl.textContent = `Load 12 more · ${remaining} remaining`;
+    } else {
+      moreEl.style.display = 'none';
+    }
+  }
 }
 
 /* Re-render performance card when period changes */
@@ -2289,7 +2420,6 @@ function buildIdeationTabsHTML(card) {
   const TABS_PRIMARY = [
     { id:'concept',     emoji:'📋', label:'Production Note', locked:true },
     { id:'validation',  emoji:'✅', label:'Validation',  locked:true },
-    { id:'experience',  emoji:'📋', label:'Experience'  },
     { id:'running',     emoji:'⚙️', label:'Running'     },
   ];
   const TABS_ACTION = [
@@ -2315,8 +2445,20 @@ function buildIdeationTabsHTML(card) {
        onclick="switchIdeoTab('${sid}','${t.id}',this)">${t.emoji} ${t.label}</button>`).join('');
   const detailsBtn = `<button class="ideo-tab-btn ideo-details-btn"
     onclick="toggleIdeoActionTabs(this,'${sid}')">▸ Details</button>`;
+  const exportBtns = `<span class="ideo-split-btn" id="ideo-split-btn-${sid}">
+      <button class="ideo-tab-btn ideo-details-btn" onclick="_exportIdeo('${sid}','docx')" title="Download as Word (.doc)" style="border-radius:6px 0 0 6px !important;margin-left:4px">DOCX</button><button class="ideo-tab-btn ideo-details-btn ideo-split-arrow-btn" onclick="event.stopPropagation();_toggleExportMenu('${sid}')" style="border-radius:0 6px 6px 0 !important;border-left:none !important;padding:4px 5px !important;margin-left:0">▾</button>
+      <div class="ideo-split-menu" id="ideo-export-menu-${sid}">
+        <button onclick="_exportIdeo('${sid}','docx');_closeExportMenu('${sid}')">DOCX</button>
+        <button onclick="_exportIdeo('${sid}','pdf');_closeExportMenu('${sid}')">PDF</button>
+        <button onclick="_exportIdeo('${sid}','pptx');_closeExportMenu('${sid}')">PPTX</button>
+      </div>
+    </span>
+    <button class="ideo-tab-btn ideo-details-btn ideo-share-btn" onclick="_shareIdeo('${sid}')" title="Share" style="margin-left:4px;padding:4px 7px !important;display:inline-flex;align-items:center">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+    </button>`;
   const barGear = `<span class="ideo-gear ideo-bar-gear" id="ideo-bar-gear-${sid}" title="Ideation status"></span>`;
-  const primaryRow = primaryBtns + detailsBtn + barGear;
+  const rightGroup = `<span class="ideo-tab-right">${exportBtns}${barGear}</span>`;
+  const primaryRow = primaryBtns + detailsBtn + rightGroup;
   const actionRow = `<div class="ideo-action-row" id="ideo-action-row-${sid}" style="display:none">${actionBtns}</div>`;
 
   /* Evidence tab — pre-render ML data inline */
@@ -2377,7 +2519,7 @@ function buildIdeationTabsHTML(card) {
             <div class="ideo-lbl">Audience</div>
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
               <div class="ideo-chips" id="aud-${sid}" style="flex-shrink:0">${audChips}</div>
-              <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:180px">
+              <div style="display:flex;align-items:center;gap:6px;flex:0 1 280px;min-width:180px;max-width:280px">
                 <span style="font-size:11px;color:var(--muted)">♀</span>
                 <input type="range" id="gender-ratio-${sid}" min="0" max="100" value="50"
                   style="flex:1;height:4px;accent-color:var(--accent);cursor:pointer"
@@ -2452,34 +2594,23 @@ function buildIdeationTabsHTML(card) {
       </div>
     </div>
 
-    <!-- 📋 Experience (Cut Development Checklist) -->
-    <div class="ideo-tab-pane" id="itab-${sid}-experience">
-      <div class="ideo-result vis" id="ideo-out-${sid}-experience"
-           style="display:block;font-size:12.5px;line-height:1.7">
-        ${_buildValidationChecklist(sid, '')}
-      </div>
-    </div>
-
     <!-- ⚙️ Running (default active tab — clean, empty view on first open) -->
     <div class="ideo-tab-pane active" id="itab-${sid}-running">
       <div class="ideo-run-status" id="ideo-run-status-${sid}">
         <span class="ideo-gear" id="ideo-gear-${sid}">⚙️</span>
-        <span id="ideo-run-label-${sid}">No process running</span>
+        <span id="ideo-run-label-${sid}">${_personaGenerationPromise ? '🎭 Generating audience panel…' : (_personasGenerated ? '✓ Audience panel ready' : 'Ready to ideate')}</span>
       </div>
       <div class="pipe-graph-wrap">
         <div class="pipe-graph" id="pipe-graph-${sid}"></div>
         <div class="pipe-aud-panel" id="pipe-aud-panel-${sid}">
           <div class="pipe-aud-title">🎭 AUDIENCE</div>
-          <div class="pipe-aud-node" id="pipe-aud-zara-${sid}"><span class="aud-emoji">💅</span><span class="aud-name">Zara</span><span class="aud-bar-track"><span class="aud-bar-fill" id="pipe-aud-bar-zara-${sid}"></span></span><span class="pipe-aud-rating" id="pipe-aud-r-zara-${sid}">—</span></div>
-          <div class="pipe-aud-node" id="pipe-aud-james-${sid}"><span class="aud-emoji">🎧</span><span class="aud-name">James</span><span class="aud-bar-track"><span class="aud-bar-fill" id="pipe-aud-bar-james-${sid}"></span></span><span class="pipe-aud-rating" id="pipe-aud-r-james-${sid}">—</span></div>
-          <div class="pipe-aud-node" id="pipe-aud-priya-${sid}"><span class="aud-emoji">📚</span><span class="aud-name">Priya</span><span class="aud-bar-track"><span class="aud-bar-fill" id="pipe-aud-bar-priya-${sid}"></span></span><span class="pipe-aud-rating" id="pipe-aud-r-priya-${sid}">—</span></div>
-          <div class="pipe-aud-node" id="pipe-aud-lucas-${sid}"><span class="aud-emoji">🎮</span><span class="aud-name">Lucas</span><span class="aud-bar-track"><span class="aud-bar-fill" id="pipe-aud-bar-lucas-${sid}"></span></span><span class="pipe-aud-rating" id="pipe-aud-r-lucas-${sid}">—</span></div>
-          <div class="pipe-aud-node" id="pipe-aud-thomas-${sid}"><span class="aud-emoji">🍺</span><span class="aud-name">Thomas</span><span class="aud-bar-track"><span class="aud-bar-fill" id="pipe-aud-bar-thomas-${sid}"></span></span><span class="pipe-aud-rating" id="pipe-aud-r-thomas-${sid}">—</span></div>
-          <div class="pipe-aud-avg" id="pipe-aud-avg-${sid}"><span class="pipe-aud-avg-label">AVG</span><span class="pipe-aud-avg-val" id="pipe-aud-avg-val-${sid}">—</span></div>
+          <!-- Audience persona nodes are injected dynamically by _buildAudPanelNodes() -->
+          <div id="pipe-aud-nodes-${sid}"></div>
+          <div class="pipe-aud-avg" id="pipe-aud-avg-${sid}"><span class="pipe-aud-avg-label">FANS</span><span class="pipe-aud-avg-val" id="pipe-aud-fans-val-${sid}">—</span> <span class="pipe-aud-avg-label" style="margin-left:6px">FLOOR</span><span class="pipe-aud-avg-val" id="pipe-aud-floor-val-${sid}">—</span></div>
         </div>
+        <div class="pipe-convergence-panel" id="pipe-convergence-${sid}"></div>
       </div>
       <div class="pipe-stage-label" id="pipe-stage-label-${sid}"></div>
-      <div id="pipe-convergence-${sid}" style="margin-bottom:8px"></div>
       <div class="ideo-run-log" id="ideo-run-log-${sid}">Waiting for ideation…</div>
     </div>
 
@@ -2739,20 +2870,42 @@ function _saveIdeoSessions(sessions) {
   localStorage.setItem(IDEO_SESSIONS_KEY, JSON.stringify(sessions));
 }
 
-function _refreshSessionDropdown(sid) {
+/* Persist a single action's raw text to the most recent session in localStorage.
+   Called immediately after generation, BEFORE rendering — so text survives even if
+   the browser crashes or user navigates away mid-pipeline. */
+function _persistSessionRawText(sid, action, text) {
+  try {
+    const sessions = _getIdeoSessions();
+    // Find the most recent non-deleted session (the one currently being built)
+    const recent = sessions.find(s => !s.deleted);
+    if (!recent) return; // No session yet — will be saved when saveIdeoSession() runs
+    if (!recent.rawTexts) recent.rawTexts = {};
+    recent.rawTexts[action] = text;
+    _saveIdeoSessions(sessions);
+  } catch (_) { /* localStorage quota or parse error — non-fatal */ }
+}
+
+function _refreshSessionDropdown(sid, autoLoad) {
   const dd = document.getElementById(`ideo-session-dd-${sid}`);
   if (!dd) return;
-  const sessions = _getIdeoSessions();
+  const sessions = _getIdeoSessions().filter(s => !s.deleted);
   const currentVal = dd.value;
   dd.innerHTML = '<option value="__new">+ New session</option>';
-  sessions.filter(s => !s.deleted).forEach(s => {
+  sessions.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s.id;
     opt.textContent = s.title || `Session ${s.id.slice(-4)}`;
     dd.appendChild(opt);
   });
   // Re-select current if it exists
-  if (currentVal && [...dd.options].some(o => o.value === currentVal)) dd.value = currentVal;
+  if (currentVal && currentVal !== '__new' && [...dd.options].some(o => o.value === currentVal)) {
+    dd.value = currentVal;
+  } else if (autoLoad && sessions.length > 0) {
+    // Auto-select the most recent session on first load
+    dd.value = sessions[0].id;
+    loadIdeoSession(sid, sessions[0].id);
+  }
+  _updateSessionDeleteBtn(sid);
 }
 
 function saveIdeoSession(sid) {
@@ -2804,12 +2957,15 @@ function saveIdeoSession(sid) {
   }
 
   const sessionId = `ideo-${Date.now()}`;
+  // Include raw markdown texts so we can export full content later
+  const rawTexts = window._ideoRawTexts?.[sid] || {};
   const session = {
     id: sessionId,
     title,
     ts: Date.now(),
     config: { fmt, aud, dur, nov, brief, genderRatio, customDur },
     outputs,
+    rawTexts,
     deleted: false
   };
 
@@ -2824,7 +2980,268 @@ function saveIdeoSession(sid) {
   const dd = document.getElementById(`ideo-session-dd-${sid}`);
   if (dd) dd.value = sessionId;
 
+  // ── Persist to disk via proxy ──────────────────────────────────
+  _persistSessionToDisk(sessionId, title, session.config, outputs, sid);
+
   return sessionId;
+}
+
+async function _persistSessionToDisk(sessionId, title, config, outputs, sid) {
+  try {
+    const project = new URLSearchParams(location.search).get('project') || 'cut';
+    const rawTexts = window._ideoRawTexts?.[sid] || {};
+    const resp = await fetch('http://localhost:5765/api/session/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        project,
+        sessionId,
+        title,
+        ts: Date.now(),
+        config,
+        outputs,
+        rawTexts,
+      }),
+    });
+    const result = await resp.json();
+    if (result.ok) {
+      console.log(`[Session] Saved to disk: ${result.path} (${result.files.length} files)`);
+      _ideoLog(sid, `📁 Saved to disk: sessions/${sessionId}/ (${result.files.length} files)`, 'log-ok');
+    } else {
+      console.warn('[Session] Disk save failed:', result.error);
+    }
+  } catch (e) {
+    // Proxy not running — localStorage save is still fine
+    console.warn('[Session] Disk persistence unavailable (proxy not running?):', e.message);
+  }
+}
+
+// ── Export split-button menu helpers ─────────────────────────────
+function _toggleExportMenu(sid) {
+  // Remove any existing floating menu
+  const existing = document.getElementById(`ideo-export-menu-float-${sid}`);
+  if (existing) { existing.remove(); return; }
+
+  // Find the arrow button to anchor position
+  const arrow = document.querySelector(`#ideo-split-btn-${sid} .ideo-split-arrow-btn`);
+  if (!arrow) return;
+  const rect = arrow.getBoundingClientRect();
+
+  // Create floating menu appended to body (avoids overflow:hidden clipping)
+  const menuDiv = document.createElement('div');
+  menuDiv.id = `ideo-export-menu-float-${sid}`;
+  menuDiv.className = 'ideo-split-menu open';
+  menuDiv.style.cssText = `position:fixed;z-index:9999;top:${rect.bottom + 4}px;left:${rect.left}px`;
+  menuDiv.innerHTML = `
+    <button onclick="_exportIdeo('${sid}','docx');document.getElementById('ideo-export-menu-float-${sid}')?.remove()">DOCX</button>
+    <button onclick="_exportIdeo('${sid}','pdf');document.getElementById('ideo-export-menu-float-${sid}')?.remove()">PDF</button>
+    <button onclick="_exportIdeo('${sid}','pptx');document.getElementById('ideo-export-menu-float-${sid}')?.remove()">PPTX</button>`;
+  document.body.appendChild(menuDiv);
+
+  // Close on outside click
+  const close = (e) => {
+    if (!menuDiv.contains(e.target) && e.target !== arrow) {
+      menuDiv.remove();
+      document.removeEventListener('click', close);
+    }
+  };
+  setTimeout(() => document.addEventListener('click', close), 0);
+}
+function _closeExportMenu(sid) {
+  const menu = document.getElementById(`ideo-export-menu-${sid}`);
+  if (menu) menu.classList.remove('open');
+}
+
+// ── Share button ────────────────────────────────────────────────
+function _shareIdeo(sid) {
+  const rawTexts = window._ideoRawTexts?.[sid] || {};
+  const concept = rawTexts.concept || document.getElementById(`ideo-out-${sid}-concept`)?.textContent || '';
+  const project = CONFIG?.project?.name || 'CUT Analytics';
+
+  // Extract title from concept
+  const titleMatch = concept.match(/^##?\s+(.+)/m);
+  const title = titleMatch ? titleMatch[1].replace(/\*\*/g, '').trim() : `${project} Ideation`;
+
+  // Build a concise shareable summary (first ~500 chars of concept)
+  const summary = concept.replace(/^#+\s+.+\n/gm, '').trim().substring(0, 400).replace(/\n/g, ' ');
+  const shareText = `${title}\n\n${summary}…\n\n— Generated by CUT Analytics`;
+  const shareUrl = window.location.href;
+
+  // Use Web Share API if available (works on macOS Safari, mobile)
+  if (navigator.share) {
+    navigator.share({ title, text: shareText, url: shareUrl }).catch(() => {});
+    return;
+  }
+
+  // Fallback: show a share menu
+  const existing = document.getElementById(`ideo-share-menu-${sid}`);
+  if (existing) { existing.remove(); return; }
+
+  const encoded = encodeURIComponent(shareText);
+  const encodedUrl = encodeURIComponent(shareUrl);
+  const encodedTitle = encodeURIComponent(title);
+
+  const menuHtml = `<div class="ideo-split-menu open" id="ideo-share-menu-${sid}" style="position:fixed;z-index:9999">
+    <button onclick="navigator.clipboard.writeText(\`${shareText.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`);this.textContent='✓ Copied!';setTimeout(()=>document.getElementById('ideo-share-menu-${sid}')?.remove(),800)">📋 Copy to clipboard</button>
+    <button onclick="window.open('https://api.whatsapp.com/send?text=${encoded}','_blank');document.getElementById('ideo-share-menu-${sid}')?.remove()">💬 WhatsApp</button>
+    <button onclick="window.open('https://slack.com/share?text=${encoded}','_blank');document.getElementById('ideo-share-menu-${sid}')?.remove()">💼 Slack</button>
+    <button onclick="window.open('mailto:?subject=${encodedTitle}&body=${encoded}','_blank');document.getElementById('ideo-share-menu-${sid}')?.remove()">✉️ Email</button>
+    <button onclick="window.open('https://twitter.com/intent/tweet?text=${encodeURIComponent(title + ' — ' + summary.substring(0, 200) + '…')}','_blank');document.getElementById('ideo-share-menu-${sid}')?.remove()">🐦 Twitter/X</button>
+  </div>`;
+
+  const btn = document.querySelector(`#ideo-split-btn-${sid}`)?.closest('.ideo-toolbar')?.querySelector('.ideo-share-btn');
+  if (!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.innerHTML = menuHtml;
+  const menu = div.firstElementChild;
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+  document.body.appendChild(menu);
+
+  // Close on outside click
+  setTimeout(() => {
+    const close = (e) => {
+      if (!menu.contains(e.target)) { menu.remove(); document.removeEventListener('click', close); }
+    };
+    document.addEventListener('click', close);
+  }, 0);
+}
+
+// ── Export ideation to Word / PDF / PowerPoint ──────────────────
+async function _exportIdeo(sid, format) {
+  const TABS = ['concept','storyboard','script','casting','production','titles','thumbnails','distribution','validation'];
+  const TAB_LABELS = { concept:'Production Note', storyboard:'Storyboard', script:'Script', casting:'Cast',
+    production:'Production Plan', titles:'Titles & Packaging', thumbnails:'Thumbnails', distribution:'Distribution', validation:'Validation' };
+
+  // Gather raw markdown (preferred) or rendered HTML
+  const sections = [];
+  const rawTexts = window._ideoRawTexts?.[sid] || {};
+  TABS.forEach(t => {
+    const raw = rawTexts[t];
+    const el = document.getElementById(`ideo-out-${sid}-${t}`);
+    const html = el?.innerHTML || '';
+    if (!raw && !html) return;
+    sections.push({ id: t, label: TAB_LABELS[t] || t, raw: raw || '', html });
+  });
+
+  if (sections.length === 0) { alert('No content to export. Run ideation first.'); return; }
+
+  const project = CONFIG?.project?.name || 'CUT Ideation';
+  const ts = new Date().toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+  const title = sections[0]?.raw?.match(/^#\s+(.+)/m)?.[1] || `${project} — Ideation Output`;
+
+  if (format === 'docx' || format === 'pdf') {
+    // Generate HTML document — Word opens .doc HTML natively, PDF uses print
+    const bodyHtml = sections.map(s => `
+      <h1 style="color:#7c6af7;border-bottom:2px solid #7c6af7;padding-bottom:6px;margin-top:30px">${s.label}</h1>
+      <div class="section-content">${s.html || marked.parse(s.raw)}</div>
+    `).join('');
+
+    const fullHtml = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${_escHtml(title)}</title>
+<style>
+  body { font-family:Helvetica,Arial,sans-serif; max-width:800px; margin:40px auto; padding:0 30px;
+         color:#1a1a2e; line-height:1.7; font-size:13px; }
+  h1 { font-size:20px; margin-top:28px; }
+  h2 { font-size:16px; color:#333; margin-top:18px; }
+  h3 { font-size:14px; color:#555; }
+  strong { color:#4a3d8f; }
+  ul, ol { padding-left:24px; }
+  li { margin-bottom:4px; }
+  table { border-collapse:collapse; width:100%; margin:12px 0; }
+  th, td { border:1px solid #ccc; padding:6px 10px; text-align:left; font-size:12px; }
+  th { background:#f0f0f0; font-weight:600; }
+  .cover { text-align:center; margin:60px 0 40px; }
+  .cover h1 { font-size:28px; color:#7c6af7; border:none; }
+  .cover p { color:#666; font-size:14px; }
+  @media print { body { margin:0; padding:20px; } .cover { page-break-after:always; } }
+</style></head><body>
+<div class="cover">
+  <h1>${_escHtml(title)}</h1>
+  <p>${_escHtml(project)} · ${ts}</p>
+  <p style="margin-top:20px;font-size:12px;color:#999">Generated by CUT Analytics Ideation Pipeline</p>
+</div>
+${bodyHtml}
+</body></html>`;
+
+    if (format === 'pdf') {
+      // Open in new window for print-to-PDF
+      const w = window.open('', '_blank');
+      w.document.write(fullHtml);
+      w.document.close();
+      setTimeout(() => w.print(), 500);
+    } else {
+      // Download as .doc (Word opens HTML natively)
+      const blob = new Blob([fullHtml], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${project.replace(/[^a-zA-Z0-9]/g, '_')}_ideation.doc`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  } else if (format === 'pptx') {
+    // Load PptxGenJS from CDN if not already loaded
+    if (!window.PptxGenJS) {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgenjs.bundle.js';
+      document.head.appendChild(script);
+      await new Promise((resolve, reject) => { script.onload = resolve; script.onerror = reject; });
+    }
+
+    const pres = new PptxGenJS();
+    pres.layout = 'LAYOUT_16x9';
+    pres.author = 'CUT Analytics';
+    pres.title = title;
+
+    // Title slide
+    let slide = pres.addSlide();
+    slide.background = { color: '1a1a2e' };
+    slide.addText(title, { x: 0.8, y: 1.5, w: 8.4, h: 1.5, fontSize: 28, color: 'FFFFFF', fontFace: 'Helvetica', bold: true });
+    slide.addText(`${project} · ${ts}`, { x: 0.8, y: 3.0, w: 8.4, h: 0.5, fontSize: 14, color: '7c6af7', fontFace: 'Helvetica' });
+    slide.addText('Generated by CUT Analytics Ideation Pipeline', { x: 0.8, y: 4.5, w: 8.4, h: 0.4, fontSize: 10, color: '666666' });
+
+    // Content slides — one per section
+    sections.forEach(s => {
+      // Strip HTML tags for plain text, split into chunks
+      const text = s.raw || s.html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+      const lines = text.split('\n').filter(l => l.trim());
+
+      // Section title slide
+      slide = pres.addSlide();
+      slide.background = { color: '1a1a2e' };
+      slide.addText(s.label, { x: 0.8, y: 2.0, w: 8.4, h: 1.0, fontSize: 24, color: '7c6af7', fontFace: 'Helvetica', bold: true });
+
+      // Content slides — chunk text into pages (~18 lines per slide)
+      const LINES_PER_SLIDE = 18;
+      for (let i = 0; i < lines.length; i += LINES_PER_SLIDE) {
+        const chunk = lines.slice(i, i + LINES_PER_SLIDE);
+        slide = pres.addSlide();
+        slide.background = { color: '1a1a2e' };
+        slide.addText(s.label, { x: 0.5, y: 0.2, w: 9, h: 0.4, fontSize: 11, color: '7c6af7', fontFace: 'Helvetica', bold: true });
+
+        const bodyText = chunk.map(line => {
+          const isHeading = line.startsWith('#');
+          const cleaned = line.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+          return {
+            text: cleaned + '\n',
+            options: {
+              fontSize: isHeading ? 13 : 10,
+              color: isHeading ? '7c6af7' : 'cccccc',
+              bold: isHeading,
+              fontFace: 'Helvetica',
+              breakLine: true
+            }
+          };
+        });
+
+        slide.addText(bodyText, { x: 0.5, y: 0.7, w: 9, h: 4.6, valign: 'top', lineSpacing: 14 });
+      }
+    });
+
+    pres.writeFile({ fileName: `${project.replace(/[^a-zA-Z0-9]/g, '_')}_ideation.pptx` });
+  }
 }
 
 function loadIdeoSession(sid, sessionId) {
@@ -2871,6 +3288,12 @@ function loadIdeoSession(sid, sessionId) {
   for (const [tab, html] of Object.entries(session.outputs || {})) {
     const el = document.getElementById(`ideo-out-${sid}-${tab}`);
     if (el) { el.innerHTML = html; el.style.display = 'block'; }
+  }
+
+  // Restore raw texts (markdown) so export produces full content
+  if (session.rawTexts && Object.keys(session.rawTexts).length > 0) {
+    if (!window._ideoRawTexts) window._ideoRawTexts = {};
+    window._ideoRawTexts[sid] = { ...session.rawTexts };
   }
 
   // Restore config
@@ -3001,27 +3424,304 @@ function loadIdeoRefFile(input, sid) {
 // Agent registry — loaded from JSON configs in agents/ folder
 const AGENT_CONFIGS = {};
 const AUDIENCE_PERSONAS = [];
+let _personasGenerated = false;  // flag: dynamic personas already generated for this session
+let _personaGenerationPromise = null; // mutex: if generation is in-flight, await this instead of starting a new one
 const PIPELINE_STATE = {};  // per-sid state: { outputs, stage, paused, userNotes }
 let _pipelineAbort = {};    // per-sid abort flags: { [sid]: true/false }
 
-// Stop a running pipeline
+// Active AbortControllers for in-flight API calls — keyed by sid
+const _pipelineAbortControllers = {};
+
+// Stop a running pipeline — cancels in-flight API calls immediately
 function stopPipeline(sid) {
   _pipelineAbort[sid] = true;
-  _ideoLog(sid, '⛔ Pipeline stop requested by user…', 'log-warn');
+  _ideoLog(sid, '⛔ Stopping pipeline…', 'log-warn');
+
+  // Abort any in-flight fetch requests
+  if (_pipelineAbortControllers[sid]) {
+    _pipelineAbortControllers[sid].abort();
+    _pipelineAbortControllers[sid] = null;
+  }
+
+  // Immediately reset button so user sees it's acknowledged
+  const btn = document.getElementById(`ideo-ideate-btn-${sid}`);
+  if (btn) {
+    btn.disabled = false;
+    btn.classList.remove('ideating');
+    btn.innerHTML = '✦ Ideate';
+    btn.onclick = () => runAllIdeoActions(sid);
+  }
+  _pipeStageLabel(sid, '⛔ Stopped');
+  _setIdeoRunning(sid, false, 'Stopped by user');
+  PIPE_NODES.forEach(n => _pipeNodeState(sid, n.id, 'idle'));
 }
 
-// Check abort flag — call at start of each stage
+// Check abort flag — call at start of each stage and before each API call
 function _checkAbort(sid) {
   if (_pipelineAbort[sid]) throw new Error('PIPELINE_STOPPED');
+}
+// Get pipeline signal for passing to API calls
+function _getPipeSignal(sid) {
+  return _pipelineAbortControllers[sid]?.signal || null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DYNAMIC AUDIENCE PERSONA GENERATOR
+   Creates 15 diverse audience personas tailored to the specific
+   project/channel being analyzed. Personas are generated once per
+   session and cached. Each persona gets: demographics, psychographics,
+   viewing behavior, review personality, and a voice-specific prompt.
+   ═══════════════════════════════════════════════════════════════════ */
+
+const PERSONA_EMOJIS = ['💅','🎧','📚','🎮','🍺','🌸','🔥','🎯','💎','🌍','🎪','🧠','📱','🎨','🏋️'];
+
+// ── Persona disk persistence ────────────────────────────────────
+// Save/load personas to project folder so they survive page reloads
+// without needing a fresh API call each time.
+
+function _savePersonasToDisk() {
+  const project = new URLSearchParams(location.search).get('project') || 'cut';
+  try {
+    const data = JSON.stringify({ personas: AUDIENCE_PERSONAS, ts: Date.now() });
+    localStorage.setItem(`calli_personas_${project}`, data);
+    console.log(`[Audience] Saved ${AUDIENCE_PERSONAS.length} personas to localStorage`);
+  } catch(e) {
+    console.warn('[Audience] Could not save personas:', e.message);
+  }
+}
+
+function _loadPersonasFromDisk() {
+  const project = new URLSearchParams(location.search).get('project') || 'cut';
+  try {
+    const raw = localStorage.getItem(`calli_personas_${project}`);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data.personas || data.personas.length < 10) return false;
+    // Check age — regenerate if older than 7 days
+    if (data.ts && Date.now() - data.ts > 7 * 24 * 60 * 60 * 1000) {
+      console.log('[Audience] Cached personas are stale (>7 days), will regenerate');
+      localStorage.removeItem(`calli_personas_${project}`);
+      return false;
+    }
+    AUDIENCE_PERSONAS.length = 0;
+    data.personas.forEach(p => AUDIENCE_PERSONAS.push(p));
+    _personasGenerated = true;
+    console.log(`[Audience] Loaded ${AUDIENCE_PERSONAS.length} cached personas from localStorage`);
+    return true;
+  } catch(e) {
+    console.log('[Audience] No cached personas found, will generate fresh');
+    return false;
+  }
+}
+
+// Background preloader — call from loadProject, no sid needed
+async function _preloadAudiencePersonas() {
+  try {
+    // Try loading from disk first (instant, no API call)
+    const cached = await _loadPersonasFromDisk();
+    if (cached) {
+      // Update any existing card panels
+      document.querySelectorAll('[id^="pipe-aud-nodes-"]').forEach(el => {
+        const panelSid = el.id.replace('pipe-aud-nodes-', '');
+        _buildAudPanelNodes(panelSid);
+      });
+      document.querySelectorAll('[id^="ideo-run-label-"]').forEach(el => {
+        if (el.textContent.includes('Generating') || el.textContent.includes('Ready to')) {
+          el.textContent = `✓ ${AUDIENCE_PERSONAS.length} personas ready (cached)`;
+        }
+      });
+      return;
+    }
+
+    // No cache — generate fresh
+    await _loadAgentConfigs();
+    await _generateAudiencePersonas(null);
+    console.log(`[Audience] Pre-generated ${AUDIENCE_PERSONAS.length} personas`);
+    // Update status labels in any existing ideation cards
+    document.querySelectorAll('[id^="ideo-run-label-"]').forEach(el => {
+      if (el.textContent.includes('Generating') || el.textContent.includes('Ready to')) {
+        el.textContent = `✓ ${AUDIENCE_PERSONAS.length} audience personas ready`;
+      }
+    });
+  } catch(e) {
+    console.warn('[Audience] Background generation failed, will retry on first Ideate', e);
+    document.querySelectorAll('[id^="ideo-run-label-"]').forEach(el => {
+      if (el.textContent.includes('Generating')) {
+        el.textContent = 'Ready to ideate';
+      }
+    });
+  }
+}
+
+async function _generateAudiencePersonas(sid) {
+  if (_personasGenerated && AUDIENCE_PERSONAS.length >= 10) return; // already done
+  // If generation is already in-flight, await that instead of starting a second one
+  if (_personaGenerationPromise) return _personaGenerationPromise;
+  _personaGenerationPromise = _doGeneratePersonas(sid);
+  try { return await _personaGenerationPromise; } finally { _personaGenerationPromise = null; }
+}
+
+async function _doGeneratePersonas(sid) {
+
+  const projectName = CONFIG?.project?.name || 'this channel';
+  const projectDesc = CONFIG?.project?.description || '';
+  const formatHints = CONFIG?.project?.format_tags?.join(', ') || 'social experiment, human connection, diverse perspectives';
+  const mlSummary = ML_INSIGHTS?.summary_text || '';
+  const audienceHints = ML_INSIGHTS?.audience_demographics || '';
+
+  // Log helper — writes to card log if sid exists, otherwise console only
+  const _log = (msg, cls) => { if (sid) _ideoLog(sid, msg, cls); else console.log(`[Audience] ${msg.replace(/<[^>]+>/g, '')}`); };
+
+  // Status updater — updates all ideo-run-label and aud-panel containers
+  const _updateStatus = (msg) => {
+    document.querySelectorAll('[id^="ideo-run-label-"]').forEach(el => {
+      if (el.textContent.includes('Generating') || el.textContent.includes('audience') || el.textContent.includes('Ready to')) {
+        el.textContent = msg;
+      }
+    });
+  };
+
+  _log('🎭 Generating dynamic audience panel (15 personas)…');
+  _updateStatus('🎭 Generating audience personas…');
+
+  const prompt = `Generate 15 audience personas for "${projectName}" (${formatHints}).
+${projectDesc ? projectDesc.substring(0, 150) : ''}
+${mlSummary ? `Audience: ${mlSummary.substring(0, 150)}` : ''}
+
+Return a JSON array of 15 objects. Be CONCISE — short strings, no filler. Each object:
+{"name":"FirstName","age":22,"gender":"F","location":"LA, USA","personality_type":"ENFP","interests":["3 items"],"media_diet":["3 items"],"harshness":0.6,"focus_areas":["3 items"],"pet_peeves":["3 items"],"praise_triggers":["3 items"],"cultural_context":"1 sentence","voice_notes":"1 sentence","viewer_type":"loyal_subscriber"}
+
+Diversity requirements: ages 16-55+, 5+ countries, mix genders, harshness 0.3-0.9, viewer_types: loyal_subscriber/casual_browser/algorithm_discovery/binge_watcher/hate_watcher/lapsed_viewer.
+
+Return ONLY the JSON array.`;
+
+  try {
+    _updateStatus('🎭 Calling API for audience personas…');
+    const raw = await callClaude(prompt, { maxTokens: 4000, temperature: 0.85, system: false });
+
+    // Parse JSON — handle markdown code fences
+    let jsonStr = raw.trim();
+    if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+    }
+    const personas = JSON.parse(jsonStr);
+
+    if (!Array.isArray(personas) || personas.length < 10) {
+      throw new Error(`Expected 15 personas, got ${personas?.length || 0}`);
+    }
+
+    // Clear existing and build full persona objects
+    AUDIENCE_PERSONAS.length = 0;
+    const total = personas.length;
+
+    personas.forEach((p, i) => {
+      const emoji = PERSONA_EMOJIS[i] || '👤';
+      const name = p.name || `Persona${i+1}`;
+      const key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      // Live progress — update status and log for each persona
+      _updateStatus(`🎭 Building persona ${i + 1}/${total}: ${emoji} ${name}`);
+      _log(`  ${emoji} ${i + 1}/${total} — ${name} (${p.age}, ${p.location}, ${(p.viewer_type || '').replace(/_/g, ' ')})`, 'log-dim');
+
+      // Build the prompt template with the persona's voice
+      const promptTemplate = `You are ${name}, a ${p.age}-year-old ${p.gender.toLowerCase()} from ${p.location}. ${p.cultural_context}
+
+Your personality: ${p.personality_type}. ${p.voice_notes}
+
+You're a ${(p.viewer_type || 'casual_browser').replace(/_/g, ' ')} of ${projectName}. Your interests include ${p.interests.join(', ')}. Your media diet: ${p.media_diet.join(', ')}.
+
+What you look for in videos: ${p.focus_areas.join(', ')}.
+What loses you: ${p.pet_peeves.join(', ')}.
+What wins you: ${p.praise_triggers.join(', ')}.
+
+You're reviewing this concept:
+
+CONCEPT: {concept_text}
+TITLES: {title_options}
+THUMBNAIL APPROACH: {thumbnail_summary}
+STORYBOARD: {storyboard_summary}
+
+React as yourself — authentic, in your own voice:
+
+- **Click?** (Yes/No + why in 1 sentence)
+- **Watch to end?** (Yes/No + what keeps or loses you)
+- **Share?** (Yes/No + who and why)
+- **Vibe check** (1-2 sentences, your honest gut reaction)
+- **Rating**: X/10
+
+${p.harshness >= 0.7 ? 'Be tough — you have high standards and don\'t sugarcoat.' : p.harshness <= 0.4 ? 'You tend to be generous and look for the positive, but still honest.' : 'Be direct and honest.'}`;
+
+      AUDIENCE_PERSONAS.push({
+        id: `audience_${i + 1}`,
+        name,
+        emoji,
+        role: 'Audience Panelist',
+        type: 'audience_persona',
+        demographics: {
+          age: p.age,
+          gender: p.gender,
+          location: p.location
+        },
+        psychographics: {
+          personality_type: p.personality_type,
+          big_five: p.big_five || {},
+          interests: p.interests,
+          media_diet: p.media_diet
+        },
+        review_personality: {
+          harshness: p.harshness,
+          enthusiasm_ceiling: p.enthusiasm_ceiling,
+          focus_areas: p.focus_areas,
+          pet_peeves: p.pet_peeves,
+          praise_triggers: p.praise_triggers
+        },
+        viewer_type: p.viewer_type || 'casual_browser',
+        cultural_context: p.cultural_context,
+        prompt_template: promptTemplate
+      });
+
+      // Incrementally update audience panels so user sees personas appear
+      document.querySelectorAll('[id^="pipe-aud-nodes-"]').forEach(el => {
+        const panelSid = el.id.replace('pipe-aud-nodes-', '');
+        _buildAudPanelNodes(panelSid);
+      });
+    });
+
+    _personasGenerated = true;
+    _updateStatus(`✓ ${AUDIENCE_PERSONAS.length} audience personas ready`);
+    _log(`✓ Generated ${AUDIENCE_PERSONAS.length} audience personas`, 'log-ok');
+
+    // Persist to disk for next page load
+    _savePersonasToDisk();
+
+    return AUDIENCE_PERSONAS;
+  } catch(e) {
+    console.error('Persona generation failed:', e);
+    _log(`⚠ Persona generation failed: ${e.message}. Falling back to static personas.`, 'log-warn');
+    // Fall back to loading static persona files
+    await _loadStaticPersonas();
+    return AUDIENCE_PERSONAS;
+  }
+}
+
+// Fallback: load original 5 static persona files
+async function _loadStaticPersonas() {
+  if (AUDIENCE_PERSONAS.length > 0) return;
+  const audienceFiles = [
+    'Audience 1 - Zara', 'Audience 2 - James', 'Audience 3 - Priya',
+    'Audience 4 - Lucas', 'Audience 5 - Thomas'
+  ];
+  for (const name of audienceFiles) {
+    try {
+      const r = await fetch(`agents/audience/${name}.json`);
+      if (r.ok) AUDIENCE_PERSONAS.push(await r.json());
+    } catch(e) { console.warn(`Could not load audience: ${name}`, e); }
+  }
 }
 
 async function _loadAgentConfigs() {
   if (Object.keys(AGENT_CONFIGS).length > 0) return; // already loaded
   const agentIds = ['orchestrator', 'writer', 'creative_director', 'data_analyst', 'critic'];
-  const audienceFiles = [
-    'Audience 1 - Zara', 'Audience 2 - James', 'Audience 3 - Priya',
-    'Audience 4 - Lucas', 'Audience 5 - Thomas'
-  ];
   // Load core agents
   for (const id of agentIds) {
     try {
@@ -3029,19 +3729,14 @@ async function _loadAgentConfigs() {
       if (r.ok) AGENT_CONFIGS[id] = await r.json();
     } catch(e) { console.warn(`Could not load agent config: ${id}`, e); }
   }
-  // Load audience personas
-  for (const name of audienceFiles) {
-    try {
-      const r = await fetch(`agents/audience/${name}.json`);
-      if (r.ok) AUDIENCE_PERSONAS.push(await r.json());
-    } catch(e) { console.warn(`Could not load audience: ${name}`, e); }
-  }
+  // Audience personas are now generated dynamically at pipeline start
+  // via _generateAudiencePersonas(). Static files are only used as fallback.
   // Load pipeline config
   try {
     const r = await fetch('agents/pipeline.json');
     if (r.ok) AGENT_CONFIGS._pipeline = await r.json();
   } catch(e) { console.warn('Could not load pipeline config', e); }
-  console.log(`[Pipeline] Loaded ${Object.keys(AGENT_CONFIGS).length} agents, ${AUDIENCE_PERSONAS.length} audience personas`);
+  console.log(`[Pipeline] Loaded ${Object.keys(AGENT_CONFIGS).length} agents`);
 }
 
 // ── Pipeline config (overridable by debug/production profiles) ───
@@ -3050,11 +3745,16 @@ const PIPE_CFG = {
   max_iterations: 5,                // hard stop for audience feedback loop
   max_revisions_per_stage: 2,       // critic retry cap per stage
   consensus: {
-    strategy: 'weighted',           // 'simple_avg' | 'weighted' | 'convergence'
-    avg_threshold: 6.5,             // audience avg must exceed this
-    hard_floor: 4,                  // no persona below this
-    critic_floor: 6,                // critic score must exceed this
+    strategy: 'fanbase',            // 'simple_avg' | 'weighted' | 'convergence' | 'fanbase'
+    avg_threshold: 6,               // audience avg must exceed this (used by simple_avg, weighted, convergence)
+    hard_floor: 3,                  // absolute floor — no persona below this (concept is offensive/broken)
+    critic_floor: 5,                // critic score must exceed this
     convergence_variance: 2.5,      // for 'convergence' strategy: max std-dev
+    // ── Fanbase strategy (default) ───────────────────────────────
+    // Models real audience dynamics: great content is loved by its
+    // target audience, not universally liked by everyone.
+    fanbase_top_threshold: 7,       // top half of scores must average ≥ this (core fans love it)
+    fanbase_floor_threshold: 4,     // bottom half must average ≥ this (nobody finds it terrible)
     weights: {},                    // format→persona weights, populated at runtime
   },
   inter_agent_messages: true,       // enable [REQUEST:agent] parsing
@@ -3065,7 +3765,7 @@ const PIPE_CFG = {
 // Load config overrides from pipeline_config.json or pipeline.json execution block
 async function _loadPipelineProfile(profileName) {
   try {
-    const resp = await fetch('pipeline_config.json');
+    const resp = await fetch('pipeline_config.json', { cache: 'no-store' });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     const name = profileName || data.active_profile || 'production';
@@ -3114,13 +3814,13 @@ function _getAgentConfig(id) {
 }
 
 // Call Claude with agent-specific system prompt and params
-async function _callAgent(agentId, prompt, { extraContext = '', overrideTemp, overrideTokens } = {}) {
+async function _callAgent(agentId, prompt, { extraContext = '', overrideTemp, overrideTokens, signal } = {}) {
   const cfg = _getAgentConfig(agentId);
   const temp = overrideTemp ?? cfg.temperature ?? 0.7;
   const tokens = overrideTokens ?? cfg.max_tokens ?? 800;
   const system = cfg.system_prompt || 'You are a helpful creative strategist.';
   const fullPrompt = extraContext ? `${prompt}\n\n${extraContext}` : prompt;
-  return callClaude(fullPrompt, { temperature: temp, maxTokens: tokens, system: false });
+  return callClaude(fullPrompt, { temperature: temp, maxTokens: tokens, system: false, signal });
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -3187,13 +3887,25 @@ function _computeConsensus(audienceResult, criticScore, iteration) {
   const votes = audienceResult.votes.filter(v => v.rating > 0);
   if (votes.length === 0) return { pass: false, reason: 'No valid audience votes', details: {} };
 
+  // Sort votes descending to split into top/bottom halves
+  const sorted = [...votes].sort((a, b) => b.rating - a.rating);
+  const midpoint = Math.ceil(sorted.length / 2);
+  const topHalf = sorted.slice(0, midpoint);
+  const bottomHalf = sorted.slice(midpoint);
+
   const avg = votes.reduce((s,v) => s + v.rating, 0) / votes.length;
+  const topAvg = topHalf.reduce((s,v) => s + v.rating, 0) / topHalf.length;
+  const bottomAvg = bottomHalf.length > 0
+    ? bottomHalf.reduce((s,v) => s + v.rating, 0) / bottomHalf.length
+    : avg;
   const min = Math.min(...votes.map(v => v.rating));
   const variance = Math.sqrt(votes.reduce((s,v) => s + (v.rating - avg) ** 2, 0) / votes.length);
 
-  // Hard floor check: no persona below minimum
-  const floorFail = min < cfg.hard_floor;
-  const floorPersonas = floorFail ? votes.filter(v => v.rating < cfg.hard_floor).map(v => v.name) : [];
+  // Hard floor check: at most 1 persona can score below hard_floor (outlier tolerance)
+  // With 15 diverse personas, a single low outlier is expected — two signals a real problem
+  const belowFloor = votes.filter(v => v.rating < cfg.hard_floor);
+  const floorFail = belowFloor.length > 1;
+  const floorPersonas = floorFail ? belowFloor.map(v => v.name) : [];
 
   // Critic floor check
   const criticFail = criticScore < cfg.critic_floor;
@@ -3202,7 +3914,28 @@ function _computeConsensus(audienceResult, criticScore, iteration) {
   let strategyPass = false;
   let reason = '';
 
-  if (cfg.strategy === 'simple_avg') {
+  if (cfg.strategy === 'fanbase') {
+    // ── FANBASE STRATEGY ──────────────────────────────────────
+    // Great content is loved by its target audience (top half ≥ 7),
+    // and doesn't repel anyone (bottom half ≥ 4).
+    // This models real YouTube dynamics: polarizing > bland.
+    const topPass = topAvg >= (cfg.fanbase_top_threshold || 7);
+    const bottomPass = bottomAvg >= (cfg.fanbase_floor_threshold || 4);
+    strategyPass = topPass && bottomPass;
+
+    const topNames = topHalf.map(v => `${v.emoji || ''}${v.name}:${v.rating}`).join(' ');
+    const bottomNames = bottomHalf.map(v => `${v.emoji || ''}${v.name}:${v.rating}`).join(' ');
+
+    if (!topPass && !bottomPass) {
+      reason = `Fans lukewarm (top avg ${topAvg.toFixed(1)} < ${cfg.fanbase_top_threshold}) & floor concern (bottom avg ${bottomAvg.toFixed(1)} < ${cfg.fanbase_floor_threshold})`;
+    } else if (!topPass) {
+      reason = `Needs stronger fan reaction: top avg ${topAvg.toFixed(1)} < ${cfg.fanbase_top_threshold} [${topNames}]`;
+    } else if (!bottomPass) {
+      reason = `Floor concern: bottom avg ${bottomAvg.toFixed(1)} < ${cfg.fanbase_floor_threshold} [${bottomNames}]`;
+    } else {
+      reason = `Fanbase strong: top ${topAvg.toFixed(1)} ≥ ${cfg.fanbase_top_threshold} [${topNames}], floor safe ${bottomAvg.toFixed(1)} ≥ ${cfg.fanbase_floor_threshold}`;
+    }
+  } else if (cfg.strategy === 'simple_avg') {
     strategyPass = avg >= cfg.avg_threshold;
     reason = strategyPass ? `Average ${avg.toFixed(1)} ≥ ${cfg.avg_threshold}` : `Average ${avg.toFixed(1)} < ${cfg.avg_threshold}`;
   } else if (cfg.strategy === 'convergence') {
@@ -3210,52 +3943,92 @@ function _computeConsensus(audienceResult, criticScore, iteration) {
     reason = variance > cfg.convergence_variance
       ? `Variance ${variance.toFixed(1)} > ${cfg.convergence_variance} (too polarizing)`
       : `Converged: avg ${avg.toFixed(1)}, σ ${variance.toFixed(1)}`;
-  } else { // 'weighted' — default
-    // Weight by format relevance (for now, equal weights; can be customized per format)
-    const weightedAvg = avg; // TODO: apply format-specific persona weights from cfg.weights
+  } else { // 'weighted'
+    const weightedAvg = avg;
     strategyPass = weightedAvg >= cfg.avg_threshold;
     reason = strategyPass ? `Weighted avg ${weightedAvg.toFixed(1)} ≥ ${cfg.avg_threshold}` : `Weighted avg ${weightedAvg.toFixed(1)} < ${cfg.avg_threshold}`;
   }
 
-  const pass = strategyPass && !floorFail && !criticFail;
+  // For fanbase strategy: audience is authoritative — critic informs but doesn't veto
+  const pass = cfg.strategy === 'fanbase'
+    ? strategyPass && !floorFail
+    : strategyPass && !floorFail && !criticFail;
 
-  if (floorFail) reason += ` | Floor fail: ${floorPersonas.join(', ')} < ${cfg.hard_floor}`;
-  if (criticFail) reason += ` | Critic ${criticScore}/10 < ${cfg.critic_floor}`;
+  if (floorFail) reason += ` | Hard floor: ${floorPersonas.join(', ')} < ${cfg.hard_floor}`;
+  if (criticFail) reason += ` | Critic ${criticScore}/10 < ${cfg.critic_floor} (advisory)`;
 
   return {
     pass,
     reason,
-    details: { avg: parseFloat(avg.toFixed(1)), min, variance: parseFloat(variance.toFixed(1)),
-               criticScore, strategy: cfg.strategy, iteration }
+    details: {
+      avg: parseFloat(avg.toFixed(1)),
+      topAvg: parseFloat(topAvg.toFixed(1)),
+      bottomAvg: parseFloat(bottomAvg.toFixed(1)),
+      min, variance: parseFloat(variance.toFixed(1)),
+      criticScore, strategy: cfg.strategy, iteration,
+      topHalf: topHalf.map(v => v.name),
+      bottomHalf: bottomHalf.map(v => v.name)
+    }
   };
 }
 
 // Producer synthesizes audience feedback into actionable revision notes
 async function _producerRevisionBrief(sid, audienceResult, criticNotes, iteration) {
-  const lowScorers = audienceResult.votes
-    .filter(v => v.rating > 0 && v.rating < 6)
+  // Sort votes to identify fan vs floor segments
+  const sorted = [...audienceResult.votes].filter(v => v.rating > 0).sort((a, b) => b.rating - a.rating);
+  const midpoint = Math.ceil(sorted.length / 2);
+  const topHalf = sorted.slice(0, midpoint);
+  const bottomHalf = sorted.slice(midpoint);
+  const topAvg = topHalf.reduce((s,v) => s + v.rating, 0) / (topHalf.length || 1);
+  const bottomAvg = bottomHalf.length > 0 ? bottomHalf.reduce((s,v) => s + v.rating, 0) / bottomHalf.length : topAvg;
+
+  const fanScorers = topHalf
+    .map(v => `${v.emoji} ${v.name} (${v.rating}/10): key praise: ${v.response.substring(0, 120)}`);
+  const floorScorers = bottomHalf
     .map(v => `${v.emoji} ${v.name} (${v.rating}/10): ${v.response.substring(0, 200)}`);
-  const highScorers = audienceResult.votes
-    .filter(v => v.rating >= 7)
-    .map(v => `${v.emoji} ${v.name} (${v.rating}/10): key praise: ${v.response.substring(0, 100)}`);
+
+  // Determine the revision focus based on what failed
+  const fanbaseCfg = PIPE_CFG.consensus;
+  const fansLoveIt = topAvg >= (fanbaseCfg.fanbase_top_threshold || 7);
+  const floorSafe = bottomAvg >= (fanbaseCfg.fanbase_floor_threshold || 4);
+
+  let focusDirective = '';
+  if (fansLoveIt && !floorSafe) {
+    focusDirective = `FOCUS: The core fans already love this (top avg ${topAvg.toFixed(1)}/10). DO NOT CHANGE what they love. Your ONLY job is to soften the element that repels the bottom scorers — find the one thing that's alienating them and adjust it WITHOUT diluting what fans love.`;
+  } else if (!fansLoveIt && floorSafe) {
+    focusDirective = `FOCUS: Nobody hates this, but nobody loves it either (top avg ${topAvg.toFixed(1)}/10). The concept needs MORE creative boldness, not less. Find the one element that could be pushed further — a stronger hook, a bolder character choice, higher stakes.`;
+  } else if (!fansLoveIt && !floorSafe) {
+    focusDirective = `FOCUS: Both fan engagement AND floor safety need work. Prioritize the fan side — make the top scorers love it. A concept with passionate fans and one detractor is better than one everyone finds "fine."`;
+  } else {
+    focusDirective = `FOCUS: This is passing! Only micro-polish needed, if anything.`;
+  }
 
   const prompt = `You are The Producer. This is iteration ${iteration} of the audience feedback loop.
 
-AUDIENCE FEEDBACK (${audienceResult.avgRating}/10 average):
-Low-scoring panelists:
-${lowScorers.join('\n') || 'None — all scores are acceptable.'}
+${focusDirective}
 
-High-scoring panelists (preserve what works):
-${highScorers.join('\n') || 'None.'}
+FANBASE (top half, avg ${topAvg.toFixed(1)}/10):
+${fanScorers.join('\n') || 'None.'}
+
+FLOOR (bottom half, avg ${bottomAvg.toFixed(1)}/10):
+${floorScorers.join('\n') || 'None.'}
 
 ${criticNotes ? `CRITIC NOTES:\n${criticNotes}` : ''}
 
-Synthesize this into a REVISION BRIEF for the Writer and Creative Director:
-1. What MUST change (cite specific audience complaints)
-2. What MUST be preserved (cite specific praise)
-3. Priority: which single change would improve scores the most?
+Synthesize a REVISION BRIEF for the Writer and Creative Director.
 
-Be concise — max 200 words. The agents need actionable direction, not analysis.`;
+⚠️ CRITICAL RULES FOR REVISION BRIEFS:
+- Identify the SINGLE most impactful change. NOT a laundry list — one surgical fix.
+- EXPLICITLY list what MUST be preserved (creative hooks, voice, tone, character energy).
+- The Writer will make a targeted edit, NOT a full rewrite. Frame your brief accordingly.
+- Creative boldness > compliance. A concept that's exciting but imperfect beats one that's safe but forgettable.
+- If high-scorers love something that low-scorers dislike, KEEP IT. Polarization is better than blandness.
+
+Format:
+PRESERVE: [specific elements that are working — be concrete]
+FIX: [the ONE thing to change, with specific direction on HOW]
+
+Be concise — max 150 words.`;
 
   return _callAgent('orchestrator', prompt, { overrideTokens: 400 });
 }
@@ -3270,19 +4043,28 @@ async function _criticReview(sid, stageName, stageOutput, conceptSummary) {
 
   const prompt = `You are The Critic for ${channelName}'s production pipeline.
 
-You are reviewing the **${stageName}** output.
+You are reviewing the **${stageName}** output (first draft).
 
-${stageOutput.substring(0, 1500)}
+${stageOutput.substring(0, 2000)}
 
-CONCEPT CONTEXT: ${conceptSummary.substring(0, 500)}
+${conceptSummary !== stageOutput ? `CONCEPT CONTEXT: ${conceptSummary.substring(0, 400)}` : ''}
 ${mlCtx}
 
 Review criteria for ${stageName}:
 ${criteriaText || 'General quality, coherence, and brand alignment.'}
 
+SCORING GUIDE (1-10, NEVER 0):
+- 8-10: Exceptional → APPROVE
+- 7: Good, solid work → APPROVE
+- 5-6: Has potential, needs specific fixes → REVISE
+- 3-4: Significant structural issues → REVISE
+- 1-2: Fundamentally broken → REJECT (rare — only if incoherent or offensive)
+
+This is a FIRST DRAFT. Be constructive. A 7 is a strong first draft — APPROVE it.
+
 Provide your review in EXACTLY this format:
 **Score**: X/10
-**Strengths**: [cite specific elements]
+**Strengths**: [cite specific elements that work]
 **Weaknesses**: [cite specific structural problems]
 **Revision Notes**: [if score < 7, provide 2-3 actionable directives]
 **Verdict**: APPROVE / REVISE / REJECT`;
@@ -3292,8 +4074,10 @@ Provide your review in EXACTLY this format:
   // Parse score and verdict
   const scoreMatch = text.match(/\*\*Score\*\*:\s*(\d+)/);
   const verdictMatch = text.match(/\*\*Verdict\*\*:\s*(APPROVE|REVISE|REJECT)/i);
-  const score = scoreMatch ? parseInt(scoreMatch[1]) : 7;
-  const verdict = verdictMatch ? verdictMatch[1].toUpperCase() : 'APPROVE';
+  const rawScore = scoreMatch ? parseInt(scoreMatch[1]) : 7;
+  const score = Math.max(1, Math.min(10, rawScore)); // Clamp 1-10, never 0
+  // Score is authoritative: 7+ always APPROVE regardless of what the LLM text says
+  const verdict = score >= 7 ? 'APPROVE' : (verdictMatch ? verdictMatch[1].toUpperCase() : 'REVISE');
 
   // Extract revision notes
   const notesMatch = text.match(/\*\*Revision Notes\*\*:([\s\S]*?)(?:\*\*Verdict\*\*|$)/);
@@ -3353,7 +4137,7 @@ async function _runAudiencePanel(sid, outputs, iterationInfo) {
 
   // On iterations > 1, tell personas what changed so they can evaluate the delta
   const iterCtx = iterationInfo && iterationInfo.iteration > 1
-    ? `\n\n[NOTE: This is revision ${iterationInfo.iteration}. The creative team revised the concept based on feedback. Key changes: ${(iterationInfo.revisionBrief || 'general improvements').substring(0, 200)}. Judge the concept on its own merits — don't default to the same score as before. Be specific about what improved or didn't.]`
+    ? `\n\n[NOTE: This is a revised version. The creative team made targeted improvements. Judge this concept FRESH on its own merits — as if you're seeing it for the first time. Do NOT remember or reference any previous score. React to what's in front of you right now. If the concept is compelling, rate it high. If not, rate it low. Your job is to be an honest audience member, not a critic tracking revisions.]`
     : '';
 
   // Push for honest, differentiated scoring — strong anchoring to avoid LLM middle-bias
@@ -3369,10 +4153,10 @@ IMPORTANT: Your rating MUST reflect your genuine reaction. If you'd click and sh
 **Rating**: X/10`;
 
   // Activate all audience nodes
-  ['zara','james','priya','lucas','thomas'].forEach(n => _pipeAudState(sid, n, 'active'));
+  AUDIENCE_PERSONAS.forEach(p => _pipeAudState(sid, p.name.toLowerCase().replace(/[^a-z0-9]/g, ''), 'active'));
 
   const results = await Promise.all(AUDIENCE_PERSONAS.map(async (persona) => {
-    const audKey = persona.name.toLowerCase();
+    const audKey = persona.name.toLowerCase().replace(/[^a-z0-9]/g, '');
     try {
       _pipeAudState(sid, audKey, 'active');
       const prompt = persona.prompt_template
@@ -3414,13 +4198,21 @@ IMPORTANT: Your rating MUST reflect your genuine reaction. If you'd click and sh
     ? (validResults.reduce((s,r) => s + r.rating, 0) / validResults.length).toFixed(1)
     : 0;
 
+  // Compute fanbase split for display
+  const sortedForDisplay = [...validResults].sort((a, b) => b.rating - a.rating);
+  const midForDisplay = Math.ceil(sortedForDisplay.length / 2);
+  const topForDisplay = sortedForDisplay.slice(0, midForDisplay);
+  const bottomForDisplay = sortedForDisplay.slice(midForDisplay);
+  const topAvgDisplay = topForDisplay.length > 0 ? (topForDisplay.reduce((s,r) => s + r.rating, 0) / topForDisplay.length).toFixed(1) : avgRating;
+  const bottomAvgDisplay = bottomForDisplay.length > 0 ? (bottomForDisplay.reduce((s,r) => s + r.rating, 0) / bottomForDisplay.length).toFixed(1) : avgRating;
+
   // Update avg in audience panel sidebar
-  _pipeAudAvg(sid, avgRating);
+  _pipeAudAvg(sid, avgRating, topAvgDisplay, bottomAvgDisplay);
 
   // Build aggregate HTML
   let html = `<div style="margin-bottom:12px;padding:10px 14px;background:rgba(124,106,247,.07);border-radius:8px;border-left:3px solid var(--accent)">
-    <strong>Audience Panel Consensus: ${avgRating}/10</strong>
-    <span style="margin-left:8px;font-size:11px;color:var(--muted)">(${validResults.length} panelists)</span>
+    <strong>Audience Panel</strong>: fans <strong>${topAvgDisplay}</strong>/10 · floor <strong>${bottomAvgDisplay}</strong>/10
+    <span style="margin-left:8px;font-size:11px;color:var(--muted)">(${validResults.length} panelists · avg ${avgRating}/10)</span>
   </div>`;
   results.forEach(r => {
     const barColor = r.rating >= 7 ? 'var(--positive)' : r.rating >= 5 ? 'var(--warning, orange)' : 'var(--negative)';
@@ -3488,6 +4280,25 @@ async function runAllIdeoActions(sid) {
 
   _activeIdeationSid = sid;
   _pipelineAbort[sid] = false; // Reset abort flag
+  // Create a fresh AbortController for this pipeline run
+  _pipelineAbortControllers[sid] = new AbortController();
+  const _pipeSignal = _pipelineAbortControllers[sid].signal;
+
+  // Wait for audience personas if background generation is still running
+  // (or generate them now if preload hasn't started yet)
+  if (!_personasGenerated || AUDIENCE_PERSONAS.length < 10) {
+    const btn = document.getElementById(`ideo-ideate-btn-${sid}`);
+    if (btn) { btn.textContent = '🎭 Preparing audience…'; btn.classList.add('ideating'); }
+    _setIdeoRunning(sid, true, 'Generating audience panel…');
+    _ideoLog(sid, '🎭 Waiting for audience panel generation…');
+    try { await _generateAudiencePersonas(sid); } catch(e) {
+      console.warn('Dynamic persona generation failed, using fallback', e);
+      await _loadStaticPersonas();
+    }
+    _ideoLog(sid, `✓ ${AUDIENCE_PERSONAS.length} personas ready`, 'log-ok');
+  }
+  // Build/rebuild the audience panel UI with the loaded personas
+  _buildAudPanelNodes(sid);
 
   const btn = document.getElementById(`ideo-ideate-btn-${sid}`);
   if (btn) {
@@ -3522,6 +4333,7 @@ async function runAllIdeoActions(sid) {
 
   // Initialize pipeline graph
   _buildPipeGraph(sid);
+  _initEmptyConvergence(sid);
   _pipeResetAll(sid);
   _pipeNodeState(sid, 'user', 'active');
 
@@ -3560,24 +4372,28 @@ async function runAllIdeoActions(sid) {
 
     await runIdeoAction(sid, 'concept', directiveCtx);
     state.outputs.concept = document.getElementById(`ideo-out-${sid}-concept`)?.textContent || '';
+
+    // ── Sanity check: if concept looks like an error, abort early ──
+    const conceptLower = state.outputs.concept.toLowerCase();
+    if (conceptLower.includes('timed out') || conceptLower.includes('error:') ||
+        conceptLower.includes('connectionpool') || conceptLower.includes('http 5') ||
+        state.outputs.concept.length < 200) {
+      _ideoLog(sid, '❌ Concept generation failed or returned an error. Aborting pipeline.', 'log-warn');
+      _ideoLog(sid, `  ↳ Output: ${state.outputs.concept.substring(0, 200)}…`, 'log-dim');
+      _setIdeoRunning(sid, false, 'Concept generation failed');
+      PIPE_NODES.forEach(n => _pipeNodeState(sid, n.id, 'idle'));
+      return;
+    }
+
     completed++;
     _ideoLog(sid, '✓ Concept drafted (1/10)', 'log-ok');
 
     // Unlock Concept tab immediately so user can view while pipeline continues
     _unlockIdeoTab(sid, 'concept');
 
-    // Critic review for concept
+    // Critic review for concept (loops until approved or max revisions)
     if (CRITIC_STAGES.includes('concept')) {
-      _pipeCriticReview(sid, 'concept', 'PENDING');
-      const review = await _pipelineCriticReview(sid, 'concept', state, criticLog);
-      _pipeCriticReview(sid, 'concept', review?.verdict || 'APPROVE');
-      if (review?.verdict === 'REVISE' && review.notes) {
-        _ideoLog(sid, '🔄 Critic requested revision — Writer revising…');
-        _pipeNodeState(sid, 'writer', 'revising');
-        await runIdeoAction(sid, 'concept', directiveCtx + `\n\nCRITIC REVISION NOTES:\n${review.notes}\nPlease address these specific issues.`);
-        state.outputs.concept = document.getElementById(`ideo-out-${sid}-concept`)?.textContent || '';
-        _ideoLog(sid, '✓ Concept revised', 'log-ok');
-      }
+      await _criticRevisionLoop(sid, 'concept', 'Writer', 'writer', state, criticLog, directiveCtx);
     }
 
     // ── STAGE 2: STORYBOARD (Creative Director, uses concept) ──
@@ -3591,16 +4407,7 @@ async function runAllIdeoActions(sid) {
     _ideoLog(sid, '✓ Storyboard complete (2/10)', 'log-ok');
 
     if (CRITIC_STAGES.includes('storyboard')) {
-      _pipeCriticReview(sid, 'storyboard', 'PENDING');
-      const review = await _pipelineCriticReview(sid, 'storyboard', state, criticLog);
-      _pipeCriticReview(sid, 'storyboard', review?.verdict || 'APPROVE');
-      if (review?.verdict === 'REVISE' && review.notes) {
-        _ideoLog(sid, '🔄 Critic requested revision — revising storyboard…');
-        _pipeNodeState(sid, 'creative', 'revising');
-        await runIdeoAction(sid, 'storyboard', directiveCtx + `\n\nCRITIC REVISION NOTES:\n${review.notes}`);
-        state.outputs.storyboard = document.getElementById(`ideo-out-${sid}-storyboard`)?.textContent || '';
-        _ideoLog(sid, '✓ Storyboard revised', 'log-ok');
-      }
+      await _criticRevisionLoop(sid, 'storyboard', 'Creative Director', 'creative', state, criticLog, directiveCtx);
     }
 
     // ── STAGE 3: SCRIPT (Writer, uses concept + storyboard) ────
@@ -3615,16 +4422,7 @@ async function runAllIdeoActions(sid) {
     _ideoLog(sid, '✓ Script complete (3/10)', 'log-ok');
 
     if (CRITIC_STAGES.includes('script')) {
-      _pipeCriticReview(sid, 'script', 'PENDING');
-      const review = await _pipelineCriticReview(sid, 'script', state, criticLog);
-      _pipeCriticReview(sid, 'script', review?.verdict || 'APPROVE');
-      if (review?.verdict === 'REVISE' && review.notes) {
-        _ideoLog(sid, '🔄 Critic requested revision — revising script…');
-        _pipeNodeState(sid, 'writer', 'revising');
-        await runIdeoAction(sid, 'script', directiveCtx + scriptCtx + `\n\nCRITIC REVISION NOTES:\n${review.notes}`);
-        state.outputs.script = document.getElementById(`ideo-out-${sid}-script`)?.textContent || '';
-        _ideoLog(sid, '✓ Script revised', 'log-ok');
-      }
+      await _criticRevisionLoop(sid, 'script', 'Writer', 'writer', state, criticLog, directiveCtx, scriptCtx);
     }
 
     // ── STAGE 4: CASTING (Creative Director, uses concept + script) ─
@@ -3660,16 +4458,7 @@ async function runAllIdeoActions(sid) {
     _ideoLog(sid, '✓ Titles complete (6/10)', 'log-ok');
 
     if (CRITIC_STAGES.includes('titles')) {
-      _pipeCriticReview(sid, 'titles', 'PENDING');
-      const review = await _pipelineCriticReview(sid, 'titles', state, criticLog);
-      _pipeCriticReview(sid, 'titles', review?.verdict || 'APPROVE');
-      if (review?.verdict === 'REVISE' && review.notes) {
-        _ideoLog(sid, '🔄 Critic requested revision — revising titles…');
-        _pipeNodeState(sid, 'writer', 'revising');
-        await runIdeoAction(sid, 'titles', directiveCtx + `\n\nCRITIC REVISION NOTES:\n${review.notes}`);
-        state.outputs.titles = document.getElementById(`ideo-out-${sid}-titles`)?.textContent || '';
-        _ideoLog(sid, '✓ Titles revised', 'log-ok');
-      }
+      await _criticRevisionLoop(sid, 'titles', 'Writer', 'writer', state, criticLog, directiveCtx);
     }
 
     // ── STAGE 7: THUMBNAILS (Creative Director, uses concept + titles) ─
@@ -3681,6 +4470,10 @@ async function runAllIdeoActions(sid) {
     state.outputs.thumbnails = document.getElementById(`ideo-out-${sid}-thumbnails`)?.textContent || '';
     completed++;
     _ideoLog(sid, '✓ Thumbnails complete (7/10)', 'log-ok');
+
+    if (CRITIC_STAGES.includes('thumbnails')) {
+      await _criticRevisionLoop(sid, 'thumbnails', 'Creative Director', 'creative', state, criticLog, directiveCtx);
+    }
 
     // ── STAGE 8: DISTRIBUTION (Orchestrator, uses creative package) ─
     _checkAbort(sid);
@@ -3708,6 +4501,11 @@ async function runAllIdeoActions(sid) {
     let lastCriticScore = 0;
     let iterationHistory = []; // Track each iteration for the validation report
 
+    // ── BEST-OF-N TRACKING ──────────────────────────────────────
+    // Instead of always using the last iteration's output, track
+    // which iteration scored highest and revert to it if scores degrade.
+    let bestIteration = { avg: 0, iteration: 0, outputs: null };
+
     while (iterationCount < maxIter) {
       iterationCount++;
       _checkAbort(sid);
@@ -3719,8 +4517,8 @@ async function runAllIdeoActions(sid) {
       _pipeHighlightStage(sid, 'audience_panel');
 
       // Reset audience node states for new iteration
-      ['zara','james','priya','lucas','thomas'].forEach(n => _pipeAudState(sid, n, 'idle'));
-      _pipeAudAvg(sid, 0);
+      AUDIENCE_PERSONAS.forEach(p => _pipeAudState(sid, p.name.toLowerCase().replace(/[^a-z0-9]/g, ''), 'idle'));
+      _pipeAudAvg(sid, 0, 0, 0);
 
       try {
         audienceResult = await _runAudiencePanel(sid, state.outputs, { iteration: iterationCount, revisionBrief: lastRevisionBrief });
@@ -3736,11 +4534,18 @@ async function runAllIdeoActions(sid) {
       // ── CRITIC SCORE for consensus (quick review of overall concept) ─
       _pipeNodeState(sid, 'critic', 'active');
       try {
-        const quickCriticPrompt = `You are The Critic. Rate this concept OVERALL (1-10) considering audience reception.
-Concept: ${(state.outputs.concept || '').substring(0, 500)}
-Audience avg: ${audienceResult.avgRating}/10
-Audience breakdown: ${audienceResult.votes?.map(v => `${v.name}: ${v.rating}/10`).join(', ')}
-Reply with ONLY: **Score**: X/10 and one sentence.`;
+        const quickCriticPrompt = `You are The Critic. Rate this concept OVERALL on a 1-10 scale based SOLELY on its creative merit, originality, and production potential. Do NOT anchor to any previous scores.
+
+Concept:
+${(state.outputs.concept || '').substring(0, 800)}
+
+SCORING CALIBRATION:
+- 7-8 = solid concept with clear hook, strong characters, and good pacing structure
+- 5-6 = has potential but missing key elements (weak hook, unclear stakes, generic characters)
+- 3-4 = fundamentally flawed premise or execution
+- 9-10 = exceptional, paradigm-shifting concept
+
+Reply with ONLY: **Score**: X/10 and one sentence explaining why.`;
         const quickCriticText = await _callAgent('critic', quickCriticPrompt, { overrideTemp: 0.3, overrideTokens: 150 });
         const scoreMatch = quickCriticText.match(/\*\*Score\*\*:\s*(\d+)/);
         lastCriticScore = scoreMatch ? parseInt(scoreMatch[1]) : Math.round(audienceResult.avgRating);
@@ -3753,9 +4558,13 @@ Reply with ONLY: **Score**: X/10 and one sentence.`;
 
       // ── CONSENSUS CHECK ────────────────────────────────────────
       consensusResult = _computeConsensus(audienceResult, lastCriticScore, iterationCount);
+      const failReason = consensusResult.pass ? '' : ` — ${consensusResult.reason}`;
+      _ideoLog(sid, `  📊 Fanbase: fans ${consensusResult.details.topAvg}/10 · floor ${consensusResult.details.bottomAvg}/10 · ${consensusResult.pass ? '✅ PASS' : '❌ FAIL'}${failReason}`, consensusResult.pass ? 'log-ok' : 'log-warn');
       iterationHistory.push({
         iteration: iterationCount,
         avgRating: audienceResult.avgRating,
+        topAvg: consensusResult.details.topAvg,
+        bottomAvg: consensusResult.details.bottomAvg,
         criticScore: lastCriticScore,
         pass: consensusResult.pass,
         reason: consensusResult.reason,
@@ -3764,6 +4573,18 @@ Reply with ONLY: **Score**: X/10 and one sentence.`;
 
       // Live-update convergence graph in Running tab
       _updateLiveConvergence(sid, iterationHistory);
+
+      // ── BEST-OF-N: snapshot if this iteration is the best so far ─
+      // Track by fans (top-half) avg — that's the metric that matters for fanbase strategy
+      const iterTopAvg = consensusResult.details.topAvg || audienceResult.avgRating;
+      if (iterTopAvg > bestIteration.avg) {
+        bestIteration = {
+          avg: iterTopAvg,
+          iteration: iterationCount,
+          outputs: JSON.parse(JSON.stringify(state.outputs)),  // deep copy (textContent)
+          rawTexts: window._ideoRawTexts?.[sid] ? JSON.parse(JSON.stringify(window._ideoRawTexts[sid])) : {}
+        };
+      }
 
       if (PIPE_CFG.verbose_logging) {
         _ideoLog(sid, `  📋 Consensus [${PIPE_CFG.consensus.strategy}]: ${consensusResult.pass ? 'PASS' : 'FAIL'} — ${_escHtml(consensusResult.reason)}`, 'log-dim');
@@ -3774,9 +4595,50 @@ Reply with ONLY: **Score**: X/10 and one sentence.`;
         break;
       }
 
+      // ── DEGRADATION CIRCUIT BREAKER ─────────────────────────────
+      // If scores drop ≥1.5 points from the best iteration, stop revising.
+      // The revision process is destroying creative quality — use the best version.
+      if (iterationCount >= 2 && bestIteration.avg - iterTopAvg >= 1.5) {
+        _ideoLog(sid, `⚠ Degradation detected: fans avg dropped from ${bestIteration.avg}/10 (iter ${bestIteration.iteration}) to ${iterTopAvg}/10. Reverting to best iteration.`, 'log-warn');
+        // Restore best iteration's outputs
+        Object.assign(state.outputs, bestIteration.outputs);
+        if (window._ideoRawTexts?.[sid] && bestIteration.rawTexts) {
+          Object.assign(window._ideoRawTexts[sid], bestIteration.rawTexts);
+        }
+        // Re-render the best outputs into the UI using raw markdown when available
+        for (const [action, textContent] of Object.entries(bestIteration.outputs)) {
+          const outEl = document.getElementById(`ideo-out-${sid}-${action}`);
+          if (!outEl || !textContent) continue;
+          const rawMd = bestIteration.rawTexts?.[action];
+          let rendered = marked.parse(rawMd || textContent);
+          rendered = linkifyHypPhrases(rendered);
+          if (action === 'script') rendered = colorizeScriptSpeakers(rendered);
+          outEl.innerHTML = rendered;
+          outEl.style.display = 'block';
+        }
+        break;
+      }
+
       // ── FAIL: Check if we have iterations left ─────────────────
       if (iterationCount >= maxIter) {
-        _ideoLog(sid, `⚠ Max iterations (${maxIter}) reached without full consensus. Proceeding with best result.`, 'log-warn');
+        _ideoLog(sid, `⚠ Max iterations (${maxIter}) reached without full consensus. Using best iteration (${bestIteration.iteration}, avg ${bestIteration.avg}/10).`, 'log-warn');
+        // Restore best iteration's outputs if the last one isn't the best
+        if (bestIteration.iteration !== iterationCount && bestIteration.outputs) {
+          Object.assign(state.outputs, bestIteration.outputs);
+          if (window._ideoRawTexts?.[sid] && bestIteration.rawTexts) {
+            Object.assign(window._ideoRawTexts[sid], bestIteration.rawTexts);
+          }
+          for (const [action, textContent] of Object.entries(bestIteration.outputs)) {
+            const outEl = document.getElementById(`ideo-out-${sid}-${action}`);
+            if (!outEl || !textContent) continue;
+            const rawMd = bestIteration.rawTexts?.[action];
+            let rendered = marked.parse(rawMd || textContent);
+            rendered = linkifyHypPhrases(rendered);
+            if (action === 'script') rendered = colorizeScriptSpeakers(rendered);
+            outEl.innerHTML = rendered;
+            outEl.style.display = 'block';
+          }
+        }
         break;
       }
 
@@ -3803,36 +4665,167 @@ Reply with ONLY: **Score**: X/10 and one sentence.`;
       _pipeNodeState(sid, 'user', 'active');
       _pipeStageLabel(sid, `Revision cycle ${iterationCount + 1}`);
 
-      const revisionCtx = `\n\n⚡ IDEATION REVISION ${iterationCount + 1} — BASED ON AUDIENCE FEEDBACK:\n${revisionBrief}\n\nPrevious audience scores: ${audienceResult.votes.map(v => `${v.emoji}${v.name}:${v.rating}`).join(' ')}`;
+      // ── ADDITIVE REVISION (not regeneration) ─────────────────
+      // Instead of calling runIdeoAction which regenerates the ENTIRE
+      // concept from scratch (causing quality degradation), we use a
+      // targeted revision prompt that takes the existing content and
+      // makes surgical fixes while preserving creative energy.
 
       // ── REVISE CONCEPT (Writer) ────────────────────────────────
+      _checkAbort(sid);
       _ideoLog(sid, `  ✍️ Writer revising concept (iteration ${iterationCount + 1})…`);
       _pipeNodeState(sid, 'writer', 'revising');
-      await runIdeoAction(sid, 'concept', directiveCtx + revisionCtx);
-      state.outputs.concept = document.getElementById(`ideo-out-${sid}-concept`)?.textContent || '';
+      {
+        const currentConcept = state.outputs.concept || '';
+        const revisePrompt = `You are The Writer. You wrote a strong concept that scored ${audienceResult.avgRating}/10 with the audience panel. Your job is to SURGICALLY IMPROVE it — not rewrite it.
+
+CURRENT CONCEPT (preserve 90% of this — it has creative energy):
+${currentConcept.substring(0, 12000)}
+
+PRODUCER'S REVISION BRIEF (address ONLY the #1 priority issue):
+${revisionBrief}
+
+RULES FOR REVISION:
+1. KEEP the existing voice, tone, creative hooks, character arcs, and structural framework
+2. Fix ONLY the single most impactful issue identified in the revision brief
+3. Do NOT flatten the writing to be more "safe" or "generic" — maintain creative boldness
+4. Do NOT add disclaimers, hedging language, or weaken strong creative choices
+5. If the revision brief asks for multiple changes, pick the ONE that will move scores the most
+6. The output format must match the original exactly — same sections, same structure
+7. Your revision should feel like a polish, not a rewrite
+
+Output the complete revised concept (same format as original):`;
+
+        const outEl = document.getElementById(`ideo-out-${sid}-concept`);
+        // One-shot Opus revision — no chunking needed
+        const revisedText = await callClaude(revisePrompt, { maxTokens: 16000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        if (outEl && revisedText) {
+          // Store raw text FIRST
+          if (!window._ideoRawTexts) window._ideoRawTexts = {};
+          if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
+          window._ideoRawTexts[sid].concept = revisedText;
+          _persistSessionRawText(sid, 'concept', revisedText);
+          // Then render
+          let rendered = marked.parse(revisedText);
+          rendered = linkifyHypPhrases(rendered);
+          outEl.innerHTML = rendered;
+          outEl.style.display = 'block';
+          state.outputs.concept = outEl.textContent || '';
+        }
+      }
       _pipeNodeState(sid, 'writer', 'done');
 
       // ── REVISE STORYBOARD (Creative Director) ──────────────────
+      _checkAbort(sid);
       _ideoLog(sid, `  🎨 Creative Director revising storyboard…`);
       _pipeNodeState(sid, 'creative', 'revising');
-      const storyRevCtx = `\n\nRevised concept:\n${state.outputs.concept.substring(0, 400)}${revisionCtx}`;
-      await runIdeoAction(sid, 'storyboard', directiveCtx + storyRevCtx);
-      state.outputs.storyboard = document.getElementById(`ideo-out-${sid}-storyboard`)?.textContent || '';
+      {
+        const currentStoryboard = state.outputs.storyboard || '';
+        const revisePrompt = `You are The Creative Director. Revise the storyboard to align with the updated concept. Make MINIMAL changes — only what's needed for consistency.
+
+CURRENT STORYBOARD:
+${currentStoryboard.substring(0, 2000)}
+
+REVISION BRIEF:
+${revisionBrief.substring(0, 300)}
+
+REVISED CONCEPT SUMMARY:
+${state.outputs.concept.substring(0, 500)}
+
+Keep 80%+ of the storyboard intact. Fix only what directly conflicts with the concept changes. Maintain visual creativity.
+
+Output the complete revised storyboard:`;
+
+        const revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        const outEl = document.getElementById(`ideo-out-${sid}-storyboard`);
+        if (outEl && revisedText) {
+          // Store FIRST, then render
+          if (!window._ideoRawTexts) window._ideoRawTexts = {};
+          if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
+          window._ideoRawTexts[sid].storyboard = revisedText;
+          _persistSessionRawText(sid, 'storyboard', revisedText);
+          let rendered = marked.parse(revisedText);
+          rendered = linkifyHypPhrases(rendered);
+          outEl.innerHTML = rendered;
+          outEl.style.display = 'block';
+          state.outputs.storyboard = outEl.textContent || '';
+        }
+      }
       _pipeNodeState(sid, 'creative', 'done');
 
-      // ── REVISE SCRIPT (Writer) — pacing/engagement matters for "watch to end" ─
+      // ── REVISE SCRIPT (Writer) ─────────────────────────────────
+      _checkAbort(sid);
       _ideoLog(sid, `  ✍️ Writer revising script…`);
       _pipeNodeState(sid, 'writer', 'revising');
-      const scriptRevCtx = `\n\nRevised concept:\n${state.outputs.concept.substring(0, 300)}\nRevised storyboard:\n${state.outputs.storyboard.substring(0, 300)}${revisionCtx}`;
-      await runIdeoAction(sid, 'script', directiveCtx + scriptRevCtx);
-      state.outputs.script = document.getElementById(`ideo-out-${sid}-script`)?.textContent || '';
+      {
+        const currentScript = state.outputs.script || '';
+        const revisePrompt = `You are The Writer. Revise the script to align with the updated concept. Make MINIMAL changes — preserve dialogue energy, pacing, and character voice.
+
+CURRENT SCRIPT:
+${currentScript.substring(0, 2500)}
+
+REVISION BRIEF:
+${revisionBrief.substring(0, 300)}
+
+REVISED CONCEPT SUMMARY:
+${state.outputs.concept.substring(0, 400)}
+
+Keep 80%+ of the script intact. Fix only what directly addresses the revision brief. Do NOT flatten dialogue or remove creative personality.
+
+Output the complete revised script:`;
+
+        const revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        const outEl = document.getElementById(`ideo-out-${sid}-script`);
+        if (outEl && revisedText) {
+          // Store FIRST, then render
+          if (!window._ideoRawTexts) window._ideoRawTexts = {};
+          if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
+          window._ideoRawTexts[sid].script = revisedText;
+          _persistSessionRawText(sid, 'script', revisedText);
+          let rendered = marked.parse(revisedText);
+          rendered = linkifyHypPhrases(rendered);
+          rendered = colorizeScriptSpeakers(rendered);
+          outEl.innerHTML = rendered;
+          outEl.style.display = 'block';
+          state.outputs.script = outEl.textContent || '';
+        }
+      }
       _pipeNodeState(sid, 'writer', 'done');
 
-      // ── REVISE TITLES (Writer) — always revise since packaging drives click ─
+      // ── REVISE TITLES (Writer) ─────────────────────────────────
+      _checkAbort(sid);
       _ideoLog(sid, `  ✍️ Writer revising titles…`);
       _pipeNodeState(sid, 'writer', 'revising');
-      await runIdeoAction(sid, 'titles', directiveCtx + revisionCtx);
-      state.outputs.titles = document.getElementById(`ideo-out-${sid}-titles`)?.textContent || '';
+      {
+        const currentTitles = state.outputs.titles || '';
+        const revisePrompt = `You are The Writer. Revise the title options based on the updated concept. Keep titles that already work, replace only weak ones.
+
+CURRENT TITLES:
+${currentTitles.substring(0, 800)}
+
+REVISION BRIEF (packaging-relevant parts only):
+${revisionBrief.substring(0, 200)}
+
+REVISED CONCEPT SUMMARY:
+${state.outputs.concept.substring(0, 300)}
+
+Output the complete revised titles:`;
+
+        const revisedText = await callClaude(revisePrompt, { maxTokens: 2000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        const outEl = document.getElementById(`ideo-out-${sid}-titles`);
+        if (outEl && revisedText) {
+          // Store FIRST, then render
+          if (!window._ideoRawTexts) window._ideoRawTexts = {};
+          if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
+          window._ideoRawTexts[sid].titles = revisedText;
+          _persistSessionRawText(sid, 'titles', revisedText);
+          let rendered = marked.parse(revisedText);
+          rendered = linkifyHypPhrases(rendered);
+          outEl.innerHTML = rendered;
+          outEl.style.display = 'block';
+          state.outputs.titles = outEl.textContent || '';
+        }
+      }
       _pipeNodeState(sid, 'writer', 'done');
 
       _pipeNodeState(sid, 'orchestrator', 'done');
@@ -3855,7 +4848,7 @@ Reply with ONLY: **Score**: X/10 and one sentence.`;
       const criticSummary = criticLog.map(c => `${c.stage}: ${c.score}/10 (${c.verdict})`).join(' · ');
       const mlCtx = ML_INSIGHTS ? `\nML signals: ${ML_INSIGHTS.summary_text || ''}` : '';
       const iterSummary = iterationHistory.map(h =>
-        `Iter ${h.iteration}: avg ${h.avgRating}/10, critic ${h.criticScore}/10, ${h.pass ? 'PASS' : 'FAIL'}`
+        `Iter ${h.iteration}: fans ${h.topAvg || h.avgRating}/10, floor ${h.bottomAvg || h.avgRating}/10, critic ${h.criticScore}/10, ${h.pass ? 'PASS' : 'FAIL'}`
       ).join('\n');
 
       const validationPrompt = `You are The Critic performing FINAL VALIDATION for ${CONFIG?.project?.name || 'this project'}.
@@ -3993,14 +4986,14 @@ End with:
    ═══════════════════════════════════════════════════════════════════ */
 
 const PIPE_NODES = [
-  // Main pipeline (left to right, 2 rows)
-  { id:'user',       emoji:'👤', label:'Director',  x:30,  y:30,  w:58, h:36, type:'user' },
-  { id:'orchestrator',emoji:'🎯',label:'Producer',  x:110, y:30,  w:58, h:36, type:'core' },
-  { id:'writer',     emoji:'✍️', label:'Writer',    x:190, y:14,  w:58, h:36, type:'core' },
-  { id:'creative',   emoji:'🎨', label:'Creative',  x:190, y:56,  w:58, h:36, type:'core' },
-  { id:'analyst',    emoji:'📊', label:'Data',      x:110, y:98,  w:58, h:36, type:'support' },
-  { id:'critic',     emoji:'🔍', label:'Critic',    x:275, y:30,  w:58, h:36, type:'critic' },
-  { id:'validation', emoji:'✅', label:'Validation', x:348, y:30,  w:64, h:36, type:'output' },
+  // Pipeline layout — fits 300×110 viewport
+  { id:'user',       emoji:'👤', label:'Director',   x:6,   y:28, w:46, h:28, type:'user' },
+  { id:'orchestrator',emoji:'🎯',label:'Producer',   x:64,  y:28, w:46, h:28, type:'core' },
+  { id:'writer',     emoji:'✍️', label:'Writer',     x:122, y:8,  w:46, h:28, type:'core' },
+  { id:'creative',   emoji:'🎨', label:'Creative',   x:122, y:50, w:46, h:28, type:'core' },
+  { id:'analyst',    emoji:'📊', label:'Data',       x:64,  y:76, w:46, h:28, type:'support' },
+  { id:'critic',     emoji:'🔍', label:'Critic',     x:180, y:28, w:46, h:28, type:'critic' },
+  { id:'validation', emoji:'✅', label:'Valid.',      x:238, y:28, w:52, h:28, type:'output' },
 ];
 
 const PIPE_EDGES = [
@@ -4035,8 +5028,8 @@ function _buildPipeGraph(sid) {
   const container = document.getElementById(`pipe-graph-${sid}`);
   if (!container) return;
 
-  const W = 420, H = 140;
-  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  const W = 300, H = 110;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">`;
 
   // Defs: arrowhead
   svg += `<defs>
@@ -4081,10 +5074,10 @@ function _buildPipeGraph(sid) {
     const cls = 'pipe-node idle';
     const rx = 8;
     svg += `<g class="${cls}" id="pipe-node-${sid}-${n.id}">
-      <rect class="pipe-node-bg" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="${rx}"
-        stroke-width="1.5"/>
-      <text x="${n.x + n.w/2}" y="${n.y + 15}" text-anchor="middle" font-size="13">${n.emoji}</text>
-      <text x="${n.x + n.w/2}" y="${n.y + 28}" text-anchor="middle" font-size="7.5" fill="var(--muted)"
+      <rect class="pipe-node-bg" x="${n.x}" y="${n.y}" width="${n.w}" height="${n.h}" rx="6"
+        stroke-width="1"/>
+      <text x="${n.x + n.w/2}" y="${n.y + 13}" text-anchor="middle" font-size="10">${n.emoji}</text>
+      <text x="${n.x + n.w/2}" y="${n.y + 23}" text-anchor="middle" font-size="6" fill="var(--muted)"
         font-weight="600">${n.label}</text>
     </g>`;
   });
@@ -4180,29 +5173,57 @@ function _pipeStageLabel(sid, text) {
   if (el) el.textContent = text;
 }
 
+// Build audience panel nodes dynamically from AUDIENCE_PERSONAS
+function _buildAudPanelNodes(sid) {
+  const container = document.getElementById(`pipe-aud-nodes-${sid}`);
+  if (!container) return;
+
+  if (AUDIENCE_PERSONAS.length === 0) {
+    const isGenerating = !!_personaGenerationPromise;
+    container.innerHTML = `<div style="font-size:7.5px;color:var(--muted);padding:4px 6px;text-align:center;opacity:.7">
+      ${isGenerating ? '<span class="ideo-gear spinning" style="font-size:10px">⚙️</span> Generating audience…' : 'Audience generated on first run'}
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = '<div class="pipe-aud-grid">' + AUDIENCE_PERSONAS.map(p => {
+    const key = p.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return `<div class="pipe-aud-node" id="pipe-aud-${key}-${sid}" title="${p.name}">
+      <span class="aud-emoji">${p.emoji || '👤'}</span>
+      <span class="aud-name">${p.name}</span>
+      <span class="pipe-aud-rating" id="pipe-aud-r-${key}-${sid}">—</span>
+    </div>`;
+  }).join('') + '</div>';
+}
+
 // Update audience panel nodes
 function _pipeAudState(sid, name, state, rating) {
-  const key = name.toLowerCase();
+  const key = name.toLowerCase().replace(/[^a-z0-9]/g, '');
   const el = document.getElementById(`pipe-aud-${key}-${sid}`);
   if (el) { el.className = `pipe-aud-node ${state}`; }
   if (rating !== undefined) {
     const rEl = document.getElementById(`pipe-aud-r-${key}-${sid}`);
-    if (rEl) rEl.textContent = rating > 0 ? rating : '—';
-    // Animate bar fill
-    const barEl = document.getElementById(`pipe-aud-bar-${key}-${sid}`);
-    if (barEl) barEl.style.width = rating > 0 ? `${Math.min(rating, 10) * 10}%` : '0%';
+    if (rEl) {
+      rEl.textContent = rating > 0 ? rating : '—';
+      // Color-code the rating
+      if (rating >= 8) rEl.style.color = 'var(--positive, #34d399)';
+      else if (rating >= 6) rEl.style.color = 'rgba(192,132,252,1)';
+      else if (rating >= 4) rEl.style.color = 'var(--warning, #fb923c)';
+      else if (rating > 0) rEl.style.color = 'var(--negative, #f87171)';
+    }
   }
   if (state === 'idle') {
-    // Reset bar on idle
-    const barEl = document.getElementById(`pipe-aud-bar-${key}-${sid}`);
-    if (barEl) barEl.style.width = '0%';
+    const rEl = document.getElementById(`pipe-aud-r-${key}-${sid}`);
+    if (rEl) { rEl.textContent = '—'; rEl.style.color = ''; }
   }
 }
 
-// Update audience avg display
-function _pipeAudAvg(sid, avg) {
-  const el = document.getElementById(`pipe-aud-avg-val-${sid}`);
-  if (el) el.textContent = avg > 0 ? avg : '—';
+// Update audience avg display (fans + floor)
+function _pipeAudAvg(sid, avg, topAvg, bottomAvg) {
+  const fansEl = document.getElementById(`pipe-aud-fans-val-${sid}`);
+  const floorEl = document.getElementById(`pipe-aud-floor-val-${sid}`);
+  if (fansEl) fansEl.textContent = topAvg > 0 ? topAvg : (avg > 0 ? avg : '—');
+  if (floorEl) floorEl.textContent = bottomAvg > 0 ? bottomAvg : '—';
 }
 
 // Reset all nodes, edges, and audience to idle
@@ -4212,7 +5233,7 @@ function _pipeResetAll(sid) {
     const edge = document.getElementById(`pipe-edge-${sid}-${i}`);
     if (edge) edge.classList.remove('active');
   });
-  ['zara','james','priya','lucas','thomas'].forEach(name => _pipeAudState(sid, name, '', undefined));
+  AUDIENCE_PERSONAS.forEach(p => _pipeAudState(sid, p.name.toLowerCase().replace(/[^a-z0-9]/g, ''), '', undefined));
   _pipeStageLabel(sid, '');
 }
 
@@ -4305,6 +5326,51 @@ function _initPipeGraph(sid) {
    CONVERGENCE GRAPH — SVG line chart of audience scores over iterations
    Shows: audience avg (bold), critic score, per-persona lines, threshold
    ═══════════════════════════════════════════════════════════════════ */
+// Show empty convergence placeholder before scores arrive
+function _initEmptyConvergence(sid) {
+  const el = document.getElementById(`pipe-convergence-${sid}`);
+  if (!el) return;
+  const cfg = PIPE_CFG.consensus;
+  const isFanbase = cfg.strategy === 'fanbase';
+  const topThresh = isFanbase ? (cfg.fanbase_top_threshold || 7) : (cfg.avg_threshold || 6.5);
+  const floorThresh = isFanbase ? (cfg.fanbase_floor_threshold || 4) : null;
+
+  const W = 300, H = 120;
+  const pad = { top: 12, right: 50, bottom: 22, left: 24 };
+  const plotW = W - pad.left - pad.right;
+  const plotH = H - pad.top - pad.bottom;
+  const y = v => pad.top + plotH - (v / 10) * plotH;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">`;
+  svg += `<rect x="0" y="0" width="${W}" height="${H}" fill="transparent" rx="6"/>`;
+
+  // Grid lines
+  [2, 4, 6, 8].forEach(v => {
+    svg += `<line x1="${pad.left}" y1="${y(v)}" x2="${W - pad.right}" y2="${y(v)}" stroke="var(--border)" stroke-width=".5" opacity=".3"/>`;
+    svg += `<text x="${pad.left - 4}" y="${y(v) + 3}" text-anchor="end" font-size="8" fill="var(--muted)" opacity=".5">${v}</text>`;
+  });
+
+  // Threshold lines
+  svg += `<line x1="${pad.left}" y1="${y(topThresh)}" x2="${W - pad.right}" y2="${y(topThresh)}" stroke="var(--positive)" stroke-width="1" stroke-dasharray="4 3" opacity=".4"/>`;
+  svg += `<text x="${W - pad.right + 2}" y="${y(topThresh) + 3}" font-size="7" fill="var(--positive)" opacity=".6">${isFanbase ? 'fans' : ''}≥${topThresh}</text>`;
+  if (floorThresh !== null) {
+    svg += `<line x1="${pad.left}" y1="${y(floorThresh)}" x2="${W - pad.right}" y2="${y(floorThresh)}" stroke="#fb923c" stroke-width="1" stroke-dasharray="4 3" opacity=".3"/>`;
+    svg += `<text x="${W - pad.right + 2}" y="${y(floorThresh) + 3}" font-size="7" fill="#fb923c" opacity=".5">floor≥${floorThresh}</text>`;
+  }
+
+  // "Waiting for scores" label
+  svg += `<text x="${W/2}" y="${H/2 + 4}" text-anchor="middle" font-size="9" fill="var(--muted)" opacity=".5">Scores will appear here</text>`;
+
+  svg += `</svg>`;
+  // Legend
+  const legend = `<div style="display:flex;gap:10px;justify-content:center;font-size:8px;color:var(--muted);margin-top:2px">
+    <span style="color:var(--accent);font-weight:700">━ Fans</span>
+    <span style="color:#fb923c">━ Floor</span>
+    <span style="color:#fbbf24">╌ Critic</span>
+  </div>`;
+  el.innerHTML = svg + legend;
+}
+
 // Live-update convergence graph in the Running tab
 function _updateLiveConvergence(sid, history) {
   const el = document.getElementById(`pipe-convergence-${sid}`);
@@ -4313,8 +5379,9 @@ function _updateLiveConvergence(sid, history) {
     // Single iteration — show a compact summary, no line chart yet
     const h = history[0];
     const voteChips = h.votes.map(v => `<span style="margin-right:6px">${v.emoji}${v.rating}</span>`).join('');
+    const fanbaseInfo = h.topAvg != null ? `fans <strong>${h.topAvg}</strong> · floor <strong>${h.bottomAvg}</strong>` : `avg <strong>${h.avgRating}</strong>`;
     el.innerHTML = `<div style="padding:8px 12px;background:var(--surface2);border-radius:8px;font-size:11px">
-      <strong>📈 Iter ${h.iteration}</strong>: avg <strong>${h.avgRating}</strong>/10 · critic <strong>${h.criticScore}</strong>/10 · ${voteChips}
+      <strong>📈 Iter ${h.iteration}</strong>: ${fanbaseInfo}/10 · critic <strong>${h.criticScore}</strong>/10 · ${voteChips}
     </div>`;
     return;
   }
@@ -4337,14 +5404,15 @@ function _buildConvergenceGraph(history) {
   // Build polyline points helper
   const points = (data) => data.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
 
-  // Threshold line
-  const thresh = PIPE_CFG.consensus.avg_threshold;
+  // Threshold lines — fanbase strategy has two: top-half and floor
+  const isFanbase = PIPE_CFG.consensus.strategy === 'fanbase';
+  const thresh = isFanbase ? (PIPE_CFG.consensus.fanbase_top_threshold || 7) : PIPE_CFG.consensus.avg_threshold;
+  const floorThresh = isFanbase ? (PIPE_CFG.consensus.fanbase_floor_threshold || 4) : null;
 
-  // Persona colors
-  const personaColors = {
-    'Zara': '#e879f9', 'James': '#60a5fa', 'Priya': '#f59e0b',
-    'Lucas': '#34d399', 'Thomas': '#fb923c'
-  };
+  // Persona colors — generate dynamically for any number of personas
+  const _pcPalette = ['#e879f9','#60a5fa','#f59e0b','#34d399','#fb923c','#a78bfa','#f87171','#2dd4bf','#fbbf24','#818cf8','#c084fc','#22d3ee','#f472b6','#84cc16','#e2e8f0'];
+  const personaColors = {};
+  (history[0]?.votes || []).forEach((v, i) => { personaColors[v.name] = _pcPalette[i % _pcPalette.length]; });
 
   // Collect per-persona score arrays
   const personaNames = history[0]?.votes?.map(v => v.name) || [];
@@ -4356,11 +5424,13 @@ function _buildConvergenceGraph(history) {
     });
   });
 
-  // Audience avg and critic arrays
+  // Audience avg, fanbase top/bottom, and critic arrays
   const avgData = history.map(h => h.avgRating);
+  const topAvgData = history.map(h => h.topAvg != null ? h.topAvg : h.avgRating);
+  const bottomAvgData = history.map(h => h.bottomAvg != null ? h.bottomAvg : h.avgRating);
   const criticData = history.map(h => h.criticScore);
 
-  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">`;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">`;
 
   // Background
   svg += `<rect x="0" y="0" width="${W}" height="${H}" fill="var(--surface3)" rx="6"/>`;
@@ -4376,20 +5446,26 @@ function _buildConvergenceGraph(history) {
     svg += `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="8" fill="var(--muted)">Iter ${h.iteration}</text>`;
   });
 
-  // Threshold line (dashed)
+  // Threshold line(s) (dashed)
   svg += `<line x1="${pad.left}" y1="${y(thresh)}" x2="${W - pad.right}" y2="${y(thresh)}" stroke="var(--positive)" stroke-width="1" stroke-dasharray="4 3" opacity=".6"/>`;
-  svg += `<text x="${W - pad.right + 2}" y="${y(thresh) + 3}" font-size="7" fill="var(--positive)" opacity=".8">≥${thresh}</text>`;
+  svg += `<text x="${W - pad.right + 2}" y="${y(thresh) + 3}" font-size="7" fill="var(--positive)" opacity=".8">${isFanbase ? 'fans' : ''}≥${thresh}</text>`;
+  // Floor threshold for fanbase strategy
+  if (floorThresh !== null) {
+    svg += `<line x1="${pad.left}" y1="${y(floorThresh)}" x2="${W - pad.right}" y2="${y(floorThresh)}" stroke="#fb923c" stroke-width="1" stroke-dasharray="4 3" opacity=".5"/>`;
+    svg += `<text x="${W - pad.right + 2}" y="${y(floorThresh) + 3}" font-size="7" fill="#fb923c" opacity=".8">floor≥${floorThresh}</text>`;
+  }
 
-  // Per-persona lines (thin, semi-transparent)
+  // Per-persona lines (very thin/subtle with many personas, more visible with few)
+  const manyPersonas = personaNames.length > 7;
   personaNames.forEach(name => {
     const color = personaColors[name] || 'var(--muted)';
     const d = personaData[name];
     if (d.length > 1) {
-      svg += `<polyline points="${points(d)}" fill="none" stroke="${color}" stroke-width="1" opacity=".4"/>`;
+      svg += `<polyline points="${points(d)}" fill="none" stroke="${color}" stroke-width="${manyPersonas ? '.6' : '1'}" opacity="${manyPersonas ? '.25' : '.4'}"/>`;
     }
-    // Dots
+    // Dots (smaller with many personas)
     d.forEach((v, i) => {
-      svg += `<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="${color}" opacity=".5"/>`;
+      svg += `<circle cx="${x(i)}" cy="${y(v)}" r="${manyPersonas ? '1.5' : '2.5'}" fill="${color}" opacity="${manyPersonas ? '.35' : '.5'}"/>`;
     });
   });
 
@@ -4401,41 +5477,62 @@ function _buildConvergenceGraph(history) {
     svg += `<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#fbbf24" opacity=".7"/>`;
   });
 
-  // Audience avg line (accent, bold)
-  if (avgData.length > 1) {
-    svg += `<polyline points="${points(avgData)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+  // Fans avg line (accent, bold) — this is the key metric
+  if (topAvgData.length > 1) {
+    svg += `<polyline points="${points(topAvgData)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
   }
-  avgData.forEach((v, i) => {
+  topAvgData.forEach((v, i) => {
     svg += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="var(--accent)" stroke="var(--surface3)" stroke-width="1.5"/>`;
     svg += `<text x="${x(i)}" y="${y(v) - 7}" text-anchor="middle" font-size="8" font-weight="700" fill="var(--accent)">${v}</text>`;
   });
 
+  // Floor avg line (orange, medium)
+  if (bottomAvgData.length > 1) {
+    svg += `<polyline points="${points(bottomAvgData)}" fill="none" stroke="#fb923c" stroke-width="1.8"/>`;
+  }
+  bottomAvgData.forEach((v, i) => {
+    svg += `<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="#fb923c" stroke="var(--surface3)" stroke-width="1"/>`;
+    svg += `<text x="${x(i)}" y="${y(v) + 12}" text-anchor="middle" font-size="7" fill="#fb923c">${v}</text>`;
+  });
+
   svg += `</svg>`;
 
-  // Legend
+  // Legend — compact for large panels, detailed for small
   const legendItems = [
-    `<span style="color:var(--accent);font-weight:700">━ Audience avg</span>`,
+    `<span style="color:var(--accent);font-weight:700">━ Fans (top 50%)</span>`,
+    `<span style="color:#fb923c">━ Floor (bottom 50%)</span>`,
     `<span style="color:#fbbf24">╌ Critic</span>`,
-    ...personaNames.map(name => {
+  ];
+  if (personaNames.length <= 7) {
+    // Show individual persona names
+    personaNames.forEach(name => {
       const emoji = history[0]?.votes?.find(v => v.name === name)?.emoji || '';
       const color = personaColors[name] || 'var(--muted)';
-      return `<span style="color:${color}">${emoji} ${name}</span>`;
-    })
-  ];
+      legendItems.push(`<span style="color:${color}">${emoji} ${name}</span>`);
+    });
+  } else {
+    // Compact: show colored dots for each persona
+    legendItems.push(`<span style="color:var(--muted)">${personaNames.length} personas:</span>`);
+    personaNames.forEach(name => {
+      const emoji = history[0]?.votes?.find(v => v.name === name)?.emoji || '';
+      const color = personaColors[name] || 'var(--muted)';
+      legendItems.push(`<span style="color:${color}" title="${name}">${emoji}</span>`);
+    });
+  }
 
   // Final delta
   const delta = avgData.length >= 2 ? (avgData[avgData.length - 1] - avgData[0]).toFixed(1) : '0';
   const deltaColor = parseFloat(delta) > 0 ? 'var(--positive)' : parseFloat(delta) < 0 ? 'var(--negative)' : 'var(--muted)';
   const deltaSign = parseFloat(delta) > 0 ? '+' : '';
 
-  return `<div style="margin-bottom:14px;padding:12px 14px;background:var(--surface2);border-radius:8px">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <strong style="font-size:11px">📈 Audience Convergence</strong>
-      <span style="font-size:10px;color:var(--muted)">${history.length} iterations · ${PIPE_CFG.consensus.strategy}</span>
-      <span style="margin-left:auto;font-size:11px;font-weight:700;color:${deltaColor}">${deltaSign}${delta}</span>
+  return `<div style="margin-bottom:10px;padding:10px 12px;background:var(--surface2);border-radius:8px">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+      <strong style="font-size:10px">📈 Convergence</strong>
+      <span style="font-size:9px;color:var(--muted)">${history.length} iter · ${PIPE_CFG.consensus.strategy}</span>
+      <span style="margin-left:auto;font-size:10px;font-weight:700;color:${deltaColor}">${deltaSign}${delta}</span>
     </div>
     ${svg}
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;font-size:9px">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;font-size:8px">
       ${legendItems.join('')}
     </div>
   </div>`;
@@ -4457,6 +5554,155 @@ async function _pipelineCriticReview(sid, stageName, state, criticLog) {
     _ideoLog(sid, `  ⚠ Critic review failed for ${stageName}: ${e.message}`, 'log-warn');
     return { score: 7, verdict: 'APPROVE', notes: '' };
   }
+}
+
+/**
+ * Critic revision loop — keeps sending work back to the originating agent
+ * until the critic approves or we hit max_revisions_per_stage.
+ *
+ * @param {string} sid - session id
+ * @param {string} stageName - e.g. 'concept', 'storyboard', 'script'
+ * @param {string} agentLabel - display name for logs (e.g. 'Writer', 'Creative Director')
+ * @param {string} agentNodeId - pipeline node id for visual state (e.g. 'writer', 'creative')
+ * @param {object} state - pipeline state (has state.outputs)
+ * @param {array}  criticLog - accumulator for critic reviews
+ * @param {string} directiveCtx - user directive context string
+ * @param {string} extraCtx - additional context to pass to the agent on revision
+ */
+async function _criticRevisionLoop(sid, stageName, agentLabel, agentNodeId, state, criticLog, directiveCtx, extraCtx = '') {
+  const maxRevisions = PIPE_CFG.max_revisions_per_stage || 2;
+  let revisionCount = 0;
+
+  while (revisionCount < maxRevisions) {
+    _pipeCriticReview(sid, stageName, 'PENDING');
+    const review = await _pipelineCriticReview(sid, stageName, state, criticLog);
+    const verdict = review?.verdict || 'APPROVE';
+    _pipeCriticReview(sid, stageName, verdict);
+
+    if (verdict === 'APPROVE') {
+      return review;  // Good to go — proceed to next stage
+    }
+
+    // REVISE or REJECT — send back to the originating agent
+    revisionCount++;
+    const action = verdict === 'REJECT' ? 'rejected' : 'requested revision';
+    _ideoLog(sid, `🔄 Critic ${action} (${revisionCount}/${maxRevisions}) — ${agentLabel} revising ${stageName}…`);
+    _pipeNodeState(sid, agentNodeId, 'revising');
+
+    await runIdeoAction(sid, stageName, directiveCtx + extraCtx + `\n\nCRITIC ${verdict} (attempt ${revisionCount}/${maxRevisions}):\n${review.notes}\n\nPlease address these specific issues. This is revision ${revisionCount} — the critic will review again.`);
+    state.outputs[stageName] = document.getElementById(`ideo-out-${sid}-${stageName}`)?.textContent || '';
+    _ideoLog(sid, `✓ ${stageName} revised (attempt ${revisionCount})`, 'log-ok');
+  }
+
+  // Exhausted revisions — log warning and continue
+  _ideoLog(sid, `⚠ ${stageName}: max revisions (${maxRevisions}) reached — proceeding with current version`, 'log-warn');
+  return { score: 0, verdict: 'MAX_REVISIONS', notes: '' };
+}
+
+// ── Chunked concept generation ─────────────────────────────────────
+// Generates the concept in multiple passes, checking for completeness
+// after each call. This avoids timeout issues with very large outputs.
+
+const CONCEPT_REQUIRED_SECTIONS = [
+  // Part A: Production Note (10 sections)
+  { id: 'concept',       patterns: [/##\s*concept/i, /\*\*the hook\*\*/i, /the hook/i] },
+  { id: 'cast',          patterns: [/##\s*cast/i, /##\s*the cast/i] },
+  { id: 'loop',          patterns: [/##\s*the loop/i, /##\s*loop/i, /\*\*core loop\*\*/i] },
+  { id: 'psych',         patterns: [/##\s*psychological drivers/i, /\*\*primary drivers\*\*/i] },
+  { id: 'structure',     patterns: [/##\s*story structure/i, /##\s*structure/i, /\*\*cold open\*\*/i] },
+  { id: 'emotional',     patterns: [/##\s*emotional design/i] },
+  { id: 'production',    patterns: [/##\s*production design/i] },
+  { id: 'questions',     patterns: [/##\s*questions/i, /##\s*prompts/i] },
+  { id: 'packaging',     patterns: [/##\s*packaging/i, /\*\*title\*\*/i] },
+  { id: 'performance',   patterns: [/##\s*performance notes/i] },
+  // Part B: Format Development Analysis (10 sections)
+  { id: 'strong_chars',  patterns: [/##\s*strong characters/i, /\*\*all unfiltered\*\*/i, /casting\s*\/\s*production/i] },
+  { id: 'early_ret',     patterns: [/##\s*early retention/i, /\*\*full 3 minute/i, /first 30 seconds/i] },
+  { id: 'reason_watch',  patterns: [/##\s*reason to watch/i, /reason to watch to the end/i] },
+  { id: 'loop_test',     patterns: [/##\s*loop structure test/i, /\*\*loop clarity\*\*/i] },
+  { id: 'format_type',   patterns: [/##\s*format type read/i, /\*\*format type\*\*/i] },
+  { id: 'yt_fitness',    patterns: [/##\s*youtube format fitness/i, /\*\*instant visual hook\*\*/i] },
+  { id: 'scorecard',     patterns: [/##\s*scorecard/i, /\*\*hook strength\*\*/i] },
+  { id: 'fragility',     patterns: [/##\s*structural fragility/i, /##\s*fragility/i] },
+  { id: 'strengths',     patterns: [/##\s*top strengths/i, /##\s*top 3 strengths/i, /\*\*fix engine\*\*/i] },
+  { id: 'diagnosis',     patterns: [/##\s*development diagnosis/i, /##\s*diagnosis/i] },
+];
+
+function _checkConceptCompleteness(text) {
+  const found = [];
+  const missing = [];
+  for (const sec of CONCEPT_REQUIRED_SECTIONS) {
+    const present = sec.patterns.some(p => p.test(text));
+    (present ? found : missing).push(sec.id);
+  }
+  return { found, missing, complete: missing.length === 0, pct: Math.round(100 * found.length / CONCEPT_REQUIRED_SECTIONS.length) };
+}
+
+/* Remove duplicate ## sections — keeps the first occurrence of each heading */
+/* ── Truncation detection ─────────────────────────────────────── */
+function _detectTruncation(text, action) {
+  if (!text || text.length < 200) return true; // way too short
+  const trimmed = text.trimEnd();
+  const lastChar = trimmed.slice(-1);
+  const lastLine = trimmed.split('\n').pop() || '';
+
+  // Obvious truncation: ends mid-word or mid-bracket
+  if (/\*\[$/.test(lastLine)) return true; // unclosed stage direction
+  if (/[a-z]$/.test(lastLine) && lastLine.length > 20 && !lastLine.endsWith('.') && !lastLine.endsWith('!') && !lastLine.endsWith('"') && !lastLine.endsWith(')') && !lastLine.endsWith('*') && !lastLine.endsWith('|') && !lastLine.endsWith('---')) return true;
+  if (lastLine.includes('"') && (lastLine.split('"').length % 2 === 0)) return true; // unclosed quote
+  if (/\|\s*$/.test(lastLine) && !lastLine.startsWith('|')) return true; // mid-table
+
+  // Section completeness check for concept (must have Part B sections)
+  if (action === 'concept') {
+    const requiredPartB = ['Strong Characters', 'Early Retention', 'Loop Structure Test', 'Format Type Read',
+      'YouTube Format Fitness', 'Scorecard', 'Structural Fragility', 'Development Diagnosis'];
+    const textLower = text.toLowerCase();
+    const missing = requiredPartB.filter(s => !textLower.includes(s.toLowerCase()));
+    if (missing.length > 3) return true; // missing too many Part B sections
+  }
+
+  return false;
+}
+
+function _deduplicateConceptSections(text, sid) {
+  const lines = text.split('\n');
+  const seenHeadings = new Map(); // normalized heading → first line index
+  const dupeRanges = []; // [{start, end}] line ranges to remove
+
+  // First pass: find all ## headings and their line indices
+  const headingIndices = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s+/.test(lines[i])) {
+      const normalized = lines[i].replace(/^##\s+/, '').trim().toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ');
+      headingIndices.push({ line: i, key: normalized });
+    }
+  }
+
+  // Second pass: detect duplicates
+  for (let h = 0; h < headingIndices.length; h++) {
+    const { line, key } = headingIndices[h];
+    if (seenHeadings.has(key)) {
+      // This is a duplicate — mark range from this heading to next heading (or EOF)
+      const nextHeadingLine = h + 1 < headingIndices.length ? headingIndices[h + 1].line : lines.length;
+      dupeRanges.push({ start: line, end: nextHeadingLine });
+    } else {
+      seenHeadings.set(key, line);
+    }
+  }
+
+  if (dupeRanges.length === 0) return text;
+
+  // Remove duplicate ranges (iterate in reverse to preserve indices)
+  const removeSet = new Set();
+  for (const { start, end } of dupeRanges) {
+    for (let i = start; i < end; i++) removeSet.add(i);
+  }
+
+  const cleaned = lines.filter((_, i) => !removeSet.has(i)).join('\n');
+  const removedSections = dupeRanges.map(r => lines[r.start].replace(/^##\s+/, '').trim());
+  if (sid) _ideoLog(sid, `  🧹 Removed ${dupeRanges.length} duplicate section(s): ${removedSections.join(', ')}`, 'log-dim');
+  return cleaned;
 }
 
 async function runIdeoAction(sid, action, extraContext = '') {
@@ -4488,9 +5734,11 @@ async function runIdeoAction(sid, action, extraContext = '') {
   const PROMPTS = {
     concept: `You are a senior creative producer for ${name}, a YouTube channel about relationships — telling delightful stories of emotional courage.${ctx}${refCtx}${urlCtx}
 
-Generate a PRODUCTION NOTE for an original video concept. Write as a producer who has made 500 episodes — direct, opinionated, specific. Do NOT write analytical steps, ideation process, or chain-of-thought. No "STEP 1", "STEP 2". Write the finished production note.
+Generate a COMPLETE PRODUCTION NOTE + FORMAT DEVELOPMENT ANALYSIS for an original video concept. Write as a producer who has made 500 episodes — direct, opinionated, specific. Do NOT write analytical steps or chain-of-thought. Write the finished production note.
 
-Follow this exact structure:
+IMPORTANT: This must be COMPLETE. Do NOT truncate or summarize any section. Every section below is mandatory.
+
+═══ PART A: PRODUCTION NOTE ═══
 
 ## Concept
 One paragraph premise with core tension and a "but" clause. Then:
@@ -4498,16 +5746,27 @@ One paragraph premise with core tension and a "but" clause. Then:
 **The WTF Moment:** The single most viral clip — name people, quote dialogue.
 
 ## Cast
-3-6 characters, each with: **Name — Archetype Title**, 2-3 sentence personality/arc, and **Reveal:** line. End with **Chemistry & Group Dynamic** paragraph.
+3-6 characters, each with: **Name — Archetype Title**, 2-3 sentence personality/arc, and **Reveal:** line.
+**Chemistry & Group Dynamic:** paragraph on group energy.
+**Character Archetypes:** Identify which are: Hero, Villain, Underdog, Overconfident Player, Chaotic Wildcard, Super Fun, Heartwarming (in ending).
 
 ## The Loop
 **Core Loop:** One sentence with arrows (action → tension → resolution → consequence)
+**Loop Family:** (Prompt/Pressure, Gatekeeper, Truth/Reveal, Mystery, Compatibility, Gamble, Elimination)
+**Why This Loop Fits:** 2 sentences
+**Secondary Loops:** Any sub-loops with arrows
 **Currency of tension:** What's at risk each round
 **Ramp:** Escalation pattern (staircase/tightrope/hybrid)
 **Payoff:** The question the viewer needs answered
 
+## Psychological Drivers
+**Primary Drivers:** List 3-5 (e.g., Vulnerability, Social risk, Prediction tension, Rejection anxiety) — for each, one sentence on WHY it's active in this format.
+**Secondary Drivers:** List 3-5 (e.g., Second-hand embarrassment, Self-presentation, Authenticity, Attraction uncertainty) — for each, one sentence on WHY it's active.
+
 ## Story Structure
-3-4 Acts with time ranges, story intent, and bullet beats. Then Cold Open (25 seconds, shot-by-shot). Then First Three Minutes (Context & Format, Stakes & Cast, First Conflict).
+3-4 Acts with time ranges, story intent, and bullet beats.
+**Cold Open** (25 seconds, shot-by-shot).
+**First Three Minutes** (Context & Format, Stakes & Cast, First Conflict, 1-min escalation, what drives early spikes).
 
 ## Emotional Design
 Tone, Dominant Emotions, Emotional Arc, Tension Source, Humor. Then 3-5 Peak Moments with timestamp, emotion, description.
@@ -4519,34 +5778,116 @@ Set, Camera, Graphics, Music & Sound, Testimonials — one concrete sentence eac
 Actual questions organized by: Icebreakers, Provocative/Reveal Triggers, Emotional Depth.
 
 ## Packaging
-Title, Title Anatomy (Provocative Action, Inherent Conflict, Zoo Effect, Core Conceit), Thumbnail strategy, 3 Alt Titles.
+**Title:** with Title Anatomy (Provocative Action, Inherent Conflict, Zoo Effect, Core Conceit).
+**Thumbnail strategy.** 3 Alt Titles.
+**Clear Stakes:** What are the social or personal stakes?
+**Curiosity Gap:** What must the audience find out?
+**Why Clearly Delightful / Provocative.**
 
 ## Performance Notes
-What Works, What Doesn't, Retention Notes, Audience Sentiment — name specific cast and timestamps.
+What Works, What Doesn't, Retention Notes, Audience Sentiment.
+
+═══ PART B: FORMAT DEVELOPMENT ANALYSIS ═══
+
+## Strong Characters (Casting / Production)
+**All Unfiltered:** What kind of participants does this format need? (one sentence)
+**Specific Characters:** What distinct personality types must be cast? (one sentence)
+**Hero:** Who does the audience root for?
+**Villain:** Who creates friction or resistance?
+**Super Fun:** Who drives entertainment value?
+**Heartwarming (in ending):** Who delivers the emotional payoff?
+**Reveals (multiple):** What kinds of reveals does this format generate?
+
+## Early Retention (Edit)
+**Full 3 Minute Plan (incl first 30 seconds):** Minute-by-minute breakdown of 0:00–3:00 with specific beats.
+**How are you dropped into the action?**
+**How do we capture your curiosity?**
+**What is the 1 min escalation?**
+**What drives early spikes?**
+**What drives early investment?**
+
+## Reason to Watch to the End
+One sentence: what question or promise makes the audience stay?
+
+## Loop Structure Test
+Rate each 1-10 with one-sentence justification:
+**Loop Clarity** · **Loop Firing Frequency** · **Loop Consequence** · **Loop Visibility** · **Loop Escalation** · **Loop End Payoff** · **Viewer Participation** · **Host Dependency** · **Conversation Risk**
+
+## Format Type Read
+**Format Type:** (e.g., Strong loop format, Borderline loop format, Conversation-dependent)
+**Why:** One sentence explaining the classification.
+
+## YouTube Format Fitness
+Rate each 1-10 with one-sentence justification:
+**Instant Visual Hook** · **Loop Visibility** · **Prediction Engine** · **Comment Fuel** · **Clip Potential** · **YouTube Fitness Score**
+
+## Scorecard
+Rate each 1-10 with one-sentence justification:
+**Hook Strength** · **Core Loop Power** · **Escalation Potential** · **End Payoff** · **Stakes** · **Retention Strength** · **Title/Thumbnail Potential** · **Comment Fuel** · **Shareability**
+
+## Structural Fragility
+Identify top 2-3 fragilities: what could make this format collapse into conversation or fail to hold attention?
+
+## Top Strengths / Problems / Fixes
+**Top 3 Strengths:** numbered.
+**Top 3 Problems:** numbered.
+**Fix Engine:** 3-4 concrete fixes addressing the top problems.
+
+## Development Diagnosis
+2-3 sentence overall diagnosis: what stage is this format at, what must change.
+
+═══ HYPOTHESIS HYPERLINKS ═══
+Throughout BOTH parts, embed hypothesis hyperlinks: [[H##:specific A/B test|the clickable phrase]]
+- At least 12 across all sections. Each a specific, runnable A/B test for THIS episode.
+- A/B test format: "Test [concrete variant A naming cast/moments/timestamps] vs [variant B] — measure [specific metric like ret_initial_drop, CTR, engagement_comment_ratio] over [timeframe like first 48hrs]"
+- GOOD example: "The host opens with [[H01:Test cold open with Marcus saying 'Don't' at 0:03 vs ambient micro-expression montage — measure ret_initial_drop over first 48hrs|a provocative question about loyalty]]"
+- BAD example: "[[H01:Test X vs Y|phrase]]" — too generic. Name the cast. Name the moment. Name the metric.
+- In the RECOMMENDATION section, A/B tests must name BOTH title/thumbnail variants being tested explicitly.
+
+CRITICAL COMPLETENESS REQUIREMENTS:
+- Your response MUST include ALL sections listed above — PART A (10 sections) AND PART B (10 sections).
+- Do NOT stop after the Production Note. You MUST continue to Part B: Format Development Analysis.
+- Write EVERY section fully. Do NOT summarize, truncate, or skip any section.
+- Aim for 3000-5000 words total. A short response is a FAILED response.
+- ALL 20 sections required: Concept, Cast, The Loop, Psychological Drivers, Story Structure, Emotional Design, Production Design, Questions & Prompts, Packaging, Performance Notes, Strong Characters, Early Retention, Reason to Watch to the End, Loop Structure Test, Format Type Read, YouTube Format Fitness, Scorecard, Structural Fragility, Top Strengths/Problems/Fixes, Development Diagnosis.
 
 Format: ${fmt || 'any'} · Audience: ${aud || 'general'}${genderCtx} · Duration: ${durLabel} · Brief: ${brief || 'open'}`,
 
     storyboard: `You are a video director for ${name}.
 Concept: "${concept}" · Duration: ${durLabel}${refCtx}${urlCtx}
-Write a 4-scene storyboard. Each scene: number, visual description (2 sentences), on-screen action or dialogue (1 sentence), mood.`,
+Write a detailed 4-scene storyboard. Each scene: number, scene title, visual description (3-4 sentences covering camera, lighting, set, mood), on-screen action and key dialogue (2-3 sentences), mood emoji and description.
+End with a Director's Note on pacing and which scene is the clip.
+Embed 2-3 hypothesis links: [[H##:test description|phrase]] for testable production decisions.`,
 
     script: `You are a scriptwriter for ${name}.
-Write a tight video script for: "${concept}"${refCtx}${urlCtx}
-Include: hook (first 5 sec), body (3 key beats), CTA. Format with speaker notes.
-Keep it punchy and true to the ${fmt} format.`,
+Write a FULL video script for: "${concept}"${refCtx}${urlCtx}
+Include: cold open hook (first 15 sec with stage directions), full body with ALL rounds/segments of the loop, transitions between segments, confessional/testimonial beats, and closing CTA.
+Format each line as SPEAKER: "dialogue" with [STAGE DIRECTIONS] in brackets.
+Write the COMPLETE script — do not summarize or skip segments. Every round of the loop should be written out.
+Keep it punchy and true to the ${fmt} format.
+Embed 2-3 hypothesis links: [[H##:test description|phrase]] for testable script choices.`,
 
     casting: `You are a casting director for ${name}.
 Ideal on-screen talent for a "${fmt}" episode targeting "${aud}": "${concept}"${refCtx}${urlCtx}
-Cover: Energy & personality, Age & demographic match, Relevant experience, Voice & style, Red flags to avoid.`,
+Cover:
+## Demographics & Energy: age range, personality types, diversity
+## Character Archetypes Needed: Hero, Villain, Underdog, Overconfident, Wildcard, Super Fun
+## What We Value (in order): 1) Comfort on camera under pressure 2) Experience with vulnerability formats 3) Social native fluency 4) Group chemistry instinct
+## Red Flags to Avoid: follower count (vanity metric), traditional acting credits, brand deal history
+## Gender Mix & Regional Voice
+Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
     production: `You are a production manager for ${name}.
-Concise production plan for: "${concept}" (${durLabel})${refCtx}${urlCtx}
-Cover: 1) Shooting setup & location 2) Props & wardrobe 3) Crew 4) Pacing & editing notes 5) Key risks.`,
+Detailed production plan for: "${concept}" (${durLabel})${refCtx}${urlCtx}
+Cover: 1) Shooting setup & location (set design, lighting mood, feel) 2) Props & wardrobe with specific notes 3) Crew table (Role, Headcount, Notes for each) 4) Camera strategy (how many, what they cover) 5) Pacing & editing notes 6) Key risks & contingencies.
+Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
     titles: `You are a YouTube title strategist for ${name}.${ctx}${refCtx}
 Episode: "${concept}"
-Generate 8 title options — vary tone: curiosity, FOMO, identity, humor, vulnerability.
-For each: the title, then one sentence on why it works (data-backed where possible).`,
+Generate 8 title options across these categories: VULNERABILITY, CURIOSITY, FOMO, IDENTITY, HUMOR, PROVOCATION, EMOTIONAL, SOCIAL PROOF.
+For EACH title: the number and category header, then the title in quotes, then "Why it works:" with specific ML feature references (e.g., title_fomo_score, title_personal_you, LASSO-stable for retention) and psychological reasoning (2-3 sentences).
+Be thorough — fill the full space. Do NOT truncate.
+Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
     thumbnails: `You are a thumbnail art director for ${name}.${ctx}${refCtx}
 Episode: "${concept}"
@@ -4560,7 +5901,12 @@ Output ONLY valid JSON array. No markdown, no explanation, no code fences. Examp
 
     distribution: `You are a distribution strategist for ${name}.${ctx}${refCtx}
 Episode: "${concept}"
-Plan: 1) Optimal posting time & cadence 2) Platform cuts (Shorts / Reels / TikTok) 3) Caption hook 4) Community post idea 5) Collab angle.`,
+Write a detailed distribution plan:
+## Cadence: Full episode day, Shorts/clips schedule, community post timing, frequency recommendation with reasoning.
+## Platform Cuts: YouTube Shorts (spec, what to pull, title), TikTok (angle), Instagram Reels. For each: cut spec, what moment to pull, title/caption.
+## Caption Hook & Community Post idea.
+## Collab Angle & Cross-promotion.
+Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
   };
 
   // Determine agent identity for this action (for inter-agent messaging)
@@ -4577,7 +5923,10 @@ Plan: 1) Optimal posting time & cadence 2) Platform cuts (Shorts / Reels / TikTo
     : '';
 
   try {
-    const tokens = (action === 'concept') ? 1500 : 700;
+    // Opus for all creative generation — deeper reasoning, better structure adherence
+    const OPUS_MODEL = 'claude-opus-4-6';
+    const TOKEN_MAP = { concept: 16000, script: 12000, storyboard: 8192, casting: 6000, production: 6000, titles: 4096, distribution: 4096, thumbnails: 800 };
+    const tokens = TOKEN_MAP[action] || 2000;
     const finalPrompt = extraContext
       ? PROMPTS[action] + extraContext + requestHint
       : PROMPTS[action] + requestHint;
@@ -4585,15 +5934,70 @@ Plan: 1) Optimal posting time & cadence 2) Platform cuts (Shorts / Reels / TikTo
     if (action === 'thumbnails') {
       await _generateThumbnails(outEl, finalPrompt, temp, sid);
     } else {
-      let text = await callClaude(finalPrompt, { temperature: temp, maxTokens: tokens, system: false });
+      // ── One-shot Opus generation for all creative actions ──
+      _ideoLog(sid, `  🧠 Generating ${action} with Opus (${tokens} max tokens)…`, 'log-dim');
+      let text = await callClaude(finalPrompt, {
+        temperature: temp, maxTokens: tokens, system: false, model: OPUS_MODEL,
+      });
 
       // ── Inter-agent message passing ─────────────────────────────
-      // Process [REQUEST:agent_id: question] tags in the output
       if (PIPE_CFG.inter_agent_messages && PIPELINE_STATE[sid]) {
         text = await _processAgentRequests(sid, agentId, text, PIPELINE_STATE[sid]);
       }
 
-      outEl.innerHTML = marked.parse(text);
+      // ── Deduplicate concept sections if needed ──────────────────
+      if (action === 'concept') {
+        text = _deduplicateConceptSections(text, sid);
+      }
+
+      // ── Multi-pass truncation recovery ─────────────────────────
+      // The API sets stop_reason='max_tokens' when hitting the limit.
+      // The model also "speed-runs" near the limit, dropping markdown formatting.
+      // Fix: detect via API metadata + heuristic, then continue with full context.
+      const MAX_CONTINUATIONS = 3;
+      for (let pass = 0; pass < MAX_CONTINUATIONS; pass++) {
+        const apiTruncated = callClaude._lastStopReason === 'max_tokens';
+        const heuristicTruncated = _detectTruncation(text, action);
+        if (!apiTruncated && !heuristicTruncated) break;
+
+        _ideoLog(sid, `  ⚠️ Truncation detected in ${action} (pass ${pass+1}, reason: ${apiTruncated ? 'max_tokens' : 'heuristic'}) — continuing…`, 'log-warn');
+
+        // Build continuation prompt WITH original prompt context so model maintains style + formatting
+        const lastChunk = text.slice(-1500); // last ~400 words for overlap
+        const contPrompt = `${finalPrompt}\n\n` +
+          `══ CONTINUATION INSTRUCTIONS ══\n` +
+          `You already wrote the first part of this ${action}. Here is how your output ended:\n` +
+          `---\n${lastChunk}\n---\n\n` +
+          `CONTINUE from EXACTLY where you left off. Rules:\n` +
+          `1. Do NOT repeat ANY content already written — start mid-sentence if needed\n` +
+          `2. MAINTAIN proper markdown formatting: use ## for headers, **bold** for emphasis, - for lists, | for tables\n` +
+          `3. Complete ALL remaining sections from the template\n` +
+          `4. If you were mid-section, finish that section first, then continue to the next\n` +
+          `5. Do NOT add any preamble like "Continuing from..." — just write the content directly`;
+        const contTokens = Math.min(tokens, 8000);
+        const contText = await callClaude(contPrompt, {
+          temperature: temp, maxTokens: contTokens, system: false, model: OPUS_MODEL,
+        });
+
+        text = text + '\n\n' + contText;
+        _ideoLog(sid, `  ✅ Continuation ${pass+1} appended (${contText.length} chars)`, 'log-dim');
+      }
+
+      // ── STORE raw markdown FIRST (before rendering) ─────────────
+      if (!window._ideoRawTexts) window._ideoRawTexts = {};
+      if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
+      window._ideoRawTexts[sid][action] = text;
+
+      // ── Save to localStorage immediately ────────────────────────
+      _persistSessionRawText(sid, action, text);
+
+      // ── Now render ──────────────────────────────────────────────
+      let rendered = marked.parse(text);
+      rendered = linkifyHypPhrases(rendered);
+      if (action === 'script') {
+        rendered = colorizeScriptSpeakers(rendered);
+      }
+      outEl.innerHTML = rendered;
     }
   } catch(e) {
     outEl.innerHTML = `<span style="color:var(--negative)">Error: ${e.message}</span>`;
@@ -6539,6 +7943,167 @@ function askAboutVideo(id, title) {
 }
 
 
+/* ── Hypothesis hyperlink rendering ─────────────────────────────── */
+/* Syntax: [[H##:A/B test description|linked phrase]] */
+function linkifyHypPhrases(html) {
+  // Robust regex: handles special chars in test description and phrase
+  return html.replace(/\[\[H(\d+):([^|]*?)\|([^\]]*?)\]\]/g, function(_, num, test, phrase) {
+    const id = 'H' + num.padStart(2, '0');
+    // Double-encode for safe embedding in onclick — use data attributes instead
+    const safeId = id.replace(/'/g, "\\'");
+    const safeTest = test.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;');
+    return `<span class="hyp-link" data-hyp-id="${id}" data-hyp-test="${safeTest}" onclick="showHypPopup(event, this)">${phrase}</span>`;
+  });
+}
+
+/* ── Build rich hypothesis popup matching the recommendations card ── */
+let _activeHypPopup = null;
+
+function _findMatchingHypCard(hypId, testDesc) {
+  // Try to find a matching card from the synthesized hypotheses
+  const SRC = (ML_INSIGHTS_CONTENT) || ML_INSIGHTS;
+  if (!SRC) return null;
+  const cards = _synthesizeHypotheses(SRC);
+  if (!cards.length) return null;
+  // Match by ID first (H01 → first card, etc.)
+  const num = parseInt(hypId.replace('H',''), 10);
+  // Try to match by keyword overlap between testDesc and card title/abTest
+  const testLower = testDesc.toLowerCase();
+  let bestMatch = null, bestScore = 0;
+  for (const c of cards) {
+    let score = 0;
+    const titleLower = c.title.toLowerCase();
+    const abLower = (c.abTest || '').toLowerCase();
+    const descLower = (c.desc || '').toLowerCase();
+    // Keyword overlap scoring
+    const testWords = testLower.split(/\s+/).filter(w => w.length > 3);
+    for (const w of testWords) {
+      if (titleLower.includes(w)) score += 3;
+      if (abLower.includes(w)) score += 2;
+      if (descLower.includes(w)) score += 1;
+    }
+    if (score > bestScore) { bestScore = score; bestMatch = c; }
+  }
+  // If no keyword match, use index position
+  if (!bestMatch && num > 0 && num <= cards.length) bestMatch = cards[num - 1];
+  return bestMatch;
+}
+
+function showHypPopup(evt, linkEl) {
+  closeHypPopup();
+  const hypId = linkEl.dataset.hypId;
+  const testDesc = linkEl.dataset.hypTest;
+  const rect = linkEl.getBoundingClientRect();
+
+  // Find matching ML hypothesis card
+  const mlCard = _findMatchingHypCard(hypId, testDesc);
+
+  const popup = document.createElement('div');
+  popup.className = 'hyp-popup';
+
+  let html = '<div class="hyp-popup-header">';
+  html += `<span class="hyp-popup-id">${hypId}</span>`;
+  if (mlCard) {
+    const tierLabel = mlCard.tier === 'gold' ? '🏆 Gold' : mlCard.tier === 'silver' ? '🥈 Silver' : '🥉 Bronze';
+    html += `<span class="hyp-popup-tier ${mlCard.tier}">${tierLabel} · ${mlCard.nMethods}/3</span>`;
+    html += `<span class="hyp-popup-cat" style="background:${mlCard.cat.color}0c;color:${mlCard.cat.color}99;border:1px solid ${mlCard.cat.color}22">${mlCard.cat.emoji} ${mlCard.cat.label}</span>`;
+  }
+  html += `<button class="hyp-popup-close" onclick="closeHypPopup()">✕</button></div>`;
+  html += '<div class="hyp-popup-body">';
+
+  if (mlCard) {
+    html += `<div class="hyp-popup-title">${escHtml(mlCard.title)}</div>`;
+    html += `<div class="hyp-popup-desc">${escHtml(mlCard.desc)}</div>`;
+
+    // Evidence rows
+    if (mlCard.evidence && mlCard.evidence.length) {
+      html += '<div class="hyp-popup-section"><div class="hyp-popup-section-title">Evidence</div>';
+      mlCard.evidence.forEach(e => {
+        html += `<div class="hyp-popup-ev"><span class="hyp-popup-ev-icon">${e.icon}</span><span>${e.text}</span></div>`;
+      });
+      html += '</div>';
+    }
+
+    // A/B test
+    if (mlCard.abTest) {
+      html += `<div class="hyp-popup-section"><div class="hyp-popup-section-title">How to test</div>
+        <div class="hyp-popup-ab"><strong>🧪</strong> ${escHtml(mlCard.abTest)}</div></div>`;
+    }
+
+    // Video examples
+    if (mlCard.examples && mlCard.examples.high && mlCard.examples.low) {
+      html += '<div class="hyp-popup-section"><div class="hyp-popup-section-title">In your videos</div>';
+      const fmtR = mlCard.examples.fmtT || (v => v?.toFixed?.(1) || v);
+      [mlCard.examples.high[0], mlCard.examples.low[0]].forEach((v, i) => {
+        if (!v) return;
+        const icon = i === 0 ? '▲' : '▼';
+        const color = i === 0 ? '#34d399' : '#f87171';
+        html += `<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:11px">
+          <span style="color:${color};font-weight:700">${icon}</span>
+          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(v.title||'')}</span>
+          <span style="color:${color};font-weight:600;flex-shrink:0">${fmtR(v.targetVal)}</span></div>`;
+      });
+      html += '</div>';
+    }
+  } else {
+    // Fallback: no ML match, show the test description from the production note
+    html += `<div class="hyp-popup-title">${hypId}: Hypothesis</div>`;
+    html += `<div class="hyp-popup-desc">${testDesc}</div>`;
+  }
+
+  // Always show the ideation-specific context
+  html += `<div class="hyp-popup-section"><div class="hyp-popup-section-title">Ideation context</div>
+    <div class="hyp-popup-context"><strong>Proposed test:</strong> ${testDesc}</div></div>`;
+
+  html += '</div>';
+  popup.innerHTML = html;
+  document.body.appendChild(popup);
+
+  // Position below the link
+  const popW = popup.offsetWidth || 380;
+  let left = rect.left + rect.width / 2 - popW / 2;
+  let top = rect.bottom + 8;
+  if (left < 8) left = 8;
+  if (left + popW > window.innerWidth - 8) left = window.innerWidth - popW - 8;
+  if (top + popup.offsetHeight > window.innerHeight - 8) top = rect.top - popup.offsetHeight - 8;
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  _activeHypPopup = popup;
+  setTimeout(() => document.addEventListener('click', _closeHypOnOutside, { once: true }), 100);
+}
+function closeHypPopup() {
+  if (_activeHypPopup) { _activeHypPopup.remove(); _activeHypPopup = null; }
+}
+function _closeHypOnOutside(e) {
+  if (_activeHypPopup && !_activeHypPopup.contains(e.target)) closeHypPopup();
+  else if (_activeHypPopup) setTimeout(() => document.addEventListener('click', _closeHypOnOutside, { once: true }), 50);
+}
+
+/* ── Speaker color system for script dialogue ──────────────────── */
+const SPEAKER_COLORS = ['#a78bfa','#34d399','#fb923c','#f87171','#2dd4bf','#e879f9','#60a5fa','#fbbf24'];
+const _speakerColorMap = {};
+let _speakerColorIdx = 0;
+function getSpeakerColor(name) {
+  const key = name.trim().toUpperCase();
+  if (!_speakerColorMap[key]) {
+    _speakerColorMap[key] = SPEAKER_COLORS[_speakerColorIdx % SPEAKER_COLORS.length];
+    _speakerColorIdx++;
+  }
+  return _speakerColorMap[key];
+}
+
+function colorizeScriptSpeakers(html) {
+  // Match lines like "**SPEAKER:** text" or "**SPEAKER** text" or "SPEAKER: text" at line starts
+  return html.replace(/<p>\s*<strong>([^<]+)<\/strong>:?\s*/g, function(match, speaker) {
+    const color = getSpeakerColor(speaker);
+    return `<p><span class="script-speaker" style="color:${color}">${speaker}:</span> `;
+  }).replace(/<p>([A-Z][A-Z\s\d]+):\s*/g, function(match, speaker) {
+    if (speaker.length > 30) return match; // Skip false positives
+    const color = getSpeakerColor(speaker);
+    return `<p><span class="script-speaker" style="color:${color}">${speaker}:</span> `;
+  });
+}
+
 /* ── Claude API ───────────────────────────────────────────────────── */
 function buildSystemPrompt() {
   let sys=`You are Calliope, an AI analyst and creative partner for ${CONFIG?.project?.name||'this project'}. You are data-driven, sharp, and concise.
@@ -6606,28 +8171,56 @@ async function readSSEStream(response,onChunk) {
   return fullText;
 }
 
-async function callClaude(prompt,{temperature=0.7,maxTokens=800,system=true}={}) {
+async function callClaude(prompt,{temperature=0.7,maxTokens=800,system=true,signal=null,model:modelOverride=null}={}) {
+  callClaude._lastStopReason = 'end_turn'; // reset before each call
   const key  =localStorage.getItem('anthropic_api_key')||localStorage.getItem('anthropicKey')||'';
-  const model=CONFIG?.calliope?.model||'claude-sonnet-4-6';
+  const model=modelOverride||CONFIG?.calliope?.model||'claude-sonnet-4-6';
   const sys  =system?buildSystemPrompt():'You are a helpful creative strategist.';
   const bodyObj={model,max_tokens:maxTokens,system:sys,temperature,messages:[{role:'user',content:prompt}]};
 
-  const MAX_RETRIES = 3;
+  const MAX_RETRIES = 2;
   const RETRYABLE = [429, 503, 529];
+  const TIMEOUT_MS = 600000; // 10 min timeout per attempt (Opus concept can be 16k tokens)
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    const r=(!IS_PROD&&key)
+    // Check if already aborted by pipeline stop
+    if (signal?.aborted) throw new Error('PIPELINE_STOPPED');
+    const ctrl = new AbortController();
+    // Link external signal (from pipeline stop) to our controller
+    if (signal) signal.addEventListener('abort', () => ctrl.abort(), { once: true });
+    const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+    let r;
+    try {
+    r=(!IS_PROD&&key)
       ?await fetch('https://api.anthropic.com/v1/messages',{
-          method:'POST',
+          method:'POST',signal:ctrl.signal,
           headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01',
                    'x-api-key':key,'anthropic-dangerous-direct-browser-access':'true'},
           body:JSON.stringify(bodyObj)})
-      :await fetch(PROXY,{method:'POST',
+      :await fetch(PROXY,{method:'POST',signal:ctrl.signal,
           headers:{'Content-Type':'application/json'},body:JSON.stringify(bodyObj)});
+    } catch(e) {
+      clearTimeout(timer);
+      if (e.name === 'AbortError') {
+        // If pipeline was stopped, propagate as PIPELINE_STOPPED (don't retry)
+        if (signal?.aborted) throw new Error('PIPELINE_STOPPED');
+        if (attempt < MAX_RETRIES) { console.warn(`[Claude API] Timeout — retrying (${attempt+1}/${MAX_RETRIES})…`); continue; }
+        throw new Error(`Request timed out after ${TIMEOUT_MS / 1000} seconds. Try again or check your connection.`);
+      }
+      throw e;
+    }
+    clearTimeout(timer);
 
     if (r.ok) {
       const data=await r.json();
-      return data.content?.[0]?.text||'';
+      const text = data.content?.[0]?.text||'';
+      if (data.stop_reason === 'max_tokens') {
+        console.warn(`[Claude API] Response truncated at max_tokens (${maxTokens}). Input tokens: ${data.usage?.input_tokens}, Output tokens: ${data.usage?.output_tokens}`);
+      }
+      // Store last call metadata on global for caller to inspect
+      callClaude._lastStopReason = data.stop_reason || 'end_turn';
+      callClaude._lastUsage = data.usage || {};
+      return text;
     }
 
     const errBody = await r.json().catch(()=>({}));
@@ -6864,54 +8457,50 @@ const TOUR_DETAILED = [
     body:'These context-aware prompts adapt to your project. Click one to instantly send it to Calliope — great for discovering what the system can do.' },
   /* ── Radial menu deep-dive (top → bottom visual order) ── */
   { target:'#radial-fab',    title:'The + Menu',
-    body:'Tap this button to open the action menu. Let\'s open it and walk through each option.',
+    body:'Tap this button to open the action menu. Each spoke opens a different analysis panel on the canvas. Let\'s walk through them.',
     onEnter() { if (!radialOpen) toggleRadial(); } },
-  { target:'_spoke_videos',  title:'🎬 Video Browser',
-    body:'Browse and search your full video catalogue. See thumbnails, stats, and performance metrics for every piece of content.',
+  { target:'_spoke_channel',  title:'🎬 Channel',
+    body:'Your video library — key metrics (total videos, views, retention, formats) and a searchable, sortable grid of every video with thumbnail, title, views, and retention. Click any video for a detailed breakdown.',
     onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Video browser' },
-  { target:'_spoke_trends',  title:'📈 Trends',
-    body:'Time-series trends for your key metrics. Spot seasonal patterns, growth trajectories, and inflection points.',
+    spokeLabel:'Channel' },
+  { target:'_spoke_channelperf',  title:'📊 Channel Performance',
+    body:'Channel health at a glance. Contains: Overview (views, retention, engagement trends with period deltas), Outliers (top and bottom performers), Retention curves, Revenue & CPM, Format breakdown, Engagement stats, Duration analysis, AI Discoverability scores, Traffic sources, and Audience demographics.',
     onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Trends' },
-  { target:'_spoke_performance',  title:'📊 Performance',
-    body:'Opens the Performance dashboard — channel health, outlier detection, retention curves, revenue, and period-over-period deltas at a glance.',
+    spokeLabel:'Channel Performance' },
+  { target:'_spoke_analysis',  title:'🧠 AI Analysis',
+    body:'The ML Signals panel — three tabs: Correlations (Pearson/Spearman between every feature and your target metric), Lasso regression (which features matter when controlling for others), and Random Forest + SHAP (non-linear feature importance with direction). Filter by target, feature group, distribution vs. content lens, and direction.',
     onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Performance' },
-  { target:'_spoke_hypotheses',  title:'🔬 Hypotheses',
-    body:'Statistical hypothesis tests on your features. Each test shows significance, effect size, a plain-English interpretation, and a suggested A/B experiment.',
+    spokeLabel:'AI Analysis' },
+  { target:'_spoke_trends',  title:'📈 Social Media Trends',
+    body:'Time-series social signals from Twitter/X, Reddit, Google Trends, and news outlets. Track keyword buzz, sentiment shifts, competitor mentions, and trending topics relevant to your content niche. Powered by the Social Pulse proxy.',
     onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Hypotheses' },
+    spokeLabel:'Social Media Trends' },
+  { target:'_spoke_recommendations',  title:'🔬 Recommendations',
+    body:'Data-driven recommendations synthesized from all ML signals. Each card shows: a concrete production action (the hypothesis), statistical evidence (correlation, LASSO, SHAP), confidence tier (gold/silver/bronze), a ready-to-run A/B test, and real video examples (top and bottom performers). Filter by distribution vs. content lens.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'Recommendations' },
   { target:'_spoke_ideation',  title:'💡 Ideation',
-    body:'The Ideation Studio — generate data-backed episode concepts. Choose format, audience, duration, and novelty level, optionally upload a brief, and let Calliope create ideas.',
+    body:'The Ideation Studio — a multi-agent AI pipeline that generates full production notes for new episodes. Pick format, audience, duration, novelty, and optionally upload a brief. Five AI agents (Writer, Creative Director, Producer, Data Analyst, Critic) collaborate, then five audience personas score and iterate up to 5 rounds until consensus. Produces: concept, storyboard, script, titles, thumbnails, distribution plan, and validation.',
     onEnter() { if (!radialOpen) toggleRadial(); },
     spokeLabel:'Ideation' },
-  { target:'_spoke_analysis',  title:'🧠 Analysis (ML Signals)',
-    body:'The ML Signals panel — tabbed views for Correlations, Lasso regression, and Random Forest feature importances. Filter by target, feature group, and direction.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Analysis' },
-  { target:'_spoke_data',  title:'🔢 Data & Metrics',
-    body:'Quick summary metrics row — total videos, average views, top formats, and other headline numbers pulled straight from your dataset.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Data' },
   { target:'_spoke_allpanels',  title:'✦ All Panels',
-    body:'Loads every analysis card at once — correlations, hypotheses, performance, ideation, data browser, and more. Great for a full overview.',
+    body:'Loads every panel at once for a complete overview of your channel analytics, ML signals, recommendations, and ideation studio.',
     onEnter() { if (!radialOpen) toggleRadial(); },
     spokeLabel:'All panels' },
   /* ── Back to main areas ── */
   { target:'#canvas-body',   title:'Living Canvas',
-    body:'Cards materialize here as you interact. Each card is self-contained — with its own filters, charts, and controls. Cards can be correlations, hypothesis tests, performance dashboards, video browsers, or ideation studios.',
+    body:'Cards materialize here as you interact. Each card is self-contained with its own filters, charts, and controls. Drag the + menu to add panels, or let Calliope surface them through conversation.',
     onEnter() { if (radialOpen) toggleRadial(); } },
   { target:'#stat-pills',    title:'Top-Bar Sparklines',
     body:'Miniature trend charts for your core KPIs. They load from your video data and give you an at-a-glance health check without opening any panel.' },
   { target:'#canvas-header',  title:'Canvas Controls',
     body:'See how many insight cards are active, and clear the canvas to start fresh when you want a clean slate.' },
   { target:'#pane-divider',  title:'Resizable Layout',
-    body:'Drag this divider left or right to balance chat and canvas space to your preference. The layout is flexible.' },
+    body:'Drag this divider left or right to balance chat and canvas space to your preference.' },
   { target:'#settings-btn',  title:'Settings',
-    body:'Configure your project connection, API keys, and Calliope preferences. This is also where you manage data pipelines.' },
+    body:'Configure your project connection, API keys (Anthropic for AI, fal.ai for thumbnails), and Calliope preferences.' },
   { target:'#tour-btn',      title:'You Are Here!',
-    body:'This button launches the tutorial anytime. Choose Quick for a refresher, or Detailed for the full walkthrough. You can replay it whenever you like.' },
+    body:'This button launches the tutorial anytime. Choose Quick for a refresher, or Detailed for the full walkthrough.' },
 ];
 
 let _tourSteps = [];
@@ -7145,6 +8734,7 @@ document.addEventListener('keydown', e => {
       <div class="debug-group">
         <label>Consensus Strategy</label>
         <select id="dbg-consensus" onchange="PIPE_CFG.consensus.strategy=this.value">
+          <option value="fanbase">Fanbase (top/floor)</option>
           <option value="simple_avg">Simple Average</option>
           <option value="weighted">Weighted</option>
           <option value="convergence">Convergence (variance)</option>
@@ -7185,6 +8775,11 @@ document.addEventListener('keydown', e => {
           <input type="number" id="dbg-max-rev" value="2" step="1" min="0" max="5" style="width:50px"
             onchange="PIPE_CFG.max_revisions_per_stage=parseInt(this.value)">
         </div>
+      </div>
+      <div class="debug-group">
+        <label>Creative Model</label>
+        <span style="font-size:10px;color:var(--accent);padding:2px 6px;background:var(--surface2);border-radius:4px">Opus 4</span>
+        <span style="font-size:9px;color:var(--muted);display:block;margin-top:2px">Scoring: Sonnet 4</span>
       </div>
       <div class="debug-group">
         <label>Flags</label>
