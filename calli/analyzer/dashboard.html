@@ -399,11 +399,11 @@
     .ml-sub-chart canvas { width:100% !important; height:240px !important; }
 
     /* ── Performance panel: card grid ──────────────────────────────── */
-    .perf-grid          { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    .perf-grid          { display:grid; grid-template-columns:repeat(5,1fr);
                           gap:8px; margin-bottom:10px; }
     .perf-card          { background:var(--surface2); border:1px solid var(--border);
                           border-radius:8px; padding:10px 12px; cursor:pointer;
-                          transition:border-color .15s; }
+                          transition:border-color .15s; min-width:0; overflow:hidden; }
     .perf-card:hover    { border-color:var(--accent); }
     .perf-card.open     { grid-column:1/-1; }
     .perf-card-hdr      { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
@@ -433,7 +433,7 @@
     /* ── Outliers: video card grid ─────────────────────────────────── */
     .perf-outlier-label  { font-size:9.5px; font-weight:700; text-transform:uppercase;
                           letter-spacing:.05em; color:var(--muted); margin:6px 0 6px; }
-    .perf-outlier-grid   { display:grid; grid-template-columns:repeat(3,1fr);
+    .perf-outlier-grid   { display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
                           gap:8px; margin-bottom:8px; }
     .perf-outlier        { background:var(--surface2); border:1px solid var(--border);
                           border-radius:7px; overflow:hidden; cursor:pointer;
@@ -1598,6 +1598,7 @@ function refreshCard(card) {
 function afterCardInsert(card) {
   if (card.type === 'corr-chart')  initCorrChart(card);
   if (card.type === 'trend-chart') initTrendChart(card);
+  if (card.type === 'performance') perfRenderOutliers(card.id);
   // Wire up video browser filters
   if (card.type === 'video-browser') {
     const sid = card.id;
@@ -1876,11 +1877,6 @@ function _perfCompute(periodDays) {
     published:{ cur: recent.length,                       prev: prev.length },
   };
 
-  // Outliers — highest/lowest by views
-  const sortedByViews = [...recent].sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
-  const topVideos = sortedByViews.slice(0, 3);
-  const bottomVideos = sortedByViews.slice(-3).reverse();
-
   // Format / series breakdown
   const formatMap = {};
   recent.forEach(v => {
@@ -1891,7 +1887,7 @@ function _perfCompute(periodDays) {
     formatMap[fmt].rev   += parseFloat(v.revenue) || 0;
   });
 
-  return { recent, prev, totals, topVideos, bottomVideos, formatMap, titleFld, thumbFld };
+  return { recent, prev, totals, formatMap, titleFld, thumbFld };
 }
 
 function buildPerformanceHTML(card) {
@@ -1907,9 +1903,9 @@ function buildPerformanceHTML(card) {
     { val: '180', label: 'Last 6 months' },
     { val: '365', label: 'Last year' },
     { val: '9999',label: 'All time' },
-  ], card.opts.period || '90');
+  ], card.opts.period || '365');
 
-  const days = parseInt(document.getElementById(`ml-period-${sid}`)?.value || card.opts.period || '90');
+  const days = parseInt(document.getElementById(`ml-period-${sid}`)?.value || card.opts.period || '365');
   const d    = noData ? null : _perfCompute(days);
 
   /* ── Section builders (card grid) ── */
@@ -1930,19 +1926,6 @@ function buildPerformanceHTML(card) {
       <span class="perf-row-val">${val}</span>${delta}</div>`;
   }
 
-  function outlierCard(v) {
-    const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail_url';
-    const titleFld = CONFIG?.data?.schema?.title || 'title';
-    const _vid = v.video_id || v.id || '';
-    const _thumb = v[thumbFld] || v.thumbnail_url || v.thumbnail || (_vid ? `https://i.ytimg.com/vi/${_vid}/hqdefault.jpg` : '');
-    return `<div class="perf-outlier" onclick="openVidPopup('${escHtml(_vid)}')">
-      <img class="perf-outlier-thumb" src="${_thumb}" loading="lazy"
-           onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
-      <div class="perf-outlier-info">
-        <div class="perf-outlier-title">${escHtml(v[titleFld]||'Untitled')}</div>
-        <div class="perf-outlier-meta">${fmtCompact(parseFloat(v.views)||0)} views</div>
-      </div></div>`;
-  }
 
   /* ── 1. Overview / Monthly Totals ── */
   let overviewBody, overviewHero, overviewDelta;
@@ -1962,17 +1945,8 @@ function buildPerformanceHTML(card) {
     overviewDelta = '';
   }
 
-  /* ── 2. Outliers ── */
-  let outlierBody;
-  if (d && d.topVideos.length) {
-    outlierBody =
-      `<div class="perf-outlier-label">Top performers</div>` +
-      `<div class="perf-outlier-grid">${d.topVideos.map(v => outlierCard(v)).join('')}</div>` +
-      `<div class="perf-outlier-label">Lowest performers</div>` +
-      `<div class="perf-outlier-grid">${d.bottomVideos.map(v => outlierCard(v)).join('')}</div>`;
-  } else {
-    outlierBody = empty;
-  }
+  /* ── 2. Outliers — rendered dynamically via perfRenderOutliers after card insert ── */
+  const outlierN = parseInt(card.opts.outlierN || '5');
 
   /* ── 3. Revenue ── */
   let revenueBody, revHero, revDelta;
@@ -2103,34 +2077,94 @@ function buildPerformanceHTML(card) {
     section('traffic',  '🔀', 'Traffic',      '—', '', trafficBody) +
     section('audience', '👥', 'Audience',      '—', '', audienceBody);
 
-  /* ── Outliers section (video card grids) ── */
-  const outlierSection = `<div class="perf-outlier-section" id="perf-sec-${sid}-outliers">${outlierBody}</div>`;
+  /* ── Search bar ── */
+  const searchBar = `<input type="text" class="perf-search" id="perf-search-${sid}"
+    placeholder="Search videos by title…"
+    oninput="perfSearchVideo('${sid}',this.value)"
+    style="flex:1;min-width:160px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);
+           background:var(--surface2);color:var(--text);font-size:12px;font-family:inherit;outline:none">`;
 
-  /* ── Video Grid (compact browse inside perf panel) ── */
-  const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
-  const titleFld = CONFIG?.data?.fields?.title    || 'title';
-  const thumbFld = CONFIG?.data?.fields?.thumbnail|| 'thumbnail';
-  const sortedVids = (d ? d.recent : VIDEOS).slice().sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
-  const VID_PAGE = 12;
-  const vidCards = sortedVids.slice(0, VID_PAGE).map(v => videoCardHTML(v, idFld, titleFld, thumbFld)).join('');
-  const vidMore  = sortedVids.length > VID_PAGE
-    ? `<button class="vbr-load-more" onclick="perfLoadMoreVids('${sid}')" id="perf-vidmore-${sid}">Load 12 more · ${sortedVids.length - VID_PAGE} remaining</button>`
-    : '';
-  const videoGridSection = vidCards
-    ? `<div id="perf-sec-${sid}-vidgrid"><div class="perf-outlier-label">Videos (${sortedVids.length})</div><div class="vbr-grid" id="perf-vidgrid-${sid}">${vidCards}</div>${vidMore}</div>`
-    : '';
+  /* ── Outlier count dropdown ── */
+  const outlierDd = buildMLDd(sid, 'outlierN', 'Outliers', [
+    { val:'3',  label:'Top/Bottom 3' },
+    { val:'5',  label:'Top/Bottom 5' },
+    { val:'10', label:'Top/Bottom 10' },
+  ], String(outlierN));
 
   return `<div class="cc-title">Channel Performance ${_helpBtn('performance',sid)}</div>
-    <div class="ml-filter-bar">${periodDd}</div>
+    <div class="ml-filter-bar" style="gap:8px">${periodDd}${outlierDd}${searchBar}</div>
     <div class="perf-grid">${metricCards}</div>
-    ${outlierSection}
-    ${videoGridSection}`;
+    <div id="perf-outlier-wrap-${sid}"></div>
+    <div id="perf-search-results-${sid}"></div>`;
 }
 
 /* Toggle accordion card */
 function togglePerfSection(sid, secId) {
   const el = document.getElementById(`perf-sec-${sid}-${secId}`);
   if (el) el.classList.toggle('open');
+}
+
+/* Search videos within performance panel */
+function perfSearchVideo(sid, query) {
+  const results = document.getElementById(`perf-search-results-${sid}`);
+  if (!results) return;
+  const q = (query||'').trim().toLowerCase();
+  if (q.length < 2) { results.innerHTML = ''; return; }
+  const titleFld = CONFIG?.data?.fields?.title || 'title';
+  const thumbFld = CONFIG?.data?.fields?.thumbnail || 'thumbnail';
+  const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
+  const matches = VIDEOS.filter(v => (v[titleFld]||'').toLowerCase().includes(q)).slice(0,8);
+  if (!matches.length) { results.innerHTML = `<div class="perf-empty">No videos matching "${escHtml(query)}"</div>`; return; }
+  results.innerHTML = `<div class="perf-outlier-grid" style="margin-top:8px">${matches.map(v => {
+    const _vid = v.video_id||v.id||'';
+    return `<div class="perf-outlier" onclick="openVidPopup('${escHtml(_vid)}')">
+      <img class="perf-outlier-thumb" src="${_thumbSrc(v,thumbFld)}" loading="lazy"
+           onerror="${_thumbOnerror(_vid)}">
+      <div class="perf-outlier-info">
+        <div class="perf-outlier-title">${escHtml(v[titleFld]||'Untitled')}</div>
+        <div class="perf-outlier-meta">${fmtCompact(parseFloat(v.views)||0)} views</div>
+      </div></div>`;
+  }).join('')}</div>`;
+}
+
+/* Toggle outlier view: top / bottom / both */
+/* Render outlier video cards based on current outlierN setting */
+function perfRenderOutliers(sid) {
+  const wrap = document.getElementById(`perf-outlier-wrap-${sid}`);
+  if (!wrap) return;
+  const card = CANVAS_CARDS.find(c => c.id === sid);
+  if (!card) return;
+  const n = parseInt(card.opts.outlierN || '5');
+  const days = parseInt(card.opts.period || '365');
+  if (!VIDEOS.length) { wrap.innerHTML = ''; return; }
+  const d = _perfCompute(days);
+  if (!d) { wrap.innerHTML = ''; return; }
+  const sorted = [...d.recent].sort((a,b) => (parseFloat(b.views)||0) - (parseFloat(a.views)||0));
+  const actualN = Math.min(n, Math.floor(sorted.length / 2)); // prevent overlap
+  const top = sorted.slice(0, actualN);
+  const bot = sorted.slice(sorted.length - actualN).reverse();
+  const thumbFld = CONFIG?.data?.fields?.thumbnail || 'thumbnail';
+  const titleFld = CONFIG?.data?.fields?.title || 'title';
+  function oCard(v) {
+    const _vid = v.video_id || v.id || '';
+    // Try maxresdefault first, fall back to hqdefault via onerror
+    const _thumb = v[thumbFld] || v.thumbnail_url || v.thumbnail
+      || (_vid ? `https://i.ytimg.com/vi/${_vid}/maxresdefault.jpg` : '');
+    const _fallback = _vid ? `this.src='https://i.ytimg.com/vi/${_vid}/hqdefault.jpg';this.onerror=function(){this.style.background='var(--surface3)';this.removeAttribute('src')}` : "this.style.background='var(--surface3)';this.removeAttribute('src')";
+    return `<div class="perf-outlier" onclick="openVidPopup('${escHtml(_vid)}')">
+      <img class="perf-outlier-thumb" src="${_thumb}" loading="lazy"
+           onerror="${_fallback}">
+      <div class="perf-outlier-info">
+        <div class="perf-outlier-title">${escHtml(v[titleFld]||'Untitled')}</div>
+        <div class="perf-outlier-meta">${fmtCompact(parseFloat(v.views)||0)} views</div>
+      </div></div>`;
+  }
+  if (!actualN) { wrap.innerHTML = '<div class="perf-empty">Not enough videos for outlier analysis.</div>'; return; }
+  wrap.innerHTML = `
+    <div class="perf-outlier-label">Top ${actualN}</div>
+    <div class="perf-outlier-grid">${top.map(oCard).join('')}</div>
+    <div class="perf-outlier-label" style="margin-top:10px">Bottom ${actualN}</div>
+    <div class="perf-outlier-grid">${bot.map(oCard).join('')}</div>`;
 }
 
 /* Load more videos inside the performance panel video grid */
@@ -2141,7 +2175,7 @@ function perfLoadMoreVids(sid) {
   const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
   const titleFld = CONFIG?.data?.fields?.title    || 'title';
   const thumbFld = CONFIG?.data?.fields?.thumbnail|| 'thumbnail';
-  const days = parseInt(card.opts.period || '90');
+  const days = parseInt(card.opts.period || '365');
   const now  = Date.now();
   const dateFld = CONFIG?.data?.fields?.date || 'published_at';
   const recent = days >= 9999 ? VIDEOS : VIDEOS.filter(v => {
@@ -2170,7 +2204,8 @@ function perfLoadMoreVids(sid) {
 function refreshPerformanceCard(sid) {
   const card = CANVAS_CARDS.find(c => c.id === sid);
   if (!card) return;
-  card.opts.period = document.getElementById(`ml-period-${sid}`)?.value || '90';
+  card.opts.period = document.getElementById(`ml-period-${sid}`)?.value || '365';
+  card.opts.outlierN = document.getElementById(`ml-outlierN-${sid}`)?.value || '5';
   refreshCard(card);
 }
 
@@ -2409,10 +2444,9 @@ function videoCardHTML(v, idFld, titleFld, thumbFld) {
   const views = fmtCompact(parseFloat(v.views)||0);
   const ret   = v.avg_view_percentage ? `${parseFloat(v.avg_view_percentage).toFixed(0)}% ret` : '';
   const vidId = v[idFld] || '';
-  const thumbSrc = v[thumbFld] || v.thumbnail_url || v.thumbnail || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : '');
   return `<div class="vbr-card" onclick="openVidPopup('${escHtml(vidId)}')" style="cursor:pointer">
-    <img class="vbr-thumb" src="${thumbSrc}" loading="lazy"
-         onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+    <img class="vbr-thumb" src="${_thumbSrc(v,thumbFld)}" loading="lazy"
+         onerror="${_thumbOnerror(vidId)}">
     <div class="vbr-body">
       <div class="vbr-title">${escHtml(v[titleFld]||'Untitled')}</div>
       <div class="vbr-meta">${views}${ret ? ' · '+ret : ''}</div>
@@ -2427,28 +2461,24 @@ function openVidPopup(vidId) {
   const thumbFld = CONFIG?.data?.fields?.thumbnail || 'thumbnail';
   const titleFld = CONFIG?.data?.fields?.title || 'title';
   const ytUrl = vidId ? `https://www.youtube.com/watch?v=${vidId}` : '#';
-  const thumb = v[thumbFld] || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : '');
+  const thumb = _thumbSrc(v, thumbFld);
+  const thumbFallback = _thumbOnerror(vidId);
 
-  // Build metadata rows from all available fields
-  const skip = new Set([titleFld, thumbFld, 'video_id', 'id', 'thumbnail_url', 'thumbnail']);
-  const metaRows = [];
-  const priority = ['views','avg_view_percentage','retention_30s','estimated_revenue','cpm',
-    'likes','comments','duration_seconds','published_at','spread_potential','spread_tier',
-    'outlier_potential','cut_dna_score','cut_dna_tier','format','series',
+  // Curated metadata: YouTube data + interpretable features only
+  const POPUP_FIELDS = [
+    'views','avg_view_percentage','retention_30s','likes','comments_count','comments',
+    'duration_seconds','published_at','estimated_revenue','revenue','cpm',
+    'subscribers_gained','impressions','ctr','estimated_minutes_watched',
+    'format','series','is_youtube_short','tags',
+    'spread_potential','spread_tier','outlier_potential',
     'engagement_like_ratio','engagement_comment_ratio','engagement_overall_ratio',
-    'upload_cadence_14d','days_since_prev','ai_discoverability_score'];
-
-  const added = new Set();
-  for (const k of priority) {
-    if (v[k] !== undefined && v[k] !== null && v[k] !== '') {
-      metaRows.push(_vidPopupRow(k, v[k]));
-      added.add(k);
-    }
-  }
-  // Add remaining fields
-  for (const [k, val] of Object.entries(v)) {
-    if (skip.has(k) || added.has(k) || val === undefined || val === null || val === '') continue;
-    if (typeof val === 'object') continue;
+    'comment_sentiment_mean','comment_question_rate','comment_relatability_score',
+    'share_intent_score','rewatch_intent','genz_score','parasocial_score',
+  ];
+  const metaRows = [];
+  for (const k of POPUP_FIELDS) {
+    const val = v[k];
+    if (val === undefined || val === null || val === '') continue;
     metaRows.push(_vidPopupRow(k, val));
   }
 
@@ -2456,7 +2486,7 @@ function openVidPopup(vidId) {
   popup.innerHTML = `
     <button class="vid-popup-close" onclick="closeVidPopup()">✕</button>
     <a href="${ytUrl}" target="_blank" rel="noopener">
-      <img class="vid-popup-thumb" src="${thumb}" onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+      <img class="vid-popup-thumb" src="${thumb}" onerror="${thumbFallback || "this.style.background='var(--surface3)';this.removeAttribute('src')"}">
     </a>
     <div class="vid-popup-body">
       <div class="vid-popup-title">${escHtml(v[titleFld]||'Untitled')}</div>
@@ -2465,16 +2495,41 @@ function openVidPopup(vidId) {
     </div>`;
   document.getElementById('vid-popup-scrim').classList.add('open');
 }
+function _fmtFullNum(n) {
+  if (isNaN(n) || n == null) return '\u2014';
+  return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
 function _vidPopupRow(key, val) {
   let display = val;
-  if (typeof val === 'number') {
-    if (key.includes('ratio') || key.includes('percentage') || key.includes('potential') || key.includes('score'))
-      display = (val * (Math.abs(val) <= 1 ? 100 : 1)).toFixed(1) + '%';
-    else if (key === 'cpm' || key === 'estimated_revenue') display = '$' + fmtCompact(val);
-    else if (key === 'duration_seconds') { const m = Math.floor(val/60); display = `${m}m ${Math.round(val%60)}s`; }
-    else display = fmtCompact(val);
+  /* Tags: pipe-separated → comma-separated running text */
+  if (key === 'tags' && typeof val === 'string') {
+    display = val.split('|').map(t => t.trim()).filter(Boolean).join(', ');
   }
-  return `<div class="vid-popup-row"><span class="vid-popup-lbl">${fmtLabel(key)}</span><span class="vid-popup-val">${display}</span></div>`;
+  /* Booleans / 0-1 flags */
+  else if (key === 'is_youtube_short') {
+    display = (val === true || val === 1 || val === '1') ? 'Yes' : 'No';
+  }
+  /* Dates */
+  else if (key === 'published_at' && typeof val === 'string') {
+    try { display = new Date(val).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); } catch(e) {}
+  }
+  /* Numbers */
+  else if (typeof val === 'number') {
+    if (key === 'duration_seconds') {
+      const h = Math.floor(val / 3600), m = Math.floor((val % 3600) / 60), s = Math.round(val % 60);
+      display = h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
+    } else if (key === 'cpm' || key === 'estimated_revenue' || key === 'revenue') {
+      display = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    } else if (key.includes('ratio') || key === 'ctr' || key === 'avg_view_percentage' || key === 'retention_30s' || key === 'spread_potential') {
+      const pct = Math.abs(val) <= 1 ? val * 100 : val;
+      display = pct.toFixed(1) + '%';
+    } else if (key.includes('score') || key.includes('intent') || key === 'outlier_potential') {
+      display = val.toFixed(1) + '%';
+    } else {
+      display = _fmtFullNum(val);
+    }
+  }
+  return `<div class="vid-popup-row"><span class="vid-popup-lbl">${fmtLabel(key)}</span><span class="vid-popup-val">${escHtml(String(display))}</span></div>`;
 }
 function closeVidPopup() {
   document.getElementById('vid-popup-scrim').classList.remove('open');
@@ -9062,19 +9117,37 @@ function fmtCompact(n){
   return Math.round(n).toString();
 }
 const LABEL_MAP = {
-  views_public: 'Views',
-  engagement_like_ratio: 'Engagement Like Ratio',
-  engagement_comment_ratio: 'Engagement Comment Ratio',
-  engagement_overall_ratio: 'Engagement Overall Ratio',
-  outlier_spike_score: 'Outlier Spike Score',
-  outlier_retention_score: 'Outlier Retention Score',
-  outlier_potential: 'Outlier Potential',
-  avg_view_percentage: 'Avg View %',
-  retention_30s: 'Retention 30s',
+  views: 'Views', views_public: 'Views',
+  avg_view_percentage: 'Average View %',
+  retention_30s: '30-Second Retention',
+  likes: 'Likes',
+  comments_count: 'Comments', comments: 'Comments',
+  duration_seconds: 'Duration',
+  published_at: 'Published',
+  estimated_revenue: 'Revenue', revenue: 'Revenue',
+  cpm: 'Cost per Mille (CPM)',
   subscribers_gained: 'Subscribers Gained',
-  cpm: 'CPM',
+  impressions: 'Impressions',
+  ctr: 'Click-Through Rate',
+  estimated_minutes_watched: 'Minutes Watched',
+  format: 'Format', series: 'Series',
+  is_youtube_short: 'YouTube Short',
+  tags: 'Tags',
   spread_potential: 'Spread Potential',
   spread_tier: 'Spread Tier',
+  outlier_potential: 'Outlier Potential',
+  engagement_like_ratio: 'Like Ratio',
+  engagement_comment_ratio: 'Comment Ratio',
+  engagement_overall_ratio: 'Overall Engagement',
+  outlier_spike_score: 'Outlier Spike Score',
+  outlier_retention_score: 'Outlier Retention Score',
+  comment_sentiment_mean: 'Comment Sentiment',
+  comment_question_rate: 'Comment Question Rate',
+  comment_relatability_score: 'Relatability Score',
+  share_intent_score: 'Share Intent',
+  rewatch_intent: 'Rewatch Intent',
+  genz_score: 'Gen Z Score',
+  parasocial_score: 'Parasocial Score',
 };
 function fmtLabel(str){return LABEL_MAP[str]||(str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
 const FEAT_NICE_NAMES = {
@@ -9184,6 +9257,19 @@ function fmtFeatureName(str){
   return FEAT_NICE_NAMES[str] || (str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 }
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Thumbnail helpers — always prefer maxresdefault when video ID is available */
+function _ytThumb(vidId, quality) { return vidId ? `https://i.ytimg.com/vi/${vidId}/${quality||'maxresdefault'}.jpg` : ''; }
+function _thumbSrc(v, thumbFld) {
+  const vidId = v.video_id || v.id || '';
+  // If we have a video ID, always use maxresdefault (highest quality YouTube offers)
+  if (vidId) return _ytThumb(vidId, 'maxresdefault');
+  return v[thumbFld||'thumbnail'] || v.thumbnail_url || v.thumbnail || '';
+}
+function _thumbOnerror(vidId) {
+  if (!vidId) return "this.style.background='var(--surface3)';this.removeAttribute('src')";
+  return `this.src='${_ytThumb(vidId,'hqdefault')}';this.onerror=function(){this.style.background='var(--surface3)';this.removeAttribute('src')}`;
+}
 
 /* ── Panel Help Tours ─────────────────────────────────────────────
    Each ? button launches a guided mini-tour through the panel's
@@ -9309,9 +9395,9 @@ function _panelTourSteps(type, sid) {
       { el: () => $(`#perf-sec-${sid}-overview`),
         title: '📊 Performance',
         body: 'Total views, videos published, avg retention, 30s retention, and net subscribers. Click the header to expand/collapse any section.' },
-      { el: () => $(`#perf-sec-${sid}-outliers`),
+      { el: () => $(`#perf-outlier-wrap-${sid}`),
         title: '🏆 Outliers',
-        body: 'Top and bottom performing videos with thumbnails and metric values. Quick way to find what worked and what didn\'t.' },
+        body: 'Top and bottom performing videos as thumbnail cards. Use the Outliers dropdown to show Top/Bottom 3, 5, or 10. Click any video for full metadata.' },
       { el: () => $(`#perf-sec-${sid}-retention`),
         title: '📈 Retention',
         body: 'Average percentage viewed and 30-second retention. Spike/drop detection requires per-second retention curves from YouTube Analytics API.' },
@@ -9336,9 +9422,9 @@ function _panelTourSteps(type, sid) {
       { el: () => $(`#perf-sec-${sid}-traffic`),
         title: '🔀 Traffic',
         body: 'Traffic source breakdown (Browse, Search, External, Suggested). Requires YouTube Analytics API connection to populate.' },
-      { el: () => $(`#perf-sec-${sid}-vidgrid`),
-        title: '🎬 Videos',
-        body: 'Scrollable video grid with thumbnails sorted by views. Click any video for a detailed metadata popup. Click "Load 12 more" to paginate.' },
+      { el: () => $(`#perf-search-${sid}`),
+        title: '🔍 Video Search',
+        body: 'Search any video by title. Results appear as thumbnail cards below — click one to see full metadata in a popup.' },
     );
   }
 
