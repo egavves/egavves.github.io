@@ -242,6 +242,32 @@
     .vbr-load-more:hover { border-color:var(--accent); color:var(--text); }
     .vbr-load-more:disabled { opacity:.35; cursor:default; }
 
+    /* ── Video detail popup ─────────────────────────────────────── */
+    .vid-popup-scrim { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9000;
+                       display:none; align-items:center; justify-content:center; }
+    .vid-popup-scrim.open { display:flex; }
+    .vid-popup { background:var(--surface); border:1px solid var(--border);
+                 border-radius:12px; max-width:520px; width:92vw; max-height:85vh;
+                 overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,.5); }
+    .vid-popup-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block;
+                       border-radius:12px 12px 0 0; cursor:pointer; }
+    .vid-popup-body { padding:14px 18px 18px; }
+    .vid-popup-title { font-size:15px; font-weight:700; color:var(--text); line-height:1.4;
+                       margin-bottom:8px; }
+    .vid-popup-yt { display:inline-flex; align-items:center; gap:5px; font-size:11px;
+                    font-weight:600; color:var(--accent); text-decoration:none;
+                    margin-bottom:12px; }
+    .vid-popup-yt:hover { text-decoration:underline; }
+    .vid-popup-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
+    .vid-popup-row { display:flex; justify-content:space-between; padding:4px 0;
+                     border-bottom:1px solid var(--border); font-size:11px; }
+    .vid-popup-lbl { color:var(--muted); }
+    .vid-popup-val { color:var(--text); font-weight:600; text-align:right; }
+    .vid-popup-close { position:absolute; top:10px; right:14px; width:28px; height:28px;
+                       border-radius:50%; border:none; background:rgba(0,0,0,.5);
+                       color:#fff; font-size:16px; cursor:pointer; z-index:1;
+                       display:flex; align-items:center; justify-content:center; }
+
     /* ── ML Signals panel ─────────────────────────────────────────── */
     .ml-filter-bar { display:flex; gap:7px; flex-wrap:wrap; align-items:center;
                      margin-bottom:12px; }
@@ -1139,6 +1165,11 @@
 <div class="tour-spotlight" id="tour-spotlight" style="display:none;"></div>
 <div class="tour-tip" id="tour-tip" style="display:none;"></div>
 
+<!-- Video detail popup -->
+<div class="vid-popup-scrim" id="vid-popup-scrim" onclick="if(event.target===this)closeVidPopup()">
+  <div class="vid-popup" id="vid-popup" style="position:relative"></div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="../calli-system.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
@@ -1430,11 +1461,10 @@ function buildRadialMenu(cfg) {
   container.appendChild(loadSpoke);
 
   // Config-driven spokes — order is bottom→top (column-reverse flex)
-  // Visual order top→bottom: Videos, YT Performance, AI Analysis, Social Media Trends, Recommendations, Ideation
+  // Visual order top→bottom: Videos, YT Performance, AI Analysis, Recommendations, Ideation
   const SPOKE_MAP = [
     { keys:['ideation','ideation-panel'],     id:'ideation-tabs',    icon:'💡', label:'Ideation'             },
     { keys:['hypotheses','hyp-panel'],        id:'hypothesis',       icon:'🔬', label:'Recommendations'      },
-    { keys:['trends','trend-panel'],          id:'trend-chart',      icon:'📈', label:'Social Media Trends'  },
     { keys:['analysis','analysis-panel'],     id:'corr-chart',       icon:'🧠', label:'AI Analysis'          },
     { keys:['performance','perf-panel'],      id:'performance',      icon:'📊', label:'Channel Performance'  },
     { keys:['videos','video-panel','data','data-panel','summary','report-panel'], id:'videos-combined', icon:'🎬', label:'Channel' },
@@ -1894,8 +1924,10 @@ function buildPerformanceHTML(card) {
   function outlierRow(v) {
     const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail_url';
     const titleFld = CONFIG?.data?.schema?.title || 'title';
-    return `<div class="perf-outlier">
-      <img class="perf-outlier-thumb" src="${v[thumbFld]||''}" loading="lazy"
+    const _vid = v.video_id || v.id || '';
+    const _thumb = v[thumbFld] || v.thumbnail_url || v.thumbnail || (_vid ? `https://i.ytimg.com/vi/${_vid}/hqdefault.jpg` : '');
+    return `<div class="perf-outlier" style="cursor:pointer" onclick="openVidPopup('${escHtml(_vid)}')">
+      <img class="perf-outlier-thumb" src="${_thumb}" loading="lazy"
            onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
       <div class="perf-outlier-info">
         <div class="perf-outlier-title">${escHtml(v[titleFld]||'Untitled')}</div>
@@ -2367,16 +2399,75 @@ function videoCardHTML(v, idFld, titleFld, thumbFld) {
   const views = fmtCompact(parseFloat(v.views)||0);
   const ret   = v.avg_view_percentage ? `${parseFloat(v.avg_view_percentage).toFixed(0)}% ret` : '';
   const vidId = v[idFld] || '';
-  const ytUrl = vidId ? `https://www.youtube.com/watch?v=${vidId}` : '#';
-  return `<a class="vbr-card" href="${ytUrl}" target="_blank" rel="noopener"
-             style="text-decoration:none;color:inherit">
-    <img class="vbr-thumb" src="${v[thumbFld]||''}" loading="lazy"
+  const thumbSrc = v[thumbFld] || v.thumbnail_url || v.thumbnail || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : '');
+  return `<div class="vbr-card" onclick="openVidPopup('${escHtml(vidId)}')" style="cursor:pointer">
+    <img class="vbr-thumb" src="${thumbSrc}" loading="lazy"
          onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
     <div class="vbr-body">
       <div class="vbr-title">${escHtml(v[titleFld]||'Untitled')}</div>
       <div class="vbr-meta">${views}${ret ? ' · '+ret : ''}</div>
     </div>
-  </a>`;
+  </div>`;
+}
+
+/* ── Video detail popup ──────────────────────────────────────── */
+function openVidPopup(vidId) {
+  const v = VIDEOS.find(x => (x.video_id||x.id) === vidId);
+  if (!v) return;
+  const thumbFld = CONFIG?.data?.fields?.thumbnail || 'thumbnail';
+  const titleFld = CONFIG?.data?.fields?.title || 'title';
+  const ytUrl = vidId ? `https://www.youtube.com/watch?v=${vidId}` : '#';
+  const thumb = v[thumbFld] || (vidId ? `https://i.ytimg.com/vi/${vidId}/hqdefault.jpg` : '');
+
+  // Build metadata rows from all available fields
+  const skip = new Set([titleFld, thumbFld, 'video_id', 'id', 'thumbnail_url', 'thumbnail']);
+  const metaRows = [];
+  const priority = ['views','avg_view_percentage','retention_30s','estimated_revenue','cpm',
+    'likes','comments','duration_seconds','published_at','spread_potential','spread_tier',
+    'outlier_potential','cut_dna_score','cut_dna_tier','format','series',
+    'engagement_like_ratio','engagement_comment_ratio','engagement_overall_ratio',
+    'upload_cadence_14d','days_since_prev','ai_discoverability_score'];
+
+  const added = new Set();
+  for (const k of priority) {
+    if (v[k] !== undefined && v[k] !== null && v[k] !== '') {
+      metaRows.push(_vidPopupRow(k, v[k]));
+      added.add(k);
+    }
+  }
+  // Add remaining fields
+  for (const [k, val] of Object.entries(v)) {
+    if (skip.has(k) || added.has(k) || val === undefined || val === null || val === '') continue;
+    if (typeof val === 'object') continue;
+    metaRows.push(_vidPopupRow(k, val));
+  }
+
+  const popup = document.getElementById('vid-popup');
+  popup.innerHTML = `
+    <button class="vid-popup-close" onclick="closeVidPopup()">✕</button>
+    <a href="${ytUrl}" target="_blank" rel="noopener">
+      <img class="vid-popup-thumb" src="${thumb}" onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
+    </a>
+    <div class="vid-popup-body">
+      <div class="vid-popup-title">${escHtml(v[titleFld]||'Untitled')}</div>
+      <a class="vid-popup-yt" href="${ytUrl}" target="_blank" rel="noopener">▶ Watch on YouTube</a>
+      <div class="vid-popup-grid">${metaRows.join('')}</div>
+    </div>`;
+  document.getElementById('vid-popup-scrim').classList.add('open');
+}
+function _vidPopupRow(key, val) {
+  let display = val;
+  if (typeof val === 'number') {
+    if (key.includes('ratio') || key.includes('percentage') || key.includes('potential') || key.includes('score'))
+      display = (val * (Math.abs(val) <= 1 ? 100 : 1)).toFixed(1) + '%';
+    else if (key === 'cpm' || key === 'estimated_revenue') display = '$' + fmtCompact(val);
+    else if (key === 'duration_seconds') { const m = Math.floor(val/60); display = `${m}m ${Math.round(val%60)}s`; }
+    else display = fmtCompact(val);
+  }
+  return `<div class="vid-popup-row"><span class="vid-popup-lbl">${fmtLabel(key)}</span><span class="vid-popup-val">${display}</span></div>`;
+}
+function closeVidPopup() {
+  document.getElementById('vid-popup-scrim').classList.remove('open');
 }
 
 /* Features explorer: each feature with corr bar + min/max video examples */
@@ -9140,51 +9231,52 @@ function _panelTourSteps(type, sid) {
   }
 
   else if (type === 'hypothesis') {
+    const _f = () => $(`#hyp-filters-${sid}`);
     steps.push(
-      { el: () => $(`#hyp-lens-${sid}`) || $(`[id^="hyp-lens-"]`),
+      { el: () => { const f = _f(); return f && f.querySelector('.ml-lens-toggle'); },
         title: 'Distribution / Content Lens',
-        body: 'Switch the ML data lens. Distribution uses all signals (geo, traffic, platform). Content focuses on features you can directly control in production (topic, format, pacing).' },
-      { el: () => $(`#hyp-tier-chips-${sid}`) || $(`[id^="hyp-tier-chips-"]`),
-        title: 'Confidence Tier Filter',
-        body: '🏆 Gold = all 3 ML methods agree. 🥈 Silver = 2 of 3. 🥉 Bronze = 1 of 3. 💡 Best Practices = general YouTube tips.' },
-      { el: () => $(`[id^="hyp-cat-toggle-"]`),
-        title: 'Categories Toggle',
-        body: 'Expand to see category chips — filter recommendations by signal type (e.g., Retention, Engagement, Sentiment).' },
-      { el: () => $(`[id^="hyp-target-row-"]`),
+        body: 'Switch the ML data lens. Distribution uses all signals (geo, traffic, platform). Content focuses only on features you can directly control in production (topic, format, pacing, audio).' },
+      { el: () => { const f = _f(); if (!f) return null; const chips = f.querySelectorAll('.hyp-chip'); return chips.length > 1 ? chips[1] : null; },
+        title: 'Confidence Tiers',
+        body: '🏆 Gold = all 3 ML methods agree — highest confidence. 🥈 Silver = 2 of 3 methods agree. 🥉 Bronze = 1 of 3 methods found significance. 💡 Best Practices = curated YouTube tips independent of your data.' },
+      { el: () => { const f = _f(); return f && f.querySelector('.hyp-cat-toggle'); },
+        title: 'Categories ▼',
+        body: 'Expand to reveal category chips — filter recommendations by signal type (e.g., Retention, Engagement, Sentiment, Production). Helps you focus on one creative dimension at a time.' },
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.ml-lens-toggle:last-of-type'); },
         title: 'Optimize For',
-        body: 'Choose which metric to optimize. The hypothesis list re-ranks based on which production levers most affect your chosen target.' },
+        body: 'Choose which target metric to optimize (Retention, Views, Spread Potential, etc.). The hypothesis list re-ranks to surface the production levers that most affect your chosen target.' },
       { el: () => $(`#hyp-rows-${sid}`)?.querySelector('.hyp-card'),
         title: 'Hypothesis Card',
-        body: 'Each card is a concrete, testable production action. Shows the hypothesis, category badge, confidence tier, and method dots (which of Correlation / Lasso / Random Forest found it significant).' },
+        body: 'Each card is a concrete, testable production action. Shows: the hypothesis title, category badge, confidence tier (Gold/Silver/Bronze), and three method dots indicating which of Correlation, Lasso, and Random Forest found this feature significant.' },
       { el: () => $(`#hyp-rows-${sid}`)?.querySelector('[onclick*="toggleHypDetail"]'),
         title: 'Show Evidence & A/B Test',
-        body: 'Expand any card to see: statistical evidence per method, real video examples (top & bottom performers from your library), and a ready-to-run A/B test template.' },
+        body: 'Expand any card to see: statistical evidence from each ML method, real video examples (top & bottom performers from your library), and a ready-to-run A/B test template you can execute immediately.' },
     );
   }
 
   else if (type === 'ml') {
     steps.push(
-      { el: () => $(`#ml-target-${sid}`) || $(`[id^="ml-target-"]`),
+      { el: () => $(`#ml-dd-target-${sid}`),
         title: 'Target Metric',
-        body: 'The metric you\'re trying to optimize — e.g., views, retention, CPM. All charts recalculate to show which features drive this target.' },
-      { el: () => $(`#ml-group-${sid}`) || $(`[id^="ml-group-"]`),
+        body: 'The metric you\'re trying to optimize — e.g., views, retention, spread potential. All charts recalculate to show which features drive this target.' },
+      { el: () => $(`#ml-dd-group-${sid}`),
         title: 'Feature Group Filter',
         body: 'Narrow to a specific category of features — e.g., Sentiment, Engagement, Production quality. "All groups" shows everything.' },
-      { el: () => $(`#ml-topn-${sid}`) || $(`[id^="ml-topn-"]`),
+      { el: () => $(`#ml-dd-topn-${sid}`),
         title: 'Top N',
         body: 'How many features to display: Top 10, 15, 20, or All. Keeps the chart focused on the strongest signals.' },
-      { el: () => $(`#ml-dir-${sid}`) || $(`[id^="ml-dir-"]`),
+      { el: () => $(`#ml-dd-dir-${sid}`),
         title: 'Direction Filter',
         body: 'Show only Positive (more of this feature → better performance) or Negative (more → worse), or All.' },
-      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.ml-tab-bar .ml-tab-btn'); },
-        title: 'Method Tabs',
-        body: '📊 Correlations = linear relationships. 🪢 Lasso = controls for confounders. 🌲 Random Forest = captures non-linear interactions via SHAP values.' },
-      { el: () => $(`#ml-lens-${sid}`) || $(`[id^="ml-lens-"]`),
+      { el: () => { const c = sid && document.getElementById(sid); return c ? c.querySelector('.ml-tab-bar') : null; },
+        title: 'ML Method Tabs',
+        body: 'Three complementary ML toolkits, each revealing different patterns in your data: 📊 Correlations = simple linear relationships between features and your target. 🪢 Lasso = regularized regression that controls for confounders (isolates each feature\'s unique contribution). 🌲 Random Forest + SHAP = captures non-linear and interaction effects. When multiple methods agree, the signal is strongest.' },
+      { el: () => { const c = sid && document.getElementById(sid); return c ? c.querySelector('.ml-filter-bar .ml-lens-toggle') : null; },
         title: 'Distribution / Content Lens',
-        body: 'Distribution = all signals including geo and traffic. Content = only features you can control in production.' },
-      { el: () => $(`#chart-canvas-${sid}`)?.parentElement,
+        body: 'Distribution = all signals including geo, traffic, and platform factors. Content = only features you can directly control in production (topic, pacing, audio, thumbnails).' },
+      { el: () => $(`#ml-wrap-${sid}`),
         title: 'Feature Chart',
-        body: 'Horizontal bar chart of feature importance. Click any bar to open a detail card with the scatter distribution and per-format breakdown.' },
+        body: 'Horizontal bar chart of feature importance. The length of each bar shows strength. Click any bar to open a detail card with the scatter distribution and per-format breakdown.' },
     );
   }
 
@@ -9201,27 +9293,42 @@ function _panelTourSteps(type, sid) {
 
   else if (type === 'performance') {
     steps.push(
-      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.ml-filter-bar'); },
+      { el: () => { const c = sid && document.getElementById(sid); return c ? c.querySelector('.ml-filter-bar') : null; },
         title: 'Period Filter',
         body: 'Filter all sections to a time window: Last 30 days, 90 days, 6 months, 1 year, or All time. Every metric recalculates.' },
       { el: () => $(`#perf-sec-${sid}-overview`),
-        title: '📊 Performance Section',
-        body: 'Total views, videos published, avg retention, 30s retention, and net subscribers in the selected period. Click the header to expand/collapse.' },
+        title: '📊 Performance',
+        body: 'Total views, videos published, avg retention, 30s retention, and net subscribers. Click the header to expand/collapse any section.' },
       { el: () => $(`#perf-sec-${sid}-outliers`),
-        title: '⚡ Outliers',
+        title: '🏆 Outliers',
         body: 'Top and bottom performing videos with thumbnails and metric values. Quick way to find what worked and what didn\'t.' },
+      { el: () => $(`#perf-sec-${sid}-retention`),
+        title: '📈 Retention',
+        body: 'Average percentage viewed and 30-second retention. Spike/drop detection requires per-second retention curves from YouTube Analytics API.' },
       { el: () => $(`#perf-sec-${sid}-revenue`),
-        title: '💰 Revenue & CPM',
+        title: '💰 Revenue',
         body: 'Total estimated revenue and average CPM (cost per thousand impressions) for the period.' },
-      { el: () => $(`#perf-sec-${sid}-formats`),
-        title: '📁 Series / Formats',
-        body: 'Breakdown by video format — how many videos per format and their average performance.' },
+      { el: () => $(`#perf-sec-${sid}-series`),
+        title: '🎬 Series',
+        body: 'Breakdown by video format — how many videos per format and their average view count.' },
+      { el: () => $(`#perf-sec-${sid}-engage`),
+        title: '💬 Engagement',
+        body: 'Net subscriber gains for the selected period with comparison to previous period.' },
       { el: () => $(`#perf-sec-${sid}-spread`),
-        title: '🧬 Spread & DNA',
+        title: '🔥 Spread & DNA',
         body: 'Spread Potential (virality composite score) with tier distribution, and Content DNA fingerprint averaging across your videos.' },
+      { el: () => $(`#perf-sec-${sid}-cadence`),
+        title: '📅 Upload Cadence',
+        body: 'Average videos per 2-week window and average days between uploads. Consistency matters for algorithm favor.' },
+      { el: () => $(`#perf-sec-${sid}-aiDisc`),
+        title: '🤖 AI Discovery',
+        body: 'AI Discoverability score — how likely your content is to be surfaced by AI chatbots (ChatGPT, Perplexity, Google AI).' },
+      { el: () => $(`#perf-sec-${sid}-traffic`),
+        title: '🔀 Traffic',
+        body: 'Traffic source breakdown (Browse, Search, External, Suggested). Requires YouTube Analytics API connection to populate.' },
       { el: () => $(`#perf-sec-${sid}-vidgrid`),
-        title: '🎬 Videos Grid',
-        body: 'Scrollable video grid with thumbnails sorted by views. Click "Load 12 more" to paginate.' },
+        title: '🎬 Videos',
+        body: 'Scrollable video grid with thumbnails sorted by views. Click any video for a detailed metadata popup. Click "Load 12 more" to paginate.' },
     );
   }
 
@@ -9332,10 +9439,6 @@ const TOUR_DETAILED = [
     body:'Data-driven recommendations synthesized from all ML signals. Each card shows: a concrete production action (the hypothesis), statistical evidence (correlation, LASSO, SHAP), confidence tier (gold/silver/bronze), a ready-to-run A/B test, and real video examples (top and bottom performers). Filter by distribution vs. content lens.',
     onEnter() { if (!radialOpen) toggleRadial(); },
     spokeLabel:'Recommendations' },
-  { target:'_spoke_trends',  title:'📈 Social Media Trends',
-    body:'Time-series social signals from Twitter/X, Reddit, Google Trends, and news outlets. Track keyword buzz, sentiment shifts, competitor mentions, and trending topics relevant to your content niche. Powered by the Social Pulse proxy.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Social Media Trends' },
   { target:'_spoke_analysis',  title:'🧠 AI Analysis',
     body:'The ML Signals panel — three tabs: Correlations (Pearson/Spearman between every feature and your target metric), Lasso regression (which features matter when controlling for others), and Random Forest + SHAP (non-linear feature importance with direction). Filter by target, feature group, distribution vs. content lens, and direction.',
     onEnter() { if (!radialOpen) toggleRadial(); },
