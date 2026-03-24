@@ -107,7 +107,7 @@
     .cc-title { font-size:10px; font-weight:700; color:var(--muted);
                 text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;
                 display:flex; align-items:center; gap:6px; }
-    /* ── Panel Help Button & Popover ─────────────────────────────── */
+    /* ── Panel Help Button ──────────────────────────────────────── */
     .panel-help-btn { display:inline-flex; align-items:center; justify-content:center;
                       width:16px; height:16px; border-radius:50%; border:1px solid var(--border2);
                       background:var(--surface2); color:var(--muted); font-size:10px;
@@ -115,27 +115,6 @@
                       transition:all .15s; text-transform:none; letter-spacing:0; }
     .panel-help-btn:hover { border-color:var(--accent); color:var(--accent);
                             background:rgba(124,106,247,.1); }
-    .panel-help-pop { display:none; position:absolute; top:32px; left:0; z-index:100;
-                      background:var(--surface); border:1px solid var(--border);
-                      border-radius:10px; padding:14px 16px; width:min(420px,calc(100% - 20px));
-                      box-shadow:0 8px 32px rgba(0,0,0,.45); font-size:11.5px;
-                      line-height:1.65; color:var(--text-dim); font-weight:400;
-                      text-transform:none; letter-spacing:0; max-height:60vh; overflow-y:auto; }
-    .panel-help-pop.open { display:block; }
-    .panel-help-pop h4 { font-size:11px; font-weight:700; color:var(--text);
-                          margin:10px 0 4px; text-transform:uppercase; letter-spacing:.05em; }
-    .panel-help-pop h4:first-child { margin-top:0; }
-    .panel-help-pop p { margin:0 0 6px; }
-    .panel-help-pop ul { padding-left:16px; margin:2px 0 8px; }
-    .panel-help-pop li { margin-bottom:3px; }
-    .panel-help-pop code { font-size:10px; background:var(--surface2); padding:1px 4px;
-                            border-radius:3px; }
-    .panel-help-pop .help-key { display:inline-block; min-width:90px; font-weight:600;
-                                 color:var(--text); }
-    .panel-help-pop .help-close { position:absolute; top:8px; right:10px; background:none;
-                                   border:none; color:var(--muted); font-size:14px;
-                                   cursor:pointer; padding:2px 4px; }
-    .panel-help-pop .help-close:hover { color:var(--text); }
     .ideo-sessions-sel { background:var(--surface2); border:1px solid rgba(124,106,247,.45);
                          border-radius:9px; color:var(--text); font-size:13px;
                          padding:0 16px; cursor:pointer; outline:none; max-width:200px;
@@ -1641,7 +1620,7 @@ function updateCanvasState() {
 /* ── Card HTML builders ───────────────────────────────────────────── */
 function buildCardHTML(card) {
   switch (card.type) {
-    case 'metrics-row':       return buildMetricsRowHTML();
+    case 'metrics-row':       return buildMetricsRowHTML(card);
     case 'performance':       return buildPerformanceHTML(card);
     case 'corr-chart':        return buildCorrChartHTML(card);
     case 'trend-chart':       return buildTrendChartHTML(card);
@@ -1657,7 +1636,7 @@ function buildCardHTML(card) {
 }
 
 /* Metrics row */
-function buildMetricsRowHTML() {
+function buildMetricsRowHTML(card) {
   const cells = (CONFIG?.interface?.stat_cards || []).map(sc => {
     const val = computeStat(sc, VIDEOS);
     return `<div class="cc-metric-cell">
@@ -1666,13 +1645,7 @@ function buildMetricsRowHTML() {
     </div>`;
   });
   if (!cells.length) return `<div class="cc-title">Metrics</div><div class="cc-empty"><div>No stat cards configured</div></div>`;
-  return `<div class="cc-title">Key Metrics ${_helpBtn('help-metrics')}
-    <div class="panel-help-pop" id="help-metrics">
-      <button class="help-close" onclick="togglePanelHelp('help-metrics',event)">✕</button>
-      <h4>What This Panel Shows</h4>
-      <p>At-a-glance KPIs for your channel: total videos, total views, average retention, format count, and other key stats. These numbers are computed from all loaded video data.</p>
-    </div>
-    </div>
+  return `<div class="cc-title">Key Metrics ${_helpBtn('metrics',card.id)}</div>
     <div class="cc-metric-row">${cells.join('')}</div>`;
 }
 
@@ -1773,30 +1746,7 @@ function buildCorrChartHTML(card) {
                 onclick="switchMLLens('${sid}','content',this)">Content</button>
       </div>` : '';
 
-  return `<div class="cc-title">ML Signals ${_helpBtn('help-ml-'+sid)}
-    <div class="panel-help-pop" id="help-ml-${sid}">
-      <button class="help-close" onclick="togglePanelHelp('help-ml-${sid}',event)">✕</button>
-      <h4>What This Panel Shows</h4>
-      <p>Machine learning analysis of which features in your videos correlate with performance. Three independent methods cross-validate each signal.</p>
-      <h4>Method Tabs</h4>
-      <ul>
-        <li><span class="help-key">📊 Correlations</span> Pearson/Spearman correlation between each feature and your target metric. Shows linear relationships.</li>
-        <li><span class="help-key">🪢 Lasso</span> Lasso regression — identifies which features matter when controlling for all others. Removes redundant signals.</li>
-        <li><span class="help-key">🌲 Random Forest</span> Non-linear feature importance via SHAP values. Captures complex interactions between features.</li>
-      </ul>
-      <h4>Filters</h4>
-      <ul>
-        <li><span class="help-key">Target</span> The metric you're trying to optimize (e.g., views, retention, CPM).</li>
-        <li><span class="help-key">Features</span> Filter by feature group — narrow to a category like engagement, sentiment, or production.</li>
-        <li><span class="help-key">Show</span> How many top features to display (Top 10, 15, 20, or All).</li>
-        <li><span class="help-key">Direction</span> Filter to only positive or negative correlations.</li>
-        <li><span class="help-key">Format</span> Run analysis on a specific video format subset (e.g., Shorts, Truth or Drink).</li>
-        <li><span class="help-key">Distribution / Content</span> <b>Distribution</b> = all signals; <b>Content</b> = only features you can control in production.</li>
-      </ul>
-      <h4>Interacting with the Chart</h4>
-      <p>Click any bar in the chart to see a detail card with the feature's distribution scatter plot and per-format comparison.</p>
-    </div>
-    </div>
+  return `<div class="cc-title">ML Signals ${_helpBtn('ml',sid)}</div>
 
     <!-- ▸ Pill filter bar ───────────────────────────────────────── -->
     <div class="ml-filter-bar">${targetDd}${groupDd}${topnDd}${dirDd}${formatDd}${lensToggle}</div>
@@ -2130,31 +2080,7 @@ function buildPerformanceHTML(card) {
   const allSections = sections +
     section('vidgrid', '🎬', 'Videos', `${sortedVids.length}`, '', videoGridBody, true);
 
-  return `<div class="cc-title">Channel Performance ${_helpBtn('help-perf-'+sid)}
-    <div class="panel-help-pop" id="help-perf-${sid}">
-      <button class="help-close" onclick="togglePanelHelp('help-perf-${sid}',event)">✕</button>
-      <h4>What This Panel Shows</h4>
-      <p>A comprehensive health dashboard for your channel, broken into collapsible sections. All metrics recalculate when you change the time period.</p>
-      <h4>Controls</h4>
-      <ul>
-        <li><span class="help-key">Period dropdown</span> Filter to Last 30 days, 90 days, 6 months, 1 year, or All time. All sections update accordingly.</li>
-        <li><span class="help-key">Section headers</span> Click any section header to expand or collapse it.</li>
-      </ul>
-      <h4>Sections</h4>
-      <ul>
-        <li><span class="help-key">📊 Performance</span> Total views, videos published, avg retention, 30s retention, and net subscribers in the selected period.</li>
-        <li><span class="help-key">⚡ Outliers</span> Top and bottom performing videos with thumbnails and metric values.</li>
-        <li><span class="help-key">📈 Retention</span> Average view percentage and 30-second retention across all videos.</li>
-        <li><span class="help-key">💰 Revenue</span> Total estimated revenue and average CPM.</li>
-        <li><span class="help-key">📁 Series</span> Format breakdown showing how many videos per format and their average performance.</li>
-        <li><span class="help-key">💬 Engagement</span> Net subscriber changes driven by your content.</li>
-        <li><span class="help-key">🧬 Spread & DNA</span> Spread Potential (virality score) with tier distribution, and Content DNA fingerprint.</li>
-        <li><span class="help-key">📅 Upload Cadence</span> Publishing frequency — videos per 2 weeks and days between uploads.</li>
-        <li><span class="help-key">🤖 AI Discovery</span> AI Discoverability score measuring how likely AI assistants surface your content.</li>
-        <li><span class="help-key">🎬 Videos</span> Sortable video grid with thumbnails and per-video metrics.</li>
-      </ul>
-    </div>
-    </div>
+  return `<div class="cc-title">Channel Performance ${_helpBtn('performance',sid)}</div>
     <div class="ml-filter-bar">${periodDd}</div>
     ${allSections}`;
 }
@@ -2214,17 +2140,7 @@ function buildTrendChartHTML(card) {
     `<option value="${m}"${m===metric?' selected':''}>${fmtLabel(m)}</option>`).join('');
   return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">
       <span>Trends Over Time</span>
-      ${_helpBtn('help-trend-'+card.id)}
-      <div class="panel-help-pop" id="help-trend-${card.id}">
-        <button class="help-close" onclick="togglePanelHelp('help-trend-${card.id}',event)">✕</button>
-        <h4>What This Panel Shows</h4>
-        <p>A time-series chart of your video metrics, plotted by publish date. Spot seasonal patterns, growth trends, and performance shifts over time.</p>
-        <h4>Controls</h4>
-        <ul>
-          <li><span class="help-key">Metric dropdown</span> Switch between: Views, Avg View Percentage, CPM, and Subscribers Gained.</li>
-        </ul>
-        <p>Each dot represents one video. Hover for details.</p>
-      </div>
+      ${_helpBtn('trend',card.id)}
       <select style="margin-left:auto;background:var(--surface2);border:1px solid var(--border2);
         color:var(--text);border-radius:5px;font-size:11px;padding:2px 6px"
         onchange="updateTrendMetric('${card.id}',this.value)">${opts}</select>
@@ -2259,25 +2175,7 @@ function buildVideoBrowserHTML(card) {
   return `<div class="cc-title">Video Library
     <span style="font-weight:400;color:var(--muted2);margin-left:4px"
           id="vbr-count-${sid}">(${VIDEOS.length})</span>
-    ${_helpBtn('help-vbr-'+sid)}
-    <div class="panel-help-pop" id="help-vbr-${sid}">
-      <button class="help-close" onclick="togglePanelHelp('help-vbr-${sid}',event)">✕</button>
-      <h4>What This Panel Shows</h4>
-      <p>Your complete video library with thumbnails, titles, views, and retention. Click any video card to open it on YouTube.</p>
-      <h4>YouTube Scraper</h4>
-      <ul>
-        <li><span class="help-key">Channel URL input</span> Paste any YouTube channel URL or handle (e.g., @CutYT, youtube.com/c/Cut). Supports /channel/, /@handle, /c/, /user/ formats.</li>
-        <li><span class="help-key">Scrape button</span> Fetches up to 200 videos from the channel via YouTube Data API. New videos are merged into your library; duplicates are skipped.</li>
-      </ul>
-      <h4>Filters & Sorting</h4>
-      <ul>
-        <li><span class="help-key">Search by title</span> Type to instantly filter videos by title text.</li>
-        <li><span class="help-key">Sort dropdown</span> Sort by Views, Retention, Date, or CPM (all descending).</li>
-        <li><span class="help-key">Format chips</span> Toggle to filter by video format (e.g., Long-form, Shorts). Multiple formats can be active at once.</li>
-        <li><span class="help-key">Load more</span> Loads 10 additional videos at a time from the sorted list.</li>
-      </ul>
-    </div>
-    </div>
+    ${_helpBtn('vbr',sid)}</div>
     <div class="yt-scrape-bar" id="yt-scrape-bar-${sid}">
       <input id="yt-url-${sid}" class="yt-url-input"
              placeholder="Paste YouTube channel URL…"
@@ -2761,35 +2659,7 @@ function buildIdeationTabsHTML(card) {
   ].map(n => `<button class="ideo-chip${n.sel?' sel':''}"
     onclick="toggleIdeoChip(this,'nov-${sid}')" data-val="${n.val}">${n.label}</button>`).join('');
 
-  return `<div class="cc-title">Ideation Studio ${_helpBtn('help-ideation-'+sid)}
-    <div class="panel-help-pop" id="help-ideation-${sid}">
-      <button class="help-close" onclick="togglePanelHelp('help-ideation-${sid}',event)">✕</button>
-      <h4>Configuration</h4>
-      <ul>
-        <li><span class="help-key">Format chips</span> Pick one or more video formats (e.g., Truth or Drink, Lineup). Select <b>✦ Innovate</b> to let AI create a novel format.</li>
-        <li><span class="help-key">Audience chips</span> Target audience personas. <b>🌐 Any</b> targets universal appeal.</li>
-        <li><span class="help-key">Duration chips</span> Target length — Short (&lt;3 min), Medium (3–10), Long (10+), or type a custom duration.</li>
-        <li><span class="help-key">Novelty</span> Controls creative risk: <b>🧊 Safe</b> (proven formulas), <b>⚖️ Balanced</b>, <b>🔥 Bold</b> (experimental concepts).</li>
-        <li><span class="help-key">Gender slider</span> Target gender distribution for audience scoring.</li>
-        <li><span class="help-key">Brief</span> Optional free-text to guide the concept — theme, twist, guest type, inspiration.</li>
-        <li><span class="help-key">📄 Drop zone</span> Upload a reference doc (.txt, .md, .docx) to feed context to all agents.</li>
-      </ul>
-      <h4>Controls</h4>
-      <ul>
-        <li><span class="help-key">Session dropdown</span> Switch between saved ideation sessions or start a new one.</li>
-        <li><span class="help-key">✦ Ideate</span> Launch the full multi-agent pipeline. Five AI agents collaborate, then five audience personas score and iterate until consensus.</li>
-        <li><span class="help-key">DOCX / ▾</span> Export the production note as Word, PDF, or PowerPoint.</li>
-        <li><span class="help-key">Share ↗</span> Copy a shareable link to this ideation session.</li>
-      </ul>
-      <h4>Tabs</h4>
-      <ul>
-        <li><span class="help-key">Production Note</span> The final AI-generated concept document — unlocked after ideation completes.</li>
-        <li><span class="help-key">Validation</span> AI quality scorecard checking Loop, Psych Driver, Stakes, Character, Topic, Packaging, and Brand fit.</li>
-        <li><span class="help-key">Running</span> Real-time pipeline status, audience persona scores, convergence chart, and agent logs.</li>
-        <li><span class="help-key">▸ Details</span> Expand to see individual deliverables: Storyboard, Script, Casting, Production, Titles, Thumbnails, Distribution, and Evidence.</li>
-      </ul>
-    </div>
-    </div>
+  return `<div class="cc-title">Ideation Studio ${_helpBtn('ideation',sid)}</div>
 
     <!-- ▸ Collapsible config drawer ──────────────────────────────── -->
     <div class="ideo-drawer" id="ideo-drawer-${sid}">
@@ -7409,8 +7279,9 @@ function buildHypothesisHTML(card) {
   </div>` : '';
   /* Target selector — switch which outcome the hypotheses optimize for */
   const TARGET_LABELS = {retention_30s:'🎯 Retention',views_public:'👀 Views',spread_potential:'🔥 Spread Potential',engagement_like_ratio:'👍 Likes',engagement_comment_ratio:'💬 Comments',engagement_overall_ratio:'📈 Engagement',outlier_potential:'⚡ Outlier'};
-  const targetBtns = availTargets.length > 1 ? availTargets.map(t => {
-    const sel = (curTarget === t) || (!curTarget && t === (availTargets.includes('retention_30s') ? 'retention_30s' : availTargets[0]));
+  const mainTargets = availTargets.filter(t => t in TARGET_LABELS);
+  const targetBtns = mainTargets.length > 1 ? mainTargets.map(t => {
+    const sel = (curTarget === t) || (!curTarget && t === (mainTargets.includes('retention_30s') ? 'retention_30s' : mainTargets[0]));
     const lbl = TARGET_LABELS[t] || fmtLabel(t);
     return `<button class="ml-lens-btn${sel?' active':''}" onclick="switchHypTarget('${sid}','${t}',this)" style="font-size:10px">${lbl}</button>`;
   }).join('') : '';
@@ -7473,25 +7344,7 @@ function buildHypothesisHTML(card) {
 
   return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">🔬 Hypotheses & Recommendations
     <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">${cards.length} data-driven + ${YT_TIPS.length} best practices</span>
-    ${_helpBtn('help-hyp-'+sid)}
-    <div class="panel-help-pop" id="help-hyp-${sid}">
-      <button class="help-close" onclick="togglePanelHelp('help-hyp-${sid}',event)">✕</button>
-      <h4>What This Panel Shows</h4>
-      <p>Data-driven production recommendations synthesized from all ML signals (Correlation, Lasso, Random Forest + SHAP). Each card is a concrete, testable action grounded in your channel's data.</p>
-      <h4>Filters</h4>
-      <ul>
-        <li><span class="help-key">Distribution / Content</span> Switch ML lens — <b>Distribution</b> includes all signals (geo, traffic, platform); <b>Content</b> focuses on features you can directly control (topic, format, pacing).</li>
-        <li><span class="help-key">Tier chips</span> Filter by confidence: <b>🏆 Gold</b> (3/3 methods agree), <b>🥈 Silver</b> (2/3), <b>🥉 Bronze</b> (1/3). <b>💡 Best Practices</b> shows general YouTube tips.</li>
-        <li><span class="help-key">Categories ▼</span> Expand category chips to filter by signal type (e.g., Retention, Comments, Engagement).</li>
-        <li><span class="help-key">Optimize for</span> Choose which metric to optimize — changes which hypotheses appear and their rankings.</li>
-      </ul>
-      <h4>Hypothesis Cards</h4>
-      <ul>
-        <li><span class="help-key">Tier badge</span> Gold/Silver/Bronze — how many of the 3 ML methods support this recommendation.</li>
-        <li><span class="help-key">Method dots</span> Three dots showing which methods found significance: Correlation, Lasso, Random Forest.</li>
-        <li><span class="help-key">Show evidence</span> Expand to see statistical evidence, real video examples (top & bottom performers), and a ready-to-run A/B test template.</li>
-      </ul>
-    </div>
+    ${_helpBtn('hypothesis',sid)}
     </div>
   ${fb}<div class="hyp-grid" id="hyp-rows-${sid}">${grid}${tipsHTML}</div>`;
 }
@@ -9231,25 +9084,206 @@ function fmtFeatureName(str){
 }
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-/* ── Panel Help Popover ──────────────────────────────────────────── */
-function togglePanelHelp(id, ev) {
-  if (ev) ev.stopPropagation();
-  const el = document.getElementById(id);
-  if (!el) return;
-  const wasOpen = el.classList.contains('open');
-  // Close all open help popovers
-  document.querySelectorAll('.panel-help-pop.open').forEach(p => p.classList.remove('open'));
-  if (!wasOpen) el.classList.add('open');
-}
-// Close help popovers on outside click
-document.addEventListener('click', e => {
-  if (!e.target.closest('.panel-help-pop') && !e.target.closest('.panel-help-btn')) {
-    document.querySelectorAll('.panel-help-pop.open').forEach(p => p.classList.remove('open'));
-  }
-});
+/* ── Panel Help Tours ─────────────────────────────────────────────
+   Each ? button launches a guided mini-tour through the panel's
+   controls, reusing the same spotlight engine as the main tour.
+   ────────────────────────────────────────────────────────────────── */
 
-function _helpBtn(popId) {
-  return `<button class="panel-help-btn" onclick="togglePanelHelp('${popId}',event)" title="Help">?</button>`;
+function _helpBtn(panelType, sid) {
+  return `<button class="panel-help-btn" onclick="startPanelTour('${panelType}','${sid||''}')" title="Guided tour of this panel">?</button>`;
+}
+
+function _panelTourSteps(type, sid) {
+  const $ = s => {
+    // Try within the card first, fall back to global
+    const card = sid ? document.getElementById(sid) : null;
+    return (card && card.querySelector(s)) || document.querySelector(s);
+  };
+  const steps = [];
+
+  if (type === 'ideation') {
+    steps.push(
+      { el: () => $(`#ideo-drawer-${sid}`),
+        title: 'Configuration Drawer',
+        body: 'Set the creative parameters for your ideation. Expand or collapse with the chevron button on the left.' },
+      { el: () => $(`[data-chip-group="fmt-${sid}"]`) || $(`#ideo-drawer-body-${sid} .ideo-chip`),
+        title: 'Format Chips',
+        body: 'Pick one or more video formats (e.g., Truth or Drink, Lineup). Select ✦ Innovate to let AI invent a novel format.' },
+      { el: () => $(`[data-chip-group="nov-${sid}"]`) || $(`#ideo-drawer-body-${sid}`),
+        title: 'Novelty Level',
+        body: '🧊 Safe = proven formulas, ⚖️ Balanced = mix of familiar and fresh, 🔥 Bold = experimental and high-risk concepts.' },
+      { el: () => $(`#ideo-brief-${sid}`),
+        title: 'Brief / Angle',
+        body: 'Optional free-text prompt to guide the concept — describe a theme, guest type, twist, or inspiration. Leave blank for AI to decide.' },
+      { el: () => $(`#ideo-dropzone-${sid}`),
+        title: 'Reference Document',
+        body: 'Drag & drop a .txt, .md, or .docx file to feed additional context to all agents — research notes, competitor scripts, brand guidelines.' },
+      { el: () => $(`#ideo-session-dd-${sid}`),
+        title: 'Session Selector',
+        body: 'Switch between saved ideation sessions or start a new one. Each session preserves its full pipeline output.' },
+      { el: () => $(`#ideo-ideate-btn-${sid}`),
+        title: '✦ Ideate Button',
+        body: 'Launches the full multi-agent pipeline. Five AI agents (Writer, Creative Director, Producer, Data Analyst, Critic) collaborate, then five audience personas score the result and iterate up to 5 rounds.' },
+      { el: () => $(`#ideo-${sid}-concept-btn-${sid}`) || $(`#itab-${sid}-running`)?.previousElementSibling?.querySelector('.ideo-tab-btn'),
+        title: 'Production Note Tab',
+        body: 'The final AI-generated concept — a complete production note with format, audience, hook, and creative direction. Unlocked after ideation completes.' },
+      { el: () => $(`#ideo-${sid}-validation-btn-${sid}`) || (() => { const b = sid && document.getElementById(sid); return b && b.querySelectorAll('.ideo-tab-btn')[1]; })(),
+        title: 'Validation Tab',
+        body: 'AI quality scorecard. Checks: Loop (retention hook), Psych Driver, Stakes, Character, Topic, Packaging, and Brand Fit. Each scored 1–10.' },
+      { el: () => { const b = sid && document.getElementById(sid); return b && b.querySelector('.ideo-details-btn'); },
+        title: '▸ Details / Deliverables',
+        body: 'Expand to see all production artifacts: Storyboard, Script, Casting, Production plan, Titles, Thumbnails, Distribution strategy, and Evidence (statistical backing).' },
+      { el: () => { const b = sid && document.getElementById(sid); return b && b.querySelector('.ideo-split-arrow-btn')?.parentElement || b && b.querySelector('[onclick*="exportIdeo"]'); },
+        title: 'Export & Share',
+        body: 'Download the full production note as DOCX, PDF, or PPTX. Use the share button to copy a link to this ideation session.' },
+    );
+  }
+
+  else if (type === 'hypothesis') {
+    steps.push(
+      { el: () => $(`#hyp-lens-${sid}`) || $(`[id^="hyp-lens-"]`),
+        title: 'Distribution / Content Lens',
+        body: 'Switch the ML data lens. Distribution uses all signals (geo, traffic, platform). Content focuses on features you can directly control in production (topic, format, pacing).' },
+      { el: () => $(`#hyp-tier-chips-${sid}`) || $(`[id^="hyp-tier-chips-"]`),
+        title: 'Confidence Tier Filter',
+        body: '🏆 Gold = all 3 ML methods agree. 🥈 Silver = 2 of 3. 🥉 Bronze = 1 of 3. 💡 Best Practices = general YouTube tips.' },
+      { el: () => $(`[id^="hyp-cat-toggle-"]`),
+        title: 'Categories Toggle',
+        body: 'Expand to see category chips — filter recommendations by signal type (e.g., Retention, Engagement, Sentiment).' },
+      { el: () => $(`[id^="hyp-target-row-"]`),
+        title: 'Optimize For',
+        body: 'Choose which metric to optimize. The hypothesis list re-ranks based on which production levers most affect your chosen target.' },
+      { el: () => $(`#hyp-rows-${sid}`)?.querySelector('.hyp-card'),
+        title: 'Hypothesis Card',
+        body: 'Each card is a concrete, testable production action. Shows the hypothesis, category badge, confidence tier, and method dots (which of Correlation / Lasso / Random Forest found it significant).' },
+      { el: () => $(`#hyp-rows-${sid}`)?.querySelector('[onclick*="toggleHypDetail"]'),
+        title: 'Show Evidence & A/B Test',
+        body: 'Expand any card to see: statistical evidence per method, real video examples (top & bottom performers from your library), and a ready-to-run A/B test template.' },
+    );
+  }
+
+  else if (type === 'ml') {
+    steps.push(
+      { el: () => $(`#ml-target-${sid}`) || $(`[id^="ml-target-"]`),
+        title: 'Target Metric',
+        body: 'The metric you\'re trying to optimize — e.g., views, retention, CPM. All charts recalculate to show which features drive this target.' },
+      { el: () => $(`#ml-group-${sid}`) || $(`[id^="ml-group-"]`),
+        title: 'Feature Group Filter',
+        body: 'Narrow to a specific category of features — e.g., Sentiment, Engagement, Production quality. "All groups" shows everything.' },
+      { el: () => $(`#ml-topn-${sid}`) || $(`[id^="ml-topn-"]`),
+        title: 'Top N',
+        body: 'How many features to display: Top 10, 15, 20, or All. Keeps the chart focused on the strongest signals.' },
+      { el: () => $(`#ml-dir-${sid}`) || $(`[id^="ml-dir-"]`),
+        title: 'Direction Filter',
+        body: 'Show only Positive (more of this feature → better performance) or Negative (more → worse), or All.' },
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.ml-tab-bar .ml-tab-btn'); },
+        title: 'Method Tabs',
+        body: '📊 Correlations = linear relationships. 🪢 Lasso = controls for confounders. 🌲 Random Forest = captures non-linear interactions via SHAP values.' },
+      { el: () => $(`#ml-lens-${sid}`) || $(`[id^="ml-lens-"]`),
+        title: 'Distribution / Content Lens',
+        body: 'Distribution = all signals including geo and traffic. Content = only features you can control in production.' },
+      { el: () => $(`#chart-canvas-${sid}`)?.parentElement,
+        title: 'Feature Chart',
+        body: 'Horizontal bar chart of feature importance. Click any bar to open a detail card with the scatter distribution and per-format breakdown.' },
+    );
+  }
+
+  else if (type === 'trend') {
+    steps.push(
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('select'); },
+        title: 'Metric Selector',
+        body: 'Switch between Views, Avg View Percentage, CPM, and Subscribers Gained. The chart redraws instantly.' },
+      { el: () => $(`#chart-canvas-${sid}`)?.parentElement,
+        title: 'Time Series Chart',
+        body: 'Each dot is one video plotted by publish date. Spot seasonal patterns, growth trends, and dips. Hover any dot for details.' },
+    );
+  }
+
+  else if (type === 'performance') {
+    steps.push(
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.ml-filter-bar'); },
+        title: 'Period Filter',
+        body: 'Filter all sections to a time window: Last 30 days, 90 days, 6 months, 1 year, or All time. Every metric recalculates.' },
+      { el: () => $(`#perf-sec-${sid}-overview`),
+        title: '📊 Performance Section',
+        body: 'Total views, videos published, avg retention, 30s retention, and net subscribers in the selected period. Click the header to expand/collapse.' },
+      { el: () => $(`#perf-sec-${sid}-outliers`),
+        title: '⚡ Outliers',
+        body: 'Top and bottom performing videos with thumbnails and metric values. Quick way to find what worked and what didn\'t.' },
+      { el: () => $(`#perf-sec-${sid}-revenue`),
+        title: '💰 Revenue & CPM',
+        body: 'Total estimated revenue and average CPM (cost per thousand impressions) for the period.' },
+      { el: () => $(`#perf-sec-${sid}-formats`),
+        title: '📁 Series / Formats',
+        body: 'Breakdown by video format — how many videos per format and their average performance.' },
+      { el: () => $(`#perf-sec-${sid}-spread`),
+        title: '🧬 Spread & DNA',
+        body: 'Spread Potential (virality composite score) with tier distribution, and Content DNA fingerprint averaging across your videos.' },
+      { el: () => $(`#perf-sec-${sid}-vidgrid`),
+        title: '🎬 Videos Grid',
+        body: 'Scrollable video grid with thumbnails sorted by views. Click "Load 12 more" to paginate.' },
+    );
+  }
+
+  else if (type === 'vbr') {
+    steps.push(
+      { el: () => $(`#yt-url-${sid}`),
+        title: 'YouTube Channel URL',
+        body: 'Paste any YouTube channel URL or handle (e.g., @CutYT, youtube.com/c/Cut). Supports /channel/, /@handle, /c/, /user/ formats.' },
+      { el: () => $(`#yt-scrape-btn-${sid}`),
+        title: 'Scrape Button',
+        body: 'Fetches up to 200 videos from the channel via YouTube Data API. New videos merge into your library; duplicates are skipped.' },
+      { el: () => $(`#vbr-search-${sid}`),
+        title: 'Search by Title',
+        body: 'Type to instantly filter the video grid — matches against video titles in real time.' },
+      { el: () => $(`#vbr-sort-${sid}`),
+        title: 'Sort Dropdown',
+        body: 'Sort by Views ↓, Retention ↓, Date ↓, or CPM ↓. All descending.' },
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.vbr-chip'); },
+        title: 'Format Chips',
+        body: 'Toggle to filter by video format (e.g., Long-form, Shorts). Multiple formats can be active at once.' },
+      { el: () => $(`#vbr-grid-${sid}`),
+        title: 'Video Grid',
+        body: 'Thumbnail cards for every video. Each shows title, views, and retention. Click any card to open the video on YouTube.' },
+    );
+  }
+
+  else if (type === 'metrics') {
+    steps.push(
+      { el: () => { const c = sid && document.getElementById(sid); return c && c.querySelector('.cc-metric-row'); },
+        title: 'Key Metrics Row',
+        body: 'At-a-glance KPIs for your channel: total videos, total views, average retention, format count, and other key stats computed from all loaded video data.' },
+    );
+  }
+
+  // Filter out steps where the element can't be found
+  return steps;
+}
+
+function startPanelTour(type, sid) {
+  const steps = _panelTourSteps(type, sid);
+  // Resolve elements and filter missing ones
+  const resolved = steps.map(s => ({ ...s, _el: s.el() })).filter(s => s._el);
+  if (!resolved.length) return;
+
+  // Scroll the card into view first
+  const card = sid && document.getElementById(sid);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Feed into the main tour engine
+  _tourSteps = resolved.map(s => ({
+    target: null,
+    title: s.title,
+    body: s.body,
+    _directEl: s._el,
+  }));
+  _tourIdx = 0;
+  _tourActive = true;
+  document.body.classList.add('touring');
+  document.getElementById('tour-overlay').classList.remove('hidden');
+  document.getElementById('tour-spotlight').style.display = 'block';
+  document.getElementById('tour-tip').style.display = 'block';
+  _showTourStep();
 }
 
 function esc(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
@@ -9403,9 +9437,11 @@ function _showTourStep() {
 }
 
 function _renderTourStep(step) {
-  // Resolve target — spokeLabel does a dynamic lookup by label text
+  // Resolve target — direct element, spokeLabel lookup, or CSS selector
   let el;
-  if (step.spokeLabel) {
+  if (step._directEl) {
+    el = step._directEl;
+  } else if (step.spokeLabel) {
     const allLabels = document.querySelectorAll('.radial-spoke-label');
     for (const lbl of allLabels) {
       if (lbl.textContent.trim().toLowerCase().includes(step.spokeLabel.toLowerCase())) {
