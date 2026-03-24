@@ -7285,7 +7285,7 @@ function buildHypothesisHTML(card) {
     const lbl = TARGET_LABELS[t] || fmtLabel(t);
     return `<button class="ml-lens-btn${sel?' active':''}" onclick="switchHypTarget('${sid}','${t}',this)" style="font-size:10px">${lbl}</button>`;
   }).join('') : '';
-  const targetToggle = targetBtns ? `<div class="ml-lens-toggle" style="margin-top:4px"><span style="font-size:9px;opacity:.5;margin-right:4px">Optimize for:</span>${targetBtns}</div>` : '';
+  const targetToggle = targetBtns ? `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-basis:100%"><span style="font-size:10px;font-weight:600;color:var(--muted);white-space:nowrap">Optimize for</span><div class="ml-lens-toggle">${targetBtns}</div></div>` : '';
   const fb=`<div class="hyp-filters" id="hyp-filters-${sid}" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
     <button class="hyp-chip sel" onclick="filterHyp('${sid}','all',this)">All (${cards.length + YT_TIPS.length})</button>
     ${tc.gold?`<button class="hyp-chip" onclick="filterHyp('${sid}','gold',this)">🏆 Gold (${tc.gold})</button>`:''}
@@ -9124,13 +9124,13 @@ function _panelTourSteps(type, sid) {
       { el: () => $(`#ideo-ideate-btn-${sid}`),
         title: '✦ Ideate Button',
         body: 'Launches the full multi-agent pipeline. Five AI agents (Writer, Creative Director, Producer, Data Analyst, Critic) collaborate, then five audience personas score the result and iterate up to 5 rounds.' },
-      { el: () => $(`#ideo-${sid}-concept-btn-${sid}`) || $(`#itab-${sid}-running`)?.previousElementSibling?.querySelector('.ideo-tab-btn'),
-        title: 'Production Note Tab',
+      { el: () => $(`#ideo-concept-btn-${sid}`),
+        title: '📋 Production Note Tab',
         body: 'The final AI-generated concept — a complete production note with format, audience, hook, and creative direction. Unlocked after ideation completes.' },
-      { el: () => $(`#ideo-${sid}-validation-btn-${sid}`) || (() => { const b = sid && document.getElementById(sid); return b && b.querySelectorAll('.ideo-tab-btn')[1]; })(),
-        title: 'Validation Tab',
+      { el: () => $(`#ideo-validation-btn-${sid}`),
+        title: '✅ Validation Tab',
         body: 'AI quality scorecard. Checks: Loop (retention hook), Psych Driver, Stakes, Character, Topic, Packaging, and Brand Fit. Each scored 1–10.' },
-      { el: () => { const b = sid && document.getElementById(sid); return b && b.querySelector('.ideo-details-btn'); },
+      { el: () => { const b = sid && document.getElementById(sid); return b ? b.querySelector('.ideo-details-btn') : null; },
         title: '▸ Details / Deliverables',
         body: 'Expand to see all production artifacts: Storyboard, Script, Casting, Production plan, Titles, Thumbnails, Distribution strategy, and Evidence (statistical backing).' },
       { el: () => { const b = sid && document.getElementById(sid); return b && b.querySelector('.ideo-split-arrow-btn')?.parentElement || b && b.querySelector('[onclick*="exportIdeo"]'); },
