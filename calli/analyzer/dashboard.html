@@ -105,7 +105,37 @@
           position:relative; min-width:0; overflow:clip; }
     .cc.wide { grid-column:1/-1; }
     .cc-title { font-size:10px; font-weight:700; color:var(--muted);
-                text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
+                text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;
+                display:flex; align-items:center; gap:6px; }
+    /* ── Panel Help Button & Popover ─────────────────────────────── */
+    .panel-help-btn { display:inline-flex; align-items:center; justify-content:center;
+                      width:16px; height:16px; border-radius:50%; border:1px solid var(--border2);
+                      background:var(--surface2); color:var(--muted); font-size:10px;
+                      font-weight:700; cursor:pointer; flex-shrink:0; line-height:1;
+                      transition:all .15s; text-transform:none; letter-spacing:0; }
+    .panel-help-btn:hover { border-color:var(--accent); color:var(--accent);
+                            background:rgba(124,106,247,.1); }
+    .panel-help-pop { display:none; position:absolute; top:32px; left:0; z-index:100;
+                      background:var(--surface); border:1px solid var(--border);
+                      border-radius:10px; padding:14px 16px; width:min(420px,calc(100% - 20px));
+                      box-shadow:0 8px 32px rgba(0,0,0,.45); font-size:11.5px;
+                      line-height:1.65; color:var(--text-dim); font-weight:400;
+                      text-transform:none; letter-spacing:0; max-height:60vh; overflow-y:auto; }
+    .panel-help-pop.open { display:block; }
+    .panel-help-pop h4 { font-size:11px; font-weight:700; color:var(--text);
+                          margin:10px 0 4px; text-transform:uppercase; letter-spacing:.05em; }
+    .panel-help-pop h4:first-child { margin-top:0; }
+    .panel-help-pop p { margin:0 0 6px; }
+    .panel-help-pop ul { padding-left:16px; margin:2px 0 8px; }
+    .panel-help-pop li { margin-bottom:3px; }
+    .panel-help-pop code { font-size:10px; background:var(--surface2); padding:1px 4px;
+                            border-radius:3px; }
+    .panel-help-pop .help-key { display:inline-block; min-width:90px; font-weight:600;
+                                 color:var(--text); }
+    .panel-help-pop .help-close { position:absolute; top:8px; right:10px; background:none;
+                                   border:none; color:var(--muted); font-size:14px;
+                                   cursor:pointer; padding:2px 4px; }
+    .panel-help-pop .help-close:hover { color:var(--text); }
     .ideo-sessions-sel { background:var(--surface2); border:1px solid rgba(124,106,247,.45);
                          border-radius:9px; color:var(--text); font-size:13px;
                          padding:0 16px; cursor:pointer; outline:none; max-width:200px;
@@ -1636,7 +1666,13 @@ function buildMetricsRowHTML() {
     </div>`;
   });
   if (!cells.length) return `<div class="cc-title">Metrics</div><div class="cc-empty"><div>No stat cards configured</div></div>`;
-  return `<div class="cc-title">Key Metrics</div>
+  return `<div class="cc-title">Key Metrics ${_helpBtn('help-metrics')}
+    <div class="panel-help-pop" id="help-metrics">
+      <button class="help-close" onclick="togglePanelHelp('help-metrics',event)">✕</button>
+      <h4>What This Panel Shows</h4>
+      <p>At-a-glance KPIs for your channel: total videos, total views, average retention, format count, and other key stats. These numbers are computed from all loaded video data.</p>
+    </div>
+    </div>
     <div class="cc-metric-row">${cells.join('')}</div>`;
 }
 
@@ -1737,7 +1773,30 @@ function buildCorrChartHTML(card) {
                 onclick="switchMLLens('${sid}','content',this)">Content</button>
       </div>` : '';
 
-  return `<div class="cc-title">ML Signals</div>
+  return `<div class="cc-title">ML Signals ${_helpBtn('help-ml-'+sid)}
+    <div class="panel-help-pop" id="help-ml-${sid}">
+      <button class="help-close" onclick="togglePanelHelp('help-ml-${sid}',event)">✕</button>
+      <h4>What This Panel Shows</h4>
+      <p>Machine learning analysis of which features in your videos correlate with performance. Three independent methods cross-validate each signal.</p>
+      <h4>Method Tabs</h4>
+      <ul>
+        <li><span class="help-key">📊 Correlations</span> Pearson/Spearman correlation between each feature and your target metric. Shows linear relationships.</li>
+        <li><span class="help-key">🪢 Lasso</span> Lasso regression — identifies which features matter when controlling for all others. Removes redundant signals.</li>
+        <li><span class="help-key">🌲 Random Forest</span> Non-linear feature importance via SHAP values. Captures complex interactions between features.</li>
+      </ul>
+      <h4>Filters</h4>
+      <ul>
+        <li><span class="help-key">Target</span> The metric you're trying to optimize (e.g., views, retention, CPM).</li>
+        <li><span class="help-key">Features</span> Filter by feature group — narrow to a category like engagement, sentiment, or production.</li>
+        <li><span class="help-key">Show</span> How many top features to display (Top 10, 15, 20, or All).</li>
+        <li><span class="help-key">Direction</span> Filter to only positive or negative correlations.</li>
+        <li><span class="help-key">Format</span> Run analysis on a specific video format subset (e.g., Shorts, Truth or Drink).</li>
+        <li><span class="help-key">Distribution / Content</span> <b>Distribution</b> = all signals; <b>Content</b> = only features you can control in production.</li>
+      </ul>
+      <h4>Interacting with the Chart</h4>
+      <p>Click any bar in the chart to see a detail card with the feature's distribution scatter plot and per-format comparison.</p>
+    </div>
+    </div>
 
     <!-- ▸ Pill filter bar ───────────────────────────────────────── -->
     <div class="ml-filter-bar">${targetDd}${groupDd}${topnDd}${dirDd}${formatDd}${lensToggle}</div>
@@ -2071,7 +2130,31 @@ function buildPerformanceHTML(card) {
   const allSections = sections +
     section('vidgrid', '🎬', 'Videos', `${sortedVids.length}`, '', videoGridBody, true);
 
-  return `<div class="cc-title">Channel Performance</div>
+  return `<div class="cc-title">Channel Performance ${_helpBtn('help-perf-'+sid)}
+    <div class="panel-help-pop" id="help-perf-${sid}">
+      <button class="help-close" onclick="togglePanelHelp('help-perf-${sid}',event)">✕</button>
+      <h4>What This Panel Shows</h4>
+      <p>A comprehensive health dashboard for your channel, broken into collapsible sections. All metrics recalculate when you change the time period.</p>
+      <h4>Controls</h4>
+      <ul>
+        <li><span class="help-key">Period dropdown</span> Filter to Last 30 days, 90 days, 6 months, 1 year, or All time. All sections update accordingly.</li>
+        <li><span class="help-key">Section headers</span> Click any section header to expand or collapse it.</li>
+      </ul>
+      <h4>Sections</h4>
+      <ul>
+        <li><span class="help-key">📊 Performance</span> Total views, videos published, avg retention, 30s retention, and net subscribers in the selected period.</li>
+        <li><span class="help-key">⚡ Outliers</span> Top and bottom performing videos with thumbnails and metric values.</li>
+        <li><span class="help-key">📈 Retention</span> Average view percentage and 30-second retention across all videos.</li>
+        <li><span class="help-key">💰 Revenue</span> Total estimated revenue and average CPM.</li>
+        <li><span class="help-key">📁 Series</span> Format breakdown showing how many videos per format and their average performance.</li>
+        <li><span class="help-key">💬 Engagement</span> Net subscriber changes driven by your content.</li>
+        <li><span class="help-key">🧬 Spread & DNA</span> Spread Potential (virality score) with tier distribution, and Content DNA fingerprint.</li>
+        <li><span class="help-key">📅 Upload Cadence</span> Publishing frequency — videos per 2 weeks and days between uploads.</li>
+        <li><span class="help-key">🤖 AI Discovery</span> AI Discoverability score measuring how likely AI assistants surface your content.</li>
+        <li><span class="help-key">🎬 Videos</span> Sortable video grid with thumbnails and per-video metrics.</li>
+      </ul>
+    </div>
+    </div>
     <div class="ml-filter-bar">${periodDd}</div>
     ${allSections}`;
 }
@@ -2131,6 +2214,17 @@ function buildTrendChartHTML(card) {
     `<option value="${m}"${m===metric?' selected':''}>${fmtLabel(m)}</option>`).join('');
   return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">
       <span>Trends Over Time</span>
+      ${_helpBtn('help-trend-'+card.id)}
+      <div class="panel-help-pop" id="help-trend-${card.id}">
+        <button class="help-close" onclick="togglePanelHelp('help-trend-${card.id}',event)">✕</button>
+        <h4>What This Panel Shows</h4>
+        <p>A time-series chart of your video metrics, plotted by publish date. Spot seasonal patterns, growth trends, and performance shifts over time.</p>
+        <h4>Controls</h4>
+        <ul>
+          <li><span class="help-key">Metric dropdown</span> Switch between: Views, Avg View Percentage, CPM, and Subscribers Gained.</li>
+        </ul>
+        <p>Each dot represents one video. Hover for details.</p>
+      </div>
       <select style="margin-left:auto;background:var(--surface2);border:1px solid var(--border2);
         color:var(--text);border-radius:5px;font-size:11px;padding:2px 6px"
         onchange="updateTrendMetric('${card.id}',this.value)">${opts}</select>
@@ -2165,6 +2259,24 @@ function buildVideoBrowserHTML(card) {
   return `<div class="cc-title">Video Library
     <span style="font-weight:400;color:var(--muted2);margin-left:4px"
           id="vbr-count-${sid}">(${VIDEOS.length})</span>
+    ${_helpBtn('help-vbr-'+sid)}
+    <div class="panel-help-pop" id="help-vbr-${sid}">
+      <button class="help-close" onclick="togglePanelHelp('help-vbr-${sid}',event)">✕</button>
+      <h4>What This Panel Shows</h4>
+      <p>Your complete video library with thumbnails, titles, views, and retention. Click any video card to open it on YouTube.</p>
+      <h4>YouTube Scraper</h4>
+      <ul>
+        <li><span class="help-key">Channel URL input</span> Paste any YouTube channel URL or handle (e.g., @CutYT, youtube.com/c/Cut). Supports /channel/, /@handle, /c/, /user/ formats.</li>
+        <li><span class="help-key">Scrape button</span> Fetches up to 200 videos from the channel via YouTube Data API. New videos are merged into your library; duplicates are skipped.</li>
+      </ul>
+      <h4>Filters & Sorting</h4>
+      <ul>
+        <li><span class="help-key">Search by title</span> Type to instantly filter videos by title text.</li>
+        <li><span class="help-key">Sort dropdown</span> Sort by Views, Retention, Date, or CPM (all descending).</li>
+        <li><span class="help-key">Format chips</span> Toggle to filter by video format (e.g., Long-form, Shorts). Multiple formats can be active at once.</li>
+        <li><span class="help-key">Load more</span> Loads 10 additional videos at a time from the sorted list.</li>
+      </ul>
+    </div>
     </div>
     <div class="yt-scrape-bar" id="yt-scrape-bar-${sid}">
       <input id="yt-url-${sid}" class="yt-url-input"
@@ -2649,7 +2761,35 @@ function buildIdeationTabsHTML(card) {
   ].map(n => `<button class="ideo-chip${n.sel?' sel':''}"
     onclick="toggleIdeoChip(this,'nov-${sid}')" data-val="${n.val}">${n.label}</button>`).join('');
 
-  return `<div class="cc-title">Ideation Studio</div>
+  return `<div class="cc-title">Ideation Studio ${_helpBtn('help-ideation-'+sid)}
+    <div class="panel-help-pop" id="help-ideation-${sid}">
+      <button class="help-close" onclick="togglePanelHelp('help-ideation-${sid}',event)">✕</button>
+      <h4>Configuration</h4>
+      <ul>
+        <li><span class="help-key">Format chips</span> Pick one or more video formats (e.g., Truth or Drink, Lineup). Select <b>✦ Innovate</b> to let AI create a novel format.</li>
+        <li><span class="help-key">Audience chips</span> Target audience personas. <b>🌐 Any</b> targets universal appeal.</li>
+        <li><span class="help-key">Duration chips</span> Target length — Short (&lt;3 min), Medium (3–10), Long (10+), or type a custom duration.</li>
+        <li><span class="help-key">Novelty</span> Controls creative risk: <b>🧊 Safe</b> (proven formulas), <b>⚖️ Balanced</b>, <b>🔥 Bold</b> (experimental concepts).</li>
+        <li><span class="help-key">Gender slider</span> Target gender distribution for audience scoring.</li>
+        <li><span class="help-key">Brief</span> Optional free-text to guide the concept — theme, twist, guest type, inspiration.</li>
+        <li><span class="help-key">📄 Drop zone</span> Upload a reference doc (.txt, .md, .docx) to feed context to all agents.</li>
+      </ul>
+      <h4>Controls</h4>
+      <ul>
+        <li><span class="help-key">Session dropdown</span> Switch between saved ideation sessions or start a new one.</li>
+        <li><span class="help-key">✦ Ideate</span> Launch the full multi-agent pipeline. Five AI agents collaborate, then five audience personas score and iterate until consensus.</li>
+        <li><span class="help-key">DOCX / ▾</span> Export the production note as Word, PDF, or PowerPoint.</li>
+        <li><span class="help-key">Share ↗</span> Copy a shareable link to this ideation session.</li>
+      </ul>
+      <h4>Tabs</h4>
+      <ul>
+        <li><span class="help-key">Production Note</span> The final AI-generated concept document — unlocked after ideation completes.</li>
+        <li><span class="help-key">Validation</span> AI quality scorecard checking Loop, Psych Driver, Stakes, Character, Topic, Packaging, and Brand fit.</li>
+        <li><span class="help-key">Running</span> Real-time pipeline status, audience persona scores, convergence chart, and agent logs.</li>
+        <li><span class="help-key">▸ Details</span> Expand to see individual deliverables: Storyboard, Script, Casting, Production, Titles, Thumbnails, Distribution, and Evidence.</li>
+      </ul>
+    </div>
+    </div>
 
     <!-- ▸ Collapsible config drawer ──────────────────────────────── -->
     <div class="ideo-drawer" id="ideo-drawer-${sid}">
@@ -3125,7 +3265,7 @@ function saveIdeoSession(sid) {
     rawTexts,
     loopScores,
     loopFeatures,
-    loopScoreVersion: loopScores ? 3 : undefined,
+    loopScoreVersion: loopScores ? 4 : undefined,
     deleted: false
   };
 
@@ -3525,9 +3665,24 @@ function loadIdeoSession(sid, sessionId) {
 async function _lazyComputeLoopScores(sid, session) {
   if (!LOOP_SCORE_CONFIG) return;
 
-  // Check if session already has loop scores stored (v2 = percentile-based)
-  // Invalidate v1 scores (raw-value method produced inflated 10.0s)
-  if (session.loopScores && session.loopScoreVersion >= 3) {
+  // ── Strip any old inline-baked loop score blocks from the validation HTML ──
+  // (These were rendered during the original ideation run and are now stale)
+  const valPre = document.getElementById(`ideo-out-${sid}-validation`);
+  if (valPre) {
+    valPre.querySelectorAll('div').forEach(el => {
+      if (el.textContent.includes('Loop Structure Test') && !el.classList.contains('loop-score-container')) {
+        // Walk up to the nearest margin wrapper (the outer container of the inline-rendered block)
+        const wrapper = el.closest('[style*="margin:12px"]') || el;
+        if (wrapper.parentElement === valPre || wrapper.parentElement?.parentElement === valPre) {
+          wrapper.remove();
+        }
+      }
+    });
+  }
+
+  // Check if session already has loop scores stored (v3 = percentile, direct mapping)
+  // Invalidate v1/v2 scores (raw-value and anchor-mismatch methods produced inflated 10.0s)
+  if (session.loopScores && session.loopScoreVersion >= 4) {
     // Render stored scores directly (no API call needed)
     const valEl = document.getElementById(`ideo-out-${sid}-validation`);
     if (valEl) {
@@ -3571,12 +3726,13 @@ async function _lazyComputeLoopScores(sid, session) {
   container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px">📊 Computing LASSO loop scores…</div>';
 
   try {
-    const estimatedFeatures = await _estimateLoopFeatures(sid, conceptText, storyboardText);
-    if (!estimatedFeatures) {
+    const estimation = await _estimateLoopFeatures(sid, conceptText, storyboardText);
+    if (!estimation) {
       container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px">⚠ Could not estimate loop features</div>';
       return;
     }
-    const loopScores = _computeLoopScores(estimatedFeatures);
+    const { features: estimatedFeatures, rationales } = estimation;
+    const loopScores = _computeLoopScores(estimatedFeatures, rationales);
     if (!loopScores) {
       container.innerHTML = '';
       return;
@@ -3591,7 +3747,7 @@ async function _lazyComputeLoopScores(sid, session) {
     if (stored) {
       stored.loopScores = loopScores;
       stored.loopFeatures = estimatedFeatures;
-      stored.loopScoreVersion = 3; // v3 = percentile-based, direct mapping (no anchor mismatch)
+      stored.loopScoreVersion = 4; // v4 = percentile-based + dimension rationales
       _saveIdeoSessions(sessions);
     }
 
@@ -4347,17 +4503,30 @@ ${storyboardText ? `STORYBOARD:\n${(storyboardText || '').substring(0, 1500)}` :
 FEATURES TO SCORE (with dataset reference points):
 ${featureLines.join('\n')}
 
-OUTPUT: Return ONLY a JSON object mapping each feature name to a percentile integer (0–100). No explanation.
-Example: {"loop_quality_score": 55, "pacing_quality_score": 40, "peaks_per_minute": 70, ...}`;
+OUTPUT: Return ONLY a JSON object with two keys:
+1. "features": maps each feature name to a percentile integer (0–100)
+2. "rationales": maps each DIMENSION name (e.g. "Loop Clarity") to a 1-sentence justification explaining WHY the concept scores where it does on that dimension. Reference concrete concept mechanics, not vague praise.
+
+Example:
+{
+  "features": {"loop_quality_score": 55, "pacing_quality_score": 40, "peaks_per_minute": 70},
+  "rationales": {"Loop Clarity": "The blind-taste mechanic creates a clean, repeatable loop but the multi-round format may dilute focus.", "Loop Firing Frequency": "3-4 tasting rounds per episode gives moderate pacing, typical for CUT formats."}
+}`;
 
   try {
     _ideoLog(sid, '  📊 Data analyst estimating loop features (percentile)…', 'log-dim');
     const raw = await callClaude(prompt, {
-      temperature: 0.3, maxTokens: 2000, system: false, model: 'claude-sonnet-4-6'
+      temperature: 0.3, maxTokens: 3000, system: false, model: 'claude-sonnet-4-6'
     });
     const match = raw.match(/\{[\s\S]*\}/);
     if (!match) return null;
-    return JSON.parse(match[0]);
+    const parsed = JSON.parse(match[0]);
+    // Support both flat format (legacy) and structured format
+    if (parsed.features) {
+      return { features: parsed.features, rationales: parsed.rationales || {} };
+    }
+    // Flat format fallback (no rationales key → treat entire object as features)
+    return { features: parsed, rationales: {} };
   } catch (e) {
     _ideoLog(sid, `  ⚠ Loop feature estimation failed: ${e.message}`, 'log-warn');
     return null;
@@ -4369,7 +4538,7 @@ Example: {"loop_quality_score": 55, "pacing_quality_score": 40, "peaks_per_minut
  * Input: { feature_name: percentile (0-100), ... }
  * Returns: { dimension_name: { score: 1-10, features: {...} }, ... }
  */
-function _computeLoopScores(estimatedPercentiles) {
+function _computeLoopScores(estimatedPercentiles, rationales = {}) {
   if (!LOOP_SCORE_CONFIG || !estimatedPercentiles) return null;
 
   const results = {};
@@ -4422,7 +4591,8 @@ function _computeLoopScores(estimatedPercentiles) {
       raw: Math.round(rawScore * 1000) / 1000,
       features: featureDetails,
       direction: dim.direction,
-      description: dim.description
+      description: dim.description,
+      rationale: rationales[dimName] || ''
     };
   }
 
@@ -4451,10 +4621,13 @@ function _renderLoopScoreCards(loopScores) {
       .map(([f, d]) => `${f}: p${d.percentile || '?'} (median=${d.stats_median}, w=${d.weight})`)
       .join('\n');
 
+    const rationale = data.rationale ? `<div style="font-size:11px;color:var(--text,#ccc);margin-top:6px;line-height:1.4">${data.rationale}</div>` : '';
+
     html += `<div style="background:var(--surface3,#1a1a2e);border:1px solid var(--border,#333);border-radius:8px;padding:12px" title="${featureLines.replace(/"/g, '&quot;')}">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:4px">${name.replace(/ /g, ' ').toUpperCase()}</div>
       <div style="font-size:24px;font-weight:700;color:${color}">${data.score.toFixed(1)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px;background:var(--surface2,#111);border-radius:4px;padding:6px">${data.description}</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;font-style:italic">${data.description}</div>
+      ${rationale}
     </div>`;
   }
 
@@ -5329,9 +5502,10 @@ End with:
         if (LOOP_SCORE_CONFIG) {
           const rawConcept = window._ideoRawTexts?.[sid]?.concept || conceptOut;
           const rawStoryboard = window._ideoRawTexts?.[sid]?.storyboard || storyboardOut;
-          const estimatedFeatures = await _estimateLoopFeatures(sid, rawConcept, rawStoryboard);
-          if (estimatedFeatures) {
-            const loopScores = _computeLoopScores(estimatedFeatures);
+          const estimation = await _estimateLoopFeatures(sid, rawConcept, rawStoryboard);
+          if (estimation) {
+            const { features: estimatedFeatures, rationales } = estimation;
+            const loopScores = _computeLoopScores(estimatedFeatures, rationales);
             if (loopScores) {
               loopScoreHtml = _renderLoopScoreCards(loopScores);
               // Store for persistence
@@ -7298,7 +7472,27 @@ function buildHypothesisHTML(card) {
   </div>`).join('');
 
   return `<div class="cc-title" style="display:flex;align-items:center;gap:8px">🔬 Hypotheses & Recommendations
-    <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">${cards.length} data-driven + ${YT_TIPS.length} best practices</span></div>
+    <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">${cards.length} data-driven + ${YT_TIPS.length} best practices</span>
+    ${_helpBtn('help-hyp-'+sid)}
+    <div class="panel-help-pop" id="help-hyp-${sid}">
+      <button class="help-close" onclick="togglePanelHelp('help-hyp-${sid}',event)">✕</button>
+      <h4>What This Panel Shows</h4>
+      <p>Data-driven production recommendations synthesized from all ML signals (Correlation, Lasso, Random Forest + SHAP). Each card is a concrete, testable action grounded in your channel's data.</p>
+      <h4>Filters</h4>
+      <ul>
+        <li><span class="help-key">Distribution / Content</span> Switch ML lens — <b>Distribution</b> includes all signals (geo, traffic, platform); <b>Content</b> focuses on features you can directly control (topic, format, pacing).</li>
+        <li><span class="help-key">Tier chips</span> Filter by confidence: <b>🏆 Gold</b> (3/3 methods agree), <b>🥈 Silver</b> (2/3), <b>🥉 Bronze</b> (1/3). <b>💡 Best Practices</b> shows general YouTube tips.</li>
+        <li><span class="help-key">Categories ▼</span> Expand category chips to filter by signal type (e.g., Retention, Comments, Engagement).</li>
+        <li><span class="help-key">Optimize for</span> Choose which metric to optimize — changes which hypotheses appear and their rankings.</li>
+      </ul>
+      <h4>Hypothesis Cards</h4>
+      <ul>
+        <li><span class="help-key">Tier badge</span> Gold/Silver/Bronze — how many of the 3 ML methods support this recommendation.</li>
+        <li><span class="help-key">Method dots</span> Three dots showing which methods found significance: Correlation, Lasso, Random Forest.</li>
+        <li><span class="help-key">Show evidence</span> Expand to see statistical evidence, real video examples (top & bottom performers), and a ready-to-run A/B test template.</li>
+      </ul>
+    </div>
+    </div>
   ${fb}<div class="hyp-grid" id="hyp-rows-${sid}">${grid}${tipsHTML}</div>`;
 }
 function toggleHypDetail(btn) { const d=btn.nextElementSibling; if (!d) return; const o=d.classList.toggle('open'); btn.textContent=o?'Hide detail ▲':'Show evidence & A/B test ▼'; }
@@ -9036,6 +9230,28 @@ function fmtFeatureName(str){
   return FEAT_NICE_NAMES[str] || (str||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 }
 function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ── Panel Help Popover ──────────────────────────────────────────── */
+function togglePanelHelp(id, ev) {
+  if (ev) ev.stopPropagation();
+  const el = document.getElementById(id);
+  if (!el) return;
+  const wasOpen = el.classList.contains('open');
+  // Close all open help popovers
+  document.querySelectorAll('.panel-help-pop.open').forEach(p => p.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+// Close help popovers on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.panel-help-pop') && !e.target.closest('.panel-help-btn')) {
+    document.querySelectorAll('.panel-help-pop.open').forEach(p => p.classList.remove('open'));
+  }
+});
+
+function _helpBtn(popId) {
+  return `<button class="panel-help-btn" onclick="togglePanelHelp('${popId}',event)" title="Help">?</button>`;
+}
+
 function esc(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
 function showFatal(msg){
   document.body.innerHTML=`<div style="display:flex;height:100%;align-items:center;
