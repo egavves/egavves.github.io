@@ -2495,40 +2495,78 @@ function openVidPopup(vidId) {
     </div>`;
   document.getElementById('vid-popup-scrim').classList.add('open');
 }
-function _fmtFullNum(n) {
-  if (isNaN(n) || n == null) return '\u2014';
-  return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+function _fmtInt(n) { return isNaN(n) ? '\u2014' : Math.round(n).toLocaleString('en-US'); }
+function _fmtDol(n) { return isNaN(n) ? '\u2014' : '$' + n.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function _fmtPct(n) { return isNaN(n) ? '\u2014' : n.toFixed(1) + '%'; }
+function _fmtDur(s) {
+  if (isNaN(s)) return '\u2014';
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = Math.round(s%60);
+  return h > 0 ? `${h}h ${m}m ${sec}s` : `${m}m ${sec}s`;
 }
+
+/* Fields that are already 0-100 percentages (don't multiply by 100) */
+const _PCT_RAW = new Set(['avg_view_percentage','retention_30s']);
+/* Fields that are 0-1 ratios (multiply by 100) */
+const _PCT_RATIO = new Set(['ctr','spread_potential','engagement_like_ratio','engagement_comment_ratio',
+  'engagement_overall_ratio','comment_sentiment_mean','comment_question_rate','comment_relatability_score',
+  'share_intent_score','rewatch_intent','genz_score','parasocial_score']);
+/* Dollar fields */
+const _DOLLAR = new Set(['cpm','estimated_revenue','revenue']);
+/* Integer count fields */
+const _INT = new Set(['views','likes','comments_count','comments','subscribers_gained','impressions','estimated_minutes_watched']);
+/* String fields shown as-is */
+const _TEXT = new Set(['format','series','spread_tier']);
+
 function _vidPopupRow(key, val) {
-  let display = val;
-  /* Tags: pipe-separated → comma-separated running text */
-  if (key === 'tags' && typeof val === 'string') {
-    display = val.split('|').map(t => t.trim()).filter(Boolean).join(', ');
+  let display;
+
+  /* Tags: pipe-separated → comma list */
+  if (key === 'tags') {
+    display = String(val).split('|').map(t => t.trim()).filter(Boolean).join(', ');
   }
-  /* Booleans / 0-1 flags */
+  /* Boolean flags */
   else if (key === 'is_youtube_short') {
-    display = (val === true || val === 1 || val === '1') ? 'Yes' : 'No';
+    display = (val === true || val == 1 || val === '1' || val === 'true') ? 'Yes' : 'No';
   }
   /* Dates */
-  else if (key === 'published_at' && typeof val === 'string') {
-    try { display = new Date(val).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); } catch(e) {}
+  else if (key === 'published_at') {
+    try { display = new Date(val).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); } catch(e) { display = val; }
   }
-  /* Numbers */
-  else if (typeof val === 'number') {
-    if (key === 'duration_seconds') {
-      const h = Math.floor(val / 3600), m = Math.floor((val % 3600) / 60), s = Math.round(val % 60);
-      display = h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
-    } else if (key === 'cpm' || key === 'estimated_revenue' || key === 'revenue') {
-      display = '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    } else if (key.includes('ratio') || key === 'ctr' || key === 'avg_view_percentage' || key === 'retention_30s' || key === 'spread_potential') {
-      const pct = Math.abs(val) <= 1 ? val * 100 : val;
-      display = pct.toFixed(1) + '%';
-    } else if (key.includes('score') || key.includes('intent') || key === 'outlier_potential') {
-      display = val.toFixed(1) + '%';
-    } else {
-      display = _fmtFullNum(val);
-    }
+  /* Text fields */
+  else if (_TEXT.has(key)) {
+    display = val;
   }
+  /* Duration */
+  else if (key === 'duration_seconds') {
+    display = _fmtDur(parseFloat(val));
+  }
+  /* Dollars */
+  else if (_DOLLAR.has(key)) {
+    display = _fmtDol(parseFloat(val));
+  }
+  /* Already 0-100 percentages */
+  else if (_PCT_RAW.has(key)) {
+    display = _fmtPct(parseFloat(val));
+  }
+  /* 0-1 ratios → multiply by 100 */
+  else if (_PCT_RATIO.has(key)) {
+    display = _fmtPct(parseFloat(val) * 100);
+  }
+  /* Integer counts */
+  else if (_INT.has(key)) {
+    display = _fmtInt(parseFloat(val));
+  }
+  /* Outlier potential: raw score, show with 1 decimal */
+  else if (key === 'outlier_potential') {
+    const n = parseFloat(val);
+    display = isNaN(n) ? val : n.toFixed(1);
+  }
+  /* Fallback: try as number with commas, else show raw */
+  else {
+    const n = parseFloat(val);
+    display = isNaN(n) ? val : _fmtInt(n);
+  }
+
   return `<div class="vid-popup-row"><span class="vid-popup-lbl">${fmtLabel(key)}</span><span class="vid-popup-val">${escHtml(String(display))}</span></div>`;
 }
 function closeVidPopup() {
