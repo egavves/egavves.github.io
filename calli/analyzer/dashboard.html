@@ -247,22 +247,23 @@
                        display:none; align-items:center; justify-content:center; }
     .vid-popup-scrim.open { display:flex; }
     .vid-popup { background:var(--surface); border:1px solid var(--border);
-                 border-radius:12px; max-width:520px; width:92vw; max-height:85vh;
+                 border-radius:12px; max-width:700px; width:94vw; max-height:88vh;
                  overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,.5); }
     .vid-popup-thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block;
                        border-radius:12px 12px 0 0; cursor:pointer; }
-    .vid-popup-body { padding:14px 18px 18px; }
-    .vid-popup-title { font-size:15px; font-weight:700; color:var(--text); line-height:1.4;
+    .vid-popup-body { padding:16px 22px 22px; }
+    .vid-popup-title { font-size:16px; font-weight:700; color:var(--text); line-height:1.4;
                        margin-bottom:8px; }
-    .vid-popup-yt { display:inline-flex; align-items:center; gap:5px; font-size:11px;
+    .vid-popup-yt { display:inline-flex; align-items:center; gap:5px; font-size:12px;
                     font-weight:600; color:var(--accent); text-decoration:none;
-                    margin-bottom:12px; }
+                    margin-bottom:14px; }
     .vid-popup-yt:hover { text-decoration:underline; }
-    .vid-popup-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 16px; }
-    .vid-popup-row { display:flex; justify-content:space-between; padding:4px 0;
-                     border-bottom:1px solid var(--border); font-size:11px; }
-    .vid-popup-lbl { color:var(--muted); }
-    .vid-popup-val { color:var(--text); font-weight:600; text-align:right; }
+    .vid-popup-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 24px; }
+    .vid-popup-row { display:flex; justify-content:space-between; gap:8px; padding:5px 0;
+                     border-bottom:1px solid var(--border); font-size:11.5px; }
+    .vid-popup-lbl { color:var(--muted); white-space:nowrap; flex-shrink:0; }
+    .vid-popup-val { color:var(--text); font-weight:600; text-align:right;
+                     overflow:hidden; text-overflow:ellipsis; max-width:200px; }
     .vid-popup-close { position:absolute; top:10px; right:14px; width:28px; height:28px;
                        border-radius:50%; border:none; background:rgba(0,0,0,.5);
                        color:#fff; font-size:16px; cursor:pointer; z-index:1;
@@ -9197,10 +9198,10 @@ function _panelTourSteps(type, sid) {
       { el: () => $(`#ideo-drawer-${sid}`),
         title: 'Configuration Drawer',
         body: 'Set the creative parameters for your ideation. Expand or collapse with the chevron button on the left.' },
-      { el: () => $(`[data-chip-group="fmt-${sid}"]`) || $(`#ideo-drawer-body-${sid} .ideo-chip`),
+      { el: () => $(`#fmt-${sid}`),
         title: 'Format Chips',
         body: 'Pick one or more video formats (e.g., Truth or Drink, Lineup). Select ✦ Innovate to let AI invent a novel format.' },
-      { el: () => $(`[data-chip-group="nov-${sid}"]`) || $(`#ideo-drawer-body-${sid}`),
+      { el: () => $(`#nov-${sid}`),
         title: 'Novelty Level',
         body: '🧊 Safe = proven formulas, ⚖️ Balanced = mix of familiar and fresh, 🔥 Bold = experimental and high-risk concepts.' },
       { el: () => $(`#ideo-brief-${sid}`),
