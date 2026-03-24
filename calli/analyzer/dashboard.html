@@ -102,7 +102,7 @@
     .cc { background:var(--surface); border:1px solid var(--border);
           border-radius:10px; padding:14px 16px;
           animation:cardIn .3s cubic-bezier(.25,.8,.25,1);
-          position:relative; min-width:0; overflow:hidden; }
+          position:relative; min-width:0; overflow:clip; }
     .cc.wide { grid-column:1/-1; }
     .cc-title { font-size:10px; font-weight:700; color:var(--muted);
                 text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; }
@@ -179,6 +179,21 @@
                       text-transform:uppercase; letter-spacing:.06em; }
 
     /* ── Video Browser ────────────────────────────────────────────── */
+    .yt-scrape-bar { display:flex; align-items:center; gap:8px; margin-bottom:12px;
+                     flex-wrap:wrap; }
+    .yt-url-input  { flex:1; min-width:180px; background:var(--surface2);
+                     border:1px solid var(--border2); border-radius:7px;
+                     padding:7px 12px; font-size:12.5px; color:var(--text);
+                     outline:none; }
+    .yt-url-input:focus { border-color:rgba(124,106,247,.5); }
+    .yt-url-input::placeholder { color:var(--muted); }
+    .yt-scrape-btn { background:linear-gradient(135deg,#7c6af7,#9b6dff);
+                     color:#fff; border:none; border-radius:7px;
+                     padding:7px 16px; font-size:12px; font-weight:600;
+                     cursor:pointer; white-space:nowrap; transition:opacity .15s; }
+    .yt-scrape-btn:hover { opacity:.88; }
+    .yt-scrape-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .yt-scrape-status { font-size:11px; color:var(--muted); width:100%; }
     .vbr-filter-bar { display:flex; align-items:center; gap:8px; margin-bottom:12px;
                       flex-wrap:wrap; }
     .vbr-search { flex:1; min-width:140px; background:var(--surface2);
@@ -393,7 +408,8 @@
                     margin-bottom:14px; overflow-x:auto; flex-wrap:nowrap;
                     scrollbar-width:none;
                     position:sticky; top:0; z-index:10;
-                    background:var(--surface2); padding-top:2px; }
+                    background:var(--surface); padding-top:2px;
+                    margin-left:-16px; margin-right:-16px; padding-left:16px; padding-right:16px; }
     .ideo-tab-bar::-webkit-scrollbar { display:none; }
     .ideo-tab-btn { background:none; border:none; border-bottom:2px solid transparent;
                     padding:7px 13px; font-size:12px; font-weight:600;
@@ -420,7 +436,8 @@
     .ideo-action-row { display:flex; gap:0; overflow-x:auto; flex-wrap:nowrap;
                        scrollbar-width:none; border-bottom:1px solid var(--border);
                        background:var(--surface3); margin-bottom:14px;
-                       position:sticky; top:38px; z-index:9; }
+                       position:sticky; top:38px; z-index:9;
+                       margin-left:-16px; margin-right:-16px; padding-left:16px; padding-right:16px; }
     .ideo-action-row::-webkit-scrollbar { display:none; }
     .ideo-tab-right { margin-left:auto; display:inline-flex; align-items:center; gap:2px; flex-shrink:0; }
     .ideo-bar-gear { font-size:13px; opacity:.4; margin-left:4px; }
@@ -519,7 +536,7 @@
     .ideo-result { background:var(--surface2); border:1px solid var(--border);
                    border-radius:8px; padding:12px 14px; font-size:12.5px;
                    line-height:1.7; color:var(--text-dim); display:none;
-                   min-height:60px; overflow-y:auto; overflow-x:hidden;
+                   min-height:60px; overflow-y:auto; overflow-x:auto;
                    word-wrap:break-word; overflow-wrap:break-word;
                    width:100%; box-sizing:border-box; }
     .ideo-result.vis { display:block; }
@@ -529,9 +546,32 @@
     .ideo-result img { max-width:100%; height:auto; border-radius:6px; margin:6px 0; }
     .ideo-result ul, .ideo-result ol { padding-left:24px; margin:4px 0 8px; }
     .ideo-result li { margin-bottom:3px; }
-    .ideo-result pre { white-space:pre-wrap; word-break:break-word; overflow-x:auto; max-width:100%; }
-    .ideo-result table { table-layout:fixed; width:100%; word-wrap:break-word; }
-    .ideo-result h1, .ideo-result h2, .ideo-result h3, .ideo-result h4 { word-wrap:break-word; overflow-wrap:break-word; }
+    .ideo-result pre { white-space:pre-wrap; word-break:break-word; overflow-x:auto; max-width:100%;
+                        background:var(--surface3); border-radius:6px; padding:10px 12px;
+                        font-size:11.5px; line-height:1.6; margin:6px 0; }
+    .ideo-result code { font-size:11px; background:var(--surface3); padding:1px 4px; border-radius:3px; }
+    .ideo-result pre code { background:none; padding:0; }
+    .ideo-result table { table-layout:auto; width:100%;
+                          word-wrap:break-word; border-collapse:collapse;
+                          font-size:11.5px; margin:8px 0; }
+    .ideo-result table th, .ideo-result table td {
+      border:1px solid var(--border); padding:6px 10px; text-align:left;
+      vertical-align:top; font-size:11.5px; line-height:1.5;
+      min-width:50px; }
+    .ideo-result table th { background:var(--surface3); font-weight:700;
+                            color:var(--text); font-size:10px; text-transform:uppercase;
+                            letter-spacing:.04em; white-space:nowrap; }
+    .ideo-result h1 { font-size:15px; font-weight:800; margin:16px 0 8px; color:var(--text);
+                      letter-spacing:.01em; line-height:1.35; }
+    .ideo-result h2 { font-size:13.5px; font-weight:700; margin:14px 0 6px; color:var(--text);
+                      border-bottom:1px solid var(--border); padding-bottom:4px; }
+    .ideo-result h3 { font-size:12.5px; font-weight:700; margin:10px 0 4px; color:var(--text-dim); }
+    .ideo-result h4 { font-size:12px; font-weight:600; margin:8px 0 3px; color:var(--muted); }
+    .ideo-result h1, .ideo-result h2, .ideo-result h3, .ideo-result h4 {
+      word-wrap:break-word; overflow-wrap:break-word; }
+    .ideo-result hr { border:none; border-top:1px solid var(--border); margin:12px 0; }
+    .ideo-result blockquote { border-left:3px solid var(--accent); margin:8px 0;
+                               padding:4px 12px; color:var(--muted); font-style:italic; }
     .ideo-result * { max-width:100%; }
     /* Hypothesis hyperlinks */
     .hyp-link { color:#60a5fa; cursor:pointer; text-decoration:underline; text-decoration-style:dotted;
@@ -1103,6 +1143,7 @@
 let CONFIG      = null;
 let ML_INSIGHTS = null;
 let ML_INSIGHTS_CONTENT = null;  // content-only model (geo/traffic excluded)
+let LOOP_SCORE_CONFIG = null;     // LASSO-anchored loop dimension scoring config
 
 // Dynamic per-format ML data: { slug: { full: data, content: data } }
 const ML_FORMAT_MAP = {};
@@ -1215,6 +1256,12 @@ async function loadProject(id) {
   try {
     const mir = await fetch(`./projects/${id}/${CONFIG.data.files.ml_insights}`);
     if (mir.ok) ML_INSIGHTS = await mir.json();
+  } catch(_) {}
+
+  // Load LASSO-anchored loop score config
+  try {
+    const lscr = await fetch(`./projects/${id}/data/loop_score_config.json`);
+    if (lscr.ok) LOOP_SCORE_CONFIG = await lscr.json();
   } catch(_) {}
 
   // Load content-only ML insights (confounds excluded)
@@ -1513,7 +1560,7 @@ function afterCardInsert(card) {
     renderVbrGrid(sid);
   }
   // Populate sessions dropdown for ideation card
-  if (card.type === 'ideation') {
+  if (card.type === 'ideation' || card.type === 'ideation-tabs') {
     _refreshSessionDropdown(card.id, true);  // autoLoad most recent session
     _initPipeGraph(card.id);
     _buildAudPanelNodes(card.id);  // Show personas or generating spinner
@@ -2119,6 +2166,16 @@ function buildVideoBrowserHTML(card) {
     <span style="font-weight:400;color:var(--muted2);margin-left:4px"
           id="vbr-count-${sid}">(${VIDEOS.length})</span>
     </div>
+    <div class="yt-scrape-bar" id="yt-scrape-bar-${sid}">
+      <input id="yt-url-${sid}" class="yt-url-input"
+             placeholder="Paste YouTube channel URL…"
+             onkeydown="if(event.key==='Enter')scrapeYouTubeChannel('${sid}')">
+      <button class="yt-scrape-btn" id="yt-scrape-btn-${sid}"
+              onclick="scrapeYouTubeChannel('${sid}')">
+        <span id="yt-scrape-label-${sid}">Scrape</span>
+      </button>
+      <div class="yt-scrape-status" id="yt-scrape-status-${sid}"></div>
+    </div>
     <div class="vbr-filter-bar">
       <input id="vbr-search-${sid}" class="vbr-search"
              placeholder="Search by title…">
@@ -2197,6 +2254,102 @@ function renderVbrGrid(sid, resetPage = false) {
     } else {
       moreEl.style.display = 'none';
     }
+  }
+}
+
+/* ── YouTube Channel Scraper ──────────────────────────────────────── */
+const YT_PROXY = IS_PROD
+  ? 'https://egavves-github-io.vercel.app/api/youtube'
+  : 'http://localhost:5765/api/youtube';
+
+function _extractChannelId(url) {
+  // Handles: /channel/UC..., /@handle, /c/customName, /user/username
+  try {
+    const u = new URL(url.includes('://') ? url : 'https://' + url);
+    const p = u.pathname.replace(/\/+$/, '').split('/');
+    if (p.includes('channel')) return { type: 'id', value: p[p.indexOf('channel') + 1] };
+    if (p.length >= 2 && p[1].startsWith('@')) return { type: 'handle', value: p[1] };
+    if (p.includes('c'))    return { type: 'custom', value: p[p.indexOf('c') + 1] };
+    if (p.includes('user')) return { type: 'user', value: p[p.indexOf('user') + 1] };
+    // Fallback: maybe they pasted just a handle like @CutYT
+    if (url.startsWith('@')) return { type: 'handle', value: url };
+    return { type: 'handle', value: p[p.length - 1] };
+  } catch { return null; }
+}
+
+async function scrapeYouTubeChannel(sid) {
+  const input  = document.getElementById(`yt-url-${sid}`);
+  const btn    = document.getElementById(`yt-scrape-btn-${sid}`);
+  const label  = document.getElementById(`yt-scrape-label-${sid}`);
+  const status = document.getElementById(`yt-scrape-status-${sid}`);
+  const rawUrl = (input?.value || '').trim();
+  if (!rawUrl) { status.textContent = 'Please paste a YouTube channel URL.'; return; }
+
+  const parsed = _extractChannelId(rawUrl);
+  if (!parsed) { status.textContent = 'Could not parse channel URL.'; return; }
+
+  btn.disabled = true;
+  label.textContent = 'Scraping…';
+  status.textContent = 'Fetching channel videos…';
+
+  try {
+    const resp = await fetch(YT_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: parsed.type, value: parsed.value, maxResults: 200 }),
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    if (!data.videos || !data.videos.length) {
+      status.textContent = 'No videos found for this channel.';
+      return;
+    }
+
+    // Map YouTube API data to our internal schema
+    const idFld    = CONFIG?.data?.schema?.id || 'video_id';
+    const titleFld = CONFIG?.data?.schema?.title || 'title';
+    const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail';
+    const dateFld  = CONFIG?.data?.schema?.date || 'published_at';
+
+    const existingIds = new Set(VIDEOS.map(v => v[idFld]));
+    let added = 0;
+
+    for (const v of data.videos) {
+      if (existingIds.has(v.id)) continue;
+      const row = {};
+      row[idFld]    = v.id;
+      row[titleFld] = v.title;
+      row[thumbFld] = v.thumbnail;
+      row[dateFld]  = v.publishedAt;
+      row.views     = v.views || '0';
+      row.likes     = v.likes || '0';
+      row.comments  = v.comments || '0';
+      row.duration  = v.duration || '';
+      row.avg_view_percentage = '';
+      VIDEOS.push(row);
+      existingIds.add(v.id);
+      added++;
+    }
+
+    // Re-compute spread potential for new entries
+    if (typeof _computeSpreadPotential === 'function') _computeSpreadPotential(VIDEOS);
+
+    // Re-render all video browser grids
+    for (const card of CANVAS_CARDS) {
+      if (card.type === 'video-browser') renderVbrGrid(card.id, true);
+    }
+
+    status.innerHTML = `<span style="color:#4cdf8a">✓ Scraped ${data.videos.length} videos from <strong>${escHtml(data.channelTitle || 'channel')}</strong>` +
+      (added < data.videos.length ? ` (${added} new, ${data.videos.length - added} already loaded)` : '') + '</span>';
+  } catch (e) {
+    status.textContent = `Error: ${e.message}`;
+    console.error('YouTube scrape error:', e);
+  } finally {
+    btn.disabled = false;
+    label.textContent = 'Scrape';
   }
 }
 
@@ -2959,6 +3112,10 @@ function saveIdeoSession(sid) {
   const sessionId = `ideo-${Date.now()}`;
   // Include raw markdown texts so we can export full content later
   const rawTexts = window._ideoRawTexts?.[sid] || {};
+  // Include loop scores if computed during this session
+  const loopScores = window._ideoLoopScores?.[sid]?.scores || null;
+  const loopFeatures = window._ideoLoopScores?.[sid]?.features || null;
+
   const session = {
     id: sessionId,
     title,
@@ -2966,6 +3123,9 @@ function saveIdeoSession(sid) {
     config: { fmt, aud, dur, nov, brief, genderRatio, customDur },
     outputs,
     rawTexts,
+    loopScores,
+    loopFeatures,
+    loopScoreVersion: loopScores ? 3 : undefined,
     deleted: false
   };
 
@@ -3284,16 +3444,31 @@ function loadIdeoSession(sid, sessionId) {
   const session = sessions.find(s => s.id === sessionId);
   if (!session) return;
 
-  // Restore outputs
-  for (const [tab, html] of Object.entries(session.outputs || {})) {
-    const el = document.getElementById(`ideo-out-${sid}-${tab}`);
-    if (el) { el.innerHTML = html; el.style.display = 'block'; }
-  }
-
   // Restore raw texts (markdown) so export produces full content
   if (session.rawTexts && Object.keys(session.rawTexts).length > 0) {
     if (!window._ideoRawTexts) window._ideoRawTexts = {};
     window._ideoRawTexts[sid] = { ...session.rawTexts };
+  }
+
+  // Restore outputs — prefer re-rendering raw texts through markdown pipeline
+  // This fixes old sessions that stored plain text without markdown formatting
+  for (const [tab, html] of Object.entries(session.outputs || {})) {
+    const el = document.getElementById(`ideo-out-${sid}-${tab}`);
+    if (!el) continue;
+    const rawText = window._ideoRawTexts?.[sid]?.[tab];
+    if (rawText && tab !== 'thumbnails') {
+      // Re-render through markdown pipeline with plain-text injection
+      const fixed = _injectMarkdownIfPlainText(rawText, tab);
+      let rendered = marked.parse(fixed);
+      rendered = linkifyHypPhrases(rendered);
+      if (tab === 'script') rendered = colorizeScriptSpeakers(rendered);
+      el.innerHTML = rendered;
+      // Also update stored raw text with injected markdown
+      window._ideoRawTexts[sid][tab] = fixed;
+    } else {
+      el.innerHTML = html;
+    }
+    el.style.display = 'block';
   }
 
   // Restore config
@@ -3325,6 +3500,11 @@ function loadIdeoSession(sid, sessionId) {
   if (session.outputs?.concept) {
     ['concept', 'validation'].forEach(tabId => _unlockIdeoTab(sid, tabId));
   }
+  // Unlock all other tabs that have content
+  const ALL_TABS = ['storyboard','script','casting','production','titles','thumbnails','distribution','evidence'];
+  ALL_TABS.forEach(tabId => {
+    if (session.outputs?.[tabId]) _unlockIdeoTab(sid, tabId);
+  });
 
   // Switch to concept tab
   const card = document.getElementById(`itab-${sid}-concept`)?.closest('.cc');
@@ -3334,6 +3514,92 @@ function loadIdeoSession(sid, sessionId) {
     document.getElementById(`itab-${sid}-concept`)?.classList.add('active');
     const cBtn = document.getElementById(`ideo-concept-btn-${sid}`);
     if (cBtn) cBtn.classList.add('active');
+  }
+
+  // ── Lazy loop score computation ─────────────────────────────────
+  // If the session has a validation panel but no loop scores, compute them
+  // asynchronously and inject into the validation tab.
+  _lazyComputeLoopScores(sid, session);
+}
+
+async function _lazyComputeLoopScores(sid, session) {
+  if (!LOOP_SCORE_CONFIG) return;
+
+  // Check if session already has loop scores stored (v2 = percentile-based)
+  // Invalidate v1 scores (raw-value method produced inflated 10.0s)
+  if (session.loopScores && session.loopScoreVersion >= 3) {
+    // Render stored scores directly (no API call needed)
+    const valEl = document.getElementById(`ideo-out-${sid}-validation`);
+    if (valEl) {
+      const html = _renderLoopScoreCards(session.loopScores);
+      // Find or create the loop score container inside validation
+      let container = valEl.querySelector('.loop-score-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'loop-score-container';
+        // Insert after the critic validation block (first child with accent border)
+        const criticBlock = valEl.querySelector('[style*="border-left"]');
+        if (criticBlock) criticBlock.insertAdjacentElement('afterend', container);
+        else valEl.insertAdjacentElement('afterbegin', container);
+      }
+      container.innerHTML = html;
+    }
+    return;
+  }
+
+  // No stored scores — compute them if we have concept text
+  const conceptText = window._ideoRawTexts?.[sid]?.concept
+    || session.rawTexts?.concept
+    || document.getElementById(`ideo-out-${sid}-concept`)?.textContent || '';
+  const storyboardText = window._ideoRawTexts?.[sid]?.storyboard
+    || session.rawTexts?.storyboard || '';
+
+  if (!conceptText || conceptText.length < 200) return;
+
+  // Show a computing indicator in the validation tab
+  const valEl = document.getElementById(`ideo-out-${sid}-validation`);
+  if (!valEl) return;
+
+  let container = valEl.querySelector('.loop-score-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'loop-score-container';
+    const criticBlock = valEl.querySelector('[style*="border-left"]');
+    if (criticBlock) criticBlock.insertAdjacentElement('afterend', container);
+    else valEl.insertAdjacentElement('afterbegin', container);
+  }
+  container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px">📊 Computing LASSO loop scores…</div>';
+
+  try {
+    const estimatedFeatures = await _estimateLoopFeatures(sid, conceptText, storyboardText);
+    if (!estimatedFeatures) {
+      container.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px">⚠ Could not estimate loop features</div>';
+      return;
+    }
+    const loopScores = _computeLoopScores(estimatedFeatures);
+    if (!loopScores) {
+      container.innerHTML = '';
+      return;
+    }
+
+    // Render
+    container.innerHTML = _renderLoopScoreCards(loopScores);
+
+    // Persist to localStorage session
+    const sessions = _getIdeoSessions();
+    const stored = sessions.find(s => s.id === session.id);
+    if (stored) {
+      stored.loopScores = loopScores;
+      stored.loopFeatures = estimatedFeatures;
+      stored.loopScoreVersion = 3; // v3 = percentile-based, direct mapping (no anchor mismatch)
+      _saveIdeoSessions(sessions);
+    }
+
+    // Also persist to in-memory store
+    if (!window._ideoLoopScores) window._ideoLoopScores = {};
+    window._ideoLoopScores[sid] = { scores: loopScores, features: estimatedFeatures };
+  } catch (e) {
+    container.innerHTML = `<div style="font-size:11px;color:var(--muted);padding:8px">⚠ Loop scoring: ${e.message}</div>`;
   }
 }
 
@@ -4034,6 +4300,168 @@ Be concise — max 150 words.`;
 }
 
 // Critic review: reviews a stage output, returns { score, verdict, notes, html }
+// ══ LASSO-Anchored Loop Score System ══════════════════════════════
+// Uses precomputed LOOP_SCORE_CONFIG to score ideation concepts against
+// the CUT dataset using LASSO stability-weighted features.
+
+/**
+ * Ask the data analyst to estimate feature values for the ideated concept.
+ * Returns { feature_name: estimated_value, ... }
+ */
+async function _estimateLoopFeatures(sid, conceptText, storyboardText) {
+  if (!LOOP_SCORE_CONFIG) return null;
+
+  // Build feature reference grouped by dimension, showing what the percentiles MEAN
+  const featureLines = [];
+  for (const [dimName, dim] of Object.entries(LOOP_SCORE_CONFIG.dimensions || {})) {
+    featureLines.push(`\n${dimName} (${dim.description}):`);
+    for (const feat of dim.features) {
+      const s = LOOP_SCORE_CONFIG.feature_stats[feat];
+      if (!s) continue;
+      featureLines.push(`  ${feat}: p25=${s.p25} | median=${s.p50} | p75=${s.p75} (range: ${s.min}–${s.max})`);
+    }
+  }
+
+  const prompt = `You are a data analyst comparing a video concept against ${LOOP_SCORE_CONFIG.n_videos} real CUT episodes.
+
+TASK: For each feature below, estimate what PERCENTILE (0–100) this concept would land at relative to the existing CUT dataset.
+- 50 = this concept is average for CUT
+- 25 = below average (bottom quarter of CUT episodes)
+- 75 = above average (top quarter)
+- 90+ = exceptional — only give this if the concept clearly surpasses what most CUT videos achieve
+- below 20 = weak relative to CUT's catalog
+
+CALIBRATION RULES — READ CAREFULLY:
+- Most untested concepts cluster in the 35–65 range. A concept that scores 80+ on everything is unrealistic.
+- Be tough. An ambitious IDEA does not automatically score high — execution uncertainty should pull toward 50.
+- "Truth or Drink" is CUT's strongest loop format. Even it typically scores 60–75 on most features, not 90+.
+- Only award 85+ if the concept has a SPECIFIC, CONCRETE mechanism that clearly beats the typical CUT episode on that feature.
+- If a concept is "fine" or "solid" on a dimension, that's 45–55, NOT 70+.
+- Host Dependency: high dominant_speaker_share means MORE host-dependent (worse for format scalability).
+
+CONCEPT:
+${(conceptText || '').substring(0, 5000)}
+
+${storyboardText ? `STORYBOARD:\n${(storyboardText || '').substring(0, 1500)}` : ''}
+
+FEATURES TO SCORE (with dataset reference points):
+${featureLines.join('\n')}
+
+OUTPUT: Return ONLY a JSON object mapping each feature name to a percentile integer (0–100). No explanation.
+Example: {"loop_quality_score": 55, "pacing_quality_score": 40, "peaks_per_minute": 70, ...}`;
+
+  try {
+    _ideoLog(sid, '  📊 Data analyst estimating loop features (percentile)…', 'log-dim');
+    const raw = await callClaude(prompt, {
+      temperature: 0.3, maxTokens: 2000, system: false, model: 'claude-sonnet-4-6'
+    });
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    return JSON.parse(match[0]);
+  } catch (e) {
+    _ideoLog(sid, `  ⚠ Loop feature estimation failed: ${e.message}`, 'log-warn');
+    return null;
+  }
+}
+
+/**
+ * Compute normalized loop scores from percentile estimates.
+ * Input: { feature_name: percentile (0-100), ... }
+ * Returns: { dimension_name: { score: 1-10, features: {...} }, ... }
+ */
+function _computeLoopScores(estimatedPercentiles) {
+  if (!LOOP_SCORE_CONFIG || !estimatedPercentiles) return null;
+
+  const results = {};
+  for (const [dimName, dim] of Object.entries(LOOP_SCORE_CONFIG.dimensions)) {
+    const featureDetails = {};
+    let weightedSum = 0;
+    let usedWeight = 0;
+
+    for (const feat of dim.features) {
+      const weight = dim.weights[feat] || 0;
+      const stats = LOOP_SCORE_CONFIG.feature_stats[feat];
+      let pctile = estimatedPercentiles[feat];
+
+      if (pctile == null || !stats) continue;
+
+      // Clamp percentile to [0, 100]
+      pctile = Math.max(0, Math.min(100, pctile));
+
+      // Convert percentile to [0, 1]
+      let norm = pctile / 100;
+
+      // Invert for "lower is better" features in host dependency
+      if (dim.direction === 'lower_better' && feat === 'dominant_speaker_share') {
+        norm = 1 - norm;
+      }
+
+      featureDetails[feat] = {
+        percentile: pctile,
+        normalized: Math.round(norm * 1000) / 1000,
+        weight: weight,
+        stats_median: stats.p50,
+      };
+
+      weightedSum += norm * weight;
+      usedWeight += weight;
+    }
+
+    if (usedWeight === 0) continue;
+
+    const rawScore = weightedSum / usedWeight; // weighted average of percentiles/100
+
+    // Map to 1–10 scale directly from percentile space:
+    // rawScore is already a [0,1] value where 0.5 = dataset median
+    // So: 0 → 1.0, 0.5 → 5.5, 1.0 → 10.0
+    let score = 1 + 9 * rawScore;
+    score = Math.max(1, Math.min(10, Math.round(score * 10) / 10));
+
+    results[dimName] = {
+      score,
+      raw: Math.round(rawScore * 1000) / 1000,
+      features: featureDetails,
+      direction: dim.direction,
+      description: dim.description
+    };
+  }
+
+  return results;
+}
+
+/**
+ * Render loop score cards as HTML.
+ */
+function _renderLoopScoreCards(loopScores) {
+  if (!loopScores) return '';
+
+  const scoreColor = (s) => s >= 8 ? 'var(--positive, #4caf50)' : s >= 6 ? '#ffb347' : s >= 4 ? '#ff6b6b' : 'var(--negative, #f44336)';
+
+  let html = `<div style="margin:12px 0">
+    <div style="font-weight:700;font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+      <span>Loop Structure Test</span>
+      <span style="font-size:9px;color:var(--muted);font-weight:400">LASSO-calibrated · ${LOOP_SCORE_CONFIG?.n_videos || 482} episodes · p5→1.0 · p95→10.0 · R²=${LOOP_SCORE_CONFIG?.r2_cv || '0.54'}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">`;
+
+  for (const [name, data] of Object.entries(loopScores)) {
+    const color = scoreColor(data.score);
+    // Build feature breakdown tooltip
+    const featureLines = Object.entries(data.features)
+      .map(([f, d]) => `${f}: p${d.percentile || '?'} (median=${d.stats_median}, w=${d.weight})`)
+      .join('\n');
+
+    html += `<div style="background:var(--surface3,#1a1a2e);border:1px solid var(--border,#333);border-radius:8px;padding:12px" title="${featureLines.replace(/"/g, '&quot;')}">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:4px">${name.replace(/ /g, ' ').toUpperCase()}</div>
+      <div style="font-size:24px;font-weight:700;color:${color}">${data.score.toFixed(1)}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;background:var(--surface2,#111);border-radius:4px;padding:6px">${data.description}</div>
+    </div>`;
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
 async function _criticReview(sid, stageName, stageOutput, conceptSummary) {
   const cfg = _getAgentConfig('critic');
   const criteria = cfg.review_criteria?.[stageName] || {};
@@ -4226,7 +4654,7 @@ IMPORTANT: Your rating MUST reflect your genuine reaction. If you'd click and sh
     </details>`;
   });
 
-  return { votes: results, feedback: html, avgRating: parseFloat(avgRating) };
+  return { votes: results, feedback: html, avgRating: parseFloat(avgRating), topAvg: parseFloat(topAvgDisplay), bottomAvg: parseFloat(bottomAvgDisplay) };
 }
 
 // ── User-as-Director: Calliope integration ──────────────────────
@@ -4698,8 +5126,10 @@ Output the complete revised concept (same format as original):`;
 
         const outEl = document.getElementById(`ideo-out-${sid}-concept`);
         // One-shot Opus revision — no chunking needed
-        const revisedText = await callClaude(revisePrompt, { maxTokens: 16000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        let revisedText = await callClaude(revisePrompt, { maxTokens: 16000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
         if (outEl && revisedText) {
+          // Post-process: inject markdown if plain text
+          revisedText = _injectMarkdownIfPlainText(revisedText, 'concept');
           // Store raw text FIRST
           if (!window._ideoRawTexts) window._ideoRawTexts = {};
           if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
@@ -4736,9 +5166,10 @@ Keep 80%+ of the storyboard intact. Fix only what directly conflicts with the co
 
 Output the complete revised storyboard:`;
 
-        const revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        let revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
         const outEl = document.getElementById(`ideo-out-${sid}-storyboard`);
         if (outEl && revisedText) {
+          revisedText = _injectMarkdownIfPlainText(revisedText, 'storyboard');
           // Store FIRST, then render
           if (!window._ideoRawTexts) window._ideoRawTexts = {};
           if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
@@ -4774,9 +5205,10 @@ Keep 80%+ of the script intact. Fix only what directly addresses the revision br
 
 Output the complete revised script:`;
 
-        const revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        let revisedText = await callClaude(revisePrompt, { maxTokens: 4096, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
         const outEl = document.getElementById(`ideo-out-${sid}-script`);
         if (outEl && revisedText) {
+          revisedText = _injectMarkdownIfPlainText(revisedText, 'script');
           // Store FIRST, then render
           if (!window._ideoRawTexts) window._ideoRawTexts = {};
           if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
@@ -4811,9 +5243,10 @@ ${state.outputs.concept.substring(0, 300)}
 
 Output the complete revised titles:`;
 
-        const revisedText = await callClaude(revisePrompt, { maxTokens: 2000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
+        let revisedText = await callClaude(revisePrompt, { maxTokens: 2000, temperature: 0.7, system: false, model: 'claude-opus-4-6', signal: _getPipeSignal(sid) });
         const outEl = document.getElementById(`ideo-out-${sid}-titles`);
         if (outEl && revisedText) {
+          revisedText = _injectMarkdownIfPlainText(revisedText, 'titles');
           // Store FIRST, then render
           if (!window._ideoRawTexts) window._ideoRawTexts = {};
           if (!window._ideoRawTexts[sid]) window._ideoRawTexts[sid] = {};
@@ -4891,20 +5324,55 @@ End with:
       try {
         const validationText = await _callAgent('critic', validationPrompt, { overrideTemp: 0.3, overrideTokens: 1200 });
 
+        // ── LASSO-anchored loop scoring ────────────────────────────
+        let loopScoreHtml = '';
+        if (LOOP_SCORE_CONFIG) {
+          const rawConcept = window._ideoRawTexts?.[sid]?.concept || conceptOut;
+          const rawStoryboard = window._ideoRawTexts?.[sid]?.storyboard || storyboardOut;
+          const estimatedFeatures = await _estimateLoopFeatures(sid, rawConcept, rawStoryboard);
+          if (estimatedFeatures) {
+            const loopScores = _computeLoopScores(estimatedFeatures);
+            if (loopScores) {
+              loopScoreHtml = _renderLoopScoreCards(loopScores);
+              // Store for persistence
+              if (!window._ideoLoopScores) window._ideoLoopScores = {};
+              window._ideoLoopScores[sid] = { scores: loopScores, features: estimatedFeatures };
+              _ideoLog(sid, `  ✅ Loop scores computed (${Object.keys(loopScores).length} dimensions)`, 'log-ok');
+            }
+          }
+        }
+
         // Build iteration convergence graph + tracker
         const iterTrackerHtml = iterationHistory.length > 1
           ? _buildConvergenceGraph(iterationHistory)
           : '';
 
+        // Build compact audience row (one line per panelist)
+        const audVotes = audienceResult.votes || [];
+        const audCompactHtml = audVotes.length > 0 ? `<div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px">
+          ${audVotes.map(v => {
+            const c = v.rating >= 8 ? 'var(--positive,#4caf50)' : v.rating >= 6 ? 'var(--accent,#7c6af7)' : v.rating >= 4 ? '#ffb347' : 'var(--negative,#f44336)';
+            return `<span style="white-space:nowrap">${v.emoji || ''} <strong>${v.name}</strong> <span style="color:${c};font-weight:700">${v.rating}/10</span></span>`;
+          }).join('')}
+        </div>` : '';
+
         valEl.innerHTML = `
           ${iterTrackerHtml}
-          <div style="margin-bottom:16px">
-            <div class="ideo-lbl" style="margin-bottom:8px">🎭 Audience Panel ${iterationCount > 1 ? `(final — iteration ${iterationCount})` : ''}</div>
-            ${audienceResult.feedback}
-          </div>
-          <div style="padding:12px;background:rgba(124,106,247,.07);border-radius:8px;border-left:3px solid var(--accent)">
+          <div style="padding:12px;background:rgba(124,106,247,.07);border-radius:8px;border-left:3px solid var(--accent);margin-bottom:12px">
             <div class="ideo-lbl" style="margin-bottom:6px">🔍 Critic Validation</div>
             <div>${marked.parse(validationText)}</div>
+          </div>
+          ${loopScoreHtml}
+          <div style="margin:12px 0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span class="ideo-lbl" style="margin:0">🎭 Audience Panel</span>
+              <span style="font-size:10px;color:var(--muted)">fans <strong style="color:var(--positive,#4caf50)">${(audienceResult.topAvg || audienceResult.avgRating || 0).toFixed(1)}</strong>/10 · floor <strong style="color:#ffb347">${(audienceResult.bottomAvg || audienceResult.avgRating || 0).toFixed(1)}</strong>/10 · ${audVotes.length} panelists · avg ${(audienceResult.avgRating || 0).toFixed(1)}/10${iterationCount > 1 ? ` · ${iterationCount} iterations` : ''}</span>
+            </div>
+            ${audCompactHtml}
+            <details style="margin-top:6px">
+              <summary style="cursor:pointer;font-size:10px;color:var(--muted)">Expand full panelist feedback</summary>
+              <div style="padding:8px">${audienceResult.feedback}</div>
+            </details>
           </div>
           ${criticLog.length > 0 ? `<details style="margin-top:12px">
             <summary style="cursor:pointer;font-size:11px;color:var(--muted)">Stage-by-stage critic notes (${criticLog.length} reviews)</summary>
@@ -5664,6 +6132,114 @@ function _detectTruncation(text, action) {
   return false;
 }
 
+/**
+ * Post-processing: detect plain-text output and inject markdown formatting.
+ * If the model generated content without ## headers, this finds section boundaries
+ * by matching known section names and injects ## headers + **bold** labels.
+ */
+function _injectMarkdownIfPlainText(text, action) {
+  // Quick check: if the text already has markdown headers, skip
+  const headerCount = (text.match(/^##\s+/gm) || []).length;
+  if (headerCount >= 3) return text; // already has markdown structure
+
+  // Known section patterns for each action type
+  const SECTION_PATTERNS = {
+    concept: [
+      { pattern: /^(Concept)\b/im, header: '## Concept' },
+      { pattern: /^(Thumbnail\s*(?:&|and)\s*Title\s*Strategy)\b/im, header: '## Thumbnail & Title Strategy' },
+      { pattern: /^(Cast)\b/im, header: '## Cast' },
+      { pattern: /^(The Loop)\b/im, header: '## The Loop' },
+      { pattern: /^(Psychological Drivers)\b/im, header: '## Psychological Drivers' },
+      { pattern: /^(Story Structure)\b/im, header: '## Story Structure' },
+      { pattern: /^(Emotional Design)\b/im, header: '## Emotional Design' },
+      { pattern: /^(Production Design)\b/im, header: '## Production Design' },
+      { pattern: /^(Questions\s*(?:&|and)\s*Prompts)\b/im, header: '## Questions & Prompts' },
+      { pattern: /^(Packaging)\b/im, header: '## Packaging' },
+      { pattern: /^(Performance Notes)\b/im, header: '## Performance Notes' },
+      { pattern: /^(Strong Characters)\b/im, header: '## Strong Characters' },
+      { pattern: /^(Early Retention)\b/im, header: '## Early Retention' },
+      { pattern: /^(Reason to Watch)\b/im, header: '## Reason to Watch to the End' },
+      { pattern: /^(Loop Structure Test)\b/im, header: '## Loop Structure Test' },
+      { pattern: /^(Format Type Read)\b/im, header: '## Format Type Read' },
+      { pattern: /^(YouTube Format Fitness)\b/im, header: '## YouTube Format Fitness' },
+      { pattern: /^(Scorecard)\b/im, header: '## Scorecard' },
+      { pattern: /^(Structural Fragility)\b/im, header: '## Structural Fragility' },
+      { pattern: /^(Top Strengths|Top 3 Strengths)\b/im, header: '## Top Strengths / Problems / Fixes' },
+      { pattern: /^(Development Diagnosis)\b/im, header: '## Development Diagnosis' },
+    ],
+    storyboard: [
+      { pattern: /^(Scene\s*\d)/im, header: m => `## ${m}` },
+      { pattern: /^(Director'?s?\s*Note)/im, header: "## Director's Note" },
+    ],
+    casting: [
+      { pattern: /^(Demographics\s*(?:&|and)\s*Energy)/im, header: '## Demographics & Energy' },
+      { pattern: /^(Character Archetypes)/im, header: '## Character Archetypes' },
+      { pattern: /^(What We Value)/im, header: '## What We Value' },
+      { pattern: /^(Red Flags)/im, header: '## Red Flags' },
+      { pattern: /^(Gender Mix)/im, header: '## Gender Mix & Regional Voice' },
+      { pattern: /^(Casting North Star)/im, header: '## Casting North Star' },
+    ],
+    script: [
+      { pattern: /^(COLD OPEN|Cold Open)\b/im, header: '## Cold Open' },
+      { pattern: /^(ACT\s*\d|Act\s*\d)/im, header: m => `## ${m}` },
+      { pattern: /^(Scene\s*\d)/im, header: m => `## ${m}` },
+      { pattern: /^(CLOSING|Closing|CTA|Call to Action)/im, header: '## Closing' },
+    ],
+    titles: [
+      { pattern: /^(\d+\.\s*(?:VULNERABILITY|CURIOSITY|FOMO|IDENTITY|HUMOR|PROVOCATION|EMOTIONAL|SOCIAL PROOF))/im, header: m => `## ${m}` },
+      { pattern: /^(Recommendation)\b/im, header: '## Recommendation' },
+    ],
+    production: [
+      { pattern: /^(Shooting Setup|Location)/im, header: '## Shooting Setup & Location' },
+      { pattern: /^(Props\s*(?:&|and)\s*Wardrobe)/im, header: '## Props & Wardrobe' },
+      { pattern: /^(Crew)/im, header: '## Crew' },
+      { pattern: /^(Camera Strategy)/im, header: '## Camera Strategy' },
+      { pattern: /^(Pacing|Editing Notes)/im, header: '## Pacing & Editing Notes' },
+      { pattern: /^(Key Risks|Risks\s*(?:&|and)\s*Contingencies)/im, header: '## Key Risks & Contingencies' },
+    ],
+    distribution: [
+      { pattern: /^(Cadence)/im, header: '## Cadence' },
+      { pattern: /^(Platform Cuts)/im, header: '## Platform Cuts' },
+      { pattern: /^(Caption Hook)/im, header: '## Caption Hook & Community Post' },
+      { pattern: /^(Collab)/im, header: '## Collab Angle & Cross-Promotion' },
+    ],
+  };
+
+  const patterns = SECTION_PATTERNS[action];
+  if (!patterns) return text;
+
+  const lines = text.split('\n');
+  const result = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    let matched = false;
+    for (const sec of patterns) {
+      const m = line.match(sec.pattern);
+      if (m) {
+        // Don't inject if this line is already a ## header
+        if (/^##\s/.test(line)) { matched = false; break; }
+        const headerText = typeof sec.header === 'function' ? sec.header(m[1]) : sec.header;
+        // Replace the line with the header, keeping any trailing content
+        const rest = line.replace(m[0], '').trim();
+        result.push('');  // blank line before header
+        result.push(headerText);
+        if (rest) result.push(rest);
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      // Boldify known field labels that appear as "Label:" at the start of a line
+      const boldified = line.replace(/^((?:The Hook|The WTF Moment|Core Loop|Loop Family|Currency of tension|Ramp|Payoff|Primary Drivers|Secondary Drivers|Cold Open|First Three Minutes|Tone|Dominant Emotions|Emotional Arc|Tension Source|Humor|Set|Camera|Graphics|Music|Testimonials|Title|Thumbnail strategy|Clear Stakes|Curiosity Gap|What Works|What Doesn't|Retention Notes|Audience Sentiment|All Unfiltered|Specific Characters|Hero|Villain|Super Fun|Heartwarming|Reveals|Full 3 Minute Plan|Loop Clarity|Loop Firing Frequency|Loop Consequence|Loop Visibility|Loop Escalation|Loop End Payoff|Viewer Participation|Host Dependency|Conversation Risk|Format Type|Why|Instant Visual Hook|Prediction Engine|Comment Fuel|Clip Potential|YouTube Fitness Score|Hook Strength|Core Loop Power|Escalation Potential|End Payoff|Stakes|Retention Strength|Title\/Thumbnail Potential|Shareability|Fix Engine|Chemistry|Reveal|Why it works)[:\s])/i,
+        (_, label) => `**${label.trim()}** `
+      );
+      result.push(boldified);
+    }
+  }
+
+  return result.join('\n');
+}
+
 function _deduplicateConceptSections(text, sid) {
   const lines = text.split('\n');
   const seenHeadings = new Map(); // normalized heading → first line index
@@ -5733,6 +6309,16 @@ async function runIdeoAction(sid, action, extraContext = '') {
 
   const PROMPTS = {
     concept: `You are a senior creative producer for ${name}, a YouTube channel about relationships — telling delightful stories of emotional courage.${ctx}${refCtx}${urlCtx}
+
+OUTPUT FORMAT — MANDATORY:
+Your ENTIRE response must be formatted in proper Markdown:
+- Use ## for every section header (e.g., ## Concept, ## Cast, ## The Loop)
+- Use **bold** for all field labels (e.g., **The Hook:**, **Core Loop:**, **Primary Drivers:**)
+- Use - for bullet lists and | for tables
+- Use > for blockquotes where appropriate
+- Every section MUST start with a ## header line
+- Do NOT output plain text without markdown syntax — every header, every label, every list must use markdown
+- This is non-negotiable: raw unformatted text is a FAILED response
 
 Generate a COMPLETE PRODUCTION NOTE + FORMAT DEVELOPMENT ANALYSIS for an original video concept. Write as a producer who has made 500 episodes — direct, opinionated, specific. Do NOT write analytical steps or chain-of-thought. Write the finished production note.
 
@@ -5855,37 +6441,60 @@ Format: ${fmt || 'any'} · Audience: ${aud || 'general'}${genderCtx} · Duration
 
     storyboard: `You are a video director for ${name}.
 Concept: "${concept}" · Duration: ${durLabel}${refCtx}${urlCtx}
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for scene headers (e.g., ## Scene 1: Title), **bold** for field labels, - for bullet lists. Raw unformatted text is a FAILED response.
+
 Write a detailed 4-scene storyboard. Each scene: number, scene title, visual description (3-4 sentences covering camera, lighting, set, mood), on-screen action and key dialogue (2-3 sentences), mood emoji and description.
 End with a Director's Note on pacing and which scene is the clip.
 Embed 2-3 hypothesis links: [[H##:test description|phrase]] for testable production decisions.`,
 
     script: `You are a scriptwriter for ${name}.
 Write a FULL video script for: "${concept}"${refCtx}${urlCtx}
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for act/scene headers, **BOLD** for speaker names, *italics* for stage directions, --- for scene breaks. Raw unformatted text is a FAILED response.
+
 Include: cold open hook (first 15 sec with stage directions), full body with ALL rounds/segments of the loop, transitions between segments, confessional/testimonial beats, and closing CTA.
-Format each line as SPEAKER: "dialogue" with [STAGE DIRECTIONS] in brackets.
+Format each line as **SPEAKER:** "dialogue" with *[STAGE DIRECTIONS]* in italics.
 Write the COMPLETE script — do not summarize or skip segments. Every round of the loop should be written out.
 Keep it punchy and true to the ${fmt} format.
 Embed 2-3 hypothesis links: [[H##:test description|phrase]] for testable script choices.`,
 
     casting: `You are a casting director for ${name}.
 Ideal on-screen talent for a "${fmt}" episode targeting "${aud}": "${concept}"${refCtx}${urlCtx}
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for section headers, **bold** for labels, - for bullet lists, | for tables. Raw unformatted text is a FAILED response.
+
 Cover:
 ## Demographics & Energy: age range, personality types, diversity
 ## Character Archetypes Needed: Hero, Villain, Underdog, Overconfident, Wildcard, Super Fun
 ## What We Value (in order): 1) Comfort on camera under pressure 2) Experience with vulnerability formats 3) Social native fluency 4) Group chemistry instinct
 ## Red Flags to Avoid: follower count (vanity metric), traditional acting credits, brand deal history
 ## Gender Mix & Regional Voice
+## Casting North Star: 2-3 sentence summary of the ideal cast
 Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
     production: `You are a production manager for ${name}.
 Detailed production plan for: "${concept}" (${durLabel})${refCtx}${urlCtx}
-Cover: 1) Shooting setup & location (set design, lighting mood, feel) 2) Props & wardrobe with specific notes 3) Crew table (Role, Headcount, Notes for each) 4) Camera strategy (how many, what they cover) 5) Pacing & editing notes 6) Key risks & contingencies.
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for section headers, **bold** for labels, | for tables (with header rows), - for bullet lists. All tables must have complete rows — no empty cells. Raw unformatted text is a FAILED response.
+
+Cover:
+## Shooting Setup & Location (set design table, lighting table, feel)
+## Props & Wardrobe (props table, wardrobe guidelines)
+## Crew Table (Role | Headcount | Notes for each position)
+## Camera Strategy (camera table + recording specs)
+## Pacing & Editing Notes (act-by-act table + editing principles)
+## Key Risks & Contingencies (risk | impact | mitigation table)
 Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
     titles: `You are a YouTube title strategist for ${name}.${ctx}${refCtx}
 Episode: "${concept}"
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for category headers, **bold** for title text and labels, - for bullet lists. End with a ## Recommendation section. Raw unformatted text is a FAILED response.
+
 Generate 8 title options across these categories: VULNERABILITY, CURIOSITY, FOMO, IDENTITY, HUMOR, PROVOCATION, EMOTIONAL, SOCIAL PROOF.
-For EACH title: the number and category header, then the title in quotes, then "Why it works:" with specific ML feature references (e.g., title_fomo_score, title_personal_you, LASSO-stable for retention) and psychological reasoning (2-3 sentences).
+For EACH title: ## category header, then the title in **bold quotes**, then **Why it works:** with specific ML feature references (e.g., title_fomo_score, title_personal_you, LASSO-stable for retention) and psychological reasoning (3-4 sentences).
+End with ## Recommendation: primary pick, A/B test naming both variants, title-to-content coherence note.
 Be thorough — fill the full space. Do NOT truncate.
 Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
 
@@ -5901,6 +6510,9 @@ Output ONLY valid JSON array. No markdown, no explanation, no code fences. Examp
 
     distribution: `You are a distribution strategist for ${name}.${ctx}${refCtx}
 Episode: "${concept}"
+
+OUTPUT FORMAT — MANDATORY: Format your ENTIRE response in proper Markdown. Use ## for section headers, **bold** for labels, - for bullet lists, | for tables. Raw unformatted text is a FAILED response.
+
 Write a detailed distribution plan:
 ## Cadence: Full episode day, Shorts/clips schedule, community post timing, frequency recommendation with reasoning.
 ## Platform Cuts: YouTube Shorts (spec, what to pull, title), TikTok (angle), Instagram Reels. For each: cut spec, what moment to pull, title/caption.
@@ -5982,6 +6594,9 @@ Embed 2-3 hypothesis links: [[H##:test description|phrase]].`,
         text = text + '\n\n' + contText;
         _ideoLog(sid, `  ✅ Continuation ${pass+1} appended (${contText.length} chars)`, 'log-dim');
       }
+
+      // ── Post-process: inject markdown if model output plain text ──
+      text = _injectMarkdownIfPlainText(text, action);
 
       // ── STORE raw markdown FIRST (before rendering) ─────────────
       if (!window._ideoRawTexts) window._ideoRawTexts = {};
@@ -8455,34 +9070,34 @@ const TOUR_DETAILED = [
     body:'Type any question about your content performance. Calliope understands your project data and will generate relevant analysis cards on the canvas. Try asking "What drives retention?" or "Generate an episode concept."' },
   { target:'#suggestion-row', title:'Suggestion Chips',
     body:'These context-aware prompts adapt to your project. Click one to instantly send it to Calliope — great for discovering what the system can do.' },
-  /* ── Radial menu deep-dive (top → bottom visual order) ── */
+  /* ── Radial menu deep-dive (bottom → top, matching drawer visual order from FAB) ── */
   { target:'#radial-fab',    title:'The + Menu',
-    body:'Tap this button to open the action menu. Each spoke opens a different analysis panel on the canvas. Let\'s walk through them.',
+    body:'Tap this button to open the action menu. Each spoke opens a different analysis panel on the canvas. Let\'s walk through them from bottom to top.',
     onEnter() { if (!radialOpen) toggleRadial(); } },
-  { target:'_spoke_channel',  title:'🎬 Channel',
-    body:'Your video library — key metrics (total videos, views, retention, formats) and a searchable, sortable grid of every video with thumbnail, title, views, and retention. Click any video for a detailed breakdown.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Channel' },
-  { target:'_spoke_channelperf',  title:'📊 Channel Performance',
-    body:'Channel health at a glance. Contains: Overview (views, retention, engagement trends with period deltas), Outliers (top and bottom performers), Retention curves, Revenue & CPM, Format breakdown, Engagement stats, Duration analysis, AI Discoverability scores, Traffic sources, and Audience demographics.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Channel Performance' },
-  { target:'_spoke_analysis',  title:'🧠 AI Analysis',
-    body:'The ML Signals panel — three tabs: Correlations (Pearson/Spearman between every feature and your target metric), Lasso regression (which features matter when controlling for others), and Random Forest + SHAP (non-linear feature importance with direction). Filter by target, feature group, distribution vs. content lens, and direction.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'AI Analysis' },
-  { target:'_spoke_trends',  title:'📈 Social Media Trends',
-    body:'Time-series social signals from Twitter/X, Reddit, Google Trends, and news outlets. Track keyword buzz, sentiment shifts, competitor mentions, and trending topics relevant to your content niche. Powered by the Social Pulse proxy.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Social Media Trends' },
-  { target:'_spoke_recommendations',  title:'🔬 Recommendations',
-    body:'Data-driven recommendations synthesized from all ML signals. Each card shows: a concrete production action (the hypothesis), statistical evidence (correlation, LASSO, SHAP), confidence tier (gold/silver/bronze), a ready-to-run A/B test, and real video examples (top and bottom performers). Filter by distribution vs. content lens.',
-    onEnter() { if (!radialOpen) toggleRadial(); },
-    spokeLabel:'Recommendations' },
   { target:'_spoke_ideation',  title:'💡 Ideation',
     body:'The Ideation Studio — a multi-agent AI pipeline that generates full production notes for new episodes. Pick format, audience, duration, novelty, and optionally upload a brief. Five AI agents (Writer, Creative Director, Producer, Data Analyst, Critic) collaborate, then five audience personas score and iterate up to 5 rounds until consensus. Produces: concept, storyboard, script, titles, thumbnails, distribution plan, and validation.',
     onEnter() { if (!radialOpen) toggleRadial(); },
     spokeLabel:'Ideation' },
+  { target:'_spoke_recommendations',  title:'🔬 Recommendations',
+    body:'Data-driven recommendations synthesized from all ML signals. Each card shows: a concrete production action (the hypothesis), statistical evidence (correlation, LASSO, SHAP), confidence tier (gold/silver/bronze), a ready-to-run A/B test, and real video examples (top and bottom performers). Filter by distribution vs. content lens.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'Recommendations' },
+  { target:'_spoke_trends',  title:'📈 Social Media Trends',
+    body:'Time-series social signals from Twitter/X, Reddit, Google Trends, and news outlets. Track keyword buzz, sentiment shifts, competitor mentions, and trending topics relevant to your content niche. Powered by the Social Pulse proxy.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'Social Media Trends' },
+  { target:'_spoke_analysis',  title:'🧠 AI Analysis',
+    body:'The ML Signals panel — three tabs: Correlations (Pearson/Spearman between every feature and your target metric), Lasso regression (which features matter when controlling for others), and Random Forest + SHAP (non-linear feature importance with direction). Filter by target, feature group, distribution vs. content lens, and direction.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'AI Analysis' },
+  { target:'_spoke_channelperf',  title:'📊 Channel Performance',
+    body:'Channel health at a glance. Contains: Overview (views, retention, engagement trends with period deltas), Outliers (top and bottom performers), Retention curves, Revenue & CPM, Format breakdown, Engagement stats, Duration analysis, AI Discoverability scores, Traffic sources, and Audience demographics.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'Channel Performance' },
+  { target:'_spoke_channel',  title:'🎬 Channel',
+    body:'Your video library — key metrics (total videos, views, retention, formats) and a searchable, sortable grid of every video with thumbnail, title, views, and retention. Click any video for a detailed breakdown.',
+    onEnter() { if (!radialOpen) toggleRadial(); },
+    spokeLabel:'Channel' },
   { target:'_spoke_allpanels',  title:'✦ All Panels',
     body:'Loads every panel at once for a complete overview of your channel analytics, ML signals, recommendations, and ideation studio.',
     onEnter() { if (!radialOpen) toggleRadial(); },
