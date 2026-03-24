@@ -1,0 +1,27 @@
+{
+  "id": "ideo-1774304789970",
+  "title": "PRODUCTION NOTE + FORMAT DEVELOPMENT ANALYSIS \"Tru",
+  "project": "cut",
+  "created": 1774304790115,
+  "config": {
+    "fmt": "Truth or Drink",
+    "aud": "Gen Z",
+    "dur": "medium",
+    "nov": "0.7",
+    "brief": "",
+    "genderRatio": "50",
+    "customDur": ""
+  },
+  "tabs": [
+    "concept",
+    "validation",
+    "storyboard",
+    "script",
+    "casting",
+    "production",
+    "titles",
+    "thumbnails",
+    "distribution",
+    "evidence"
+  ]
+}

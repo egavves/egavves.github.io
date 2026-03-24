@@ -6,11 +6,13 @@
       "max_iterations": 5,
       "max_revisions_per_stage": 1,
       "consensus": {
-        "strategy": "weighted",
-        "avg_threshold": 6.5,
-        "hard_floor": 4,
-        "critic_floor": 6,
+        "strategy": "fanbase",
+        "avg_threshold": 6,
+        "hard_floor": 3,
+        "critic_floor": 5,
         "convergence_variance": 2.5,
+        "fanbase_top_threshold": 7,
+        "fanbase_floor_threshold": 4,
         "weights": {}
       },
       "inter_agent_messages": true,
@@ -73,7 +75,7 @@
 
   "research_registry": {
     "consensus_strategies": {
-      "implemented": ["simple_avg", "weighted", "convergence"],
+      "implemented": ["simple_avg", "weighted", "convergence", "fanbase"],
       "planned": ["bayesian", "multi_criteria_pareto", "persona_expertise_weighted"],
       "notes": "weighted currently uses equal weights — TODO: add format-specific persona weights from audience config"
     },
