@@ -398,45 +398,54 @@
                           letter-spacing:.05em; margin-bottom:8px; }
     .ml-sub-chart canvas { width:100% !important; height:240px !important; }
 
-    /* ── Performance panel ────────────────────────────────────────── */
-    .perf-section      { border-bottom:1px solid var(--border); }
-    .perf-section:last-child { border-bottom:none; }
-    .perf-hdr          { display:flex; align-items:center; gap:8px; padding:10px 0;
-                         cursor:pointer; user-select:none; }
-    .perf-hdr:hover     { opacity:.85; }
-    .perf-hdr-icon     { font-size:14px; flex-shrink:0; }
-    .perf-hdr-title    { font-size:11.5px; font-weight:700; text-transform:uppercase;
-                         letter-spacing:.06em; color:var(--text); flex:1; }
-    .perf-hdr-hero     { font-size:13px; font-weight:700; color:var(--text); }
-    .perf-hdr-delta    { font-size:10px; font-weight:600; padding:2px 6px;
-                         border-radius:10px; margin-left:4px; }
+    /* ── Performance panel: card grid ──────────────────────────────── */
+    .perf-grid          { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+                          gap:8px; margin-bottom:10px; }
+    .perf-card          { background:var(--surface2); border:1px solid var(--border);
+                          border-radius:8px; padding:10px 12px; cursor:pointer;
+                          transition:border-color .15s; }
+    .perf-card:hover    { border-color:var(--accent); }
+    .perf-card.open     { grid-column:1/-1; }
+    .perf-card-hdr      { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+    .perf-card-icon     { font-size:13px; flex-shrink:0; }
+    .perf-card-title    { font-size:10px; font-weight:700; text-transform:uppercase;
+                          letter-spacing:.05em; color:var(--muted); flex:1; }
+    .perf-card-hero     { font-size:16px; font-weight:800; color:var(--text); line-height:1.3; }
+    .perf-hdr-delta     { font-size:10px; font-weight:600; padding:2px 6px;
+                          border-radius:10px; display:inline-block; }
     .perf-hdr-delta.up   { color:#34d399; background:rgba(52,211,153,.12); }
     .perf-hdr-delta.down { color:#f87171; background:rgba(248,113,113,.12); }
     .perf-hdr-delta.flat { color:var(--muted); background:rgba(255,255,255,.06); }
-    .perf-hdr-chev     { width:10px; height:10px; color:var(--muted);
-                         transition:transform .2s; flex-shrink:0; }
-    .perf-section.open .perf-hdr-chev { transform:rotate(180deg); }
-    .perf-body          { max-height:0; overflow:hidden;
-                         transition:max-height .25s ease; padding:0 2px; }
-    .perf-section.open .perf-body { max-height:600px; }
-    .perf-row           { display:flex; justify-content:space-between;
-                         align-items:center; padding:5px 0;
-                         font-size:12px; color:var(--text-dim); }
-    .perf-row-lbl      { flex:1; }
-    .perf-row-val      { font-weight:700; color:var(--text); margin-right:4px; }
-    .perf-row-delta    { font-size:10px; font-weight:600; }
+    .perf-card-body     { max-height:0; overflow:hidden; transition:max-height .25s ease; }
+    .perf-card.open .perf-card-body { max-height:500px; margin-top:8px;
+                          border-top:1px solid var(--border); padding-top:8px; }
+    .perf-row            { display:flex; justify-content:space-between;
+                          align-items:center; padding:4px 0;
+                          font-size:11.5px; color:var(--text-dim); }
+    .perf-row-lbl       { flex:1; }
+    .perf-row-val       { font-weight:700; color:var(--text); margin-right:4px; }
+    .perf-row-delta     { font-size:10px; font-weight:600; }
     .perf-row-delta.up   { color:#34d399; }
     .perf-row-delta.down { color:#f87171; }
     .perf-row-delta.flat { color:var(--muted); }
-    .perf-empty         { padding:8px 0; font-size:11px; color:var(--muted);
-                         font-style:italic; }
-    .perf-outlier       { display:flex; align-items:center; gap:8px; padding:5px 0; }
-    .perf-outlier-thumb { width:48px; height:27px; object-fit:cover;
-                         border-radius:4px; background:var(--surface3); flex-shrink:0; }
-    .perf-outlier-info  { flex:1; min-width:0; }
-    .perf-outlier-title { font-size:11px; font-weight:600; color:var(--text);
-                         white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .perf-outlier-meta  { font-size:10px; color:var(--muted); }
+    .perf-empty          { padding:6px 0; font-size:10.5px; color:var(--muted);
+                          font-style:italic; }
+    /* ── Outliers: video card grid ─────────────────────────────────── */
+    .perf-outlier-label  { font-size:9.5px; font-weight:700; text-transform:uppercase;
+                          letter-spacing:.05em; color:var(--muted); margin:6px 0 6px; }
+    .perf-outlier-grid   { display:grid; grid-template-columns:repeat(3,1fr);
+                          gap:8px; margin-bottom:8px; }
+    .perf-outlier        { background:var(--surface2); border:1px solid var(--border);
+                          border-radius:7px; overflow:hidden; cursor:pointer;
+                          transition:border-color .15s; }
+    .perf-outlier:hover  { border-color:var(--accent); }
+    .perf-outlier-thumb  { width:100%; aspect-ratio:16/9; object-fit:cover;
+                          display:block; background:var(--surface3); }
+    .perf-outlier-info   { padding:5px 7px 7px; }
+    .perf-outlier-title  { font-size:10px; font-weight:600; color:var(--text);
+                          line-height:1.3; display:-webkit-box; -webkit-line-clamp:2;
+                          -webkit-box-orient:vertical; overflow:hidden; }
+    .perf-outlier-meta   { font-size:9.5px; color:var(--muted); margin-top:2px; }
 
     /* ── Ideation Tabs ────────────────────────────────────────────── */
     .ideo-tab-bar { display:flex; gap:0; align-items:center;
@@ -1903,17 +1912,16 @@ function buildPerformanceHTML(card) {
   const days = parseInt(document.getElementById(`ml-period-${sid}`)?.value || card.opts.period || '90');
   const d    = noData ? null : _perfCompute(days);
 
-  /* ── Section builders ── */
+  /* ── Section builders (card grid) ── */
   function section(id, icon, title, heroVal, heroDelta, bodyHTML, openByDefault = false) {
-    return `<div class="perf-section${openByDefault ? ' open' : ''}" id="perf-sec-${sid}-${id}">
-      <div class="perf-hdr" onclick="togglePerfSection('${sid}','${id}')">
-        <span class="perf-hdr-icon">${icon}</span>
-        <span class="perf-hdr-title">${title}</span>
-        <span class="perf-hdr-hero">${heroVal}</span>
-        ${heroDelta}
-        ${chev}
+    return `<div class="perf-card${openByDefault ? ' open' : ''}" id="perf-sec-${sid}-${id}"
+                 onclick="togglePerfSection('${sid}','${id}')">
+      <div class="perf-card-hdr">
+        <span class="perf-card-icon">${icon}</span>
+        <span class="perf-card-title">${title}</span>
       </div>
-      <div class="perf-body">${bodyHTML}</div>
+      <div class="perf-card-hero">${heroVal} ${heroDelta}</div>
+      <div class="perf-card-body">${bodyHTML}</div>
     </div>`;
   }
 
@@ -1922,12 +1930,12 @@ function buildPerformanceHTML(card) {
       <span class="perf-row-val">${val}</span>${delta}</div>`;
   }
 
-  function outlierRow(v) {
+  function outlierCard(v) {
     const thumbFld = CONFIG?.data?.schema?.thumbnail || 'thumbnail_url';
     const titleFld = CONFIG?.data?.schema?.title || 'title';
     const _vid = v.video_id || v.id || '';
     const _thumb = v[thumbFld] || v.thumbnail_url || v.thumbnail || (_vid ? `https://i.ytimg.com/vi/${_vid}/hqdefault.jpg` : '');
-    return `<div class="perf-outlier" style="cursor:pointer" onclick="openVidPopup('${escHtml(_vid)}')">
+    return `<div class="perf-outlier" onclick="openVidPopup('${escHtml(_vid)}')">
       <img class="perf-outlier-thumb" src="${_thumb}" loading="lazy"
            onerror="this.style.background='var(--surface3)';this.removeAttribute('src')">
       <div class="perf-outlier-info">
@@ -1958,10 +1966,10 @@ function buildPerformanceHTML(card) {
   let outlierBody;
   if (d && d.topVideos.length) {
     outlierBody =
-      `<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:4px 0">Top performers</div>` +
-      d.topVideos.map(v => outlierRow(v)).join('') +
-      `<div style="font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:8px 0 4px">Lowest performers</div>` +
-      d.bottomVideos.map(v => outlierRow(v)).join('');
+      `<div class="perf-outlier-label">Top performers</div>` +
+      `<div class="perf-outlier-grid">${d.topVideos.map(v => outlierCard(v)).join('')}</div>` +
+      `<div class="perf-outlier-label">Lowest performers</div>` +
+      `<div class="perf-outlier-grid">${d.bottomVideos.map(v => outlierCard(v)).join('')}</div>`;
   } else {
     outlierBody = empty;
   }
@@ -2082,21 +2090,23 @@ function buildPerformanceHTML(card) {
     `<div class="perf-empty">Connect YouTube Analytics API to populate:</div>` +
     row('Gender distribution','—') + row('Age distribution','—');
 
-  /* ── Build all sections ── */
-  const sections =
-    section('overview', '📊', 'Performance',  overviewHero, overviewDelta, overviewBody, true) +
-    section('outliers', '🏆', 'Outliers',     d ? `${d.topVideos.length} top` : '—', '', outlierBody, true) +
+  /* ── Build card grid ── */
+  const metricCards =
+    section('overview', '📊', 'Performance',  overviewHero, overviewDelta, overviewBody) +
     section('retention','📈', 'Retention',     retHero, '', retBody) +
     section('revenue',  '💰', 'Revenue',      revHero, revDelta, revenueBody) +
     section('series',   '🎬', 'Series',       seriesHero, '', seriesBody) +
     section('engage',   '💬', 'Engagement',   engHero, '', engBody) +
     section('spread',   '🔥', 'Spread & DNA', spreadHero, '', spreadBody) +
-    section('cadence',  '📅', 'Upload Cadence', cadenceHero, '', cadenceBody) +
+    section('cadence',  '📅', 'Cadence',      cadenceHero, '', cadenceBody) +
     section('aiDisc',   '🤖', 'AI Discovery',  aiHero, '', aiBody) +
     section('traffic',  '🔀', 'Traffic',      '—', '', trafficBody) +
     section('audience', '👥', 'Audience',      '—', '', audienceBody);
 
-  /* ── 12. Video Grid (compact browse inside perf panel) ── */
+  /* ── Outliers section (video card grids) ── */
+  const outlierSection = `<div class="perf-outlier-section" id="perf-sec-${sid}-outliers">${outlierBody}</div>`;
+
+  /* ── Video Grid (compact browse inside perf panel) ── */
   const idFld    = CONFIG?.data?.fields?.video_id || 'video_id';
   const titleFld = CONFIG?.data?.fields?.title    || 'title';
   const thumbFld = CONFIG?.data?.fields?.thumbnail|| 'thumbnail';
@@ -2106,19 +2116,18 @@ function buildPerformanceHTML(card) {
   const vidMore  = sortedVids.length > VID_PAGE
     ? `<button class="vbr-load-more" onclick="perfLoadMoreVids('${sid}')" id="perf-vidmore-${sid}">Load 12 more · ${sortedVids.length - VID_PAGE} remaining</button>`
     : '';
-  const videoGridBody = vidCards
-    ? `<div class="vbr-grid" id="perf-vidgrid-${sid}">${vidCards}</div>${vidMore}`
-    : `<div class="perf-empty">No videos loaded.</div>`;
-
-  const allSections = sections +
-    section('vidgrid', '🎬', 'Videos', `${sortedVids.length}`, '', videoGridBody, true);
+  const videoGridSection = vidCards
+    ? `<div id="perf-sec-${sid}-vidgrid"><div class="perf-outlier-label">Videos (${sortedVids.length})</div><div class="vbr-grid" id="perf-vidgrid-${sid}">${vidCards}</div>${vidMore}</div>`
+    : '';
 
   return `<div class="cc-title">Channel Performance ${_helpBtn('performance',sid)}</div>
     <div class="ml-filter-bar">${periodDd}</div>
-    ${allSections}`;
+    <div class="perf-grid">${metricCards}</div>
+    ${outlierSection}
+    ${videoGridSection}`;
 }
 
-/* Toggle accordion section */
+/* Toggle accordion card */
 function togglePerfSection(sid, secId) {
   const el = document.getElementById(`perf-sec-${sid}-${secId}`);
   if (el) el.classList.toggle('open');
