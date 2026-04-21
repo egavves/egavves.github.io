@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Efstratios Gavves — Associate Professor of Physical AI</title>
-  <link rel="icon" type="image/x-icon"   href="favicon.ico" />
-  <link rel="icon" type="image/png"     sizes="32x32"  href="favicon-32.png" />
-  <link rel="icon" type="image/png"     sizes="192x192" href="favicon-192.png" />
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="apple-touch-icon"          href="apple-touch-icon.png" />
+  <link rel="icon" type="image/x-icon"   href="favicon.ico?v=2" />
+  <link rel="icon" type="image/png"     sizes="16x16"   href="favicon-16.png?v=2" />
+  <link rel="icon" type="image/png"     sizes="32x32"   href="favicon-32.png?v=2" />
+  <link rel="icon" type="image/png"     sizes="192x192" href="favicon-192.png?v=2" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
+  <link rel="apple-touch-icon"          href="apple-touch-icon.png?v=2" />
   <meta name="description" content="Efstratios Gavves — Associate Professor of Physical AI at the University of Amsterdam. Research in world models, causal vision, mechanistic learning and biomedical AI." />
 
   <!-- Fonts -->
@@ -47,6 +48,24 @@
       color: var(--text-hi);
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Site-wide particle background: fixed behind every section. */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Sections sit above the canvas and are slightly translucent so the
+       particle field peeks through the gutters between cards. Opaque cards
+       and photos inside keep reading crisp. */
+    section, footer, .bridge { position: relative; z-index: 1; }
+    @media (prefers-reduced-motion: reduce) {
+      #bg-canvas { display: none; }
     }
 
     ::selection { background: var(--gold-dim); }
@@ -149,13 +168,7 @@
       height: 100vh;
       min-height: 600px;
       overflow: hidden;
-      background: var(--dark);
-    }
-
-    #bg-canvas {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
+      background: transparent;
     }
 
     /* center identity */
@@ -343,7 +356,7 @@
        ABOUT
     ================================================================ */
     .about {
-      background: var(--dark);
+      background: rgba(9, 9, 13, 0.88);
       padding: 9rem 0;
     }
     .about-grid {
@@ -429,7 +442,7 @@
        MANIFESTO
     ================================================================ */
     .manifesto {
-      background: var(--dark-surf);
+      background: rgba(17, 17, 24, 0.88);
       padding: 9rem 0;
       border-top: 1px solid rgba(196,169,106,0.08);
       border-bottom: 1px solid rgba(196,169,106,0.08);
@@ -508,16 +521,16 @@
     /* ================================================================
        BRIDGE dark → light
     ================================================================ */
-    .bridge { height: 5rem; background: linear-gradient(to bottom, var(--dark-surf), var(--light)); }
+    .bridge { height: 5rem; background: linear-gradient(to bottom, rgba(17,17,24,0.88), rgba(244,241,235,0.92)); }
 
     /* ================================================================
        RESEARCH SECTIONS
     ================================================================ */
     .research {
-      background: var(--light);
+      background: rgba(244, 241, 235, 0.92);
       padding: 8rem 0;
     }
-    .research:nth-of-type(even) { background: var(--light-2); }
+    .research:nth-of-type(even) { background: rgba(235, 232, 226, 0.92); }
 
     .research-header {
       display: flex;
@@ -624,7 +637,7 @@
        PARTNERSHIPS
     ================================================================ */
     .partnerships {
-      background: var(--light-2);
+      background: rgba(235, 232, 226, 0.92);
       padding: 8rem 0;
       border-top: 1px solid rgba(139,111,56,0.12);
     }
@@ -713,7 +726,7 @@
        AWARDS
     ================================================================ */
     .awards {
-      background: var(--ink);
+      background: rgba(27, 27, 34, 0.88);
       padding: 8rem 0;
     }
     .awards-heading {
@@ -771,7 +784,7 @@
        RECENT PUBLICATIONS & NEWS
     ================================================================ */
     .recent {
-      background: var(--dark-surf);
+      background: rgba(17, 17, 24, 0.88);
       padding: 8rem 0;
       border-top: 1px solid rgba(196,169,106,0.08);
     }
@@ -876,7 +889,7 @@
        FOOTER
     ================================================================ */
     footer {
-      background: var(--dark);
+      background: rgba(9, 9, 13, 0.92);
       padding: 6rem 0 3rem;
       border-top: 1px solid rgba(196,169,106,0.1);
     }
@@ -942,7 +955,7 @@
        ENTREPRENEURSHIP
     ================================================================ */
     .entrepreneurship {
-      background: var(--dark-surf);
+      background: rgba(17, 17, 24, 0.88);
       padding: 8rem 0;
       border-top: 1px solid rgba(196,169,106,0.08);
     }
@@ -1114,6 +1127,9 @@
 </head>
 <body>
 
+<!-- Site-wide particle background (moved out of .hero; now fixed behind all sections) -->
+<canvas id="bg-canvas"></canvas>
+
 <!-- ================================================================
      NAVIGATION
 ================================================================ -->
@@ -1146,8 +1162,6 @@
      HERO CANVAS
 ================================================================ -->
 <section class="hero" id="hero">
-  <canvas id="bg-canvas"></canvas>
-
   <!-- TRON grid -->
   <div id="tron-grid">
     <div class="tron-lines"></div>
@@ -1875,10 +1889,43 @@
     tronGrid.style.transform  = 'perspective(1100px) rotateX(0deg) rotateY(0deg)';
   });
 
-  // ── PARTICLE CANVAS ──────────────────────────────────────────────
+  // ── PARTICLE CANVAS (site-wide, theme-aware) ─────────────────────
   const canvas = document.getElementById('bg-canvas');
   const ctx    = canvas.getContext('2d');
   let particles = [], rafId = null;
+
+  // Theme interpolation: 0 = dark section (gold), 1 = light section (ink-bronze).
+  // Same hue family, retuned for background luminance — the "inversion".
+  const THEME_DARK  = { r: 196, g: 169, b: 106 }; // #C4A96A — on dark bg
+  const THEME_LIGHT = { r: 138, g: 111, b:  56 }; // #8A6F38 — on light bg
+  const SECTION_THEMES = [
+    { id: 'hero',             theme: 0 },
+    { id: 'about',            theme: 0 },
+    { id: 'manifesto',        theme: 0 },
+    { id: 'world-models',     theme: 1 },
+    { id: 'causal-vision',    theme: 1 },
+    { id: 'mechanisms',       theme: 1 },
+    { id: 'biomedical',       theme: 1 },
+    { id: 'partnerships',     theme: 1 },
+    { id: 'awards',           theme: 0 },
+    { id: 'entrepreneurship', theme: 0 },
+    { id: 'recent',           theme: 0 },
+    { id: 'contact',          theme: 0 },
+  ];
+  let themeTarget = 0;      // desired theme value (0 or 1)
+  let themeT      = 0;      // smoothly-interpolated actual value
+  function updateThemeTarget() {
+    const probe = window.scrollY + window.innerHeight * 0.4;
+    let current = 0;
+    for (let i = 0; i < SECTION_THEMES.length; i++) {
+      const el = document.getElementById(SECTION_THEMES[i].id);
+      if (!el) continue;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      if (top <= probe) current = SECTION_THEMES[i].theme;
+    }
+    themeTarget = current;
+  }
+  window.addEventListener('scroll', updateThemeTarget, { passive: true });
 
   function resize() {
     canvas.width  = window.innerWidth;
@@ -1900,7 +1947,17 @@
     }
   }
 
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
   function tick() {
+    // Smoothly ease theme value toward the target each frame
+    themeT += (themeTarget - themeT) * 0.08;
+    const R = Math.round(lerp(THEME_DARK.r, THEME_LIGHT.r, themeT));
+    const G = Math.round(lerp(THEME_DARK.g, THEME_LIGHT.g, themeT));
+    const B = Math.round(lerp(THEME_DARK.b, THEME_LIGHT.b, themeT));
+    // Lines need less alpha against a light bg to keep elegance
+    const lineAlpha = lerp(0.07, 0.05, themeT);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Lines between nearby particles
@@ -1911,7 +1968,7 @@
         const d  = Math.sqrt(dx*dx + dy*dy);
         if (d < 110) {
           ctx.beginPath();
-          ctx.strokeStyle = `rgba(196,169,106,${(1 - d/110) * 0.07})`;
+          ctx.strokeStyle = `rgba(${R},${G},${B},${(1 - d/110) * lineAlpha})`;
           ctx.lineWidth   = 0.4;
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
@@ -1920,29 +1977,35 @@
       }
     }
 
-    // Constellation lines from thrust nodes to center
-    const nodes = document.querySelectorAll('.t-node');
-    const cx    = canvas.width  / 2;
-    const cy    = canvas.height / 2;
-    nodes.forEach(node => {
-      const r   = node.getBoundingClientRect();
-      const nx  = r.left + r.width  / 2;
-      const ny  = r.top  + r.height / 2;
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(196,169,106,0.12)';
-      ctx.lineWidth   = 0.6;
-      ctx.setLineDash([4, 8]);
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(nx, ny);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
+    // Constellation lines from thrust nodes to the hero identity center.
+    // Use the hero's actual viewport-relative center (not the canvas center)
+    // so the lines stay anchored to the identity text as the user scrolls.
+    const heroEl = document.getElementById('hero');
+    const heroR  = heroEl.getBoundingClientRect();
+    if (heroR.bottom > 0 && heroR.top < window.innerHeight) {
+      const nodes = document.querySelectorAll('.t-node');
+      const cx    = heroR.left + heroR.width  / 2;
+      const cy    = heroR.top  + heroR.height / 2;
+      nodes.forEach(node => {
+        const r   = node.getBoundingClientRect();
+        const nx  = r.left + r.width  / 2;
+        const ny  = r.top  + r.height / 2;
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(196,169,106,0.12)';
+        ctx.lineWidth   = 0.6;
+        ctx.setLineDash([4, 8]);
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(nx, ny);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    }
 
     // Dots
     particles.forEach(p => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(196,169,106,${p.a})`;
+      ctx.fillStyle = `rgba(${R},${G},${B},${p.a})`;
       ctx.fill();
       p.x += p.vx;
       p.y += p.vy;
@@ -1957,18 +2020,19 @@
 
   resize();
   initParticles();
+  updateThemeTarget();
+  themeT = themeTarget; // start with the correct theme (no fade-in)
   tick();
   window.addEventListener('resize', () => { resize(); initParticles(); });
 
-  // Pause animation when hero off-screen (perf)
-  new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      if (!rafId) tick();
+  // Pause animation when the tab is hidden (saves battery; still runs site-wide otherwise).
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
     } else {
-      cancelAnimationFrame(rafId);
-      rafId = null;
+      if (!rafId) tick();
     }
-  }).observe(document.getElementById('hero'));
+  });
 
 
   // ── NAV SCROLL ───────────────────────────────────────────────────
@@ -1991,6 +2055,59 @@
       const target = node.dataset.target;
       if (target) document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
     });
+  });
+
+
+  // ── SPACEBAR → JUMP TO SECTION TOPS ──────────────────────────────
+  // Space advances to the next section's top; Shift+Space to the previous.
+  // Replaces the browser default (paginated scroll that lands mid-section).
+  const SECTION_IDS = [
+    'hero','about','manifesto','world-models','causal-vision','mechanisms',
+    'biomedical','partnerships','awards','entrepreneurship','recent','contact'
+  ];
+  function sectionEls() {
+    return SECTION_IDS.map(id => document.getElementById(id)).filter(Boolean);
+  }
+  function navOffset() {
+    const n = document.getElementById('site-nav');
+    return n ? n.offsetHeight : 0;
+  }
+  function scrollToSectionTop(el) {
+    if (!el) return;
+    if (el.id === 'hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const y = el.getBoundingClientRect().top + window.scrollY - navOffset() + 2;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.code !== 'Space' && e.key !== ' ') return;
+    const t = e.target;
+    // Don't hijack when typing in an input / textarea / contentEditable.
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    // Don't hijack Ctrl/Meta-Space (browser shortcuts / system).
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    e.preventDefault();
+
+    const secs = sectionEls();
+    if (!secs.length) return;
+    const anchor = window.scrollY + navOffset() + 8;   // "current" reference line, just under the nav
+    const tops   = secs.map(s => s.getBoundingClientRect().top + window.scrollY);
+
+    if (e.shiftKey) {
+      // previous section: the last one whose top is clearly above the anchor
+      let idx = 0;
+      for (let i = tops.length - 1; i >= 0; i--) {
+        if (tops[i] < anchor - 20) { idx = i; break; }
+      }
+      scrollToSectionTop(secs[idx]);
+    } else {
+      // next section: the first one whose top is below the anchor
+      let idx = tops.length - 1;
+      for (let i = 0; i < tops.length; i++) {
+        if (tops[i] > anchor + 4) { idx = i; break; }
+      }
+      scrollToSectionTop(secs[idx]);
+    }
   });
 
 
