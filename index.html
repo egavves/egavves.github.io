@@ -638,6 +638,17 @@
     }
     .paper-link:hover { gap: 0.6rem; }
 
+    /* Subtle external-link utility — same color as surrounding text,
+       no underline, only hover shifts to gold accent. */
+    .ext-link,
+    a.ext-link:link,
+    a.ext-link:visited {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.25s, opacity 0.25s;
+    }
+    .ext-link:hover { color: var(--gold); }
+
     /* ================================================================
        PARTNERSHIPS
     ================================================================ */
@@ -979,21 +990,17 @@
       max-width: 1100px;
     }
     .venture-card {
-      background: var(--dark-card);
-      border: 1px solid rgba(196,169,106,0.18);
-      backdrop-filter: blur(20px);
+      background: transparent;
+      border: none;
       overflow: hidden;
       display: flex;
       flex-direction: row;
       gap: 1.5rem;
-      padding: 2rem;
-      transition: border-color 0.25s, box-shadow 0.25s;
+      padding: 1rem 0;
+      transition: opacity 0.25s;
       align-items: stretch;
     }
-    .venture-card:hover {
-      border-color: rgba(196,169,106,0.35);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
+    .venture-card:hover { opacity: 0.92; }
     @media (max-width: 900px) {
       .entrepreneurship-grid {
         grid-template-columns: repeat(1, 1fr);
@@ -1200,9 +1207,9 @@
       <div class="t-card-body">
         <div class="t-card-tag">Digital Twins · Embodied AI</div>
         <ul class="t-card-papers">
-          <li>DreMa: Compositional World Models <span class="t-card-venue">ICLR 2025</span></li>
-          <li>CaPo: Cooperative Plan Optimization <span class="t-card-venue">ICLR 2025</span></li>
-          <li>Graph Switching Dynamical Systems <span class="t-card-venue">ICML 2023</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Dream+to+Manipulate+Compositional+World+Models+Barcellona+Gavves">DreMa: Compositional World Models</a> <span class="t-card-venue">ICLR 2025</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=CaPo+Cooperative+Plan+Optimization+Embodied+Multi-Agent+Liu+Gavves">CaPo: Cooperative Plan Optimization</a> <span class="t-card-venue">ICLR 2025</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Graph+Switching+Dynamical+Systems+Liu+Magliacane+Kofinas+Gavves">Graph Switching Dynamical Systems</a> <span class="t-card-venue">ICML 2023</span></li>
         </ul>
       </div>
     </div>
@@ -1220,9 +1227,9 @@
       <div class="t-card-body">
         <div class="t-card-tag">Causal Representations · Interventions</div>
         <ul class="t-card-papers">
-          <li>BISCUIT: Causal Rep. Learning <span class="t-card-venue">UAI 2023</span></li>
-          <li>CITRIS: Causal Identifiability <span class="t-card-venue">ICML 2022</span></li>
-          <li>ENCO: Neural Causal Discovery <span class="t-card-venue">ICLR 2022</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=BISCUIT+Causal+Representation+Learning+Binary+Interactions+Lippe+Gavves">BISCUIT: Causal Rep. Learning</a> <span class="t-card-venue">UAI 2023</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=CITRIS+Causal+Identifiability+Temporal+Interventions+Lippe+Gavves">CITRIS: Causal Identifiability</a> <span class="t-card-venue">ICML 2022</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=ENCO+Efficient+Neural+Causal+Discovery+Interventions+Lippe+Cohen+Gavves">ENCO: Neural Causal Discovery</a> <span class="t-card-venue">ICLR 2022</span></li>
         </ul>
       </div>
     </div>
@@ -1240,9 +1247,9 @@
       <div class="t-card-body">
         <div class="t-card-tag">Physics · Interpretability · Safety</div>
         <ul class="t-card-papers">
-          <li>Mechanistic Neural Networks <span class="t-card-venue">ICML 2024</span></li>
-          <li>Mech. Interpretability for AI Safety <span class="t-card-venue">TMLR 2024</span></li>
-          <li>Modulated Neural ODEs <span class="t-card-venue">NeurIPS 2023</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Mechanistic+Neural+Networks+Scientific+Machine+Learning+Pervez+Locatello+Gavves">Mechanistic Neural Networks</a> <span class="t-card-venue">ICML 2024</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Mechanistic+Interpretability+AI+Safety+Review+Bereska+Gavves">Mech. Interpretability for AI Safety</a> <span class="t-card-venue">TMLR 2024</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Modulated+Neural+ODEs+Auzina+Yildiz+Magliacane+Bethge+Gavves">Modulated Neural ODEs</a> <span class="t-card-venue">NeurIPS 2023</span></li>
         </ul>
       </div>
     </div>
@@ -1260,9 +1267,9 @@
       <div class="t-card-body">
         <div class="t-card-tag">Brain Stroke · Cancer · Neural Fields</div>
         <ul class="t-card-papers">
-          <li>Physics-Inf. NFs for CT Perfusion <span class="t-card-venue">MIDL 2024 ★</span></li>
-          <li>Spatio-temporal Physics-Informed <span class="t-card-venue">MeDIA 2023</span></li>
-          <li>VISA: Video Object Segmentation <span class="t-card-venue">ECCV 2024</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=Accelerating+Physics-Informed+Neural+Fields+CT+Perfusion+Acute+Ischemic+Stroke+de+Vries+Gavves">Physics-Inf. NFs for CT Perfusion</a> <span class="t-card-venue">MIDL 2024 ★</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://arxiv.org/abs/2203.09594">Spatio-temporal Physics-Informed</a> <span class="t-card-venue">MeDIA 2023</span></li>
+          <li><a class="ext-link" target="_blank" rel="noopener" onclick="event.stopPropagation()" href="https://scholar.google.com/scholar?q=VISA+Reasoning+Video+Object+Segmentation+Large+Language+Models+Yan+Gavves">VISA: Video Object Segmentation</a> <span class="t-card-venue">ECCV 2024</span></li>
         </ul>
       </div>
     </div>
@@ -1289,10 +1296,10 @@
         <span class="label about-label reveal">About</span>
         <h2 class="about-heading reveal">Building AI that<br/>understands the<br/><span style="color:var(--gold)">physical world.</span></h2>
         <p class="about-text reveal">
-          I am a Professor at the <strong>University of Amsterdam</strong> and co-founder &amp; Chief Science Officer of <strong>Calli Labs</strong>. My research centers on <strong>Learning Dynamics in Computer Vision</strong>, with Physical AI as my north star — algorithms that understand cause-and-effect and physical dynamics, enabling robust embodied agents to act safely and reliably.
+          I am a Professor at the <a class="ext-link" target="_blank" rel="noopener" href="https://www.uva.nl/"><strong>University of Amsterdam</strong></a> and co-founder &amp; Chief Science Officer of <a class="ext-link" target="_blank" rel="noopener" href="https://callilabs.ai/"><strong>Calli Labs</strong></a>. My research centers on <strong>Learning Dynamics in Computer Vision</strong>, with Physical AI as my north star — algorithms that understand cause-and-effect and physical dynamics, enabling robust embodied agents to act safely and reliably.
         </p>
         <p class="about-text reveal d1">
-          Awarded the <strong>ERC Starting Grant</strong> and <strong>NWO VIDI Career Grant</strong>, I direct the QUVA Lab and POP-AART Lab at UvA. My work on causal representations, world models, and mechanistic interpretability forms the theoretical foundation for the next generation of Physical AI.
+          Awarded the <a class="ext-link" target="_blank" rel="noopener" href="https://erc.europa.eu/"><strong>ERC Starting Grant</strong></a> and <a class="ext-link" target="_blank" rel="noopener" href="https://www.nwo.nl/en/researchprogrammes/nwo-talent-programme/vidi"><strong>NWO VIDI Career Grant</strong></a>, I direct the QUVA Lab and POP-AART Lab at UvA. My work on causal representations, world models, and mechanistic interpretability forms the theoretical foundation for the next generation of Physical AI.
         </p>
         <div class="stats reveal d2">
           <div><span class="stat-val">14K+</span><span class="stat-lbl">Citations</span></div>
@@ -1400,34 +1407,34 @@
     <div class="papers-grid">
       <div class="paper-card feat reveal">
         <span class="paper-venue">ICLR 2025</span>
-        <h3 class="paper-title">Dream to Manipulate: Compositional World Models Empowering Robot Imitation Learning with Imagination</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Dream+to+Manipulate+Compositional+World+Models+Barcellona+Gavves">Dream to Manipulate: Compositional World Models Empowering Robot Imitation Learning with Imagination</a></h3>
         <p class="paper-authors">Barcellona, Zadaianchuk, Allegro, Papa, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Dream+to+Manipulate+Compositional+World+Models+Barcellona+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d1">
         <span class="paper-venue">ICLR 2025</span>
-        <h3 class="paper-title">CaPo: Cooperative Plan Optimization for Efficient Embodied Multi-Agent Cooperation</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=CaPo+Cooperative+Plan+Optimization+Embodied+Multi-Agent+Liu+Gavves">CaPo: Cooperative Plan Optimization for Efficient Embodied Multi-Agent Cooperation</a></h3>
         <p class="paper-authors">Liu, Zhou, Du, Tan, Snoek, Sonke, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=CaPo+Cooperative+Plan+Optimization+Embodied+Multi-Agent+Liu+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d2">
         <span class="paper-venue">ICML 2023</span>
-        <h3 class="paper-title">Graph Switching Dynamical Systems</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Graph+Switching+Dynamical+Systems+Liu+Magliacane+Kofinas+Gavves">Graph Switching Dynamical Systems</a></h3>
         <p class="paper-authors">Liu, Magliacane, Kofinas, Gavves</p>
-        <a href="https://github.com/yongtuoliu/Graph-Switching-Dynamical-Systems" target="_blank" class="paper-link">GitHub →</a>
+        <a href="https://github.com/yongtuoliu/Graph-Switching-Dynamical-Systems" target="_blank" rel="noopener" class="paper-link">GitHub →</a>
       </div>
       <div class="paper-card reveal">
         <span class="paper-venue">NeurIPS 2023</span>
-        <h3 class="paper-title">Latent Field Discovery in Interacting Dynamical Systems with Neural Fields</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Latent+Field+Discovery+Interacting+Dynamical+Systems+Neural+Fields+Kofinas+Gavves">Latent Field Discovery in Interacting Dynamical Systems with Neural Fields</a></h3>
         <p class="paper-authors">Kofinas, Bekkers, Nagaraja, Gavves</p>
-        <a href="https://github.com/mkofinas/aether" target="_blank" class="paper-link">GitHub →</a>
+        <a href="https://github.com/mkofinas/aether" target="_blank" rel="noopener" class="paper-link">GitHub →</a>
       </div>
       <div class="paper-card reveal d1">
         <span class="paper-venue">CVPR 2016</span>
-        <h3 class="paper-title">Siamese Instance Search for Tracking</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Siamese+Instance+Search+for+Tracking+Tao+Gavves+Smeulders">Siamese Instance Search for Tracking</a></h3>
         <p class="paper-authors">Tao, Gavves, Smeulders</p>
         <p class="paper-authors" style="font-style:italic;margin-top:0.3rem">1,467 citations · paradigm-shifting</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Siamese+Instance+Search+for+Tracking+Tao+Gavves+Smeulders" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
     </div>
   </div>
@@ -1451,27 +1458,27 @@
     <div class="papers-grid">
       <div class="paper-card feat reveal">
         <span class="paper-venue">UAI 2023</span>
-        <h3 class="paper-title">BISCUIT: Causal Representation Learning from Binary Interactions</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=BISCUIT+Causal+Representation+Learning+Binary+Interactions+Lippe+Gavves">BISCUIT: Causal Representation Learning from Binary Interactions</a></h3>
         <p class="paper-authors">Lippe, Magliacane, Löwe, Asano, Cohen, Gavves</p>
-        <a href="https://github.com/phlippe/BISCUIT" target="_blank" class="paper-link">GitHub →</a>
+        <a href="https://github.com/phlippe/BISCUIT" target="_blank" rel="noopener" class="paper-link">GitHub →</a>
       </div>
       <div class="paper-card reveal d1">
         <span class="paper-venue">ICML 2022</span>
-        <h3 class="paper-title">CITRIS: Causal Identifiability from Temporal Interventions in Latent Spaces</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=CITRIS+Causal+Identifiability+Temporal+Interventions+Latent+Spaces+Lippe+Gavves">CITRIS: Causal Identifiability from Temporal Interventions in Latent Spaces</a></h3>
         <p class="paper-authors">Lippe, Magliacane, Löwe, Asano, Cohen, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=CITRIS+Causal+Identifiability+Temporal+Interventions+Latent+Spaces+Lippe+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d2">
         <span class="paper-venue">ICLR 2022</span>
-        <h3 class="paper-title">ENCO: Efficient Neural Causal Discovery under Interventions</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=ENCO+Efficient+Neural+Causal+Discovery+Interventions+Lippe+Cohen+Gavves">ENCO: Efficient Neural Causal Discovery under Interventions</a></h3>
         <p class="paper-authors">Lippe, Cohen, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=ENCO+Efficient+Neural+Causal+Discovery+Interventions+Lippe+Cohen+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal">
         <span class="paper-venue">ICLR 2021</span>
-        <h3 class="paper-title">Efficient Neural Causal Discovery without Acyclicity Constraints</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Efficient+Neural+Causal+Discovery+without+Acyclicity+Constraints+Lippe+Cohen+Gavves">Efficient Neural Causal Discovery without Acyclicity Constraints</a></h3>
         <p class="paper-authors">Lippe, Cohen, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Efficient+Neural+Causal+Discovery+without+Acyclicity+Constraints+Lippe+Cohen+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
     </div>
   </div>
@@ -1495,29 +1502,29 @@
     <div class="papers-grid">
       <div class="paper-card feat reveal">
         <span class="paper-venue">ICML 2024</span>
-        <h3 class="paper-title">Mechanistic Neural Networks for Scientific Machine Learning</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Mechanistic+Neural+Networks+Scientific+Machine+Learning+Pervez+Locatello+Gavves">Mechanistic Neural Networks for Scientific Machine Learning</a></h3>
         <p class="paper-authors">Pervez, Locatello, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Mechanistic+Neural+Networks+Scientific+Machine+Learning+Pervez+Locatello+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d1">
         <span class="paper-venue">TMLR 2024</span>
-        <h3 class="paper-title">Mechanistic Interpretability for AI Safety — A Review</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Mechanistic+Interpretability+AI+Safety+Review+Bereska+Gavves">Mechanistic Interpretability for AI Safety — A Review</a></h3>
         <p class="paper-authors">Bereska, Gavves</p>
         <div class="paper-award">300+ Citations in One Year</div>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Mechanistic+Interpretability+AI+Safety+Review+Bereska+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d2">
         <span class="paper-venue">NeurIPS 2023</span>
-        <h3 class="paper-title">Modulated Neural ODEs</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Modulated+Neural+ODEs+Auzina+Yildiz+Magliacane+Bethge+Gavves">Modulated Neural ODEs</a></h3>
         <p class="paper-authors">Auzina, Yildiz, Magliacane, Bethge, Gavves</p>
-        <a href="https://github.com/IlzeAmandaA/MoNODE" target="_blank" class="paper-link">GitHub →</a>
+        <a href="https://github.com/IlzeAmandaA/MoNODE" target="_blank" rel="noopener" class="paper-link">GitHub →</a>
       </div>
       <div class="paper-card reveal">
         <span class="paper-venue">CVPR 2016 · Oral</span>
-        <h3 class="paper-title">Dynamic Image Networks for Action Recognition</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Dynamic+Image+Networks+Action+Recognition+Bilen+Fernando+Gavves+Vedaldi+Gould">Dynamic Image Networks for Action Recognition</a></h3>
         <p class="paper-authors">Bilen, Fernando, Gavves, Vedaldi, Gould</p>
         <p class="paper-authors" style="font-style:italic;margin-top:0.3rem">1,067 citations combined</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Dynamic+Image+Networks+Action+Recognition+Bilen+Fernando+Gavves+Vedaldi+Gould" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
     </div>
   </div>
@@ -1541,22 +1548,22 @@
     <div class="papers-grid">
       <div class="paper-card feat reveal">
         <span class="paper-venue">MIDL 2024</span>
-        <h3 class="paper-title">Accelerating Physics-Informed Neural Fields for Fast CT Perfusion Analysis in Acute Ischemic Stroke</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Accelerating+Physics-Informed+Neural+Fields+CT+Perfusion+Acute+Ischemic+Stroke+de+Vries+Gavves">Accelerating Physics-Informed Neural Fields for Fast CT Perfusion Analysis in Acute Ischemic Stroke</a></h3>
         <p class="paper-authors">de Vries, Herten, Hoving, Isgum, Emmer, Majoie, Marquering, Gavves</p>
         <div class="paper-award">Best Paper Runner-Up</div>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=Accelerating+Physics-Informed+Neural+Fields+CT+Perfusion+Acute+Ischemic+Stroke+de+Vries+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
       <div class="paper-card reveal d1">
         <span class="paper-venue">MeDIA 2023</span>
-        <h3 class="paper-title">Spatio-temporal Physics-Informed Learning for CT Perfusion</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.09594">Spatio-temporal Physics-Informed Learning for CT Perfusion</a></h3>
         <p class="paper-authors">de Vries, van Herten, Hoving, Išgum, Emmer, Majoie, Marquering, Gavves</p>
-        <a href="https://arxiv.org/abs/2203.09594" target="_blank" class="paper-link">arXiv →</a>
+        <a href="https://arxiv.org/abs/2203.09594" target="_blank" rel="noopener" class="paper-link">arXiv →</a>
       </div>
       <div class="paper-card reveal d2">
         <span class="paper-venue">ECCV 2024</span>
-        <h3 class="paper-title">VISA: Reasoning Video Object Segmentation via Large Language Models</h3>
+        <h3 class="paper-title"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=VISA+Reasoning+Video+Object+Segmentation+Large+Language+Models+Yan+Gavves">VISA: Reasoning Video Object Segmentation via Large Language Models</a></h3>
         <p class="paper-authors">Yan, Wang, Yan, Jiang, Hu, Kang, Xie, Gavves</p>
-        <a href="#" class="paper-link">Read paper →</a>
+        <a href="https://scholar.google.com/scholar?q=VISA+Reasoning+Video+Object+Segmentation+Large+Language+Models+Yan+Gavves" target="_blank" rel="noopener" class="paper-link">Read paper →</a>
       </div>
     </div>
   </div>
@@ -1585,7 +1592,7 @@
         </div>
         <div>
           <div class="partner-type">Foundation Robotics</div>
-          <div class="partner-name">Toyota Research Institute</div>
+          <div class="partner-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.tri.global/">Toyota Research Institute</a></div>
           <p class="partner-desc">€1M collaboration on transferring world models research to real-world robot learning systems. Joint work on compositional scene understanding and generalizable manipulation.</p>
         </div>
       </div>
@@ -1597,7 +1604,7 @@
         </div>
         <div>
           <div class="partner-type">World Models at Scale</div>
-          <div class="partner-name">Next Generation AI Austria</div>
+          <div class="partner-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.nx-ai.com/">Next Generation AI Austria</a></div>
           <p class="partner-desc">Ongoing research dialogue on foundation models and the future of general-purpose world models. Invited speaker at NXAI@NeurIPS on world models and Physical AI.</p>
         </div>
       </div>
@@ -1609,7 +1616,7 @@
         </div>
         <div>
           <div class="partner-type">QUVA 2.0 Lab · UvA</div>
-          <div class="partner-name">Qualcomm Research</div>
+          <div class="partner-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.qualcomm.com/research/artificial-intelligence">Qualcomm Research</a></div>
           <p class="partner-desc">Joint research laboratory at the University of Amsterdam exploring efficient, scalable AI for computer vision and embodied intelligence. Co-supervising 3 PhD students.</p>
         </div>
       </div>
@@ -1621,7 +1628,7 @@
         </div>
         <div>
           <div class="partner-type">POP-AART Lab · NKI</div>
-          <div class="partner-name">Elekta &amp; Netherlands Cancer Institute</div>
+          <div class="partner-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.elekta.com/">Elekta</a> &amp; <a class="ext-link" target="_blank" rel="noopener" href="https://www.nki.nl/">Netherlands Cancer Institute</a></div>
           <p class="partner-desc">AI-driven radiation therapy optimisation and oncological imaging. Joint research lab with NKI, co-supervising 3 PhD students on physics-informed learning for cancer treatment.</p>
         </div>
       </div>
@@ -1642,7 +1649,7 @@
       <div class="award-item reveal">
         <span class="award-year">2025</span>
         <div>
-          <div class="award-name">ELLIOT Consortium — European Large Open Multimodal Foundation Models</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://ellis.eu/">ELLIOT Consortium — European Large Open Multimodal Foundation Models</a></div>
           <div class="award-desc">HORIZON-CL4-2024 · ELLIS-sponsored · €30,000,000 granted for scalable robust generalisation</div>
         </div>
         <span class="award-badge">€30M HORIZON</span>
@@ -1651,7 +1658,7 @@
       <div class="award-item reveal">
         <span class="award-year">2025</span>
         <div>
-          <div class="award-name">Toyota Research Foundation Grant — Foundation Robotics</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.tri.global/">Toyota Research Foundation Grant — Foundation Robotics</a></div>
           <div class="award-desc">€1,000,000 · Transferring world model research to industrial robotics processes · 20% acceptance rate</div>
         </div>
         <span class="award-badge">€1M</span>
@@ -1660,7 +1667,7 @@
       <div class="award-item reveal">
         <span class="award-year">2024</span>
         <div>
-          <div class="award-name">Best Paper Runner-Up · MIDL 2024</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://scholar.google.com/scholar?q=Accelerating+Physics-Informed+Neural+Fields+CT+Perfusion+Acute+Ischemic+Stroke+de+Vries+Gavves">Best Paper Runner-Up · MIDL 2024</a></div>
           <div class="award-desc">Accelerating physics-informed neural fields for fast CT perfusion analysis in acute ischemic stroke</div>
         </div>
         <span class="award-badge">Best Paper</span>
@@ -1669,7 +1676,7 @@
       <div class="award-item reveal">
         <span class="award-year">2020</span>
         <div>
-          <div class="award-name">ERC Starting Grant — "Expectational Visual Artificial Intelligence"</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://erc.europa.eu/">ERC Starting Grant — "Expectational Visual Artificial Intelligence"</a></div>
           <div class="award-desc">European Research Council · Ranked in the top 3% of all candidates across all disciplines</div>
         </div>
         <span class="award-badge">ERC</span>
@@ -1678,7 +1685,7 @@
       <div class="award-item reveal">
         <span class="award-year">2020</span>
         <div>
-          <div class="award-name">NWO VIDI Junior Scientist Career Grant — "TIMING: Learning Time in Visual Recognition"</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://www.nwo.nl/en/researchprogrammes/nwo-talent-programme/vidi">NWO VIDI Junior Scientist Career Grant — "TIMING: Learning Time in Visual Recognition"</a></div>
           <div class="award-desc">Netherlands Organisation for Scientific Research · Prestigious personal career grant</div>
         </div>
         <span class="award-badge">NWO VIDI</span>
@@ -1687,7 +1694,7 @@
       <div class="award-item reveal">
         <span class="award-year">2019–</span>
         <div>
-          <div class="award-name">ELLIS Scholar</div>
+          <div class="award-name"><a class="ext-link" target="_blank" rel="noopener" href="https://ellis.eu/">ELLIS Scholar</a></div>
           <div class="award-desc">European Laboratory for Learning and Intelligent Systems · Member since founding</div>
         </div>
         <span class="award-badge">ELLIS</span>
