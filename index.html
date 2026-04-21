@@ -974,9 +974,9 @@
     }
     .entrepreneurship-grid {
       display: grid;
-      grid-template-columns: repeat(1, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 2rem;
-      max-width: 600px;
+      max-width: 1100px;
     }
     .venture-card {
       background: var(--dark-card);
@@ -985,7 +985,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: row;
-      gap: 2rem;
+      gap: 1.5rem;
       padding: 2rem;
       transition: border-color 0.25s, box-shadow 0.25s;
       align-items: stretch;
@@ -993,6 +993,13 @@
     .venture-card:hover {
       border-color: rgba(196,169,106,0.35);
       box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    @media (max-width: 900px) {
+      .entrepreneurship-grid {
+        grid-template-columns: repeat(1, 1fr);
+        max-width: 600px;
+      }
+      .venture-card { gap: 2rem; }
     }
     @media (max-width: 700px) {
       .venture-card { flex-direction: column; }
