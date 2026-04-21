@@ -1,24 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="s-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#F0D587"/>
-      <stop offset="100%" stop-color="#B8985B"/>
-    </linearGradient>
+    <radialGradient id="s-body" cx="36%" cy="30%" r="72%">
+      <stop offset="0%"   stop-color="#FFE9B3"/>
+      <stop offset="45%"  stop-color="#F0BE5A"/>
+      <stop offset="100%" stop-color="#7A4A1F"/>
+    </radialGradient>
+    <radialGradient id="s-moon" cx="35%" cy="35%" r="70%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="70%"  stop-color="#FFE0A0"/>
+      <stop offset="100%" stop-color="#D8A155"/>
+    </radialGradient>
   </defs>
 
-  <!-- Dark field -->
-  <rect width="32" height="32" fill="#09090D"/>
+  <!-- Bold orb fills almost the entire icon — no dark square behind. -->
+  <circle cx="16" cy="16" r="14" fill="url(#s-body)"/>
 
-  <!-- Orbit (tilted ellipse) -->
-  <g transform="rotate(-24 16 16)">
-    <ellipse cx="16" cy="16" rx="11.5" ry="5.2"
-             fill="none" stroke="url(#s-ring)"
-             stroke-width="1.6" stroke-linecap="round"/>
-  </g>
-
-  <!-- Central attractor -->
-  <circle cx="16" cy="16" r="1.4" fill="#F0D587"/>
-
-  <!-- Luminous particle on the orbit -->
-  <circle cx="26" cy="11.5" r="2.1" fill="#F6E3A8"/>
+  <!-- Luminous companion dot, top-right. -->
+  <circle cx="25" cy="9" r="2.4" fill="url(#s-moon)"/>
 </svg>

@@ -1,40 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <radialGradient id="aether-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%"   stop-color="#E8CD7E" stop-opacity="0.32"/>
-      <stop offset="55%"  stop-color="#C4A96A" stop-opacity="0.10"/>
-      <stop offset="100%" stop-color="#C4A96A" stop-opacity="0"/>
+    <!-- Warm, sun-like orb with a hot core and a darker rim. -->
+    <radialGradient id="orb-body" cx="36%" cy="30%" r="72%">
+      <stop offset="0%"   stop-color="#FFE9B3"/>
+      <stop offset="35%"  stop-color="#F4C86A"/>
+      <stop offset="78%"  stop-color="#C58A3A"/>
+      <stop offset="100%" stop-color="#6E3F13"/>
     </radialGradient>
-    <linearGradient id="aether-ring" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#E8CD7E"/>
-      <stop offset="60%"  stop-color="#C4A96A"/>
-      <stop offset="100%" stop-color="#9E8650"/>
-    </linearGradient>
-    <radialGradient id="aether-particle" cx="50%" cy="50%" r="50%">
-      <stop offset="0%"   stop-color="#F6E3A8"/>
-      <stop offset="55%"  stop-color="#E8CD7E"/>
-      <stop offset="100%" stop-color="#C4A96A"/>
+    <radialGradient id="orb-moon" cx="35%" cy="35%" r="70%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="60%"  stop-color="#FFE9B3"/>
+      <stop offset="100%" stop-color="#E3B265"/>
+    </radialGradient>
+    <radialGradient id="orb-halo" cx="50%" cy="50%" r="50%">
+      <stop offset="60%"  stop-color="#F4C86A" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#F4C86A" stop-opacity="0.18"/>
     </radialGradient>
   </defs>
 
-  <!-- Dark field -->
-  <rect width="64" height="64" fill="#09090D"/>
+  <!-- Soft halo outside the orb. -->
+  <circle cx="32" cy="32" r="31" fill="url(#orb-halo)"/>
 
-  <!-- Aetherial glow -->
-  <circle cx="32" cy="32" r="28" fill="url(#aether-glow)"/>
+  <!-- Main orb, nearly edge-to-edge, no dark square behind. -->
+  <circle cx="32" cy="32" r="27" fill="url(#orb-body)"/>
 
-  <!-- Orbit (tilted ellipse) -->
-  <g transform="rotate(-24 32 32)">
-    <ellipse cx="32" cy="32" rx="22" ry="10.5"
-             fill="none" stroke="url(#aether-ring)"
-             stroke-width="1.6" stroke-linecap="round"
-             opacity="0.92"/>
-  </g>
+  <!-- Specular highlight. -->
+  <circle cx="22" cy="20" r="5.5" fill="#FFFFFF" opacity="0.28"/>
 
-  <!-- Central attractor -->
-  <circle cx="32" cy="32" r="1.8" fill="#E8CD7E" opacity="0.9"/>
-
-  <!-- Luminous particle on the orbit -->
-  <circle cx="51.1" cy="23.2" r="4.8" fill="#C4A96A" opacity="0.18"/>
-  <circle cx="51.1" cy="23.2" r="2.6" fill="url(#aether-particle)"/>
+  <!-- Bright companion / luminous particle, top-right. -->
+  <circle cx="50" cy="18" r="4.2" fill="url(#orb-moon)"/>
 </svg>
