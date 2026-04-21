@@ -62,7 +62,13 @@
       pointer-events: none;
     }
 
-    section, footer, .bridge { position: relative; z-index: 1; }
+    /* Sections are positioned but deliberately don't set z-index, so they
+       don't create a stacking context that would cap their children. The
+       section *background* paints in normal flow (below the canvas at z:2),
+       so particles float above the cream/dark fill. Individual content
+       containers are raised to z:3 so cards and text sit above particles. */
+    section, footer, .bridge { position: relative; }
+    .container { position: relative; z-index: 3; }
     @media (prefers-reduced-motion: reduce) {
       #bg-canvas { display: none; }
     }
